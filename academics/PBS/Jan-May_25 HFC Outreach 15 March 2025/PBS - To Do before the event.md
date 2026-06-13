@@ -1,0 +1,15 @@
+- [x] Permission
+- [x] Standee
+- [ ] Preparation
+	- [x] Lokesh
+	- [ ] Eswar
+	- [ ] Shivam
+- [x] Goodies
+- [x] Email to GSB
+- [ ] Post on Social Media
+	- [x] Instagram - Shivam
+	- [ ] LinkedIn - Eswar
+- [x] Share on Whatsapp Status/Group (if possible) Don't send on random groups, tho.
+- [x] Website Content
+- [ ] Print out of Website QR
+- [ ] Print out of Some Stats and facts

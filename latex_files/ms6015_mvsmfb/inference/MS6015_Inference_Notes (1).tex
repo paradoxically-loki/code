@@ -1,0 +1,579 @@
+\documentclass[12pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{parskip}
+
+% ── Colours ───────────────────────────────────────────────────────────────────
+\definecolor{sectionblue}{RGB}{0, 70, 127}
+\definecolor{boxgray}{RGB}{245, 245, 245}
+\definecolor{boxborder}{RGB}{0, 70, 127}
+
+% ── Section formatting ────────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries\color{sectionblue}}{}{0em}{\thesection\quad}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{sectionblue}}{}{0em}{\thesubsection\quad}
+
+% ── Box environments via mdframed ─────────────────────────────────────────────
+\newmdenv[
+  backgroundcolor=boxgray,
+  linecolor=boxborder,
+  linewidth=1.2pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=6pt,
+  skipbelow=6pt
+]{keybox}
+
+\newmdenv[
+  backgroundcolor=white,
+  linecolor=gray!60,
+  linewidth=1pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=6pt,
+  skipbelow=6pt
+]{examplebox}
+
+% ── Maths macros ──────────────────────────────────────────────────────────────
+\newcommand{\xbar}{\bar{x}}
+\newcommand{\Xbar}{\bar{X}}
+\newcommand{\muv}{\boldsymbol{\mu}}
+\newcommand{\Sig}{\boldsymbol{\Sigma}}
+\newcommand{\Sv}{\mathbf{S}}
+\newcommand{\tauv}{\boldsymbol{\tau}}
+\newcommand{\betav}{\boldsymbol{\beta}}
+\newcommand{\epsilonv}{\boldsymbol{\epsilon}}
+\newcommand{\Np}{N_p}
+\newcommand{\R}{\mathbb{R}}
+
+% ── Document ──────────────────────────────────────────────────────────────────
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} MS 6015: Multivariate Statistical Methods}\\[6pt]
+  {\large Sampling Distributions and Inference about the Mean Vector}\\[4pt]
+  {\normalsize Condensed Lecture Notes \quad|\quad Reference: Johnson \& Wichern, Chapters 4--6, Keller Chapter 14}
+\end{center}
+
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Properties of the Multivariate Normal Distribution}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Density Function}
+
+A $p$-dimensional random vector $\mathbf{X}$ follows a multivariate normal distribution,
+written $\mathbf{X} \sim \Np(\muv, \Sig)$, with density:
+\[
+  f(\mathbf{x}) = \frac{1}{(2\pi)^{p/2}|\Sig|^{1/2}}
+  \exp\!\left\{-\tfrac{1}{2}(\mathbf{x}-\muv)^{\top}\Sig^{-1}(\mathbf{x}-\muv)\right\},
+  \qquad x_i \in \R.
+\]
+
+\subsection{Key Properties}
+
+\begin{keybox}\noindent\textbf{Properties of $\mathbf{X}\sim\Np(\muv,\Sig)$}\par\smallskip
+\begin{enumerate}[leftmargin=*, label=\arabic*.]
+  \item Linear combinations of the components of $\mathbf{X}$ are (multivariate) normal.
+  \item Every subset of the components of $\mathbf{X}$ is (multivariate) normal.
+  \item Zero covariance between components implies statistical independence.
+  \item Conditional distributions of the components are (multivariate) normal.
+\end{enumerate}
+\end{keybox}
+
+\subsection{Conditional Distribution}
+
+Partition $(\mathbf{X}_1^{(q_1\times1)}, \mathbf{X}_2^{(q_2\times1)}) \sim N_{q_1+q_2}(\muv, \Sig)$ with
+\[
+  \muv = \begin{pmatrix}\muv_1\\\muv_2\end{pmatrix}, \qquad
+  \Sig = \begin{pmatrix}\Sig_{11}&\Sig_{12}\\\Sig_{21}&\Sig_{22}\end{pmatrix}.
+\]
+Then the conditional distribution of $\mathbf{X}_1 \mid \mathbf{X}_2 = \mathbf{x}_2$ is multivariate normal with:
+\[
+  \text{Mean: } \muv_1 + \Sig_{12}\Sig_{22}^{-1}(\mathbf{x}_2 - \muv_2),
+  \qquad
+  \text{Covariance: } \Sig_{11} - \Sig_{12}\Sig_{22}^{-1}\Sig_{21}.
+\]
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Sampling Distributions of $\Xbar$ and $\mathbf{S}$}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{keybox}\noindent\textbf{Sampling Distribution Results}\par\smallskip
+\begin{itemize}
+  \item \textbf{Sample mean vector:} $\Xbar \sim \Np(\muv, \Sig/n)$.
+  \item \textbf{Sample covariance:} $(n-1)\mathbf{S}$ follows a \emph{Wishart distribution}
+        with $n-1$ degrees of freedom (the multivariate analogue of $\chi^2$).
+  \item $\Xbar$ and $\mathbf{S}$ are \textbf{independent}.
+\end{itemize}
+\end{keybox}
+
+\subsection{Central Limit Theorem (Multivariate)}
+
+Let $\mathbf{X}_1,\mathbf{X}_2,\ldots,\mathbf{X}_n$ be i.i.d.\ from \emph{any} population
+with mean $\muv$ and finite covariance $\Sig$. Then:
+\[
+  \sqrt{n}(\Xbar - \muv) \xrightarrow{d} \Np(\mathbf{0},\Sig).
+\]
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Univariate Hypothesis Testing (Review)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{One-Sample $t$-Test}
+
+Test $H_0: \mu = \mu_0$ vs.\ $H_1: \mu \neq \mu_0$ using:
+\[
+  t = \frac{\xbar - \mu_0}{s/\sqrt{n}} \sim t_{n-1} \quad\text{under }H_0.
+\]
+Reject $H_0$ at level $\alpha$ when $|t| > t_{n-1}(\alpha/2)$. Equivalently, reject when
+\[
+  t^2 = n(\xbar-\mu_0)(s^2)^{-1}(\xbar-\mu_0) > t_{n-1}^2(\alpha/2).
+\]
+
+A $100(1-\alpha)\%$ confidence interval for $\mu$ is:
+\[
+  \xbar \pm t_{n-1}(\alpha/2)\,\frac{s}{\sqrt{n}}.
+\]
+
+\subsection{Common Univariate Tests (Summary)}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Test} & \textbf{Statistic} & \textbf{Distribution} \\
+\midrule
+One-sample $t$ (unknown $\sigma$) & $t = \dfrac{\xbar-\mu_0}{s/\sqrt{n}}$ & $t_{n-1}$ \\[8pt]
+One-sample $z$ (known $\sigma$)   & $z = \dfrac{\xbar-\mu_0}{\sigma/\sqrt{n}}$ & $N(0,1)$ \\[8pt]
+Two-sample $F$ (variance ratio)   & $F = s_1^2/s_2^2$ & $F_{n_1-1,n_2-1}$ \\[8pt]
+One-Way ANOVA ($k$ means)         & $F = \text{MST}/\text{MSE}$ & $F_{k-1,n-k}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Hotelling's $T^2$ Statistic}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Definition}
+
+The multivariate generalisation of the squared $t$-statistic is:
+\[
+  \boxed{T^2 = n(\Xbar - \muv_0)^{\top}\mathbf{S}^{-1}(\Xbar - \muv_0).}
+\]
+This is the \textbf{Mahalanobis distance} between $\Xbar$ and $\muv_0$:
+\begin{itemize}
+  \item $(\Xbar-\muv_0)$ is the mean-difference vector (signal).
+  \item $\mathbf{S}^{-1}$ downweights directions with high variability.
+\end{itemize}
+
+\subsection{Sampling Distribution and Decision Rule}
+
+Under $H_0: \muv = \muv_0$ with multivariate normality:
+\[
+  \frac{n-p}{p(n-1)}\,T^2 \sim F_{p,\,n-p}.
+\]
+\begin{keybox}\noindent\textbf{Rejection Rule}\par\smallskip
+Reject $H_0$ at level $\alpha$ when:
+\[
+  T^2 > \frac{(n-1)p}{n-p}\,F_{p,n-p}(\alpha).
+\]
+Requires $n > p$ so that $\mathbf{S}$ is invertible. When $p = 1$, this reduces to the usual $t$-test.
+\end{keybox}
+
+\subsection{Invariance Property}
+
+$T^2$ is invariant under linear transformations $\mathbf{Y} = C\mathbf{X} + \mathbf{d}$ (with $C$ non-singular), so the test result does not depend on the units of measurement.
+
+\begin{examplebox}\noindent\textbf{Female Sweat Data ($n=20$, $p=3$)}\par\smallskip
+Testing $H_0: \muv_0 = [4, 50, 10]^\top$ for sweat rate, sodium, and potassium.\\
+At $\alpha = 0.10$: critical value $= \frac{19 \cdot 3}{17}F_{3,17}(0.10) = 8.18$.\\
+Computed $T^2 = 9.74 > 8.18 \Rightarrow$ \textbf{Reject $H_0$}.
+\end{examplebox}
+
+\begin{examplebox}\noindent\textbf{Women's Nutritional Survey ($n=737$, $p=5$)}\par\smallskip
+Testing whether average dietary intake meets federal guidelines.\\
+$T^2 = 1758.54$, $F$-statistic $= 349.80 > 3.042 = F_{5,732}(0.01) \Rightarrow$ \textbf{Reject $H_0$}.\\
+Conclusion: Women fall short on calcium and iron, and may exceed recommendations for protein, Vitamin A, and Vitamin C.
+\end{examplebox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Confidence Regions and Simultaneous Confidence Intervals}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Confidence Ellipsoid}
+
+A $100(1-\alpha)\%$ confidence region for $\muv$ is the ellipsoid:
+\[
+  \left\{\muv : n(\xbar-\muv)^{\top}\mathbf{S}^{-1}(\xbar-\muv) \leq \frac{(n-1)p}{n-p}F_{p,n-p}(\alpha)\right\}.
+\]
+This is a $p$-dimensional ellipsoid centred at $\xbar$, with axes oriented along the eigenvectors of $\mathbf{S}$ and half-lengths proportional to $\sqrt{\lambda_i/n}$, where $\lambda_i$ are eigenvalues of $\mathbf{S}$.
+
+\subsection{Three Types of Confidence Intervals}
+
+\begin{keybox}\noindent\textbf{Comparison of CI Methods for $\mu_j$}\par\smallskip
+
+\textbf{1. One-at-a-Time (Marginal):}
+\[
+  \xbar_j \pm t_{n-1,\,\alpha/2}\sqrt{s_{jj}/n}.
+\]
+Each individual CI has coverage $1-\alpha$, but the \emph{joint} coverage is less than $1-\alpha$.
+
+\medskip
+\textbf{2. Bonferroni Simultaneous CIs:}
+\[
+  \xbar_j \pm t_{n-1,\,\alpha/(2p)}\sqrt{s_{jj}/n}, \qquad j=1,\ldots,p.
+\]
+Joint coverage $\geq 1-\alpha$. Conservative (wider intervals), but simple and assumption-free.
+
+\medskip
+\textbf{3. Hotelling $T^2$ Simultaneous CIs:}
+\[
+  \xbar_j \pm \sqrt{\frac{p(n-1)}{n-p}F_{p,n-p}(\alpha)}\cdot\sqrt{s_{jj}/n}, \qquad j=1,\ldots,p.
+\]
+Derived from the confidence ellipsoid. Exact joint coverage $1-\alpha$ under normality; often less conservative than Bonferroni.
+\end{keybox}
+
+\textbf{Rule of thumb:} Use Bonferroni when you only care about a few specific components; use $T^2$ intervals when you want inference for all components simultaneously.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Likelihood Ratio Test and Wilks' Lambda}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The Likelihood Ratio statistic compares the restricted likelihood (at $\muv_0$) to the unrestricted MLE:
+\[
+  \Lambda = \left(\frac{|\hat{\Sig}|}{|\hat{\Sig}_0|}\right)^{n/2}.
+\]
+\textbf{Wilks' Lambda} is defined as:
+\[
+  \Lambda^{2/n} = \frac{|\hat{\Sig}|}{|\hat{\Sig}_0|} = \left(1 + \frac{T^2}{n-1}\right)^{-1}.
+\]
+Small values of $\Lambda^{2/n}$ (equivalently large $T^2$) lead to rejection of $H_0$.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Two-Sample Tests}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Univariate: Two Independent Samples}
+
+To test $H_0: \mu_1 = \mu_2$ (or $H_0: \mu_1 - \mu_2 = \delta_0$):
+
+\medskip
+\textbf{Case 1 — Equal variances ($\sigma_1^2 = \sigma_2^2$):}
+\[
+  s_p^2 = \frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{n_1+n_2-2}, \qquad
+  t = \frac{(\xbar_1-\xbar_2)-\delta_0}{s_p\sqrt{1/n_1+1/n_2}} \sim t_{n_1+n_2-2}.
+\]
+
+\textbf{Case 2 — Unequal variances ($\sigma_1^2 \neq \sigma_2^2$), Welch:}
+\[
+  t = \frac{(\xbar_1-\xbar_2)-\delta_0}{\sqrt{s_1^2/n_1+s_2^2/n_2}}, \qquad
+  \nu = \frac{(s_1^2/n_1+s_2^2/n_2)^2}{\frac{(s_1^2/n_1)^2}{n_1-1}+\frac{(s_2^2/n_2)^2}{n_2-1}}.
+\]
+
+\subsection{Multivariate: Two Independent Samples}
+
+\textbf{Assumptions:} Two independent random samples from $\Np(\muv_l,\Sig)$, $l=1,2$, with $\Sig_1 = \Sig_2 = \Sig$.
+
+\textbf{Pooled covariance estimator:}
+\[
+  \mathbf{S}_\text{pool} = \frac{(n_1-1)\mathbf{S}_1 + (n_2-1)\mathbf{S}_2}{n_1+n_2-2}.
+\]
+
+\textbf{Two-sample $T^2$:}
+\[
+  T^2 = \left[(\Xbar_1-\Xbar_2)-\boldsymbol{\delta}_0\right]^{\top}
+        \left[\left(\frac{1}{n_1}+\frac{1}{n_2}\right)\mathbf{S}_\text{pool}\right]^{-1}
+        \left[(\Xbar_1-\Xbar_2)-\boldsymbol{\delta}_0\right].
+\]
+
+Distributed as $\dfrac{(n_1+n_2-2)p}{n_1+n_2-p-1}F_{p,n_1+n_2-p-1}$ under $H_0$.
+
+\textbf{Large samples ($n_1-p$ and $n_2-p$ large):} No need to assume $\Sig_1=\Sig_2$ or normality; $T^2 \xrightarrow{d} \chi^2_p$.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Paired Comparisons}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{When to Use Paired Design}
+
+Use a paired comparison when there is a natural one-to-one correspondence between observations in the two groups (e.g., pre/post measurements, matched subjects). Pairing reduces extraneous variability and typically yields greater power than independent samples.
+
+\subsection{Univariate Paired $t$-Test}
+
+Compute differences $D_j = X_{j1} - X_{j2}$ and test $H_0: \delta = 0$:
+\[
+  t = \frac{\bar{D}}{s_D/\sqrt{n}} \sim t_{n-1} \quad\text{under }H_0.
+\]
+
+\subsection{Multivariate Paired Comparison}
+
+Form difference vectors $\mathbf{D}_j = \mathbf{X}_{j1} - \mathbf{X}_{j2}$. Assuming $\mathbf{D}_j \sim \Np(\boldsymbol{\delta}, \Sig_D)$ i.i.d.:
+\[
+  T^2 = n\bar{\mathbf{D}}^{\top}\mathbf{S}_D^{-1}\bar{\mathbf{D}} \sim \frac{(n-1)p}{n-p}F_{p,n-p} \quad\text{under }H_0: \boldsymbol{\delta}=\mathbf{0}.
+\]
+Reject $H_0$ if $T^2 \geq \dfrac{(n-1)p}{n-p}F_{p,n-p}(\alpha)$.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{One-Way Analysis of Variance (ANOVA)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Setup}
+
+$k$ independent samples (treatments) are drawn. Let $x_{lj}$ be the $j$-th observation in treatment $l$, and $\bar{x}$ be the grand mean.
+
+\textbf{Hypotheses:} $H_0: \mu_1 = \mu_2 = \cdots = \mu_k$ vs.\ $H_1$: at least two means differ.
+
+\subsection{Decomposition and Test Statistic}
+
+\[
+  \underbrace{\sum_{l,j}(x_{lj}-\bar{x})^2}_{\text{SS(Total)}}
+  = \underbrace{\sum_l n_l(\bar{x}_l-\bar{x})^2}_{\text{SST (Between)}}
+  + \underbrace{\sum_{l,j}(x_{lj}-\bar{x}_l)^2}_{\text{SSE (Within)}}.
+\]
+
+\[
+  F = \frac{\text{MST}}{\text{MSE}} = \frac{\text{SST}/(k-1)}{\text{SSE}/(n-k)} \sim F_{k-1,\,n-k} \quad\text{under }H_0.
+\]
+
+\begin{keybox}\noindent\textbf{ANOVA Table}\par\smallskip
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+Source & SS & df & MS & $F$ \\
+\midrule
+Treatments & SST & $k-1$ & MST & MST/MSE \\
+Error      & SSE & $n-k$ & MSE & \\
+Total      & SS(Total) & $n-1$ & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{keybox}
+
+\subsection{Why Not Pairwise $t$-Tests?}
+
+For $k = 6$ groups there are $\binom{6}{2} = 15$ pairs. If each is tested at $\alpha = 0.05$, the probability of at least one Type I error is $1 - (0.95)^{15} \approx 0.54$. ANOVA controls the global error rate.
+
+\subsection{Post-Hoc Multiple Comparisons}
+
+When $H_0$ is rejected, determine \emph{which} pairs differ:
+\begin{itemize}
+  \item \textbf{Fisher's LSD:} Least significant difference; most powerful but no family-wise control.
+  \item \textbf{Bonferroni:} Divide $\alpha$ by the number of comparisons.
+  \item \textbf{Tukey's method:} Controls family-wise error rate exactly for all pairwise comparisons.
+\end{itemize}
+
+\subsection{Required Conditions}
+
+\begin{itemize}
+  \item Normality within each group (check via histograms).
+  \item Equal population variances (check by comparing sample variances).
+  \item Non-parametric alternative: \textbf{Kruskal-Wallis test}.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Two-Way ANOVA: Randomized Block Design (RBD)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The RBD extends ANOVA by grouping experimental units into $b$ homogeneous blocks (analogous to matched-pairs for $k > 2$ treatments).
+
+\[
+  \text{SS(Total)} = \underbrace{\text{SST}}_{\text{Between treatments}}
+  + \underbrace{\text{SSB}}_{\text{Between blocks}}
+  + \underbrace{\text{SSE}}_{\text{Residual}}.
+\]
+
+Blocking removes between-block variability from SSE, making it easier to detect treatment differences. You can also formally test whether blocks differ ($F = \text{MSB}/\text{MSE}$).
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Two-Factor ANOVA (Factorial Design)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Two factors A ($a$ levels) and B ($b$ levels), with $n$ balanced replicates per cell.
+
+\textbf{Model:} $X_{lkr} = \mu + \tau_l + \beta_k + \gamma_{lk} + \epsilon_{lkr}$, where $\gamma_{lk}$ is the AB interaction.
+
+\textbf{SST is partitioned:}
+\[
+  \text{SST} = \text{SS}(A) + \text{SS}(B) + \text{SS}(AB).
+\]
+
+\begin{keybox}\noindent\textbf{Three Hypotheses in Two-Factor ANOVA}\par\smallskip
+\begin{itemize}
+  \item \textbf{Factor A:} $H_0$: means at all $a$ levels of A are equal; $F = \text{MS}(A)/\text{MSE}$.
+  \item \textbf{Factor B:} $H_0$: means at all $b$ levels of B are equal; $F = \text{MS}(B)/\text{MSE}$.
+  \item \textbf{Interaction AB:} $H_0$: A and B do not interact; $F = \text{MS}(AB)/\text{MSE}$.
+\end{itemize}
+\end{keybox}
+
+\textbf{Interaction} means the effect of factor A depends on the level of factor B.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{One-Way MANOVA}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Motivation}
+
+When multiple correlated outcome variables are measured simultaneously, analysing them jointly:
+\begin{itemize}
+  \item Accounts for correlations between variables.
+  \item Controls the family-wise Type I error rate across variables.
+  \item Yields greater power than running separate ANOVAs.
+\end{itemize}
+
+\subsection{MANOVA Model}
+
+\[
+  \mathbf{X}_{lj} = \muv + \tauv_l + \epsilonv_{lj}, \qquad
+  \epsilonv_{lj} \sim \Np(\mathbf{0}, \Sig) \text{ i.i.d.},
+  \qquad \sum_{l=1}^k n_l \tauv_l = \mathbf{0}.
+\]
+
+\subsection{SSCP Decomposition}
+
+\[
+  \underbrace{\mathbf{T}}_{\text{Total SSCP}} = \underbrace{\mathbf{H}}_{\text{Between (Treatment)}} + \underbrace{\mathbf{W}}_{\text{Within (Error)}},
+\]
+where
+\[
+  \mathbf{H} = \sum_{l=1}^k n_l (\bar{\mathbf{x}}_l - \bar{\mathbf{x}})(\bar{\mathbf{x}}_l - \bar{\mathbf{x}})^{\top}, \qquad
+  \mathbf{W} = \sum_{l=1}^k (n_l - 1)\mathbf{S}_l.
+\]
+
+\subsection{Test Statistics}
+
+\begin{keybox}\noindent\textbf{MANOVA Test Statistics}\par\smallskip
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{Wilks' Lambda} (most common):
+        \[ \Lambda^* = \frac{|\mathbf{W}|}{|\mathbf{T}|} = \frac{|\mathbf{W}|}{|\mathbf{W}+\mathbf{H}|}. \]
+        Small $\Lambda^*$ $\Rightarrow$ reject $H_0$.
+  \item \textbf{Hotelling--Lawley Trace:} $\operatorname{tr}(\mathbf{W}^{-1}\mathbf{H})$. Reject for large values.
+  \item \textbf{Pillai's Trace:} $\operatorname{tr}\!\left[\mathbf{H}(\mathbf{H}+\mathbf{W})^{-1}\right]$. Most robust to non-normality.
+  \item \textbf{Roy's Maximum Root:} Largest eigenvalue of $\mathbf{W}^{-1}\mathbf{H}$. Best power when only one eigenvalue is non-zero.
+\end{enumerate}
+\end{keybox}
+
+\textbf{Rule:} If all four statistics agree, report Wilks' $\Lambda^*$. If they disagree, investigate why (usually due to the structure of group differences).
+
+\subsection{Relationship to Wilks' Lambda and the F-Distribution}
+
+For special cases, $\Lambda^*$ has exact $F$-distributions:
+\begin{center}
+\begin{tabular}{llc}
+\toprule
+$p$ & $k$ (groups) & Transformed statistic $\sim F$ \\
+\midrule
+1       & any & $F_{k-1,\,n-k}$ \\
+2       & any & $F_{2(k-1),\,2(n-k-1)}$ \\
+any     & 2   & $F_{p,\,n-p-1}$ \\
+any     & 3   & $F_{2p,\,2(n-p-2)}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Two-Way MANOVA (Randomized Block Design)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Extends the RBD to multivariate responses. The additive model is:
+\[
+  \mathbf{X}_{lj} = \muv + \tauv_l + \betav_j + \epsilonv_{lj},
+\]
+with the assumption of no block-by-treatment interaction.
+
+\[
+  \mathbf{T} = \mathbf{H} + \mathbf{B} + \mathbf{W}.
+\]
+
+\begin{keybox}\noindent\textbf{MANOVA Table (RBD)}\par\smallskip
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+Source & df & SSCP & Test \\
+\midrule
+Blocks    & $b-1$       & $\mathbf{B}$ & $\Lambda^* = |\mathbf{W}|/|\mathbf{W}+\mathbf{B}|$ \\
+Treatment & $k-1$       & $\mathbf{H}$ & $\Lambda^* = |\mathbf{W}|/|\mathbf{W}+\mathbf{H}|$ \\
+Error     & $(b-1)(k-1)$& $\mathbf{W}$ & \\
+Total     & $bk-1$      & $\mathbf{T}$ & \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{keybox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Two-Factor MANOVA}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Multivariate extension of two-factor ANOVA with $a$ levels of Factor A, $b$ levels of Factor B, and $n$ replicates per cell.
+
+\textbf{Model with interaction:}
+\[
+  \mathbf{X}_{lkr} = \muv + \tauv_l + \betav_k + \boldsymbol{\gamma}_{lk} + \epsilonv_{lkr}.
+\]
+
+\begin{keybox}\noindent\textbf{Three Hypotheses in Two-Factor MANOVA}\par\smallskip
+\begin{itemize}
+  \item \textbf{Factor A:} $H_0: \tauv_1 = \cdots = \tauv_a = \mathbf{0}$. Test with $\Lambda^* = |\mathbf{W}|/|\mathbf{W}+\mathbf{H}_A|$.
+  \item \textbf{Factor B:} $H_0: \betav_1 = \cdots = \betav_b = \mathbf{0}$. Test with $\Lambda^* = |\mathbf{W}|/|\mathbf{W}+\mathbf{H}_B|$.
+  \item \textbf{Interaction:} $H_0: \boldsymbol{\gamma}_{lk} = \mathbf{0}$ for all $l,k$. Test with $\Lambda^* = |\mathbf{W}|/|\mathbf{W}+\mathbf{H}_{AB}|$.
+\end{itemize}
+\end{keybox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Grand Summary Table}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{4.2cm} p{4.5cm} p{4.5cm}}
+\toprule
+\textbf{Scenario} & \textbf{Univariate} & \textbf{Multivariate} \\
+\midrule
+One sample vs.\ known target
+  & One-sample $t$-test\newline $H_0: \mu = \mu_0$
+  & Hotelling's $T^2$\newline $H_0: \muv = \muv_0$ \\
+Two independent samples
+  & Two-sample $t$-test\newline $H_0: \mu_1 = \mu_2$
+  & Two-sample $T^2$\newline $H_0: \muv_1 = \muv_2$ \\
+Paired samples
+  & Paired $t$-test
+  & Paired $T^2$ on differences \\
+$k$ groups, 1 factor
+  & One-Way ANOVA
+  & One-Way MANOVA \\
+$k$ treatments + blocks
+  & RBD ANOVA
+  & Two-Way MANOVA (RBD) \\
+Two factors + interaction
+  & Two-Factor ANOVA
+  & Two-Factor MANOVA \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{1cm}
+\begin{keybox}\noindent\textbf{Key Conceptual Parallels}\par\smallskip
+\begin{itemize}
+  \item $t$-statistic $\longleftrightarrow$ $T^2$ (Mahalanobis distance).
+  \item $\chi^2$ distribution $\longleftrightarrow$ Wishart distribution.
+  \item $F$-ratio (ANOVA) $\longleftrightarrow$ Wilks' $\Lambda^*$ (MANOVA).
+  \item Confidence interval $\longleftrightarrow$ Confidence ellipsoid.
+  \item Sample variance $s^2$ $\longleftrightarrow$ Sample covariance matrix $\mathbf{S}$.
+\end{itemize}
+\end{keybox}
+
+\end{document}

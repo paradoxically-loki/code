@@ -1,0 +1,64 @@
+%!TEX root = ../main.tex
+
+\section{Trading Strategies Involving Options}
+
+
+\textbf{Bull Spread} {\footnotesize (long call $K_1$, short call $K_2$,\; $K_1<K_2$)}
+\begin{equation*}
+\text{Payoff} =
+\begin{cases}
+    0         & S_T < K_1 \\
+    S_T - K_1 & K_1 \leq S_T < K_2 \\
+    K_2 - K_1 & S_T \geq K_2
+\end{cases}
+\end{equation*}
+
+\noindent\textbf{Bear Spread} {\footnotesize (long put $K_2$, short put $K_1$,\; $K_1<K_2$)}
+\begin{equation*}
+\text{Payoff} =
+\begin{cases}
+    K_2 - K_1 & S_T \leq K_1 \\
+    K_2 - S_T & K_1 < S_T < K_2 \\
+    0          & S_T \geq K_2
+\end{cases}
+\end{equation*}
+
+\noindent\textbf{Box Spread} {\footnotesize (bull call spread $+$ bear put spread,\; $K_1<K_2$)}
+\begin{equation*}
+\text{Payoff} = K_2 - K_1 \qquad \forall\; S_T
+\end{equation*}
+
+\noindent\textbf{Butterfly Spread} {\footnotesize (long $K_1$, short $2\times K_2$, long $K_3$;\; $K_1<K_2<K_3$)}
+\begin{equation*}
+\text{Payoff} =
+\begin{cases}
+    0         & S_T \leq K_1 \\
+    S_T - K_1 & K_1 < S_T \leq K_2 \\
+    K_3 - S_T & K_2 < S_T < K_3 \\
+    0         & S_T \geq K_3
+\end{cases}
+\end{equation*}
+% {\footnotesize Max payoff $= K_2 - K_1$ at $S_T = K_2$ (symmetric wings)}
+
+\noindent\textbf{Straddle} {\footnotesize (long call $+$ long put, same strike $K$)}
+\begin{equation*}
+\text{Payoff} =
+\begin{cases}
+    K - S_T & S_T < K \\
+    0       & S_T = K \\
+    S_T - K & S_T > K
+\end{cases}
+= \,|S_T - K|
+\end{equation*}
+
+\noindent\textbf{Strangle} {\footnotesize (long put $K_1$, long call $K_2$,\; $K_1<K_2$)}
+\begin{equation*}
+\text{Payoff} =
+\begin{cases}
+    K_1 - S_T & S_T < K_1 \\
+    0          & K_1 \leq S_T \leq K_2 \\
+    S_T - K_2 & S_T > K_2
+\end{cases}
+\end{equation*}
+See book for more diagrams, etc.
+

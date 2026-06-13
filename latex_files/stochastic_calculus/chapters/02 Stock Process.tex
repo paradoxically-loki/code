@@ -1,0 +1,190 @@
+% !TEX root = ../main.tex
+
+\section{Stock Price Process}
+
+\begin{enumerate}
+    \item \textbf{Binomial Tree Model:} An $N$-step model where the stock price can either
+    increase or decrease by a constant up or down factor:
+    \[\mathbb{S}_n = u^{n_H(\omega_1 \omega_2 \dots \omega_n)} d^{n_T(\omega_1, \omega_2 \dots \omega_n)} \mathbb{S}_0.\]
+    For a symmetric model, we have $u = 1/d$, and thus
+    \[\mathbb{S}_n = u^{\mathbb{M}_n(\omega_1 \omega_2 \dots \omega_n)} \mathbb{S}_0.\]
+
+    \item \textbf{Properties of this Stock Price Process}
+    \begin{enumerate}
+        \item $\mathbb{S}_n$ is an adapted stochastic process.
+        \item $\mathbb{S}_n$ is a Markov process.
+        \item $\mathbb{S}_n$ is a martingale under specific probabilities called the \textit{risk-neutral probabilities}.
+        \item The conditions $\tilde{p}u + \tilde{q}d = 1 + r$ and $\tilde{p} + \tilde{q} = 1$ yield
+        \[\tilde{p} = \frac{1 + r - d}{u - d}, \quad \tilde{q} = \frac{u - (1+r)}{u - d}.\]
+        \item The discounted stock price process, defined below, is a martingale under the risk-neutral measure:
+        \[\mathbb{Y}_n(\omega_1 \omega_2 \dots \omega_n) = \frac{\mathbb{S}_n(\omega_1 \omega_2 \dots \omega_n)}{(1 + r)^n}.\]
+    \end{enumerate}
+
+    \item \textbf{Hedging Portfolio:} Suppose a seller of a European call option hedges their risk
+    by purchasing the underlying stock and investing the remainder in the money market. To be fully
+    hedged, the value of the portfolio must equal the payoff of the option in all possible states;
+    otherwise, there is a possibility of arbitrage.
+
+    \item The payoff of the call option is $\mathbb{V}_N = \max(\mathbb{S}_N - K, 0)$, and the
+    portfolio evolves as
+    \[\mathbb{X}_n(\omega_1 \dots \omega_n) = \Delta_{n-1}(\omega_1 \dots \omega_{n-1}) \mathbb{S}_n(\omega_1 \dots \omega_n) + (1+r)\bigl(\mathbb{X}_{n-1}(\omega_1 \dots \omega_{n-1}) - \Delta_{n-1}(\omega_1 \dots \omega_{n-1})\mathbb{S}_{n-1}(\omega_1 \dots \omega_{n-1})\bigr).\]
+
+    \item \textbf{For $N = 1$:} $\mathbb{X}_1(\omega_1) = (\mathbb{S}_1(\omega_1) - K)^+$, and
+    \[\Delta_0 = \frac{\mathbb{X}_1(H) - \mathbb{X}_1(T)}{\mathbb{S}_1(H) - \mathbb{S}_1(T)},\]
+    \[\mathbb{X}_0 = \frac{1}{1+r}\bigl[\tilde{p}\, \mathbb{X}_1(H) + \tilde{q}\, \mathbb{X}_1(T)\bigr] = \tilde{\mathbb{E}}\!\left(\frac{\mathbb{X}_1}{1+r}\right).\]
+
+    \item In general,
+    \[\Delta_n(\omega_1 \dots \omega_n) = \frac{\mathbb{X}_{n+1}(\omega_1 \dots \omega_n H) - \mathbb{X}_{n+1}(\omega_1 \dots \omega_n T)}{\mathbb{S}_{n+1}(\omega_1 \dots \omega_n H) - \mathbb{S}_{n+1}(\omega_1 \dots \omega_n T)},\]
+    \[\mathbb{X}_n(\omega_1 \dots \omega_n) = \frac{1}{1+r}\bigl[\tilde{p}\, \mathbb{X}_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q}\, \mathbb{X}_{n+1}(\omega_1 \dots \omega_n T)\bigr].\]
+
+    \item \textbf{Wiener Process}
+    \begin{enumerate}
+        \item It is easy to verify that $\mathbb{E}[\mathbb{M}_n] = 0$ and $\mathbb{E}[\mathbb{M}_n^2] = n$.
+        \item \textbf{Scaled Random Walk:} We define
+        \[\mathbb{W}^{(p)}(t) = \frac{1}{\sqrt{p}}\, \mathbb{M}_{pt},\]
+        where
+        \[\mathbb{M}_{pt} = \begin{cases}
+            \mathbb{M}_{pt} & \text{if $pt$ is an integer,} \\
+            \text{linear interpolation} & \text{otherwise.}
+        \end{cases}\]
+        \item The increment of the random walk is $\mathbb{M}_n - \mathbb{M}_m = \sum_{i=m+1}^{n} \mathbb{X}_i$.
+        Clearly, $\mathbb{E}[\mathbb{M}_n - \mathbb{M}_m] = 0$ and $\mathbb{E}[(\mathbb{M}_n - \mathbb{M}_m)^2] = n - m$.
+        \item The Wiener process is defined as the limit
+        \[\mathbb{W}(t) = \lim_{p \to \infty} \mathbb{W}^{(p)}(t) = \lim_{p \to \infty} \frac{1}{\sqrt{p}}\, \mathbb{M}_{pt}.\]
+        \item The process exhibits fractal (self-similar) behaviour and H\"{o}lder continuity. The
+        scaling factor $\sqrt{p}$ is chosen so that the quadratic variation of the Wiener process
+        equals $t$.
+        \item \textbf{Properties of the Wiener Process}
+        \begin{enumerate}
+            \item $\mathbb{W}(t) \sim N(0,\, t)$.
+            \item For $0 < t_1 < t_2 < \dots < t_n$, the increments $\mathbb{W}(t_i) - \mathbb{W}(t_{i-1})$ are independent.
+            \item $\mathbb{W}(t_i) - \mathbb{W}(t_{i-1}) \sim N(0,\, t_i - t_{i-1})$.
+        \end{enumerate}
+        \item Since $\mathbb{W}(t)$ is normally distributed, we have
+        \[\mathbb{P}\{\mathbb{W}(t) \leq \omega\} = \frac{1}{\sqrt{2\pi t}} \int_{-\infty}^{\omega} e^{-x^2/(2t)}\, dx.\]
+    \end{enumerate}
+
+    \item \textbf{Continuous Limit of the Binomial Asset Pricing Model}
+
+    The scaled stock price is given by
+    \[\mathbb{S}_{pt} = u^{n_H} d^{n_T} \mathbb{S}_0 = u^{(pt + \mathbb{M}_{pt})/2} d^{(pt - \mathbb{M}_{pt})/2} \mathbb{S}_0.\]
+    Choosing $u$ and $d$ such that $ud = 1$ and, in the limit as $p \to \infty$,
+    \[u = 1 + \frac{\sigma}{\sqrt{p}}, \qquad d = 1 - \frac{\sigma}{\sqrt{p}},\]
+    we obtain
+    \[\mathbb{S}_{pt} = \left(1 + \frac{\sigma}{\sqrt{p}}\right)^{(pt + \mathbb{M}_{pt})/2} \left(1 - \frac{\sigma}{\sqrt{p}}\right)^{(pt - \mathbb{M}_{pt})/2} \mathbb{S}_0.\]
+    Taking $p \to \infty$ yields
+    \[\lim_{p \to \infty} \mathbb{S}_{pt} = \mathbb{S}(t) = \mathbb{S}_0 \exp\!\left(\sigma \mathbb{W}(t) - \frac{1}{2}\sigma^2 t \right),\]
+    which is the \emph{geometric Brownian motion}.
+
+    \item Recall that $\mathbb{E}\!\left[(\mathbb{W}(t_i) - \mathbb{W}(t_{i-1}))^2\right] = t_i - t_{i-1}$,
+    which informally gives $\mathbb{E}[(\Delta \mathbb{W})^2] = \Delta t$, and hence $d\mathbb{W}^2 = dt$.
+    Consequently, $d\mathbb{W}/dt \sim 1/\sqrt{dt}$, which diverges as $dt \to 0$; the Wiener
+    process is therefore nowhere differentiable in the classical sense. To carry out calculus with
+    $d\mathbb{W}$, we must develop a new framework known as \emph{It\^{o} calculus}.
+
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+% % !TEX root = ../main.tex
+
+% \section{Stock Price Process}
+
+% \begin{enumerate}
+%     \item \textbf{Binomial Tree Model:} An $N$-step model where the stock price can either increase or decrease by a constant up or down factor:
+%     \[\mathbb{S}_n = u^{n_H(\omega_1 \omega_2 \dots \omega_n)} d^{n_T(\omega_1, \omega_2 \dots \omega_n)} \mathbb{S}_0\]
+%     For a symmetric model, we have $u = 1/d$, and thus
+%     \[\mathbb{S}_n = u^{\mathbb{M}_n(\omega_1 \omega_2 \dots \omega_n)} \mathbb{S}_0\]
+
+%     \item \textbf{Properties of this Stock Price Process}
+%     \begin{enumerate}
+%         \item $\mathbb{S}_n$ is an adapted stochastic process.
+%         \item $\mathbb{S}_n$ is a Markov process.
+%         \item $\mathbb{S}_n$ is a martingale under specific probabilities called the \textit{risk-neutral probabilities}.
+%         \item The conditions $\tilde{p}u + \tilde{q}d = 1 + r$ and $\tilde{p} + \tilde{q} = 1$ yield
+%         \[\tilde{p} = \frac{1 + r - d}{u - d}, \quad \tilde{q} = \frac{u - (1+r)}{u - d}\]
+%         \item The discounted stock price process, defined below, is a martingale under the risk-neutral measure:
+%         \[\mathbb{Y}_n(\omega_1 \omega_2 \dots \omega_n) = \frac{\mathbb{S}_n(\omega_1 \omega_2 \dots \omega_n)}{(1 + r)^n}\]
+%     \end{enumerate}
+
+%     \item \textbf{Hedging Portfolio:} Assume a seller of a European call option hedges their risk by purchasing the underlying stock and investing the remaining amount in the money market. To be fully hedged, the wealth of the portfolio must equal the payoff of the option in all possible states. Otherwise, there is a possibility of arbitrage.
+
+%     \item The payoff of the call option is $\mathbb{V}_N = \max(\mathbb{S}_N - K, 0)$, and the portfolio evolves as
+%     \[\mathbb{X}_n(\omega_1 \dots \omega_n) = \Delta_{n-1}(\omega_1 \dots \omega_{n-1}) \mathbb{S}_n(\omega_1 \dots \omega_n) + (1+r)\bigl(\mathbb{X}_{n-1}(\omega_1 \dots \omega_{n-1}) - \Delta_{n-1}(\omega_1 \dots \omega_{n-1})\mathbb{S}_{n-1}(\omega_1 \dots \omega_{n-1})\bigr)\]
+
+%     \item \textbf{For $N = 1$:} $\mathbb{X}_1(\omega_1) = (\mathbb{S}_1(\omega_1) - K)^+$, and
+%     \[\Delta_0 = \frac{\mathbb{X}_1(H) - \mathbb{X}_1(T)}{\mathbb{S}_1(H) - \mathbb{S}_1(T)}\]
+%     \[\mathbb{X}_0 = \frac{1}{1+r}\bigl[\tilde{p}\, \mathbb{X}_1(H) + \tilde{q}\, \mathbb{X}_1(T)\bigr] = \tilde{\mathbb{E}}\!\left(\frac{\mathbb{X}_1}{1+r}\right)\]
+
+%     \item In general,
+%     \[\Delta_n(\omega_1 \dots \omega_n) = \frac{\mathbb{X}_{n+1}(\omega_1 \dots \omega_n H) - \mathbb{X}_{n+1}(\omega_1 \dots \omega_n T)}{\mathbb{S}_{n+1}(\omega_1 \dots \omega_n H) - \mathbb{S}_{n+1}(\omega_1 \dots \omega_n T)}\]
+%     \[\mathbb{X}_n(\omega_1 \dots \omega_n) = \frac{1}{1+r}\bigl[\tilde{p}\, \mathbb{X}_{n+1}(\omega_1 \dots \omega_n H) + \tilde{q}\, \mathbb{X}_{n+1}(\omega_1 \dots \omega_n T)\bigr]\]
+
+%     \item \textbf{Wiener Process}
+%     \begin{enumerate}
+%         \item It is easy to see that $\mathbb{E}[\mathbb{M}_n] = 0$ and $\mathbb{E}[\mathbb{M}_n^2] = n$.
+%         \item \textbf{Scaled Random Walk:} We define
+%         \[\mathbb{W}^{(p)}(t) = \frac{1}{\sqrt{p}}\, \mathbb{M}_{pt}\]
+%         where
+%         \[\mathbb{M}_{pt} = \begin{cases}
+%             \mathbb{M}_{pt} & \text{if $pt$ is an integer,} \\
+%             \text{linear interpolation} & \text{otherwise.}
+%         \end{cases}\]
+%         \item We define increments as follows: $\mathbb{M}_n - \mathbb{M}_m = \sum_{i=m+1}^{n} \mathbb{X}_i$. Clearly, $\mathbb{E}[\mathbb{M}_n - \mathbb{M}_m] = 0$ and $\mathbb{E}[(\mathbb{M}_n - \mathbb{M}_m)^2] = n - m$.
+%         \item The Wiener process is defined as the limit:
+%         \[\mathbb{W}(t) = \lim_{p \to \infty} \mathbb{W}^{(p)}(t) = \lim_{p \to \infty} \frac{1}{\sqrt{p}}\, \mathbb{M}_{pt}\]
+%         \item The process exhibits fractal (self-similar) behavior and H\"{o}lder continuity. The scaling factor $\sqrt{p}$ is chosen so that the quadratic variation of the Wiener process is proportional to $t$.
+%         \item \textbf{Properties of the Wiener Process}
+%         \begin{enumerate}
+%             \item $\mathbb{W}(t) \sim N(0,\, t)$.
+%             \item For $0 < t_1 < t_2 < \dots < t_n$, the increments $\mathbb{W}(t_i) - \mathbb{W}(t_{i-1})$ are independent.
+%             \item $\mathbb{W}(t_i) - \mathbb{W}(t_{i-1}) \sim N(0,\, t_i - t_{i-1})$.
+%         \end{enumerate}
+%         \item Since $\mathbb{W}(t)$ is normally distributed, we have
+%         \[\mathbb{P}\{\mathbb{W}(t) \leq \omega\} = \frac{1}{\sqrt{2\pi t}} \int_{-\infty}^{\omega} e^{-x^2/(2t)}\, dx\]
+%     \end{enumerate}
+%     \item \textbf{Scaled version of the binomial asset pricing}
+%     \[\mathbb{S}_{pt} = u^{n_H} d^{n_T} \mathbb{S}_0 = u^{(pt + \mathbb{M}_{pt})/2} d^{(pt - \mathbb{M}_{pt})/2} \mathbb{S}_0\]
+%     Choosing $u$ and $d$ such that $ud = 1$ in the limiting case of $p$, we have
+%     \[u = 1 + \frac{\sigma}{\sqrt{p}}, \text{ and } d = 1 - \frac{\sigma}{\sqrt{p}}\]  
+%     We thus have, \[\mathbb{S}_{pt} = \left(1 + \frac{\sigma}{\sqrt{p}}\right)^{(pt + \mathbb{M}_{pt})/2} \left(1 - \frac{\sigma}{\sqrt{p}}\right)^{(pt - \mathbb{M}_{pt})/2} \mathbb{S}_0\] 
+%     For $p \to \infty $ we have \[\lim_{p \to \infty} \mathbb{S}_{pt} = \mathbb{S}(t) = \mathbb{S}_0 \exp\left(\sigma \mathbb{W}(t) - \frac{1}{2}\sigma^2 t \right) \]
+%     This equation represents the geometric brownian motion.
+%     \item Previously we discussed that $\mathbb{E}[\mathbb{W}(t_i) - \mathbb{W}(t_{i-1})] = t_i  -t_{i-1} \implies \mathbb{E}[(\Delta \mathbb{W})^2] = \Delta t \implies \mathbb{E}[ \mathbb{W}^2] = dt
+%     \implies d\mathbb{W}^2 = dt \implies d\mathbb{W}/dt \simeq 1/\sqrt{t} $. This is not at all differentiable. But we need to do calculus on $d\mathbb{W}$, so we'll invent a new calculus called Ito calculus.
+
+% \end{enumerate}
+

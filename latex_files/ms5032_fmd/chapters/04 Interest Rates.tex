@@ -1,0 +1,65 @@
+%!TEX root = ../main.tex
+
+\section{Interest Rates}
+
+\begin{enumerate}
+    \item \textbf{Interest rate:} The amount of money a borrower promises to pay the lender.
+    \item \textbf{Credit Risk:} Risk that there will be a default by the borrower. It strongly influences the IR charged for any transaction.
+    \item \textbf{Credit Spread:} Extra amount added to a risk-free interest rate to allow for the credit risk.
+    \item \textbf{Basis Points:} $1 \text{bps} = 0.01\%$
+    \item \textbf{Types of Rates}
+    \begin{enumerate}
+        \item \textbf{Treasury Rates:} Rates an investor earns on Treasury bills and Treasury Bonds.
+        \item \textbf{Overnight Rates:} Weighted average of rates in brokered overnight transactions. Financial institutions engage in overnight transactions as they have to maintain a reserve in their central bank accounts.
+        \item \textbf{Repo Rates:} Repurchase agreeement rates. A financial institution agrees to sell its securities for a certain price and buy them back at a later time for a slightly higher price. The difference in price is the interest, called the repo rate.
+        \begin{enumerate}
+            \item \textbf{Overnight Repo:} Funds are lent overnight.
+            \item \textbf{Term Repo:} Longer-term arrangement.
+            \item \textbf{SOFR:} Secured overnight financing rate. Volume-weighted average of the rates on overnight repo transactions in the US.
+        \end{enumerate} 
+    \end{enumerate}
+    \item \textbf{Reference Rates}
+    \begin{enumerate}
+        \item \textbf{LIBOR:} London Interbank Offered Rate. Estimates of unsecured borrowing rates for creditworthy banks.
+        \item \textbf{SOFR:} Reference rate in the US.
+        \item \textbf{SONIA:} Stirling Overnight Index Average. Reference rate in UK.
+        \item Longer rates such as three-month rates, six-month rates, or one-year rates can be determined from overnight rates by compounding them daily.
+        \item If the annualized SOFR on the $ith$ business day of a period is $r_i (1 \leq i \leq n)$ and the rate applies to $d_i$ days. The annualised interest rate for the period is 
+        $$\left(\prod_{i = 1}^{n} \left( 1 + \frac{r_i. d_i}{360} \right) - 1 \right) \frac{360}{D}$$
+        Where $d_i$ is the number of days the rate applies. ($1$ for weekdays, and $3$ for Fridays), and $D$ is the total days in the period.
+        \item LIBORs are forward looking as they are determined at the beginning of the period to which they apply. SOFR, SONIA, etc are backward looking.
+    \end{enumerate}
+    \item \textbf{Compound Interest:} $A(1 + R)^n$. And if the rate is compounded $m$ times per annum, the terminal value of the investment is $A(1 + R/m)^{mn}$.
+    \item \textbf{Continuous Compounding:} The limit as the compounding frequency $m$, tends to infinity. An amount $A$ invested for $n$ years at rate $R$ grows to $A e^{Rn}$.
+    \item \textbf{Zero Rates:} The n-year zero-coupon iterest rate is the rate of interest earned on an investment that starts today and lasts for n years. All the interest and principal is realized at the end of n years. This is also called as the \textit{n-year spot rate}, the \textit{n-year zero rate}, or just the \textit{n-year zero}.
+    \item \textbf{Bond Pricing:} Most bonds pay coupons to the holder periodically. The bond's principal(also known as its par or face value) is paid at the end of its life. The price can be calculated as the present value of all the cash flows that will be received by the owner of the bond. 
+    Sometimes bond traders use the same discount rate for all the cash flows, but a more accurate approach is to use a different zero rate for each cash flow.
+    \item \textbf{Bond Yield:} The single discount rate that, when applied to all cash flows, gives a bond price equal to its market price.
+    \item \textbf{Par Yield:} The coupon rate that causes the bond price to equal its par value.
+    \item \textbf{Determining Zero Rates:} Using the bootstrap method. We know the zero rates for shorter maturities and then iteratively use them to calculate the zero rates for longer maturities, using the PV equation.
+    \item \textbf{Zero Curve:} Zero rates as a function of maturities. We interpolate to find the rates for maturities for which bonds are not available.
+    \item \textbf{Forward Rates:} Forward interest rates are the rates of interest implied by current zero rates for periods of the time in the future.
+    If $R_1$ and $R_2$ are the zero rates for maturities $T_1$ and $T_2$, and $R_F$ is the forward interest rate for the period of time between $T_1$ and $T_2$, then 
+    $$R_F = \frac{R_2 T_2 - R_1 T_1}{T_2 - T_1}$$
+    The above equation can also be written as: $$R_F = R_2 + (R_2 - R_1) \frac{T_1}{T_2-T_1}$$ Now, taking the limit as $T_2$ approaches $T_1$, we get $$R_F = R + T \frac{\partial R}{\partial T}$$ where $R$ is the zero rate of a maturity of $T$.
+    \item The above quantity is called the \textbf{instaneous foward rate} of a maturity of $T$. This is the forward rate that is applicable to a very short future time period that begins at time $T$.
+    \item \textbf{Forward Rate Agreements:} An FRA is an agreement to exchange a predetermined fixed rate for a reference rate that will be observed in the market at a future time. Both rates are applied to a specified principal but the principal itself is not exchanged.
+    When an FRA is first set up the fixed rate is normally equal to the forward rate, so that its value is zero. As time progresses, the value is liable to change.
+    \item \textbf{Duration:} Measure of how long the holder of the bond has to wait before receiving the present value of the cash payments. A zero coupon bond has a duration equal to its maturity. However, a coupon bearing bond has a duration less than its maturity.
+    \item Duration of a bond, $D$ is defined as $$D = \sum_{i= 1}^{n} { t_i \left[ \frac{c_i e^{-yt_i}}{B} \right]} $$
+    \item The duration is therefore a weighted average of the times when payments are made, with the weight applied to time $t_i$ being equal to the proportion of the bond's total PV provided by the cashflow at time $t_i$.
+    \item Since the bond price, $B$ is a function of the yield, $y$, we have, $$\Delta B = \frac{dB}{dy} \Delta y$$
+    Also, $$ B = \sum_{i = 1}^{n} c_i e^{-yt_i}$$
+    Thus, $$\Delta B = - \Delta y \sum_{i = 1}^{n} c_i t_i e^{-yt_i}$$
+    Note the negative relationship between $B$ and $y$. Also, the above equation reduces to $$\Delta B = - B D \Delta y \quad \implies \frac{\Delta B}{B} = - D \Delta y$$
+    \item \textbf{Modified Duration:} The preceding analysis is based on the assumption that $y$ is expressed with continuous compounding. If $y$ is expressed with annual compounding, the relationship becomes, $$\Delta B = - \frac{BD \Delta y}{1 + y}$$
+    More generally, if $y$ is expressed with a compounding frequency of $m$ times per year, then $$\Delta B = - \frac{BD \Delta y}{1 + y/m}$$
+    The variable, $D^*$, defined by $$D^* = \frac{D}{1 + y/m}$$ is referred to as the bond's \textit{modified duration}. It allows the relation to be simplified to $$\Delta B = - B D^* \Delta y$$
+    \item The duration of a bond portfolio can be defined as a weighted average of the durations of the individual bonds in the portfolio, with the weights being proportional to the bond prices.
+    \item \textbf{Convexity:} The duration relationship applies only to small changes in yields. For large changes in yiels, the percentage change in value of $B$ curve has a curvature. \textit{Convexity} measures this curvature. $$C = \frac{1}{B} \frac{d^2 y}{dy^2} = \frac{\sum_{i = 1}^{n} c_i t_i^2 e^{-yt_i}}{B}$$
+    From Taylor series, we obtain a more accurate expression, given by $$\Delta B = \frac{dB}{dy} \Delta y + \frac{1}{2} \frac{d^2B}{dy^2} \Delta y^2$$ This leads to 
+    $$\frac{\Delta B}{B} = -D \Delta y + \frac{1}{2} C (\Delta y)^2$$
+    \item For a portfolio with a particular duration, the convexity of a bond portfolio tends to be greatest when the portfolio provides payments evenly over a long period of time. It is least when the payments are concentrated around one particular point of time.
+
+
+\end{enumerate}

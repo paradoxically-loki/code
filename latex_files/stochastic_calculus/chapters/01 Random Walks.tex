@@ -1,0 +1,54 @@
+%!TEX root = ../main.tex
+
+\section{Random Walks}
+
+\begin{enumerate}
+    \item Let $\omega_i$ denote the outcome of the $i$th coin toss. We define, $$\mathbb{X}_i({\omega_i}) =  \begin{cases}
+        +1, \quad \omega_i = H \\
+        -1, \quad \omega_i = T
+    \end{cases}$$
+    \item Also define, $$\mathbb{M}_n = \sum_{i=1}^{n} \mathbb{X}_i$$
+    \item Note that, $ -n \leq \mathbb{M}_n \leq n$. Also, $\mathbb{M}_n$ and $n$ must have the same parity.
+    \item Probability that the walker is at $\mathbb{M}_n = k$ after $n$ steps is \[\mathbb{P}\{\mathbb{M}_n = k\} = p_{n, k} = \frac{1}{2^n} {{n}\choose{\frac{n+k}{2}}}\]
+    \item Probability of return to the original position, $k =0$ after $n = 2 \nu$ steps is $$\mathbb{P}\{\mathbb{M}_{2\nu} = 0\} = \mu_{2\nu} = {2 \nu \choose v} \frac{1}{2^{2\nu}}$$
+    \item Number of paths from $(0, 0)$ to $(n, x)$ are, $$N_{n, x} = {n \choose {\frac{n+x}{2}}}$$
+    \item \textbf{Reflection Principle:} The number of paths from $(a, \alpha)$ to $(b, \beta)$ with $\alpha, \beta > 0$ which touch or cross the t-axis at least once is equal to the total number of paths from $(a, -\alpha)$ to $(b, \beta)$.
+    \item Number of paths from $(0, 0)$ to $(n, x)$ that stay strictly above the t-axis can be calculated by taking the first step to $(1, 1)$ and then using the Reflection Princniple. In our case, the paths come out to be $$N_{n-1, x-1} - N_{n-1, x+1} = \frac{x}{n} N_{n, x}$$
+    \item Unrelatedly, but obviously, and clearly, $\sum_{k = -n}^{n} N_{n, k} = 2^n$, which is the total possible paths in $n$ time steps.
+    \item Probability of walker returning to $k = 0$ for the first time in $n = 2\nu$ steps, $f_{2\nu}$ can be calculated from  the following relation. $$\mu_{2\nu} = f_{2\nu} \mu_0 + f_{2\nu -2} \mu_2 + \dots + f_2 \mu_{2 \nu - 2}$$ 
+    \item We can iteratively solve this but let's go for a much more elegant method. For the sake of precision, $$f_{2\nu} = \mathbb{P} \{\mathbb{M}_1 \ne 0, \mathbb{M}_2  \ne 0, \dots, \mathbb{M}_{2\nu -1} \ne 0, \mathbb{M}_{2\nu} = 0\}$$
+    \item We now prove the following result, which would be instumental in getting a closed form solution for $f_{2 \nu}$. Consider the result: $$\mathbb{P} \{\mathbb{M}_1 \ne 0, \mathbb{M}_2 \ne 0, \dots, \mathbb{M}_{2\nu} \ne 0 \} = \mathbb{P} \{\mathbb{M}_{2 \nu} = 0\} = \mu_{2\nu}$$
+    \begin{proof}
+        Total number of paths that stay above the t-axis but can be anywhere $(> 0)$ at $n = 2\nu$ is $$\sum_{l = 1}^{\nu} (N_{2\nu - 1, 2l-1} - N_{2 \nu -1, 2l+1}) = N_{2\nu  -1, 1}$$
+        Also, the probability of getting such paths is $$p_{2\nu-1, 1} = (N_{2\nu-1, 1} )\frac{1}{2^{2\nu}} = {2\nu -1 \choose \nu} \frac{1}{2^{2\nu}}$$
+        To get the expression for our result, we must double the above quantity to account for the paths that stay strictly below the t-axis. Thus, $$2 p_{2\nu-1, 1} = \frac{(2\nu)!}{\nu! \nu!} \frac{1}{2^\nu} = \mu_{2\nu}$$
+    \end{proof}
+    \item Again consider, $f_{2\nu} = \mathbb{P} \{\mathbb{M}_1 \ne 0, \mathbb{M}_2  \ne 0, \dots, \mathbb{M}_{2\nu -1} \ne 0, \mathbb{M}_{2\nu} = 0\}$. All length $2\nu$ paths which satisfy $\{\mathbb{M}_1 \ne 0, \mathbb{M}_2  \ne 0, \dots, \mathbb{M}_{2\nu -2} \ne 0\}$ are $4 (2^{2\nu - 2} \mu_{2\nu - 2}) = 2^{2\nu} \mu_{2\nu - 2}$, but this is equal to sum of paths that return to $k = 0$ at $2\nu$ and those that do not. Thus, $$2^{2\nu} \mu_{2\nu -2} = 2^{2\nu} f_{2\nu} + 2^{2\nu} \mu_{2\nu}$$
+    \item From the above, we get, $$f_{2\nu} = \mu_{2\nu - 2} - \mu_{2\nu}$$ Also, trivially, $$f_{2\nu} = \frac{1}{2\nu -1} \mu_{2\nu}$$
+    \item Probability of the walker returning back to $0$ for the last time at $t=2l$ in an $n = 2\nu$ step walk is, $$\alpha_{2l, 2\nu} = \mu_{2l} . \mu_{2\nu - 2l}$$
+    \item If $\omega$ denotes the sequence of outcomes of a coin toss experminet, and $n_H(\omega)$ and $n_T{\omega}$ the number of Heads and Tails in that sequence, then $$\mathbb{P}(\omega) = p^{n_H(\omega)} q^{n_T(\omega)}$$. 
+    \item $$\mathbb{E} \{\mathbb{M}_n\} = n(p-q)$$
+    \item \textbf{Markov Property:} The value of a random variable \textit{only} depends on the previous step. $\mathbb{M}_n$ is a Markov Process.
+    \begin{proof}
+        $$\mathbb{P}\{\mathbb{M}_n = k \mid \mathbb{M}_{n-1} = a_{n-1}, \dots, \mathbb{M}_1 = a_1 \} = \frac{\mathbb{P}\{\mathbb{M}_n = k, \mathbb{M}_{n-1} = a_{n-1}, \dots, \mathbb{M}_1 = a_1 \}}{\mathbb{P}\{\mathbb{M}_{n-1} = a_{n-1}, \dots, \mathbb{M}_1 = a_1 \}}$$
+        This evaluates to $\frac{\frac{1}{2^n}}{\frac{1}{2^{n-1}}} = \frac{1}{2}$, but the following quantity also evaluates to the same. Thus, $$\mathbb{P}\{\mathbb{M}_n = k \mid \mathbb{M}_{n-1} = a_{n-1}, \dots, \mathbb{M}_1 = a_1 \}  = \mathbb{P} \{\mathbb{M}_n = k \mid \mathbb{M}_{n-1} = a_{n-1}\}$$
+    \end{proof}
+    \item \textbf{Conditional Expectation}
+    $$
+    \mathbb{E}[\mathbb{X}](\omega_1, \omega_2, \dots, \omega_n) 
+    = \sum_{\substack{
+        \omega \in \Omega_N \\[4pt]
+        \text{s.t. } \omega_1, \omega_2, \dots, \omega_n \text{ fixed} \\[4pt]
+        \text{sum over } \omega_{n+1}, \omega_{n+2}, \dots, \omega_N
+    }}
+    \mathbb{X}(\omega)\, \mathbb{P}\{\omega \mid \omega_1, \omega_2, \dots, \omega_n\}
+    $$
+    \item \textbf{Martingale Property:} $$\mathbb{E} [\mathbb{M}_n \mid \mathcal{F}_m] = \mathbb{M}_m, \quad m \leq n$$
+    \item \textbf{Sub-Martingale:} $\mathbb{E} [\mathbb{M}_n \mid \mathcal{F}_m] \geq \mathbb{M}_m$
+    \item \textbf{Super-Martingale:} $\mathbb{E} [\mathbb{M}_n \mid \mathcal{F}_m] \leq \mathbb{M}_m$
+    \item $\mathbb{M}_n$ is a martingale. As, $$\mathbb{E} [\mathbb{M}_n] (\omega_1, \omega_2, \dots, \omega_m) = \mathbb{M}_m(\omega_1, \omega_2, \dots, \omega_m), \quad for \quad m < n$$
+
+\end{enumerate}
+
+
+

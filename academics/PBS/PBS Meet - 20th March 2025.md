@@ -1,0 +1,19 @@
+- Essay Writing Event
+	- In collaboration with writing club
+	- Essay topic
+		- Animal Rights in the Context of Cultural Practices: Can Tradition Justify Cruelty? 
+		- The Connection Between Human Rights and Animal Rights: Parallels and Tensions
+		- Veganism as a Moral Imperative: The Role of Plant-Based Diets in Animal Welfare
+		- ~~Is being Vegan the best way to help animals? A critical Examination
+		- Animals don't matter, nor does Animal Welfare
+		- Exploring the Moral Responsibilities Humans Have Toward Animals
+		- ~~The Ethics of Animal Testing: Balancing Scientific Progress with Animal Welfare~~
+	- Prizes
+- IG post on John Rawls - Shivam
+- DTF Posters - Eswar
+- Christpiracy screening? - Manish
+- Outreach next month? 12th or 19th April
+- Bag Painting Event
+- Updates on Vegan Guide in Insti - 
+- Webpage updates
+	

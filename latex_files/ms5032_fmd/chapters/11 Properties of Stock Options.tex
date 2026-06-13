@@ -1,0 +1,80 @@
+%!TEX root = ../main.tex
+
+\section{Properties of Stock Options}
+
+\begin{enumerate}
+    \item \textbf{Factors affecting Option Prices}
+    \begin{enumerate}
+        \item The current stock price, $S_0$
+        \item The strike price, $K$
+        \item The time to expiration, $T$
+        \item The volatility of the stock price, $\sigma$
+        \item The risk-free interest rate, $r$
+        \item The dividends that are expected to be paid.
+    \end{enumerate}
+    \item The direction of changes are summarised in the table below:
+    
+        \begin{table}[h]
+        % \centering
+        \textbf{Table 4.1} Summary of the effect on the price of a stock option of
+        increasing one variable while keeping all others fixed.
+
+        \vspace{0.5em}
+        \begin{tabular}{lcccc}
+        \hline\hline
+        \textit{Variable} & \textit{European call} & \textit{European put} & \textit{American call} & \textit{American put} \\
+        \hline
+        Current stock price       & $+$ & $-$ & $+$ & $-$ \\
+        Strike price              & $-$ & $+$ & $-$ & $+$ \\
+        Time to expiration        & ?   & ?   & $+$ & $+$ \\
+        Volatility                & $+$ & $+$ & $+$ & $+$ \\
+        Risk-free rate            & $+$ & $-$ & $+$ & $-$ \\
+        Amount of future dividends & $-$ & $+$ & $-$ & $+$ \\
+        \hline\hline
+        \end{tabular}
+
+        \vspace{0.5em}
+        \begin{minipage}{\linewidth}
+        % \centering
+        \small
+
+        $+$ indicates that an increase in the variable causes the option price to increase or stay the same;\\
+        $-$ indicates that an increase in the variable causes the option price to decrease or stay the same;\\
+        ? indicates that the relationship is uncertain.
+        
+        \end{minipage}
+        \end{table}
+
+    \item \textbf{Assumptions for this chapter}
+    \begin{enumerate}
+        \item There are no transaction costs.
+        \item All trading profits are subject to the same tax rate.
+        \item Borrowing and lending are possible at the risk-free interest rate.
+    \end{enumerate}
+    \item \textbf{Notations}
+    \begin{enumerate}
+        \item $S_0:$ Current stock price
+        \item $K:$ Strike price of option
+        \item $T:$ Time to expiration of option
+        \item $S_T:$ Stock price on the expiration date
+        \item $r:$ Continuously compounded risk-free rate of interest for an investment maturing in time $T$
+        \item $C:$ Value of an American call option
+        \item $P:$ Value of an American put option
+        \item $c:$ Value of an European call option
+        \item $c:$ Value of an European put option
+    \end{enumerate}
+    \item \textbf{Bounds}
+    \begin{enumerate}
+        \item $\max(S_0 - Ke^{-rT},\,0) \leq c \leq C \leq S_0$
+        \item $\max(Ke^{-rT} - S_0,\,0) \leq p \leq Ke^{-rT}$
+        \item $\max(K - S_0,\,0) \leq P \leq K $
+        \item $c \geq \max(S_0 - D - Ke^{-rT},\,0) $
+        \item $p \geq \max(D + Ke^{-rT} - S_0,\,0)$
+    \end{enumerate}
+    \item \textbf{Put-Call Parity:}
+    \begin{enumerate}
+    \item $c + Ke^{-rT} = p + S_0$ 
+    \item $c + D + Ke^{-rT} = p + S_0$
+    \end{enumerate}
+
+\end{enumerate}

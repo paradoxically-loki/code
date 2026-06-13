@@ -1,0 +1,39 @@
+%!TEX root = ../main.tex
+
+\section{The Black-Scholes-Merton Model}
+
+\text{Black-Scholes-Merton Differential Equation}
+\begin{equation*}
+  \frac{\partial f}{\partial t}
+  + rS\frac{\partial f}{\partial S}
+  + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 f}{\partial S^2}
+  = rf
+\end{equation*}
+
+\noindent\text{Pricing Formulas}
+\begin{align*}
+  c   &= S_0 N(d_1) - Ke^{-rT}N(d_2)\\
+  p   &= Ke^{-rT}N(-d_2) - S_0 N(-d_1)\\
+  d_1 &= \frac{1}{\sigma\sqrt{T}} (\ln(S_0/K)+(r+\sigma^2/2)T)\\
+  d_2 &= \frac{1}{\sigma\sqrt{T}}(\ln(S_0/K)+(r-\sigma^2/2)T) = d_1 - \sigma \sqrt{T}
+\end{align*}
+
+
+\section{The Greeks}
+\begin{align*}
+  \Delta_{\text{call}} &= N(d_1) \\
+  \Delta_{\text{put}}  &= N(d_1) - 1 \\
+  \Gamma               &= \frac{N'(d_1)}{S_0\sigma\sqrt{T}} \\
+  \nu                  &= S_0\sqrt{T}\,N'(d_1) \\
+  \rho_{\text{call}}   &= KTe^{-rT}N(d_2) \\
+  \rho_{\text{put}}    &= -KTe^{-rT}N(-d_2)
+\end{align*}
+\begin{align*}
+  \Theta_{\text{call}} &= -\frac{S_0 N'(d_1)\sigma}{2\sqrt{T}} - rKe^{-rT}N(d_2) \\
+  \Theta_{\text{put}}  &= -\frac{S_0 N'(d_1)\sigma}{2\sqrt{T}} + rKe^{-rT}N(-d_2)
+\end{align*}
+\begin{gather*}
+  N'(x) = \frac{1}{\sqrt{2\pi}}\,e^{-x^2/2} \\[2pt]
+  \Delta\Pi \approx \Theta\,\Delta t + \tfrac{1}{2}\Gamma\,(\Delta S)^2 \\[2pt]
+  \Theta + rS\Delta + \tfrac{1}{2}\sigma^2 S^2 \Gamma = r\Pi
+\end{gather*}

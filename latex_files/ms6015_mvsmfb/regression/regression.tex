@@ -1,0 +1,647 @@
+\documentclass[12pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{parskip}
+
+% ── Colours ───────────────────────────────────────────────────────────────────
+\definecolor{sectionblue}{RGB}{0, 70, 127}
+\definecolor{boxgray}{RGB}{245, 245, 245}
+\definecolor{boxborder}{RGB}{0, 70, 127}
+
+% ── Section formatting ────────────────────────────────────────────────────────
+\titleformat{\section}{\large\bfseries\color{sectionblue}}{}{0em}{\thesection\quad}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{sectionblue}}{}{0em}{\thesubsection\quad}
+
+% ── Box environments ──────────────────────────────────────────────────────────
+\newmdenv[
+  backgroundcolor=boxgray,
+  linecolor=boxborder,
+  linewidth=1.2pt,
+  innerleftmargin=8pt, innerrightmargin=8pt,
+  innertopmargin=6pt,  innerbottommargin=6pt,
+  skipabove=6pt, skipbelow=6pt
+]{keybox}
+
+\newmdenv[
+  backgroundcolor=white,
+  linecolor=gray!60,
+  linewidth=1pt,
+  innerleftmargin=8pt, innerrightmargin=8pt,
+  innertopmargin=6pt,  innerbottommargin=6pt,
+  skipabove=6pt, skipbelow=6pt
+]{examplebox}
+
+% ── Maths macros ──────────────────────────────────────────────────────────────
+\newcommand{\xbar}{\bar{x}}
+\newcommand{\Xbar}{\bar{X}}
+\newcommand{\ybar}{\bar{y}}
+\newcommand{\Yhat}{\hat{Y}}
+\newcommand{\yhat}{\hat{y}}
+\newcommand{\bhat}{\hat{\beta}}
+\newcommand{\R}{\mathbb{R}}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+  {\LARGE\bfseries\color{sectionblue} MS 6015: Multivariate Statistical Methods}\\[6pt]
+  {\large Regression Analysis — Simple, Multiple, and Advanced Topics}\\[4pt]
+  {\normalsize Condensed Lecture Notes \quad|\quad
+   Reference: Stine \& Foster (Statistics for Business); Keller (Managerial Statistics)}
+\end{center}
+
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Simple Linear Regression}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Introduction and Motivation}
+
+Regression analysis is the most widely used statistical tool for understanding relationships among variables. It connects a \textbf{response (dependent) variable} $Y$ to one or more \textbf{explanatory (predictor) variables} $X$ via an equation.
+
+Typical business questions:
+\begin{itemize}
+  \item What is the impact of an MBA on income?
+  \item How do mutual fund returns relate to the market? (CAPM)
+  \item Does a company discriminate against women in salary?
+  \item Predict house price from observed characteristics.
+\end{itemize}
+
+\subsection{Describing Association}
+
+Before fitting a model, examine a scatterplot and ask four questions:
+\begin{enumerate}
+  \item \textbf{Direction} — does the pattern trend up or down?
+  \item \textbf{Curvature} — is the pattern linear or curved?
+  \item \textbf{Variation} — are points tightly or loosely clustered?
+  \item \textbf{Outliers} — is there anything unexpected?
+\end{enumerate}
+Association is measured numerically by \textbf{covariance} and \textbf{correlation}.
+
+\subsection{The Simple Regression Model (SRM)}
+
+The SRM describes how the conditional mean of $Y$ depends on $X$:
+\[
+  Y = \beta_0 + \beta_1 X + \epsilon, \qquad \epsilon \sim N(0,\sigma_\epsilon^2).
+\]
+
+\begin{keybox}
+\noindent\textbf{Three Assumptions about $\epsilon$}\par\smallskip
+\begin{enumerate}
+  \item \textbf{Independence.} Errors are independent of each other.
+  \item \textbf{Equal variance (homoscedasticity).} $\text{Var}(\epsilon) = \sigma_\epsilon^2$ (constant).
+  \item \textbf{Normality.} Errors are normally distributed.
+\end{enumerate}
+\end{keybox}
+
+\subsection{Least Squares Estimation}
+
+The \textbf{least squares} estimates minimise $\sum_{i=1}^n e_i^2$, yielding:
+\[
+  b_1 = r_{XY}\frac{s_Y}{s_X}, \qquad b_0 = \bar{Y} - b_1\bar{X}.
+\]
+where $r_{XY}$ is the sample correlation and $s_X, s_Y$ are standard deviations.
+
+The residual is the difference between observed and fitted value:
+\[
+  e_i = Y_i - \hat{Y}_i, \qquad \hat{Y}_i = b_0 + b_1 X_i.
+\]
+
+Key properties: $\text{corr}(X, e) = 0$ and $\text{corr}(\hat{Y}, e) = 0$.
+
+\subsection{Variance Decomposition and $R^2$}
+
+\[
+  \underbrace{\sum(Y_i-\bar{Y})^2}_{\text{SST}} =
+  \underbrace{\sum(\hat{Y}_i-\bar{Y})^2}_{\text{SSR (Regression)}} +
+  \underbrace{\sum e_i^2}_{\text{SSE (Error)}}.
+\]
+
+The \textbf{coefficient of determination}:
+\[
+  R^2 = \frac{\text{SSR}}{\text{SST}} = 1 - \frac{\text{SSE}}{\text{SST}} = r_{XY}^2.
+\]
+$R^2 \in [0,1]$; closer to 1 means better fit. If $R^2 = 1$, perfect fit.
+
+\subsection{Inference in Simple Regression}
+
+The standard error of the slope:
+\[
+  \text{se}(b_1) = \frac{s_e}{s_X\sqrt{n-1}},
+  \qquad\text{where } s_e = \sqrt{\frac{\text{SSE}}{n-2}}.
+\]
+$\text{se}(b_1)$ increases with residual spread, decreases with sample size and spread of $X$.
+
+\textbf{95\% confidence interval for $\beta_1$:} $b_1 \pm t_{n-2,0.025} \cdot \text{se}(b_1)$.
+
+\textbf{Hypothesis test} $H_0: \beta_j = 0$: use $t = b_j/\text{se}(b_j)$. Reject $H_0$ if $|t| > 2$ (approx.) or p-value $< 0.05$.
+
+\begin{keybox}
+\noindent\textbf{Three Equivalent Ways to Reject $H_0:\beta_j=0$}\par\smallskip
+\begin{itemize}
+  \item Zero lies outside the 95\% confidence interval.
+  \item $|t\text{-statistic}| > 2$.
+  \item p-value $< 0.05$.
+\end{itemize}
+\end{keybox}
+
+\subsection{Capital Asset Pricing Model (CAPM) Example}
+
+The CAPM is formulated as a simple regression:
+\[
+  R_t = \beta_0 + \beta_1 M_t + \epsilon_t,
+\]
+where $R_t$ is the asset return and $M_t$ is the market return. Theory predicts $\beta_0 = 0$.
+
+For Berkshire Hathaway: slope $= 0.722$, $t = 9.29$, $p < 0.0001$ (slope significant); intercept $= 1.396$, $t = 4.11$, $p < 0.0001$ (intercept also significant, inconsistent with pure CAPM).
+
+\subsection{Prediction Intervals}
+
+A \textbf{95\% prediction interval} for a new observation $y_\text{new}$ at $x_\text{new}$ is:
+\[
+  \hat{y}_\text{new} \pm t_{n-2,0.025}\cdot \text{se}(\hat{y}_\text{new}),
+  \qquad
+  \text{se}(\hat{y}_\text{new}) = s_e\sqrt{1 + \frac{1}{n} + \frac{(x_\text{new}-\bar{x})^2}{(n-1)s_X^2}}.
+\]
+Simple approximation: $\hat{y} \pm 2s_e$.
+
+\begin{keybox}
+\noindent\textbf{Prediction Interval vs.\ Confidence Interval}\par\smallskip
+A \emph{confidence interval} estimates the mean response $E(Y|X=x)$ — a population parameter.
+A \emph{prediction interval} bounds a \emph{single new observation} — it is always wider because it accounts for individual variability as well.
+\end{keybox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Curved Patterns and Transformations}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Detecting Nonlinearity}
+
+\begin{itemize}
+  \item Plot $Y$ vs.\ $X$: look for curvature.
+  \item Plot residuals vs.\ $X$: a systematic curve in residuals confirms nonlinearity.
+  \item Ask: do equal-sized changes in $X$ produce equal changes in $Y$? If not, the relationship is nonlinear.
+\end{itemize}
+
+\subsection{Transformations}
+
+A \textbf{transformation} re-expresses a variable by applying a function (e.g.\ $\log$, reciprocal) to linearise the relationship.
+
+\begin{itemize}
+  \item \textbf{Reciprocal:} convert $d \to 1/d$. Useful for ratio variables (e.g.\ miles per gallon $\to$ gallons per 100 miles).
+  \item \textbf{Logarithm:} useful for exponential growth or right-skewed data.
+\end{itemize}
+
+\textbf{Choosing a transformation:} match the curvature pattern in the scatterplot to a standard shape, then pick the transformation that straightens it.
+
+\textbf{Key rule:} only compare $R^2$ values between models that use the \emph{same response variable}.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Regression Diagnostics}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Three major problems to diagnose: changing variation, leveraged outliers, and dependent errors.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Assumption} & \textbf{Diagnostic} & \textbf{Problem if Violated} \\
+\midrule
+Linearity         & Scatterplot          & Nonlinear pattern \\
+Independence      & Residuals vs.\ time  & Autocorrelation \\
+Constant Variance & Residual plot        & Heteroscedasticity \\
+Normality         & Normal quantile plot & Outliers, skewness \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Changing Variation (Heteroscedasticity)}
+
+\textbf{Detection:} fan-shaped residual plot; side-by-side boxplots showing increasing spread.
+
+\textbf{Consequences:}
+\begin{itemize}
+  \item Prediction intervals are too narrow for large $X$ and too wide for small $X$.
+  \item Confidence intervals and hypothesis tests for $\beta_0, \beta_1$ are unreliable.
+\end{itemize}
+
+\textbf{Fix:} transform the response (e.g.\ regress price per square foot on $1/\text{SqFt}$ to stabilise variance in house price models).
+
+\subsection{Leveraged Outliers}
+
+A \textbf{leveraged observation} has an unusually small or large value of $X$. It can pull the regression line toward itself, distorting slope and intercept estimates and making prediction intervals unreliable.
+
+\textbf{Approach:} fit the model with and without the outlier; compare estimates using standard errors as the scale. Decide whether to include based on whether the outlier is representative of future data.
+
+\subsection{Dependent Errors and Time Series}
+
+When data are collected over time, residuals may be correlated (\textbf{autocorrelation}).
+
+\textbf{Detection:} plot residuals vs.\ time; use the \textbf{Durbin-Watson statistic}:
+\[
+  D = \frac{\sum_{t=2}^n (e_t - e_{t-1})^2}{\sum_{t=1}^n e_t^2}.
+\]
+Roughly: $D < 1.5$ suggests positive autocorrelation; $D > 2.5$ suggests negative autocorrelation.
+
+\textbf{Consequences:} standard errors are underestimated, making tests too liberal.
+
+\textbf{Fix:} incorporate the dependence structure into the model.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Multiple Linear Regression (MLR)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{The Model}
+
+\[
+  Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p + \epsilon,
+  \qquad \epsilon \sim N(0,\sigma^2).
+\]
+
+The conditional mean of $Y$ is $E(Y|X_1,\ldots,X_p) = \beta_0 + \beta_1 X_1 + \cdots + \beta_p X_p$.
+
+\subsection{Least Squares Estimates}
+
+Minimise $\sum e_i^2$ over all $\beta_j$. In matrix form:
+\[
+  \hat{\boldsymbol{\beta}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{Y}.
+\]
+
+Properties: $\text{corr}(X_j, e) = 0$ for all $j$; $\text{corr}(\hat{Y}, e) = 0$.
+
+\subsection{Goodness of Fit}
+
+\[
+  R^2 = \frac{\text{SSR}}{\text{SST}} = 1 - \frac{\text{SSE}}{\text{SST}}.
+\]
+
+$R^2$ always increases as predictors are added, even random ones. The \textbf{adjusted $R^2$} penalises complexity:
+\[
+  R_a^2 = 1 - \frac{\text{MSE}}{\text{MST}} = 1 - \frac{\text{SSE}/(n-p-1)}{\text{SST}/(n-1)}.
+\]
+
+Regression standard error: $s = \sqrt{\text{SSE}/(n-p-1)}$.
+
+\subsection{Inference: $t$-Tests for Individual Coefficients}
+
+Each $b_j \sim N(\beta_j, s_{b_j}^2)$ approximately, so:
+\begin{itemize}
+  \item 95\% CI: $b_j \pm 2 s_{b_j}$.
+  \item Test statistic: $t = (b_j - \beta_{j0})/s_{b_j}$; reject if $|t| > 2$ or p-value $< 0.05$.
+\end{itemize}
+
+\subsection{The Overall $F$-Test}
+
+Tests $H_0: \beta_1 = \beta_2 = \cdots = \beta_p = 0$ simultaneously:
+\[
+  f = \frac{R^2/p}{(1-R^2)/(n-p-1)} = \frac{\text{SSR}/p}{\text{SSE}/(n-p-1)} = \frac{\text{MSR}}{\text{MSE}} \sim F_{p,\,n-p-1}.
+\]
+Reject $H_0$ if $f$ is large ($f > 4$ is a practical rule of thumb for significance).
+
+\begin{keybox}
+\noindent\textbf{Inference Strategy in MLR}\par\smallskip
+\begin{enumerate}
+  \item Check the overall $F$-test first. If not significant, stop.
+  \item If $F$ is significant, examine individual $t$-statistics.
+  \item Never use multiple individual $t$-tests as a substitute for the $F$-test.
+\end{enumerate}
+\end{keybox}
+
+\subsection{The Partial $F$-Test}
+
+Compares a reduced (base) model with $p_\text{base}$ predictors to a full model with $p_\text{full}$ predictors:
+\[
+  H_0: \beta_{p_\text{base}+1} = \cdots = \beta_{p_\text{full}} = 0.
+\]
+\[
+  f = \frac{(R^2_\text{full} - R^2_\text{base})/(p_\text{full}-p_\text{base})}{(1-R^2_\text{full})/(n-p_\text{full}-1)}
+  \sim F_{p_\text{full}-p_\text{base},\;n-p_\text{full}-1}.
+\]
+Reject $H_0$ if $f$ is large — the added predictors significantly improve the model.
+
+\subsection{Understanding Dependencies Among Predictors}
+
+In MLR, each partial slope $b_j$ measures the effect of $X_j$ \emph{holding all other $X$'s fixed}. This can differ dramatically from the marginal (simple regression) slope.
+
+\begin{examplebox}
+\noindent\textbf{Example: Price and Sales}\par\smallskip
+Simple regression of Sales on own price $P_1$ gives a \emph{positive} slope — surprising! Once competitor price $P_2$ is included, the slope of $P_1$ becomes negative ($-97.7$), correctly capturing that higher own price \emph{holding $P_2$ fixed} reduces sales. The marginal slope was confounded by the positive correlation between $P_1$ and $P_2$.
+\end{examplebox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Multicollinearity}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Definition and Consequences}
+
+\textbf{Multicollinearity} occurs when two or more predictors are highly correlated. In MLR the standard error of $b_j$ depends on the variation in $X_j$ \emph{not} explained by the other $X$'s:
+\[
+  s_{b_j}^2 = \frac{s^2}{\text{SSE}_j},
+\]
+where $\text{SSE}_j$ is the residual sum of squares from regressing $X_j$ on all other predictors. When predictors are highly correlated, $\text{SSE}_j \to 0$, so $s_{b_j} \to \infty$.
+
+\textbf{Consequences:}
+\begin{itemize}
+  \item Inflated standard errors $\Rightarrow$ wider confidence intervals.
+  \item Slopes become unstable and sensitive to small data changes.
+  \item Individual $t$-statistics can be insignificant even though the overall $F$ is significant.
+\end{itemize}
+
+\subsection{Variance Inflation Factor (VIF)}
+
+\[
+  \text{VIF}(X_j) = \frac{1}{1 - R_j^2},
+\]
+where $R_j^2$ is the $R^2$ from regressing $X_j$ on all other predictors.
+
+\[
+  \text{se}(b_j) = \frac{s}{s_{X_j}\sqrt{n}} \cdot \sqrt{\text{VIF}(X_j)}.
+\]
+
+\begin{keybox}
+\noindent\textbf{VIF Rules of Thumb}\par\smallskip
+\begin{itemize}
+  \item $\text{VIF} > 5$: moderate concern.
+  \item $\text{VIF} > 10$: serious concern; consider removing or combining the collinear predictor.
+\end{itemize}
+\end{keybox}
+
+\subsection{Warning Signs of Collinearity}
+
+\begin{enumerate}
+  \item $R^2$ increases less than expected when adding a predictor.
+  \item Slopes of correlated variables change dramatically when a predictor is added/removed.
+  \item Strong $F$-statistic but weak individual $t$-statistics.
+  \item Standard errors for partial slopes larger than for marginal (simple) slopes.
+  \item VIF $> 5$ or $10$.
+\end{enumerate}
+
+\subsection{Remedies}
+
+\begin{enumerate}
+  \item \textbf{Remove the redundant predictor} — retain the one with stronger theoretical justification.
+  \item \textbf{Combine predictors} — e.g.\ use the average of two highly correlated variables.
+  \item \textbf{Do nothing} — if estimates are still sensible and theory supports keeping both.
+\end{enumerate}
+
+\textbf{Key principle:} statistical insignificance alone does not justify removal — subject-matter knowledge must guide variable selection.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Analysis of Covariance (ANCOVA)}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Two-Sample Comparisons via Regression}
+
+A two-sample $t$-test comparing group means is equivalent to a simple regression with a \textbf{dummy variable} (indicator variable) for group membership (1 = male, 0 = female, say).
+
+\textbf{Confounding variables} are correlated with both group membership and the response. Restricting analysis to subsets with matched confounders reduces bias but loses precision.
+
+\textbf{Analysis of Covariance} combines dummy variables and continuous covariates to adjust for confounders while using all the data.
+
+\subsection{Adding Covariates and Interactions}
+
+To allow different intercepts and slopes per group, include:
+\begin{itemize}
+  \item \textbf{Dummy variable} $D$ (identifies group): shifts the intercept.
+  \item \textbf{Interaction term} $D \times X$ (product of dummy and covariate): allows different slopes.
+\end{itemize}
+Model: $Y = \beta_0 + \beta_1 X + \beta_2 D + \beta_3 (D \times X) + \epsilon$.
+
+\textbf{Principle of Marginality:}
+\begin{itemize}
+  \item If the interaction is \emph{significant}: retain it \emph{and} both component terms.
+  \item If the interaction is \emph{not significant}: remove it. The resulting \textbf{parallel lines model} ($\beta_2 D$ only) is simpler to interpret.
+\end{itemize}
+
+Note: interaction terms introduce collinearity; check VIF.
+
+\subsection{Regression with Several Groups ($J > 2$)}
+
+Use $J - 1$ dummy variables (one group serves as baseline). Coefficients on dummy variables represent differences in intercept vs.\ the baseline group. Interaction terms allow different slopes per group.
+
+\begin{examplebox}
+\noindent\textbf{Retail Sales Example (Urban/Suburban/Rural)}\par\smallskip
+Two dummy variables (Urban, Suburban; Rural = baseline). Income interacts differently with market type: urban stores have a higher intercept but lower income-sensitivity than rural stores. Population effect is constant across all locations (no interaction included).
+\end{examplebox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Model Selection}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Overfitting and the Bias--Variance Trade-off}
+
+\begin{keybox}
+\noindent\textbf{Bias--Variance Decomposition}\par\smallskip
+\[
+  E\!\left[(y - \hat{f})^2\right] = \underbrace{\text{Bias}^2(\hat{f})}_{\text{systematic error}}
+  + \underbrace{\text{Var}(\hat{f})}_{\text{estimation error}}
+  + \underbrace{\sigma_\epsilon^2}_{\text{irreducible noise}}.
+\]
+\begin{itemize}
+  \item \textbf{High bias (underfitting):} model too simple; misses the true relationship.
+  \item \textbf{High variance (overfitting):} model too complex; memorises noise.
+  \item Goal: minimise total error on \emph{unseen} data, not training data.
+\end{itemize}
+\end{keybox}
+
+\textbf{Cautionary tale — Google Flu Trends (GFT):} GFT selected 45 search terms from 50 million candidates to match historical CDC data, achieving 97\% in-sample accuracy. In practice it overestimated flu in 100/108 weeks, and completely missed the 2009 H1N1 outbreak (a spring event outside its winter-season training pattern). Lesson: always validate on held-out data; spurious correlations are dangerous.
+
+\subsection{Three Classes of Methods}
+
+\begin{center}
+\begin{tabular}{lp{5cm}p{5cm}}
+\toprule
+\textbf{Class} & \textbf{Idea} & \textbf{When to Use} \\
+\midrule
+Subset Selection & Identify a subset; fit OLS on it. Hard in/out decision. & Small/moderate $p$; interpretability needed. \\[4pt]
+Shrinkage (Regularisation) & Fit all $p$ predictors but penalise large coefficients. Soft decision. & Large or collinear $p$. \\[4pt]
+Dimension Reduction & Project $p$ predictors into $M < p$ combinations. & Very high $p$; predictors are correlated. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Subset Selection}
+
+\textbf{Best Subset Selection:} fit all $2^p$ possible models; pick the best one per size $k$ using SSE/$R^2$, then choose among sizes using a criterion. Guaranteed to find the globally best subset, but computationally infeasible for $p \gtrsim 40$.
+
+\textbf{Forward Stepwise:} start from the null model; at each step add the variable with the greatest improvement (partial $F$-test). Considers only $1 + p(p+1)/2$ models.
+
+\textbf{Backward Elimination:} start from the full model; remove the least useful variable one at a time. Requires $n > p$.
+
+\textbf{Stepwise Regression:} combines forward addition and backward elimination.
+
+\begin{keybox}
+\noindent\textbf{Stepwise methods are greedy} — they do not guarantee finding the globally best subset, but they scale to large $p$ where exhaustive search is impossible.
+\end{keybox}
+
+\subsection{Model Selection Criteria}
+
+All four criteria estimate test error by penalising training SSE for model complexity.
+
+\textbf{Mallow's $C_p$:}
+\[
+  C_p = \frac{\text{SSE}_p}{\text{MSE}_\text{full}} - (n - 2p).
+\]
+Choose the model with $p$ closest to $C_p$.
+
+\textbf{AIC} (Akaike Information Criterion, Gaussian errors):
+\[
+  \text{AIC} = \frac{1}{n\hat{\sigma}^2}(\text{SSE} + 2p\hat{\sigma}^2). \quad \text{Lower is better.}
+\]
+
+\textbf{BIC} (Bayesian Information Criterion):
+\[
+  \text{BIC} = \frac{1}{n}(\text{SSE} + \log(n)\,p\hat{\sigma}^2). \quad \text{Lower is better.}
+\]
+BIC penalises complexity more heavily than AIC (uses $\log n$ instead of $2$), favouring smaller models.
+
+\textbf{Adjusted $R^2$:}
+\[
+  R_a^2 = 1 - \frac{\text{SSE}/(n-p-1)}{\text{SST}/(n-1)}.
+\]
+
+\textbf{Cross-Validation:} directly estimates test error; no assumption about model form; most reliable but computationally expensive.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Regularisation}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Motivation}
+
+When $p$ is large, predictors are collinear, or $p \approx n$, the OLS estimator $\hat{\boldsymbol{\beta}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{Y}$ becomes unstable because $(\mathbf{X}^\top\mathbf{X})$ is nearly singular. Regularisation adds a penalty on the coefficients to reduce variance at the cost of a small increase in bias.
+
+\subsection{Ridge Regression ($L_2$ Penalty)}
+
+Minimise:
+\[
+  (\mathbf{Y} - \mathbf{X}\boldsymbol{\beta})^\top(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta}) + \lambda\boldsymbol{\beta}^\top\boldsymbol{\beta}.
+\]
+Closed-form solution:
+\[
+  \hat{\boldsymbol{\beta}}_\text{ridge} = (\mathbf{X}^\top\mathbf{X} + \lambda\mathbf{I})^{-1}\mathbf{X}^\top\mathbf{Y}.
+\]
+\begin{itemize}
+  \item $\lambda = 0$: recovers OLS.
+  \item $\lambda \to \infty$: all $\hat{\beta}_j \to 0$.
+  \item Coefficients are \emph{shrunk} toward zero but \textbf{never set exactly to zero}.
+  \item Best when all predictors are relevant; particularly useful with collinearity.
+\end{itemize}
+
+\subsection{Lasso Regression ($L_1$ Penalty)}
+
+Minimise:
+\[
+  (\mathbf{Y} - \mathbf{X}\boldsymbol{\beta})^\top(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta}) + \lambda\sum_{j=1}^p|\beta_j|.
+\]
+\begin{itemize}
+  \item No closed-form solution (solved by coordinate descent or LARS).
+  \item The $L_1$ penalty drives small coefficients to \textbf{exactly zero} $\Rightarrow$ automatic variable selection.
+  \item Best when the true model is sparse (few relevant predictors).
+\end{itemize}
+
+\subsection{Elastic Net ($L_1 + L_2$)}
+
+Combines both penalties:
+\[
+  (\mathbf{Y} - \mathbf{X}\boldsymbol{\beta})^\top(\mathbf{Y} - \mathbf{X}\boldsymbol{\beta}) + \lambda_1\sum|\beta_j| + \lambda_2\sum\beta_j^2.
+\]
+\begin{itemize}
+  \item $L_2$ component groups correlated predictors together.
+  \item $L_1$ component then selects among groups.
+  \item Best when predictors are correlated \emph{and} $p \gg n$.
+\end{itemize}
+
+\subsection{Ridge vs.\ Lasso: Geometric Intuition}
+
+The penalty term defines a constraint region for $\boldsymbol{\beta}$:
+\begin{itemize}
+  \item \textbf{Ridge:} $L_2$ ball (sphere). The RSS contours touch the sphere at a smooth point $\Rightarrow$ no coefficient is exactly zero.
+  \item \textbf{Lasso:} $L_1$ diamond. The RSS contours typically hit a corner of the diamond where one or more $\beta_j = 0$ $\Rightarrow$ automatic selection.
+\end{itemize}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\toprule
+\textbf{Property} & \textbf{Ridge ($L_2$)} & \textbf{Lasso ($L_1$)} \\
+\midrule
+Penalty              & $\lambda\sum\beta_j^2$     & $\lambda\sum|\beta_j|$ \\
+Closed form          & Yes                        & No \\
+Variable selection   & No                         & Yes \\
+Exact zeros          & No                         & Yes \\
+Grouped predictors   & Stable                     & Picks one arbitrarily \\
+Best when            & All predictors relevant    & Few predictors matter \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Choosing $\lambda$ via Cross-Validation}
+
+\begin{enumerate}
+  \item Define a grid of $\lambda$ values (e.g.\ $10^{-4}$ to $10^4$).
+  \item For each $\lambda$, compute $k$-fold cross-validation MSE.
+  \item Choose $\lambda^* = \arg\min_\lambda \text{CV}(\lambda)$.
+  \item Re-fit the model on all data using $\lambda^*$.
+\end{enumerate}
+
+\textbf{One standard-error rule:} choose the largest $\lambda$ whose CV error is within one SE of the minimum. This gives a sparser, more interpretable model with comparable performance.
+
+\textbf{Always standardise predictors} before applying Ridge or Lasso (so the penalty treats all coefficients equally).
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Grand Summary}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{p{3.5cm} p{4.5cm} p{4.5cm}}
+\toprule
+\textbf{Topic} & \textbf{Key Idea} & \textbf{Key Formula / Tool} \\
+\midrule
+SLR & Line minimising squared residuals & $b_1 = r_{XY}s_Y/s_X$ \\
+Goodness of fit & Fraction of variance explained & $R^2 = \text{SSR}/\text{SST}$ \\
+SRM Assumptions & Independence, equal variance, normality & Residual plots, QQ plots \\
+Transformations & Linearise curved relationships & Reciprocal, logarithm \\
+Heteroscedasticity & Fan-shaped residual plot & Transform response \\
+Autocorrelation & Dependence over time & Durbin-Watson statistic \\
+Outliers & Leverage \& influence & Fit with/without; compare \\
+MLR & Multiple predictors; partial slopes & OLS, $F$-test \\
+Multicollinearity & Correlated predictors inflate SE & VIF; remove/combine \\
+ANCOVA & Adjust group comparisons for covariates & Dummy variables + interactions \\
+Subset Selection & Hard in/out variable choice & Best subset, stepwise \\
+Model criteria & Penalise complexity & $C_p$, AIC, BIC, Adj.\ $R^2$ \\
+Ridge & $L_2$ shrinkage; all variables kept & $\hat{\beta}_\text{ridge} = (\mathbf{X}^\top\mathbf{X}+\lambda\mathbf{I})^{-1}\mathbf{X}^\top\mathbf{Y}$ \\
+Lasso & $L_1$ shrinkage; exact zeros & Coordinate descent, $\lambda$ via CV \\
+Elastic Net & $L_1 + L_2$; correlated predictors & Two tuning parameters $\lambda_1, \lambda_2$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{keybox}
+\noindent\textbf{Key Takeaways}\par\smallskip
+\begin{enumerate}
+  \item Check model conditions \emph{before} interpreting output.
+  \item Use the $F$-test before individual $t$-tests.
+  \item Never compare $R^2$ across models with different response variables.
+  \item Multicollinearity inflates standard errors but does not bias coefficients.
+  \item Subset selection makes hard (in/out) decisions; regularisation makes soft ones.
+  \item Ridge keeps all predictors; Lasso performs automatic variable selection.
+  \item Always use cross-validation to select $\lambda$ and compare methods.
+  \item Standardise predictors before Ridge or Lasso.
+  \item The bias--variance trade-off underlies all model selection: a little bias can greatly reduce variance and improve test performance.
+\end{enumerate}
+\end{keybox}
+
+\end{document}
