@@ -1,0 +1,171 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{palatino}
+\usepackage{pxfonts}
+\usepackage{microtype}
+
+\usepackage[
+  top=1in, bottom=1in,
+  left=1in, right=1in
+]{geometry}
+
+\usepackage{nicefrac}
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{mycyan}{cmyk}{1,0,0,0.4}
+\definecolor{mymagenta}{cmyk}{0,1,0,0.15}
+\usepackage[bookmarksnumbered]{hyperref}
+\hypersetup{
+  colorlinks,
+  citecolor=mymagenta,
+  linkcolor=mymagenta,
+  urlcolor=mycyan,
+}
+
+\usepackage{enumitem}
+\usepackage{parskip}
+
+\setcounter{tocdepth}{2}
+
+\title{\bfseries Quant Questions}
+\author{Lokesh Parihar}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Brainstellar --- Probability}
+
+\subsection{Rolling the Bullet}
+
+\textbf{Problem.} A barrel has bullets in two consecutive sockets. It is shuffled and then fired; the shot turns out to be empty. Does the probability of the next shot being fired increase if the barrel is shuffled again?
+
+\textbf{Solution.} If the barrel is shuffled, the probability of a successful fire is $\frac{2}{6} = \frac{1}{3}$. But if the next shot is fired without shuffling, there is only a $\frac{1}{4}$ chance of a successful fire. This is because the two bullets can only occupy one of the 4 remaining possible slots, given that the first shot went empty. Hence it is better \emph{not} to shuffle.
+
+\subsection{Lucky Candy}
+
+\textbf{Problem.} There are $50$ good candies and $50$ bad candies, and two identical boxes. How would you place these candies in the two boxes so as to maximise the probability of picking a good candy from a randomly chosen box?
+
+\textbf{Solution.} The probability of choosing either box is $\frac{1}{2}$, so we can only influence the outcome through candy placement. If we put all good candies in one box and all bad in the other, the probability is $\frac{1}{2}(1 + 0) = \frac{1}{2}$. We can do better: place just one good candy in one box and the remaining 49 good and all 50 bad in the other. Then
+\[
+  P = \frac{1}{2}\!\left(1 + \frac{49}{99}\right) = \frac{74}{99} \approx 0.747.
+\]
+This is the maximum.
+
+\subsection{All Girls World?}
+
+\textbf{Problem.} Consider a world where every couple keeps having babies until they have a girl. What would be the gender ratio in this world?
+
+\textbf{Solution.} Consider $N$ couples. Of these, $N/2$ have a girl on the first try; the other $N/2$ have a boy and try again. In the next round, $N/4$ have a girl and $N/4$ have a boy, and so on. At every step the number of boys born equals the number of girls born in that round, so the overall ratio remains $1:1$.
+
+\subsection{Half Time}
+
+\textbf{Problem.} On a given road, the probability of seeing an accident in one hour is $\frac{3}{4}$. What is the probability of seeing an accident in half an hour?
+
+\textbf{Solution.} The probability of no accident in one hour is $\frac{1}{4}$. By independence of the two half-hour intervals,
+\[
+  P(\text{no accident in 1 hr}) = P(\text{no accident in half hr})^2
+  \implies P(\text{no accident in half hr}) = \frac{1}{2}.
+\]
+Hence the probability of an accident in half an hour is $\frac{1}{2}$.
+
+\textbf{Alternate.} Let $x$ be the probability of an accident in half an hour. Then $x + (1-x)x = \frac{3}{4}$, which gives $x = \frac{1}{2}$.
+
+\subsection{Monty Hall Problem}
+
+\textbf{Problem.} In a magic show, three doors hide one car. You choose a door; the host (who knows where the car is) opens a different door revealing nothing, then offers you the chance to switch. Should you switch?
+
+\textbf{Solution.} Let $A$, $B$, $C$ denote the doors. Suppose you chose $A$ and the host opened $B$. Prior probabilities are $P(\text{car} @ K) = \frac{1}{3}$ for each $K$. The likelihoods are
+\[
+  P(\text{open } B \mid \text{car} @ A) = \tfrac{1}{2}, \quad
+  P(\text{open } B \mid \text{car} @ B) = 0, \quad
+  P(\text{open } B \mid \text{car} @ C) = 1.
+\]
+By Bayes' theorem,
+\[
+  P(\text{car} @ A \mid \text{open } B) = \frac{\frac{1}{2} \cdot \frac{1}{3}}{\frac{1}{2} \cdot \frac{1}{3} + 0 \cdot \frac{1}{3} + 1 \cdot \frac{1}{3}} = \frac{1}{3},
+\]
+and similarly $P(\text{car} @ C \mid \text{open } B) = \frac{2}{3}$. You should always switch.
+
+\subsection{Unbiased Coin}
+
+\textbf{Problem.} There is biased coin whose probability of coming up head is $p, \space 0.5 < p \leq 1$. Can we define two equally likely outcomes with this coin? 
+
+\textbf{Solution.} We can't obviously define equally likely outcomes with just one toss. However, we can define with two coin tosses. Note, the probabilities of $HT$ and $TH$ are the same.  We can define these events, and retry when we get anything else.
+
+
+\subsection{You Have a Train to Catch}
+
+\textbf{Question.} Spiderman has two close friends, Mary Jane \& Gwen Stacy. After every mission, he rushes to the central subway. One line heads towards Mary's place, and another towards Stacy. Trains from each line leave every $10$ minutes. Spiderman being impartial always boards the first train that leaves.\\
+However, he observes that he ends up visiting Mary Jane nine times more often than Gwen Stacy. Can you decipher why?
+
+\textbf{Solution.} Time interval between the train to Mary and Gwen is 1 minute, and that between Gwen and Mary is $9$ minutes.
+
+\subsection{Invisible Dice}
+
+\textbf{Question.} I bought two fair six-sided dice. Keeping the first one untouched, I modified the second die, by erasing each face and writing a number of my own. Now, the sum of outcomes of the two dice is equally likely an integer between 1 and 12. Can you deduce the numbers written on the modified die?
+
+\textbf{Solution.} To get the sum $12$, we'll need atleast one $6$ on the modified die, and also to get sum $1$, we'll need at least one $0$. But, since all sums are equally likely, we should have the sum $12$ coming exactly three times, this is only possible if we have three $6$s on the modified die and similarly to get three $1$s, we need three $0$s. And this is the  solution.
+
+\subsection{Daughter or Son}
+\subsection{Father of Lies}
+
+\textbf{Question.} A father claims about snowfall last night. First daughter tells that the probability of snowfall on a particular night is 1/8. Second daughter tells that 5 out of 6 times the father is lying. What is the probability that there actually was a snowfall?
+
+\textbf{Solution.}  Let $S$ be the event that the snowfall occured. And let $C$ be the event that the father is claiming that snowfall occured. We need to calculate 
+\[P(S\mid C) = \frac{P(C \mid S) P(S)}{P(C)}\]
+Clearly, $P(C \mid S) = \frac{1}{6}$, $P(S) = \frac{1}{8}$, and $P(S') = \frac{7}{8}$.
+Now, \[P(C) = P(\text{True Claim}) + P(\text{False Claim})\]
+\[ \implies P(C) = P(C \cap S) + P(C \cap S')   \]
+\[ \implies P(C) = P(C\mid S)P(S) + P(C \mid S')P(S') \]
+\[\implies P(C) = \frac{1}{6} \frac{1}{8} + \frac{5}{6} \frac{7}{8} = \frac{3}{4}\]
+Now, \[P(S\mid C) = \frac{\frac{1}{6} \frac{1}{8}}{\frac{3}{4}} = \frac{1}{36}\]
+
+
+\subsection{Witches at the Coffee Shop}
+
+\textbf{Question.} Two witches make a nightly visit to an all-night coffee shop. Each arrives at a random time between $0:00$ and $1:00$. Each one of them stays for exactly $30$ minutes. On any one given night, what is the probability that the witches will meet at the coffee shop?
+
+\textbf{Solution.} Let the two witches arrive at time $x$, and $y$ respectively. They'll be able to meet iff $|x - y| \leq \frac{1}{2}$. We can calculate this area on the unit Cartesian plane and get the answer $\frac{3}{4}$. Only the left upper and lower right triagles won't be favourable.
+
+\subsection{Half Heads}
+\textbf{Question.} Let $X$ be a random variable that takes value $0$ or $1$ with $50\%$ probability each. You need to define a new random variable $Y$ as a function of $X$, such that $Y$ has the value $1$ with $25\%$ probability and $0$ otherwise.
+
+\textbf{Solution.} $Y = f(X \wedge X')$ where $X'$ is another independent copy of $X$.
+
+\subsection{Drunk Passenger}
+\textbf{Question.} A line of $100$ airline passengers is waiting to board a plane. They each hold a ticket to one of the $100$ seats on that flight. For convenience, let's say that the $n^{th}$ passenger in line has a ticket for seat number $n$. Being drunk, the first person in line picks a random seat (equally likely for each seat). All of the other passengers are sober, and will go to their assigned seats unless it is already occupied; If it is occupied, they will then find a free seat to sit in, at random. What is the probability that the last $100^{th}$ person to board the plane will sit in their own seat number 100?
+
+\textbf{Solution.} Well. The $100^{th}$ passenger will only be able to sit on either seat number $100$ or seat number $1$. This is because, the moment someone sits on seat number $1$, every sober person including the last will go to their respective seats. Else, the last person will sit on the first seat. Since both choices are equally likely due to symmetry, the probability that the last person gets her seat is $\frac{1}{2}$.
+
+\textbf{Follow-up.} What is the probability that the second last person gets their seat? 
+
+\textbf{Solution.} Here also a similar dynamics will play out. The second last person can either sit on the first seat, second last seat, or the last seat. The moment any of these seats are occupied, the chain stops and $99^{th}$ person can get her seat in two of these three case, and thus the probability is $\frac{2}{3}$.
+
+\subsection{Stick to Triangle}
+
+\textbf{Question.} A unit stick is broken into three pieces by uniformly picking two random points on it. What is the probability that the three parts form a triangle?
+
+\textbf{Solution.} Let these two points be at a distance $x$, and $y$ from the starting point, respectively. For the three lines to form a triangle, we have the following conditions, 
+\[\min(x,y) < \frac{1}{2}, \space |x-y| \leq \frac{1}{2}, \text{and} \space \max(x,y) > \frac{1}{2}\]
+The area under the feasible region is $\frac{1}{4}$.
+
+
+
+\section{Probability --- Prof Mihai Nica}
+\subsection{Birthday Paradox}
+
+\subsection{Tuesday Problem}
+
+\subsection{Darth Wader Rule}
+
+\subsection{Random Walks}
+
+\end{document}
