@@ -115,6 +115,19 @@ However, he observes that he ends up visiting Mary Jane nine times more often th
 \textbf{Solution.} To get the sum $12$, we'll need atleast one $6$ on the modified die, and also to get sum $1$, we'll need at least one $0$. But, since all sums are equally likely, we should have the sum $12$ coming exactly three times, this is only possible if we have three $6$s on the modified die and similarly to get three $1$s, we need three $0$s. And this is the  solution.
 
 \subsection{Daughter or Son}
+
+\textbf{Question. 1} Suppose I have two children. Younger one is a girl. What is the probability that both children are girls?
+
+\textbf{Solution.} Let the first char represent the younger kid. We have total four possibilities, i.e., BB, BG, GB, GG. Out of these, only the last two are possible. Thus the required probability is $\frac{1}{2}$.
+
+\textbf{Question. 2} Suppose I have two children, and atleast one of them is a boy. Find the probability that both of them are boys.
+
+\textbf{Solution.} We have only these three possibilities, i.e., BB, BG, GB. Thus the probability is $\frac{1}{3}$.
+
+\textbf{Question. 3} Suppose I have two kids, lets call them X and Y. Suppose X is a girl. What is the probability that I have two daughters?
+
+\textbf{Solution.} We can approach this problem like we did the first part of this question. The probability is $\frac{1}{2}$.
+
 \subsection{Father of Lies}
 
 \textbf{Question.} A father claims about snowfall last night. First daughter tells that the probability of snowfall on a particular night is 1/8. Second daughter tells that 5 out of 6 times the father is lying. What is the probability that there actually was a snowfall?
@@ -162,9 +175,24 @@ The area under the feasible region is $\frac{1}{4}$.
 \section{Probability --- Prof Mihai Nica}
 \subsection{Birthday Paradox}
 
+\textbf{Question.} What is the probability of at least one birthday match among $23$ people in a room?
+
+\textbf{Solution.} The probability of at least one birthday match is $1$ minus the probability of no birthday match. And the probability of no birthday match is 
+\[\frac{365}{365} \frac{364}{365} \dots \frac{343}{365}\]
+Thus, the required probability is 
+\[1 - \prod_{i = 0}^{22} \left(\frac{365-i}{365}\right) \approx 50\%\]
+
+\textbf{Alternate Solution.} We can also solve it using probability trees. We first send one person in the room. When the second person goes in, there is a $\frac{1}{365}$ chance that she shares a birthday with the first person, and there's a $\frac{364}{365}$ chance of not sharing a birthday. Similarly, for the third person, there is a $\frac{364}{365} \frac{2}{365}$ chance of sharing a birthday with any of the previous two, and $\frac{364}{365} \frac{363}{365}$ of no matches. We now extend this tree and find the required probability by using the law of total probability.
+
 \subsection{Tuesday Problem}
 
+\textbf{Question.} Mr Smith has two kids and one boy who was born on Tuesday. What is the probability that Mr Smith has two boys?
+
+\textbf{Solution.} We make a probability grid with each side having three parts. $TueBoy$ withholding $\frac{1}{2} \frac{1}{7}$ length, $NoTueBoy$ holding $\frac{1}{2} \frac{6}{7}$, and $Girl$ holding $\frac{1}{2}$ length. The required probability is 
+\[\frac{1 + 6 + 6}{ 1 + 6 + 6 + 7 + 7} = \frac{13}{27} \approx 48.1\%\]
+
 \subsection{Darth Wader Rule}
+
 
 \subsection{Random Walks}
 

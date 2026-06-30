@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1782734403.13015 "/home/paradox/code/placement_prep/quant/quant.tex" "quant.pdf" "quant" 1782734403.73123 0
+["pdflatex"] 1782817915.87632 "/home/paradox/code/placement_prep/quant/quant.tex" "quant.pdf" "quant" 1782817916.46525 0
   "/etc/texmf/web2c/texmf.cnf" 1782365354.63656 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/paradox/code/placement_prep/quant/quant.tex" 1782734402.94847 10213 083aabccb48e05baa1455369003f3f29 ""
+  "/home/paradox/code/placement_prep/quant/quant.tex" 1782817915.12228 12549 9309e5ba02392a3df2133b554bc169ed ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm" 1136768653 3584 929cdff2b7a8c11bd4d49fd68cb0ae70 ""
@@ -110,10 +110,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1769369718 41603 27f93b3067076450172040dcd57ca8b3 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1782365383 5541477 3118940318599480888143717dd32d64 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1782365528 3639607 67b438a1c5505e75d4733898ea4148c5 ""
-  "quant.aux" 1782734403.67299 2631 cdb376d0a66ee26545af99226f56b5ea "pdflatex"
-  "quant.out" 1782734403.67299 3388 4eff40a03da738f9821e01f9aa2fbe1e "pdflatex"
-  "quant.tex" 1782734402.94847 10213 083aabccb48e05baa1455369003f3f29 ""
-  "quant.toc" 1782734403.67399 1649 16135811802e03ec323bedc0341fd453 "pdflatex"
+  "quant.aux" 1782817916.40827 2631 91fa5afb67e787ab4341059e3f8d6e9e "pdflatex"
+  "quant.out" 1782817916.40827 3388 4eff40a03da738f9821e01f9aa2fbe1e "pdflatex"
+  "quant.tex" 1782817915.12228 12549 9309e5ba02392a3df2133b554bc169ed ""
+  "quant.toc" 1782817916.40924 1649 b26e988f933a00a67ec82bf59dce4fa2 "pdflatex"
   (generated)
   "quant.aux"
   "quant.log"
