@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1782817915.87632 "/home/paradox/code/placement_prep/quant/quant.tex" "quant.pdf" "quant" 1782817916.46525 0
+["pdflatex"] 1783056716.40549 "/home/paradox/code/placement_prep/quant/quant.tex" "quant.pdf" "quant" 1783056717.5756 0
   "/etc/texmf/web2c/texmf.cnf" 1782365354.63656 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/paradox/code/placement_prep/quant/quant.tex" 1782817915.12228 12549 9309e5ba02392a3df2133b554bc169ed ""
+  "/home/paradox/code/placement_prep/quant/quant.tex" 1783056716.12065 13884 c082b82bd3da0abe7a4def608af487aa ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm" 1136768653 3584 929cdff2b7a8c11bd4d49fd68cb0ae70 ""
@@ -28,6 +28,7 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxr.tfm" 1136768653 1044 f70cfa4bf09ff6eb95520515850796cf ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/pxex.pfb" 1136849748 18964 e01e97f07816aeb524ad5d4384a80c12 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/pxsy.pfb" 1136849748 20626 c69c2224fbde54aa240f5ed20226d7da ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/pxsyb.pfb" 1136849748 24771 eb123b1d6db1a8a40172a27eb12cf6d5 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/rpxb.pfb" 1136849748 7246 c289ca9b4ffe098d3d75782b0984881a ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/rpxmi.pfb" 1232066025 14672 0093e684026e66eef888939395e1a17d ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/rpxr.pfb" 1136849748 7191 79607a98b23ce10ce99a66b7d89948fa ""
@@ -110,10 +111,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1769369718 41603 27f93b3067076450172040dcd57ca8b3 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1782365383 5541477 3118940318599480888143717dd32d64 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1782365528 3639607 67b438a1c5505e75d4733898ea4148c5 ""
-  "quant.aux" 1782817916.40827 2631 91fa5afb67e787ab4341059e3f8d6e9e "pdflatex"
-  "quant.out" 1782817916.40827 3388 4eff40a03da738f9821e01f9aa2fbe1e "pdflatex"
-  "quant.tex" 1782817915.12228 12549 9309e5ba02392a3df2133b554bc169ed ""
-  "quant.toc" 1782817916.40924 1649 b26e988f933a00a67ec82bf59dce4fa2 "pdflatex"
+  "quant.aux" 1783056717.45863 2764 44d0afb5aa3df3c687b4c439096f1692 "pdflatex"
+  "quant.out" 1783056717.45963 3611 e835283eafa36f1c6256d26db1c5b686 "pdflatex"
+  "quant.tex" 1783056716.12065 13884 c082b82bd3da0abe7a4def608af487aa ""
+  "quant.toc" 1783056717.46104 1741 64f207e4e9b1fc91d98365898b2347c5 "pdflatex"
   (generated)
   "quant.aux"
   "quant.log"

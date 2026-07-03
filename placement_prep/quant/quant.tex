@@ -191,6 +191,27 @@ Thus, the required probability is
 \textbf{Solution.} We make a probability grid with each side having three parts. $TueBoy$ withholding $\frac{1}{2} \frac{1}{7}$ length, $NoTueBoy$ holding $\frac{1}{2} \frac{6}{7}$, and $Girl$ holding $\frac{1}{2}$ length. The required probability is 
 \[\frac{1 + 6 + 6}{ 1 + 6 + 6 + 7 + 7} = \frac{13}{27} \approx 48.1\%\]
 
+\subsection{Minimum of two Uniform RVs}
+
+\textbf{Question.} What is the expected value of the minimum of two random variables, $X, Y \sim \text{UNIF}(0,1)$?
+
+\textbf{Solution.} Let $M = \min(X,Y)$. We have 
+\[P(M > t) = P(\text{X and Y both exceed t}) = P(X > t) P(X > t)\]
+But, $P(X > t) = (1-t), \text{and} P(Y > t) = (1-t)$. This implies $P(M>t) = (1-t)^2$. This is the complement of the CDF of $M$, which is $F_M(t) = P(M < t) = 1 - (1-t^2)$.
+We can now calculate the PDF of $M$ by differentiating this CDF and get 
+$f_M (t) = 2(1-t)$. Now, we get the expectation of $M$ by using the definition 
+\[\mathbb{E}[M] = \int_{-\infty}^{\infty} 2(1-t) t dt \]
+But, $M \in [0,1]$, thus we have $\mathbb{E}[M] = \int_{0}^{1} (2t - 2t^2) dt = \frac{1}{3}$.
+
+\textbf{Alternative.} We may skip the differentiation by realising the following important result. For a non-negative random variable with finite mean, we have 
+\[\mathbb{E} [M] = \int_{0}^{infty} P(M > t) dt \]
+This means that $\mathbb{E}[M] = \int_{0}^{1} (1-t)^2 = \frac{1}{3} dt$
+
+More generally, for any random variable with finite mean, we have \[
+\mathbb{E} [M] = \int_{0}^{\infty} P(M > t) dt - \int_{-\infty}^{0} P(M \leq t) dt\]
+The above relation comes from the identity, 
+\[ x = \int_{0}^{\infty} \mathbb{I}\{x > t\} dt - \int_{-\infty}^{0} \mathbb{I} \{x \leq t\} dt\]
+
 \subsection{Darth Wader Rule}
 
 
