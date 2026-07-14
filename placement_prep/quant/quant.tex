@@ -202,7 +202,32 @@ This implies, $x = px + q (1-x) \implies x = \frac{q}{1+q-p}$.
 
 \textbf{Solution.} Let, $E_n$ denotes the required quantity. We note that, \[E_n = \frac{1}{2} (1 + E_{n-1}) + \frac{1}{2} (1 + E_{n-1} + E_n)\]
 This implies, $E_n = 2 E_{n-1} + 2$. We may solve this by noting that $E_0 = 0$, and $E_1 = 2$, also note that the solution is of the form $AE_n + B$. The above can be solved to get, $E_n = 2^{n+1} - 2$. The pattern is also obvious to see once we enumerate the first few terms.
+The defining recursive relation can be understood as follows: If we can get $n-1$ consecutive heads, there is a $1/2$ chance of getting $n$ consecutive heads in just one more trial, and if we don't get it in the next trial, we'll have to wait for $E_n$ more such trials. 
 
+\subsection{Chess Tournament}
+
+\textbf{Question.} A chess tournament has $K$ levels and $N=2^K$ players with skills $P_1>P_2> \dots >P_N$. At each level, random pairs are formed and one person from each pair proceeds to the next level. When two opponents play, the one with the better skills always wins. What is the probability that players $P_1$ and $P_2$ will meet in the final level?
+
+\textbf{Solution.}
+In the first round, the probability of them facing each other is $\frac{1}{N-1}$, and the probability of them not facing one another at this level (or any other level characterised by $N = 2^K$) is $\frac{N-2}{N-1}$. Let, $f(K)$ be the probability of $P_1$ and $P_2$ facing each other in the final of a $K$ level tournament. We see, trivially, that $f(K) = 1$. We also note that \[f(K) = \frac{1}{N-1} \times 0 + \frac{N-2}{N-1} \times f(K-1)\]
+where the first term account for the possibility that the two play off each other in round one, and the second accounts for the possibility when they two don't face off in round 1 and then the problem shifts to solving $f(K-1)$ which is the same problem except we have $N/2$ people and $K-1$ rounds. \\
+We can now solve the recursion to see that $f(K) = \frac{2^{K-1}}{2^K - 1} = \frac{N}{2(N-1)}$.
+
+\subsection{Number of Double Heads}
+
+\textbf{Question.} A coin is tossed $10$ times and the output written as a string. What is the expected number of $HH$? Note that in $HHH$, number of $HH = 2$. (eg: expected number of $HH$ in $2$ tosses is $0.25$, $3$ tosses is $0.5$.)
+
+\textbf{Solution.}
+Let, $E_{n-1}$ be the number of consecutive Heads for $n-1$ trials. There is $1/2$ chance that the last trial resulted in a Tail, and $1/2$ chance that it resulted in Head. Conditional on the last trial being head, we again have two possibilities driving the recursion relation 
+\[E_n = \frac{1}{2} E_{n-1} + \frac{1}{2} \left(\frac{1}{2} E_{n-1} + \frac{1}{2} (E_{n-1} + 1)\right)\]
+This implies, $E_n = E_{n-1} + \frac{1}{4} \implies E_{10} = 2.25$.
+
+\subsection{Breaking Stick}
+
+\textbf{Question.} The stick drops and breaks at a random point distributed uniformly across the length. What is the expected length of the smaller part?
+
+\textbf{Solution.} Let the total length of the stick be $1$ unit. And the let the breakpoint be $X \approx \text{UNIF}(0,1)$. The smaller piece is $\min{X,1-X}$. Now,
+\[\mathbb{E}(\min{X,1-X}) = 2 \int_{0}^{1/2} x . 1 \space dx = \frac{1}{4}\]
 
 \section{Probability --- Prof Mihai Nica}
 \subsection{Birthday Paradox}

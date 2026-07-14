@@ -225,7 +225,6 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/pxi.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/pxmia.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/pxsyc.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/pxexa.tfm
-OUTPUT quant.toc
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/pxfonts/p1xb.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxpplb.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxb.tfm
@@ -243,6 +242,7 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxb.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/pxfonts/p1xr.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxpplr.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxr.tfm
+OUTPUT quant.toc
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/p1xb.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/p1xi.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/p1xr.tfm
@@ -262,6 +262,12 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxmi.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/pxfonts/pxmi.vf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxmi.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxpplri.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/pxfonts/pxmi.vf
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxmi.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxpplri.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/vf/public/pxfonts/pxr.vf
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxpplr.tfm
+INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/pxfonts/rpxr.tfm
 INPUT quant.aux
 INPUT ./quant.out
 INPUT ./quant.out
