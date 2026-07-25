@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.6.25)  14 JUL 2026 16:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.6.25)  16 JUL 2026 15:39
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -389,7 +389,7 @@ File: t1pxr.fd 2000/12/14 v1.0
 ) (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count314
-) (./quant.aux)
+) (./quant.aux (./chapters/probab_basics.aux) (./chapters/brainstellar.aux) (./chapters/prof_mihai.aux))
 \openout1 = `quant.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/pxmi/m/it on input line 39.
@@ -534,29 +534,48 @@ LaTeX Font Info:    Font shape `T1/pxr/b/n' in size <10.95> not available
 \openout4 = `quant.toc'.
 
  [2]
+\openout2 = `chapters/probab_basics.aux'.
+
+ (./chapters/probab_basics.tex
 LaTeX Font Info:    Font shape `T1/pxr/b/n' in size <12> not available
-(Font)              Font shape `T1/pxr/bx/n' tried instead on input line 46.
- [3] [4] [5] [6] [7] [8] [9] [10] [11] (./quant.aux)
+(Font)              Font shape `T1/pxr/bx/n' tried instead on input line 5.
+ [3
+
+] [4]) [5]
+\openout2 = `chapters/brainstellar.aux'.
+
+ (./chapters/brainstellar.tex [6
+
+
+
+] [7] [8] [9] [10] [11]) [12]
+\openout2 = `chapters/prof_mihai.aux'.
+
+ (./chapters/prof_mihai.tex [13
+
+
+
+]) [14] (./quant.aux (./chapters/probab_basics.aux) (./chapters/brainstellar.aux) (./chapters/prof_mihai.aux))
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `quant.out' has not changed.
-(rerunfilecheck)             Checksum: 92646323E2E08D6D6CBA79ED17C22138;4990.
+(rerunfilecheck)             Checksum: 7A60DFF1A936765EC5ABCB6BC4D7B8A5;6343.
  ) 
 Here is how much of TeX's memory you used:
- 14156 strings out of 467533
- 213219 string characters out of 5422138
- 669193 words of memory out of 5000000
- 42418 multiletter control sequences out of 15000+600000
- 677006 words of font info for 394 fonts, out of 8000000 for 9000
+ 14255 strings out of 467533
+ 216145 string characters out of 5422138
+ 669184 words of memory out of 5000000
+ 42480 multiletter control sequences out of 15000+600000
+ 677123 words of font info for 397 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  75i,6n,84p,1042b,499s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/pxex.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/pxsy.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/pxsyb.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/rpxb.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/rpxmi.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/pxfonts/rpxr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/palatino/uplri8a.pfb>
-Output written on quant.pdf (11 pages, 110459 bytes).
+Output written on quant.pdf (14 pages, 119800 bytes).
 PDF statistics:
- 259 PDF objects out of 1000 (max. 8388607)
- 225 compressed objects within 3 object streams
- 42 named destinations out of 1000 (max. 500000)
- 76009 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 314 PDF objects out of 1000 (max. 8388607)
+ 277 compressed objects within 3 object streams
+ 53 named destinations out of 1000 (max. 500000)
+ 76073 words of extra memory for PDF output out of 89155 (max. 10000000)
 

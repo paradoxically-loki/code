@@ -1,29 +1,37 @@
-\contentsline {section}{\numberline {1}Brainstellar --- Probability}{3}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Rolling the Bullet}{3}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Lucky Candy}{3}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}All Girls World?}{3}{subsection.1.3}%
-\contentsline {subsection}{\numberline {1.4}Half Time}{3}{subsection.1.4}%
-\contentsline {subsection}{\numberline {1.5}Monty Hall Problem}{4}{subsection.1.5}%
-\contentsline {subsection}{\numberline {1.6}Unbiased Coin}{4}{subsection.1.6}%
-\contentsline {subsection}{\numberline {1.7}You Have a Train to Catch}{4}{subsection.1.7}%
-\contentsline {subsection}{\numberline {1.8}Invisible Dice}{5}{subsection.1.8}%
-\contentsline {subsection}{\numberline {1.9}Daughter or Son}{5}{subsection.1.9}%
-\contentsline {subsection}{\numberline {1.10}Father of Lies}{5}{subsection.1.10}%
-\contentsline {subsection}{\numberline {1.11}Witches at the Coffee Shop}{6}{subsection.1.11}%
-\contentsline {subsection}{\numberline {1.12}Half Heads}{6}{subsection.1.12}%
-\contentsline {subsection}{\numberline {1.13}Drunk Passenger}{6}{subsection.1.13}%
-\contentsline {subsection}{\numberline {1.14}Stick to Triangle}{7}{subsection.1.14}%
-\contentsline {subsection}{\numberline {1.15}Pattern on Snowflakes}{7}{subsection.1.15}%
-\contentsline {subsection}{\numberline {1.16}Random Ratio}{7}{subsection.1.16}%
-\contentsline {subsection}{\numberline {1.17}Second Chance}{7}{subsection.1.17}%
-\contentsline {subsection}{\numberline {1.18}Innocent Monkey}{8}{subsection.1.18}%
-\contentsline {subsection}{\numberline {1.19}Consecutive Heads}{8}{subsection.1.19}%
-\contentsline {subsection}{\numberline {1.20}Chess Tournament}{8}{subsection.1.20}%
-\contentsline {subsection}{\numberline {1.21}Number of Double Heads}{9}{subsection.1.21}%
-\contentsline {subsection}{\numberline {1.22}Breaking Stick}{9}{subsection.1.22}%
-\contentsline {section}{\numberline {2}Probability --- Prof Mihai Nica}{9}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Birthday Paradox}{9}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Tuesday Problem}{10}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Minimum of two Uniform RVs}{10}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Darth Wader Rule}{11}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Random Walks}{11}{subsection.2.5}%
+\contentsline {section}{\numberline {1}Probability Basics}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Expectation}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Linearity of Expectation}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Variance}{3}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Covariance}{3}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Correlation}{3}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Linearity of Variance}{3}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Markov's Inequality}{4}{subsection.1.7}%
+\contentsline {subsection}{\numberline {1.8}Chebyshev's Inequality}{4}{subsection.1.8}%
+\contentsline {subsection}{\numberline {1.9}Weak Law of Large Numbers}{4}{subsection.1.9}%
+\contentsline {section}{\numberline {2}Brainstellar --- Probability}{6}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Rolling the Bullet}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Lucky Candy}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}All Girls World?}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Half Time}{6}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Monty Hall Problem}{7}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Unbiased Coin}{7}{subsection.2.6}%
+\contentsline {subsection}{\numberline {2.7}You Have a Train to Catch}{7}{subsection.2.7}%
+\contentsline {subsection}{\numberline {2.8}Invisible Dice}{8}{subsection.2.8}%
+\contentsline {subsection}{\numberline {2.9}Daughter or Son}{8}{subsection.2.9}%
+\contentsline {subsection}{\numberline {2.10}Father of Lies}{8}{subsection.2.10}%
+\contentsline {subsection}{\numberline {2.11}Witches at the Coffee Shop}{9}{subsection.2.11}%
+\contentsline {subsection}{\numberline {2.12}Half Heads}{9}{subsection.2.12}%
+\contentsline {subsection}{\numberline {2.13}Drunk Passenger}{9}{subsection.2.13}%
+\contentsline {subsection}{\numberline {2.14}Stick to Triangle}{10}{subsection.2.14}%
+\contentsline {subsection}{\numberline {2.15}Pattern on Snowflakes}{10}{subsection.2.15}%
+\contentsline {subsection}{\numberline {2.16}Random Ratio}{10}{subsection.2.16}%
+\contentsline {subsection}{\numberline {2.17}Second Chance}{10}{subsection.2.17}%
+\contentsline {subsection}{\numberline {2.18}Innocent Monkey}{11}{subsection.2.18}%
+\contentsline {subsection}{\numberline {2.19}Consecutive Heads}{11}{subsection.2.19}%
+\contentsline {subsection}{\numberline {2.20}Chess Tournament}{11}{subsection.2.20}%
+\contentsline {subsection}{\numberline {2.21}Number of Double Heads}{12}{subsection.2.21}%
+\contentsline {subsection}{\numberline {2.22}Breaking Stick}{12}{subsection.2.22}%
+\contentsline {section}{\numberline {3}Probability --- Prof Mihai Nica}{13}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Birthday Paradox}{13}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Tuesday Problem}{13}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Minimum of two Uniform RVs}{13}{subsection.3.3}%

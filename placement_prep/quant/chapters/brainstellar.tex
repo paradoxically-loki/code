@@ -1,0 +1,189 @@
+%!TEX root = ../quant.tex
+
+\section{Brainstellar --- Probability}
+
+\subsection{Rolling the Bullet}
+
+\textbf{Problem.} A barrel has bullets in two consecutive sockets. It is shuffled and then fired; the shot turns out to be empty. Does the probability of the next shot being fired increase if the barrel is shuffled again?
+
+\textbf{Solution.} If the barrel is shuffled, the probability of a successful fire is $\frac{2}{6} = \frac{1}{3}$. But if the next shot is fired without shuffling, there is only a $\frac{1}{4}$ chance of a successful fire. This is because the two bullets can only occupy one of the 4 remaining possible slots, given that the first shot went empty. Hence it is better \emph{not} to shuffle.
+
+\subsection{Lucky Candy}
+
+\textbf{Problem.} There are $50$ good candies and $50$ bad candies, and two identical boxes. How would you place these candies in the two boxes so as to maximise the probability of picking a good candy from a randomly chosen box?
+
+\textbf{Solution.} The probability of choosing either box is $\frac{1}{2}$, so we can only influence the outcome through candy placement. If we put all good candies in one box and all bad in the other, the probability is $\frac{1}{2}(1 + 0) = \frac{1}{2}$. We can do better: place just one good candy in one box and the remaining 49 good and all 50 bad in the other. Then
+\[
+  P = \frac{1}{2}\!\left(1 + \frac{49}{99}\right) = \frac{74}{99} \approx 0.747.
+\]
+This is the maximum.
+
+\subsection{All Girls World?}
+
+\textbf{Problem.} Consider a world where every couple keeps having babies until they have a girl. What would be the gender ratio in this world?
+
+\textbf{Solution.} Consider $N$ couples. Of these, $N/2$ have a girl on the first try; the other $N/2$ have a boy and try again. In the next round, $N/4$ have a girl and $N/4$ have a boy, and so on. At every step the number of boys born equals the number of girls born in that round, so the overall ratio remains $1:1$.
+
+\subsection{Half Time}
+
+\textbf{Problem.} On a given road, the probability of seeing an accident in one hour is $\frac{3}{4}$. What is the probability of seeing an accident in half an hour?
+
+\textbf{Solution.} The probability of no accident in one hour is $\frac{1}{4}$. By independence of the two half-hour intervals,
+\[
+  P(\text{no accident in 1 hr}) = P(\text{no accident in half hr})^2
+  \implies P(\text{no accident in half hr}) = \frac{1}{2}.
+\]
+Hence the probability of an accident in half an hour is $\frac{1}{2}$.
+
+\textbf{Alternate.} Let $x$ be the probability of an accident in half an hour. Then $x + (1-x)x = \frac{3}{4}$, which gives $x = \frac{1}{2}$.
+
+\subsection{Monty Hall Problem}
+
+\textbf{Problem.} In a magic show, three doors hide one car. You choose a door; the host (who knows where the car is) opens a different door revealing nothing, then offers you the chance to switch. Should you switch?
+
+\textbf{Solution.} Let $A$, $B$, $C$ denote the doors. Suppose you chose $A$ and the host opened $B$. Prior probabilities are $P(\text{car} @ K) = \frac{1}{3}$ for each $K$. The likelihoods are
+\[
+  P(\text{open } B \mid \text{car} @ A) = \tfrac{1}{2}, \quad
+  P(\text{open } B \mid \text{car} @ B) = 0, \quad
+  P(\text{open } B \mid \text{car} @ C) = 1.
+\]
+By Bayes' theorem,
+\[
+  P(\text{car} @ A \mid \text{open } B) = \frac{\frac{1}{2} \cdot \frac{1}{3}}{\frac{1}{2} \cdot \frac{1}{3} + 0 \cdot \frac{1}{3} + 1 \cdot \frac{1}{3}} = \frac{1}{3},
+\]
+and similarly $P(\text{car} @ C \mid \text{open } B) = \frac{2}{3}$. You should always switch.
+
+\subsection{Unbiased Coin}
+
+\textbf{Problem.} There is biased coin whose probability of coming up head is $p, \space 0.5 < p \leq 1$. Can we define two equally likely outcomes with this coin? 
+
+\textbf{Solution.} We can't obviously define equally likely outcomes with just one toss. However, we can define with two coin tosses. Note, the probabilities of $HT$ and $TH$ are the same.  We can define these events, and retry when we get anything else.
+
+
+\subsection{You Have a Train to Catch}
+
+\textbf{Question.} Spiderman has two close friends, Mary Jane \& Gwen Stacy. After every mission, he rushes to the central subway. One line heads towards Mary's place, and another towards Stacy. Trains from each line leave every $10$ minutes. Spiderman being impartial always boards the first train that leaves.\\
+However, he observes that he ends up visiting Mary Jane nine times more often than Gwen Stacy. Can you decipher why?
+
+\textbf{Solution.} Time interval between the train to Mary and Gwen is 1 minute, and that between Gwen and Mary is $9$ minutes.
+
+\subsection{Invisible Dice}
+
+\textbf{Question.} I bought two fair six-sided dice. Keeping the first one untouched, I modified the second die, by erasing each face and writing a number of my own. Now, the sum of outcomes of the two dice is equally likely an integer between 1 and 12. Can you deduce the numbers written on the modified die?
+
+\textbf{Solution.} To get the sum $12$, we'll need atleast one $6$ on the modified die, and also to get sum $1$, we'll need at least one $0$. But, since all sums are equally likely, we should have the sum $12$ coming exactly three times, this is only possible if we have three $6$s on the modified die and similarly to get three $1$s, we need three $0$s. And this is the  solution.
+
+\subsection{Daughter or Son}
+
+\textbf{Question. 1} Suppose I have two children. Younger one is a girl. What is the probability that both children are girls?
+
+\textbf{Solution.} Let the first char represent the younger kid. We have total four possibilities, i.e., BB, BG, GB, GG. Out of these, only the last two are possible. Thus the required probability is $\frac{1}{2}$.
+
+\textbf{Question. 2} Suppose I have two children, and atleast one of them is a boy. Find the probability that both of them are boys.
+
+\textbf{Solution.} We have only these three possibilities, i.e., BB, BG, GB. Thus the probability is $\frac{1}{3}$.
+
+\textbf{Question. 3} Suppose I have two kids, lets call them X and Y. Suppose X is a girl. What is the probability that I have two daughters?
+
+\textbf{Solution.} We can approach this problem like we did the first part of this question. The probability is $\frac{1}{2}$.
+
+\subsection{Father of Lies}
+
+\textbf{Question.} A father claims about snowfall last night. First daughter tells that the probability of snowfall on a particular night is 1/8. Second daughter tells that 5 out of 6 times the father is lying. What is the probability that there actually was a snowfall?
+
+\textbf{Solution.}  Let $S$ be the event that the snowfall occured. And let $C$ be the event that the father is claiming that snowfall occured. We need to calculate 
+\[P(S\mid C) = \frac{P(C \mid S) P(S)}{P(C)}\]
+Clearly, $P(C \mid S) = \frac{1}{6}$, $P(S) = \frac{1}{8}$, and $P(S') = \frac{7}{8}$.
+Now, \[P(C) = P(\text{True Claim}) + P(\text{False Claim})\]
+\[ \implies P(C) = P(C \cap S) + P(C \cap S')   \]
+\[ \implies P(C) = P(C\mid S)P(S) + P(C \mid S')P(S') \]
+\[\implies P(C) = \frac{1}{6} \frac{1}{8} + \frac{5}{6} \frac{7}{8} = \frac{3}{4}\]
+Now, \[P(S\mid C) = \frac{\frac{1}{6} \frac{1}{8}}{\frac{3}{4}} = \frac{1}{36}\]
+
+
+\subsection{Witches at the Coffee Shop}
+
+\textbf{Question.} Two witches make a nightly visit to an all-night coffee shop. Each arrives at a random time between $0:00$ and $1:00$. Each one of them stays for exactly $30$ minutes. On any one given night, what is the probability that the witches will meet at the coffee shop?
+
+\textbf{Solution.} Let the two witches arrive at time $x$, and $y$ respectively. They'll be able to meet iff $|x - y| \leq \frac{1}{2}$. We can calculate this area on the unit Cartesian plane and get the answer $\frac{3}{4}$. Only the left upper and lower right triagles won't be favourable.
+
+\subsection{Half Heads}
+\textbf{Question.} Let $X$ be a random variable that takes value $0$ or $1$ with $50\%$ probability each. You need to define a new random variable $Y$ as a function of $X$, such that $Y$ has the value $1$ with $25\%$ probability and $0$ otherwise.
+
+\textbf{Solution.} $Y = f(X \wedge X')$ where $X'$ is another independent copy of $X$.
+
+\subsection{Drunk Passenger}
+\textbf{Question.} A line of $100$ airline passengers is waiting to board a plane. They each hold a ticket to one of the $100$ seats on that flight. For convenience, let's say that the $n^{th}$ passenger in line has a ticket for seat number $n$. Being drunk, the first person in line picks a random seat (equally likely for each seat). All of the other passengers are sober, and will go to their assigned seats unless it is already occupied; If it is occupied, they will then find a free seat to sit in, at random. What is the probability that the last $100^{th}$ person to board the plane will sit in their own seat number 100?
+
+\textbf{Solution.} Well. The $100^{th}$ passenger will only be able to sit on either seat number $100$ or seat number $1$. This is because, the moment someone sits on seat number $1$, every sober person including the last will go to their respective seats. Else, the last person will sit on the first seat. Since both choices are equally likely due to symmetry, the probability that the last person gets her seat is $\frac{1}{2}$.
+
+\textbf{Follow-up.} What is the probability that the second last person gets their seat? 
+
+\textbf{Solution.} Here also a similar dynamics will play out. The second last person can either sit on the first seat, second last seat, or the last seat. The moment any of these seats are occupied, the chain stops and $99^{th}$ person can get her seat in two of these three case, and thus the probability is $\frac{2}{3}$.
+
+\subsection{Stick to Triangle}
+
+\textbf{Question.} A unit stick is broken into three pieces by uniformly picking two random points on it. What is the probability that the three parts form a triangle?
+
+\textbf{Solution.} Let these two points be at a distance $x$, and $y$ from the starting point, respectively. For the three lines to form a triangle, we have the following conditions, 
+\[\min(x,y) < \frac{1}{2}, \space |x-y| \leq \frac{1}{2}, \text{and} \space \max(x,y) > \frac{1}{2}\]
+The area under the feasible region is $\frac{1}{4}$.
+
+\subsection{Pattern on Snowflakes}
+
+\textbf{Question.} Snow-particles are falling on the ground one after another. A particular snowflake turns out to be of type "Stellar Dendrite" with probability $p$ if its previous particle was also Stellar Dendrite, and with probability $q$ if the previous one was something else. If a snowflake is picked from ground, what is the probability that it is Stellar Dendrite?
+
+\textbf{Solution.} Let, $P(\text{SD}) = x$. We have from the law of total probability the following, \[P(\text{SD}) = P(\text{SD} \mid \text{prev is SD}) P(\text{prev is SD}) + P(\text{SD} \mid \text{prev is not SD}) P(\text{prev is not SD})\]
+This implies, $x = px + q (1-x) \implies x = \frac{q}{1+q-p}$.
+
+\subsection{Random Ratio}
+
+\textbf{Question.} $p$ and $q$ are two points chosen at random between $0$ \& $1$. What is the probability that the ratio $p/q$ lies between $1$ \& $2$?
+
+\textbf{Solution.} The required probability is the area spanned by $x < y < 2x$ in the unit square, which is $\frac{1}{4}$.
+
+\subsection{Second Chance}
+
+\textbf{Question.} Roll a die, and you get paid what the dice shows. But if you want, you can request a second chance \& roll the die again; get paid what the second roll shows instead of the first. What is the expected value?
+
+\textbf{Solution.} Recall that the expected value for rolling a fair die is $3.5$. In the above case, we only roll again if we get less than $3.5$ on the first trial. Thus the final expected value is as follows
+\[\frac{1}{6} 4 + \frac{1}{6} 5 + \frac{1}{6} 6 + \frac{1}{6} 3.5 + \frac{1}{6} 3.5 + \frac{1}{6} 3.5 = 4.25\]
+
+\subsection{Innocent Monkey}
+
+\textbf{Question.} A very innocent monkey throws a fair die. The monkey will eat as many bananas as are shown on the die, from $1$ to $5$. But if the die shows $6$, the monkey will eat $5$ bananas and throw the die again. This may continue indefinitely. What is the expected number of bananas the monkey will eat?
+
+\textbf{Solution.} We observe the following recursive relation, \[E = \frac{1}{6} (1+2+3+4+5) + \frac{1}{6} (5 + E) \implies E = 4\]
+
+\subsection{Consecutive Heads}
+
+\textbf{Question.} What is the expected number of coin tosses required to get $n$ consecutive heads?
+
+\textbf{Solution.} Let, $E_n$ denotes the required quantity. We note that, \[E_n = \frac{1}{2} (1 + E_{n-1}) + \frac{1}{2} (1 + E_{n-1} + E_n)\]
+This implies, $E_n = 2 E_{n-1} + 2$. We may solve this by noting that $E_0 = 0$, and $E_1 = 2$, also note that the solution is of the form $AE_n + B$. The above can be solved to get, $E_n = 2^{n+1} - 2$. The pattern is also obvious to see once we enumerate the first few terms.
+The defining recursive relation can be understood as follows: If we can get $n-1$ consecutive heads, there is a $1/2$ chance of getting $n$ consecutive heads in just one more trial, and if we don't get it in the next trial, we'll have to wait for $E_n$ more such trials. 
+
+\subsection{Chess Tournament}
+
+\textbf{Question.} A chess tournament has $K$ levels and $N=2^K$ players with skills $P_1>P_2> \dots >P_N$. At each level, random pairs are formed and one person from each pair proceeds to the next level. When two opponents play, the one with the better skills always wins. What is the probability that players $P_1$ and $P_2$ will meet in the final level?
+
+\textbf{Solution.}
+In the first round, the probability of them facing each other is $\frac{1}{N-1}$, and the probability of them not facing one another at this level (or any other level characterised by $N = 2^K$) is $\frac{N-2}{N-1}$. Let, $f(K)$ be the probability of $P_1$ and $P_2$ facing each other in the final of a $K$ level tournament. We see, trivially, that $f(K) = 1$. We also note that \[f(K) = \frac{1}{N-1} \times 0 + \frac{N-2}{N-1} \times f(K-1)\]
+where the first term account for the possibility that the two play off each other in round one, and the second accounts for the possibility when they two don't face off in round 1 and then the problem shifts to solving $f(K-1)$ which is the same problem except we have $N/2$ people and $K-1$ rounds. \\
+We can now solve the recursion to see that $f(K) = \frac{2^{K-1}}{2^K - 1} = \frac{N}{2(N-1)}$.
+
+\subsection{Number of Double Heads}
+
+\textbf{Question.} A coin is tossed $10$ times and the output written as a string. What is the expected number of $HH$? Note that in $HHH$, number of $HH = 2$. (eg: expected number of $HH$ in $2$ tosses is $0.25$, $3$ tosses is $0.5$.)
+
+\textbf{Solution.}
+Let, $E_{n-1}$ be the number of consecutive Heads for $n-1$ trials. There is $1/2$ chance that the last trial resulted in a Tail, and $1/2$ chance that it resulted in Head. Conditional on the last trial being head, we again have two possibilities driving the recursion relation 
+\[E_n = \frac{1}{2} E_{n-1} + \frac{1}{2} \left(\frac{1}{2} E_{n-1} + \frac{1}{2} (E_{n-1} + 1)\right)\]
+This implies, $E_n = E_{n-1} + \frac{1}{4} \implies E_{10} = 2.25$.
+
+\subsection{Breaking Stick}
+
+\textbf{Question.} The stick drops and breaks at a random point distributed uniformly across the length. What is the expected length of the smaller part?
+
+\textbf{Solution.} Let the total length of the stick be $1$ unit. And the let the breakpoint be $X \approx \text{UNIF}(0,1)$. The smaller piece is $\min{X,1-X}$. Now,
+\[\mathbb{E}(\min{X,1-X}) = 2 \int_{0}^{1/2} x . 1 \space dx = \frac{1}{4}\]

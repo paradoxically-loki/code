@@ -1,4 +1,0 @@
-- Leadership continuation
-- Events
-- NPTEL Course
-- Brazil Seminar

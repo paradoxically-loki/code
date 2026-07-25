@@ -1,0 +1,49 @@
+%!TEX root = ../quant.tex
+
+\section{Probability --- Prof Mihai Nica}
+\subsection{Birthday Paradox}
+
+\textbf{Question.} What is the probability of at least one birthday match among $23$ people in a room?
+
+\textbf{Solution.} The probability of at least one birthday match is $1$ minus the probability of no birthday match. And the probability of no birthday match is 
+\[\frac{365}{365} \frac{364}{365} \dots \frac{343}{365}\]
+Thus, the required probability is 
+\[1 - \prod_{i = 0}^{22} \left(\frac{365-i}{365}\right) \approx 50\%\]
+
+\textbf{Alternate Solution.} We can also solve it using probability trees. We first send one person in the room. When the second person goes in, there is a $\frac{1}{365}$ chance that she shares a birthday with the first person, and there's a $\frac{364}{365}$ chance of not sharing a birthday. Similarly, for the third person, there is a $\frac{364}{365} \frac{2}{365}$ chance of sharing a birthday with any of the previous two, and $\frac{364}{365} \frac{363}{365}$ of no matches. We now extend this tree and find the required probability by using the law of total probability.
+
+\subsection{Tuesday Problem}
+
+\textbf{Question.} Mr Smith has two kids and one boy who was born on Tuesday. What is the probability that Mr Smith has two boys?
+
+\textbf{Solution.} We make a probability grid with each side having three parts. $TueBoy$ withholding $\frac{1}{2} \frac{1}{7}$ length, $NoTueBoy$ holding $\frac{1}{2} \frac{6}{7}$, and $Girl$ holding $\frac{1}{2}$ length. The required probability is 
+\[\frac{1 + 6 + 6}{ 1 + 6 + 6 + 7 + 7} = \frac{13}{27} \approx 48.1\%\]
+
+\subsection{Minimum of two Uniform RVs}
+
+\textbf{Question.} What is the expected value of the minimum of two random variables, $X, Y \sim \text{UNIF}(0,1)$?
+
+\textbf{Solution.} Let $M = \min(X,Y)$. We have 
+\[P(M > t) = P(\text{X and Y both exceed t}) = P(X > t) P(X > t)\]
+But, $P(X > t) = (1-t), \text{and} P(Y > t) = (1-t)$. This implies $P(M>t) = (1-t)^2$. This is the complement of the CDF of $M$, which is $F_M(t) = P(M < t) = 1 - (1-t^2)$.
+We can now calculate the PDF of $M$ by differentiating this CDF and get 
+$f_M (t) = 2(1-t)$. Now, we get the expectation of $M$ by using the definition 
+\[\mathbb{E}[M] = \int_{-\infty}^{\infty} 2(1-t) t dt \]
+But, $M \in [0,1]$, thus we have $\mathbb{E}[M] = \int_{0}^{1} (2t - 2t^2) dt = \frac{1}{3}$.
+
+\textbf{Alternative.} We may skip the differentiation by realising the following important result. For a non-negative random variable with finite mean, we have 
+\[\mathbb{E} [M] = \int_{0}^{infty} P(M > t) dt \]
+This means that $\mathbb{E}[M] = \int_{0}^{1} (1-t)^2 = \frac{1}{3} dt$
+
+More generally, for any random variable with finite mean, we have \[
+\mathbb{E} [M] = \int_{0}^{\infty} P(M > t) dt - \int_{-\infty}^{0} P(M \leq t) dt\]
+The above relation comes from the identity, 
+\[ x = \int_{0}^{\infty} \mathbb{I}\{x > t\} dt - \int_{-\infty}^{0} \mathbb{I} \{x \leq t\} dt\]
+
+\textbf{Extension} The result from this question can easily be extended to more than two RVs. Doing the same calculation, we get $P(M > t) = (1-t)^n$ for $n$ RVs. We can then use the formula discussed above to see $\mathbb{E}[M] = \int_{0}^{1} (1-t)^n dt = \frac{1}{1+n}$.
+
+
+% \subsection{Darth Wader Rule}
+
+
+% \subsection{Random Walks}

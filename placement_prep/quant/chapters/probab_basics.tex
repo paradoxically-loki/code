@@ -1,0 +1,78 @@
+%!TEX root = ../main.tex
+
+\section{Probability Basics}
+
+\subsection{Expectation}
+\[\mathbb{E}[X] = \sum_{x \space \in \space \Omega}^{} x p(x) = \int_{x \space \in \space \Omega}^{} x f(x) dx\]
+
+\subsection{Linearity of Expectation}
+For any RVs, $X$, and $Y$,
+\[\mathbb{E}[aX + bY] = a \mathbb{E}[X] + b \mathbb{E}[Y]\]
+This can be derived from the definition of expectation and no assumption on independence of the two RVs is required.
+
+\subsection{Variance}
+\[\mathbb{V}ar(X) = \mathbb{E}[\left(X - \mathbb{E}[X]\right)^2] = \mathbb{E}[X^2]  - \left(\mathbb{E}[X]\right)^2\]
+
+\subsection{Covariance}
+\[Cov(X,Y) = \mathbb{E}\left[(X - \mathbb{E}[X])(Y - \mathbb{E}[Y]) \right]\]
+The above expression can be simplified as follows
+\[Cov(X,Y) = \mathbb{E}[X] \mathbb{E}[Y] - \mathbb{E}[XY]\]
+If, $X$ and $Y$ are independent, the Covariance is zero as both terms in the RHS are equal. The converse however, is not true. An obvious counterexample is $X \sim \text{UNIF}(-1,1)$ and $Y = X^2$. The covariance here is zero but two are obviously dependent.
+
+\subsection{Correlation}
+\[\rho = \frac{\mathbb{E}[X] \mathbb{E}[Y] - \mathbb{E}[XY]}{\sigma (X) \sigma (Y)}\]
+It can be shown that $\rho \in [-1,1]$.
+
+\subsection{Linearity of Variance}
+For two \textit{independent} RVs, we have 
+\[\mathbb{V}ar(aX + bY) = a^2 \mathbb{V}ar(X) + b^2 \mathbb{V}ar(Y)\]
+In general,
+\[\mathbb{V}ar(aX + bY) = a^2 \mathbb{V}ar(X) + b^2 \mathbb{V}ar(Y) + 2ab \space Cov(X,Y)\]
+
+\subsection{Markov's Inequality}
+
+\textbf{Statement.} If $X$ is a non-negative RV and $a>0$, then the probability that $X$ is at least $a$ is at most the expectation of $X$ divided by $a$.
+\[P\left(X > a\right) \leq \frac{\mathbb{E}[X]}{a}\]
+
+\textbf{Proof.} We have from the definition of Expectation, $\mathbb{E}[X] = \int_{- \infty}^{\infty} x f(x) dx$. Since the RV is non-negative, we get, $\mathbb{E}[X] = \int_{0}^{\infty} x f(x) dx$. Now, we can split the integral as follows,
+\[\mathbb{E}[X] = \int_{0}^{a} x f(x) dx + \int_{a}^{\infty} x f(x) dx \geq \int_{a}^{\infty} x f(x) dx\]
+\[\implies \mathbb{E}[X] \geq \int_{a}^{\infty} a f(x) dx = a \int_{a}^{\infty} f(x) dx\]
+Upon rearrangin, we get
+\[P\left(X > a\right) \leq \frac{\mathbb{E}[X]}{a}\]
+
+\subsection{Chebyshev's Inequality}
+
+\textbf{Statement.} Let, $X$ be a RV with finite non-zero variance, $\sigma^2$ and thus finite expected value, $\mu$, then for any real number $k > 0 $, we have \[
+P(\left|X - \mu\right| \geq k\sigma) \leq \frac{1}{k^2}\]
+Also, as a general case, for any $a > 0$, we have 
+\[P(\left|X - \mu\right| \geq a) \leq \frac{\sigma^2}{a^2}\]
+
+\textbf{Proof.} The proof follows trivially from Markov's Inequality above, simply by replacing $X$ by the RV $(X - \mu)^2$ and $a$ by $(k\sigma)^2$.
+
+\subsection{Weak Law of Large Numbers}
+
+\textbf{Statement.} WLLN states that given a collection of independent and identically distributed samples from a random variable with finite mean, the sample mean converges in probability to the expected value. That is, for any number $\epsilon$, 
+\[\lim_{n \to \infty} P\left(|\bar{X}_n - \mu| < \epsilon \right) = 1\]
+
+\textbf{Proof.} Note that $\bar{X}_n = \frac{1}{n} (X_1 + X_2 + \dots + X_n)$. And, clearly, $\mathbb{V}ar(\bar{X}_n) = \frac{\sigma^2}{n}$. Now we use Chebyshev inequality to see 
+\[P(\left|\bar{X}_n - \mu\right| \geq \epsilon) \leq \frac{\sigma^2}{n\epsilon^2}\]
+\[\implies 1 - P(\left|\bar{X}_n - \mu\right| \geq \epsilon) \geq 1 - \frac{\sigma^2}{n\epsilon^2}\]
+As $n$ approaches $\infty$, the expression approaches $1$, and thus by the definition of convergence in probability, the proof is complete.
+
+
+% other inequalities on the wikipedia page
+% Normal Distribution
+% Normalisation
+% CLT
+% error function
+% computing the integral of exp(-x^2), and the general rule
+% multivariate normal
+% other distribution and their stats
+% stat summaries of all distributions
+% statistics
+% hypothesis testing
+% confidence intervals
+% p-values
+% anova/manova
+% factor analysis
+%
