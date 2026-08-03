@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1785322832.28401 "/home/paradox/code/sem9/ms5612/classnotes/main.tex" "main.pdf" "main" 1785322833.01059 0
+["pdflatex"] 1785737938.95771 "/home/paradox/code/sem9/ms5612/classnotes/main.tex" "main.pdf" "main" 1785737939.70028 0
   "/etc/texmf/web2c/texmf.cnf" 1782365354.63656 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/paradox/code/sem9/ms5612/classnotes/main.tex" 1785322831.07671 4544 e2ff84873dee31e77d53e14da7b4ffa0 ""
+  "/home/paradox/code/sem9/ms5612/classnotes/main.tex" 1785737937.79867 8376 4823f14f8538991be58d857680c39cec ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1136768653 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -69,9 +69,9 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1769369718 41603 27f93b3067076450172040dcd57ca8b3 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1782365383 5541477 3118940318599480888143717dd32d64 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1782365528 3639607 67b438a1c5505e75d4733898ea4148c5 ""
-  "main.aux" 1785322832.92686 1107 23f6b4cf7116e5dc4bfa30157a9bd93e "pdflatex"
-  "main.tex" 1785322831.07671 4544 e2ff84873dee31e77d53e14da7b4ffa0 ""
-  "main.toc" 1785322832.92686 706 e2d9af851b9684f1750cc0e4074412cc "pdflatex"
+  "main.aux" 1785737939.61263 2021 d9fdc60dc5968c89107b8c2b5e26bc49 "pdflatex"
+  "main.tex" 1785737937.79867 8376 4823f14f8538991be58d857680c39cec ""
+  "main.toc" 1785737939.61463 1292 e3dfe3371a9506a0de41149fe1fccddc "pdflatex"
   (generated)
   "main.aux"
   "main.log"

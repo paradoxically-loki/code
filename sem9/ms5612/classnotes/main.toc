@@ -7,3 +7,11 @@
 \contentsline {subsubsection}{\numberline {2.3.1}Case 1: Cost Certain, Revenue uncertain}{4}{}%
 \contentsline {subsubsection}{\numberline {2.3.2}Case 2: Revenue certain at 90, cost uncertain}{4}{}%
 \contentsline {subsubsection}{\numberline {2.3.3}Case 3: Revenue and cost are uncertain}{5}{}%
+\contentsline {section}{\numberline {3}03rd Aug - Monday}{5}{}%
+\contentsline {subsection}{\numberline {3.1}Summary of the last class}{5}{}%
+\contentsline {subsection}{\numberline {3.2}Options}{5}{}%
+\contentsline {subsection}{\numberline {3.3}Options Payoff}{6}{}%
+\contentsline {subsection}{\numberline {3.4}Popular Combinations of Options}{6}{}%
+\contentsline {subsection}{\numberline {3.5}Let's get a little more creative}{6}{}%
+\contentsline {subsection}{\numberline {3.6}Some real world examples of options}{7}{}%
+\contentsline {subsection}{\numberline {3.7}Course Project}{7}{}%
