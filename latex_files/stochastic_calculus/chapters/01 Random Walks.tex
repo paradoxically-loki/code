@@ -13,7 +13,7 @@
     \item Probability of return to the original position, $k =0$ after $n = 2 \nu$ steps is $$\mathbb{P}\{\mathbb{M}_{2\nu} = 0\} = \mu_{2\nu} = {2 \nu \choose v} \frac{1}{2^{2\nu}}$$
     \item Number of paths from $(0, 0)$ to $(n, x)$ are, $$N_{n, x} = {n \choose {\frac{n+x}{2}}}$$
     \item \textbf{Reflection Principle:} The number of paths from $(a, \alpha)$ to $(b, \beta)$ with $\alpha, \beta > 0$ which touch or cross the t-axis at least once is equal to the total number of paths from $(a, -\alpha)$ to $(b, \beta)$.
-    \item Number of paths from $(0, 0)$ to $(n, x)$ that stay strictly above the t-axis can be calculated by taking the first step to $(1, 1)$ and then using the Reflection Princniple. In our case, the paths come out to be $$N_{n-1, x-1} - N_{n-1, x+1} = \frac{x}{n} N_{n, x}$$
+    \item Number of paths from $(0, 0)$ to $(n, x)$ that stay strictly above or below the t-axis can be calculated by taking the first step to $(1, 1)$ and then using the Reflection Princniple. In our case, the paths come out to be $$N_{n-1, x-1} - N_{n-1, x+1} = \frac{x}{n} N_{n, x}$$
     \item Unrelatedly, but obviously, and clearly, $\sum_{k = -n}^{n} N_{n, k} = 2^n$, which is the total possible paths in $n$ time steps.
     \item Probability of walker returning to $k = 0$ for the first time in $n = 2\nu$ steps, $f_{2\nu}$ can be calculated from  the following relation. $$\mu_{2\nu} = f_{2\nu} \mu_0 + f_{2\nu -2} \mu_2 + \dots + f_2 \mu_{2 \nu - 2}$$ 
     \item We can iteratively solve this but let's go for a much more elegant method. For the sake of precision, $$f_{2\nu} = \mathbb{P} \{\mathbb{M}_1 \ne 0, \mathbb{M}_2  \ne 0, \dots, \mathbb{M}_{2\nu -1} \ne 0, \mathbb{M}_{2\nu} = 0\}$$
