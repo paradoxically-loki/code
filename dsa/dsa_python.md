@@ -1,11 +1,107 @@
 # DSA Notes in Python
 
+## Arrays
+### Static Arrays
+- Fixed size, decided at the time of creation, allocated as a contiguous block of memory. 
+- Access by index is $O(1)$.
+- Insertion/deletion in the middle is $O(n)$, as a lot of values need to be shifted.
+- numpy.ndarrays are static arrays, resizing means allocating a new array, not just growing the previous one.
+- Python lists/arrays are dynamic in size.
+### Dynamic Arrays
+- Same contiguous memory idea, but it can resize. 
+- If we exceed the size, it creates a new list double the size and copies everything over.
+- Append time is $O(1)$ *amortized* and not $O(1)$ *flat* like we have in static arrays.
+- Appending at the friend is anyway $O(n)$ in both cases, as we have to shift the entire list.
+
+### Some important features/functions for Arrays
+**Access**
+- `arr[i]` -> access. $O(1)$
+- `len(arr)` -> $O(1)$, Python lists track their length. Not counted each time.
+- `arr[a:b]` -> Slicing, $O(k)$. Creates a new list, doesn't just view the original.
+
+**Adding Elements**
+- `arr.append(x)` -> $O(1)$ amortized. Adds at the end.
+- `arr.extend(iterable)` -> $O(k)$ amortized. Adds each element of another iterable.
+- `arr.insert(i,x)` -> $O(n)$, everything from the index onwards need to be shifted.
+
+**Removing Elements**
+- `arr.pop()` -> $O(1)$, removes from the end, not shift needed.
+- `arr.pop(i)` -> $O(n)$, everything past the index needs to be changed.
+- `arr.remove(x)` -> $O(n)$, searches for the first match, then shifts.
+- `del arr[i]` -> $O(n)$, same cost as pop.
+- `arr.clear()` -> $O(n)$.
+
+**Search**
+- `x in arr` -> $O(n)$, linear search.
+- `arr.index(x)` -> $O(n)$, returns position.
+- `arr.count(x)` -> $O(n)$
+
+**Reordering**
+- `arr.sort()` -> $O(n \log(n))$, TimSort under the hood, stable.
+- `sorted(arr)` -> $O(n \log(n))$, returns a new list, instead on in-place sorting.
+- `arr.reverse()` -> $O(n)$.
+- `arr[::-1]` -> $O(n)$, same idea, but returns a new list.
+
+**Combining**
+- `arr1 + arr2` -> $O(n+m)$, creates a new list.
+- `arr*k` -> $O(nk)$.
+
+**Note**
+- `pop(0)`, and `insert(0,x)` are $O(n)$ and not $O(1)$, as we have to shift the whole list.
+
+### Implementation of a Dynamic Array
+```python
+class DynamicArray:
+    
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.length = 0
+        self.arr = [0]*self.capacity
+
+    def get(self, i: int) -> int:
+        if not 0 <= i <= self.capacity-1:
+            raise IndexError('Index out of range')
+        return self.arr[i]
+
+    def set(self, i: int, n: int) -> None:
+        self.arr[i] = n
+
+    def pushback(self, n: int) -> None:
+        if self.length == self.capacity:
+            self.resize()
+        
+        self.arr[self.length] = n
+        self.length += 1
+
+    def popback(self) -> int:
+        if self.length > 0:
+            self.length -= 1
+        return self.arr[self.length]
+
+    def resize(self) -> None:
+        self.capacity = 2*self.capacity
+        new_arr = [0]* self.capacity
+
+        for i in range(self.length):
+            new_arr[i] = self.arr[i]
+        self.arr = new_arr
+
+    def getSize(self) -> int:
+        return self.length
+        
+    def getCapacity(self) -> int:
+        return self.capacity
+
+```
+
 ## Linked Lists
 ### Basic Structure
 ```python
 # linked lists
+from typing import List
+
 class Node:
-    def __init__(self, data):
+    def __init__(self, data=None):
         self.data = data
         self.next = None
 
@@ -13,56 +109,51 @@ class LinkedList:
     def __init__(self):
         self.head = None
 
-    def insert_at_beginning(self, val):
-        newNode = Node(val)
-        newNode.next = self.head
-        self.head = newNode
+    def get(self, index: int) -> int:
+        temp = self.head
+        i = 0
+        while i < index and temp:
+            temp = temp.next
+            i += 1
+        return temp.data if temp else -1
 
-    def insert_at_end(self, val):
-        newNode = Node(val)
+    def insertHead(self, val: int) -> None:
+        temp = self.head
+        self.head = Node(val)
+        self.head.next = temp
+
+    def insertTail(self, val: int) -> None:
         if not self.head:
-            self.head = newNode
+            self.head = Node(val)
             return
-        
-        current = self.head
-        while current.next:
-            current = current.next
-        current.next = newNode
+        temp = self.head
+        while temp.next:
+            temp = temp.next
+        temp.next = Node(val)
 
-    def delete_node_by_value(self, val):
-        current = self.head
+    def remove(self, index: int) -> bool:
+        if not self.head or index < 0:
+            return False
+        if index == 0:
+            self.head = self.head.next
+            return True
+        curr = self.head
+        i = 0
+        while curr.next and i < index - 1:
+            curr = curr.next
+            i += 1
+        if curr.next is None:
+            return False
+        curr.next = curr.next.next
+        return True
 
-        if current and current.data == val:
-            self.head = current.next
-            current.next = None
-
-        prev = Node
-        while current and current.data != val:
-            prev = current
-            current = current.next
-
-        if current is None: #not found in the entire list
-            return
-
-        prev.next = current.next # if we have found it
-        current.next = None
-
-    def printLL(self):
-        current = self.head
-        while current:
-            print(current.data, end=" -> ")
-            current = current.next
-        print("None")
-
-ll = LinkedList()
-
-ll.insert_at_beginning(1)
-ll.insert_at_end(2)
-ll.insert_at_end(3)
-ll.insert_at_end(4)
-ll.insert_at_end(5)
-ll.delete_node_by_value(6)
-ll.printLL()    
+    def getValues(self) -> List[int]:
+        result = []
+        curr = self.head
+        while curr:
+            result.append(curr.data)
+            curr = curr.next
+        return result
 ```
 
 ### Reversing a Linked List
