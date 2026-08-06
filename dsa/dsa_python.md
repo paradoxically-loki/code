@@ -184,21 +184,275 @@ def detectCycle(head: Node) -> bool:
     return False
 ```
 
+## Queue
+### Introduction
+- FIFO (First In, First Out) functionality
+- Heavily used in Graph BFS Traversals. `List.pop(0)` if $O(n)$, so, simple lists won't be feasible.
+- We mostly use the `deque` (pronounced as deck) functionality from `collections` library.
+### Some important features/functions on `deque`
+```python
+from collections import deque
+d = deque([1,2,3])
+```
+- `d.append(4)` -> $O(1)$, appends to the right.
+- `d.appendleft(0)` -> $O(1)$, appends to the left.
+- `d.pop()` -> $O(n)$, removes and return the rightmost element.
+- `d.popleft()` -> $O(1)$, removes and return the leftmost element.
+- `d.extend(iterable)` -> $O(k)$, appends multiple elements to the right.
+- `d.extendleft(iterable)` -> $O(k)$, appends multiple elements to the right (in the reverse order).
+- `d.insert(i,x)` -> $O(n)$, inserts $x$ at index $i$.
+- `d.remove(x)` -> $O(n)$, removes the first occurence of $x$.
+- `d.rotate(n)` -> $O(k)$, rotates by $n$ steps, (negative $n$ means rotate left)
+- `d.reverse()` -> $O(n)$, reverses the deque in place.
+- `d.clear()` -> $O(n)$ , removes all elements.
+- `d.count(x)` -> $O(n)$, counts all occurences of $x$.
+- `d.index(x)` -> $O(n)$, finds the index of $x$.
+- `d.copy()` -> $O(n)$, shallow copy of the queue.
+- `d[i]` -> $O(n)$, access by index (deque is not optimized for random access)
+- `len(d)` -> $O(1)$, length of the deque.
+
+### An important note
+- `deque(maxlen=N)` creates a bounded `deque`, which is heavily used in sliding window approaches. If we add too much on the right, elements from the left starts popping.
+```python
+from collections import deque
+
+d = deque(maxlen=3)
+d.append(1); d.append(2); d.append(3); d.append(4)
+
+print(d) # deque([2,3,4]). 1 got dropped off.
+```
+### Implementation of Queues using LinkedLists
+```python
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+
+class Queue:
+    def __init__(self):
+        self.front = None
+        self.rear = None
+        self.size = 0
+
+    def enqueue(self, val):
+        newNode = Node(val)
+        if not self.rear:
+            self.front = self.rear = newNode
+        else:
+            self.rear.next = newNode
+            self.rear = newNode
+        self.size += 1
+
+    def dequeue(self) -> int:
+        if not self.rear:
+            raise IndexError("deque from empty queue")
+        val = self.front.val
+        self.front = self.front.next
+        if not self.front:
+            self.rear = None
+        self.size -= 1
+        return val
+
+    def peek(self) -> int:
+        if not self.front:
+            raise IndexError("peek from an empty queue")
+        return self.front.val
+
+    def is_empty(self) -> bool:
+        return self.front is None
+```
+
+### Implementation of Queues using two stacks
+```python
+class QueueUsingStacks:
+    def __init__(self):
+        self.in_stack = []
+        self.out_stack = []
+
+    def enqueue(self, val) -> None:
+        self.in_stack.append(val)
+
+    def dequeue(self) -> int:
+        if not self.out_stack:
+            while self.in_stack:
+                self.out_stack.append(self.in_stack.pop())
+        if not self.out_stack:
+            raise IndexError("dequeue from an empty queue")
+        return self.out_stack.pop()
+
+    def peek(self) -> bool:
+        if len(self.in_stack) == 0:
+            raise IndexError("empty queue")
+        return self.in_stack[-1]:
+
+    def is_empty(self) -> bool:
+        return len(self.in_stack) == 0
+```
+
+### Implementation of Circular Queue
+```python
+class CircularQueue:
+    def __init__(self, k):
+        self.q = [None]*k
+        self.capacity = k
+        self.front = 0
+        self.count = 0
+
+    def enqueue(self,val) -> None:
+        if self.count == self.capacity:
+            raise OverflowError("queue is full")
+        rear = (self.front + self.count) % self.capacity
+        self.q[rear] = val
+        count += 1
+
+    def dequeue(self) -> int:
+        if self.count == 0:
+            raise IndexError("Empty Queue")
+        val = self.q[self.front]
+        self.front = (self.front + 1) % self.capacity
+        self.count -= 1
+        return val
+
+    def is_empty(self) -> bool:
+        return self.count == 0
+
+    def is_full(self) -> bool:
+        return self.count == self.capacity
+```
+## Double-ended Queues
+### Introduction
+- Double ended queues give us $O(1)$ functionality to append/pop on both left and right ends.
+- Python's `collections.deque` is a double ended queue.
+### Implementation using Doubly Linked Lists
+```python
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+        self.prev = None
+
+class Deque:
+    def __init__(self):
+        self.front = None
+        self.rear = None
+        self.size = 0
+
+    def append(self,val: int) -> None:
+        newNode = Node(val)
+        if not self.rear:
+            self.front = self.rear = newNode
+        else:
+            newNode.prev = self.rear
+            self.rear.next = newNode
+            self.rear = newNode
+        self.size += 1
+
+    def appendleft(self, val: int) -> None:
+        newNode = Node(val)
+        if not self.rear:
+            self.front = self.rear = newNode
+        else:
+            newNode.next = self.front
+            self.front.prev = newNode
+            self.front = newNode
+        self.size += 1
+
+    def pop(self) -> int:
+        if not self.rear:
+            raise IndexError("empty queue")
+        val = self.rear.val
+        self.rear = self.rear.prev
+        if not self.rear:
+            self.front = None
+        else:
+            self.rear.next = None
+        self.size -= 1
+        return val
+
+    def popleft(self) -> int:
+        if not self.rear:
+            raise IndexError("empty queue")
+        val = self.front.val
+        self.front = self.front.next
+        if not self.front:
+            self.rear = None
+        else:
+            self.front.prev = None
+        self.size -= 1
+        return val
+
+    def is_empty(self) -> bool:
+        return self.size == 0
+
+# all operations here are in O(1)
+```
+
 ## Stack
 ### Stack Basics
+- Stacks follows Last In, First Out (LIFO) protocol.
+- We can generally use Python's default Lists as stacks.
+- We may also use `collections.deque`
 ```python
+stack = []
+stack.append(1)
+stack.append(2)
+stack.append(3)
 
+print(stack.pop()) # pop and return the top element
+print(stack[-1]) # peek
+print(len(stack)) #size
+print(not stack) #is_empty check
 ```
 
-
-
-
-## Queue
-### Queue Basics
 ```python
+# stacks using collections.deque
+from collections import deque
 
+stack = deque()
+stack.append(1)
+stack.append(2)
+stack.append(3)
+
+print(stack.pop()) # 3
+print(stack[-1]) #peek
 ```
+### Implementation using LinkedLists
+```python
+class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
 
+class Stack:
+    def __init__(self):
+        self.top = None
+        self.size = 0
+
+    def push(self, val: int) -> None:
+        newNode = Node(val)
+        if not self.top:
+            self.top = newNode
+        else:
+            newNode.next = self.top
+            self.top = newNode
+        self.size += 1
+
+    def pop(self) -> None:
+        if not self.top:
+            raise IndexError("Empty Stack")
+        val = self.top.val
+        self.top = self.top.next
+        self.size -= 1
+        return val
+
+    def peek(self) -> int:
+        if not self.top:
+            raise IndexErro("Empty Stack")
+        return self.top.val
+
+    def is_empty(self) -> bool:
+        return self.top is None
+```
 
 ## Binary Trees
 ### Binary Trees Basics
