@@ -453,6 +453,121 @@ class Stack:
     def is_empty(self) -> bool:
         return self.top is None
 ```
+## Heaps / Priority Queues
+### Basics
+- Unlike LIFO or FIFO, PQs don't care about the insertion order but rather the priority order.
+### `heapq` module
+- `heapq` workd directly on python `list`, turning it into a binary heap in-place.
+```python
+import heapq
+
+heap = []
+
+heapq.heappush(heap, 5)
+heapq.heappush(heap, 1)
+heapq.heappush(heap, 3)
+
+print(heapq.heappop(heap)) # 1 -> smallest
+print(heapq.heahpop(heap)) # 3
+```
+**heapq functions**
+- `heapq.heappush(heap,x)` -> $O(\log n)$, push $x$ onto heap
+- `heaq.heappop(heap)` -> $O(\log n)$, pop and return smallest item
+- `heapq.heappushpop(heap,x)` -> $O(\log n)$, Push $x$ and then pop the smallest (more efficient than push + pop)
+- `heapq.heapreplace(heap,x)` -> $O(\log n)$, Pop the smallest, and then push $x$
+- `heapq.heapify(list)` -> $O(n)$, Convert an existing list into heap, in-place
+- `heapq.nlargest(k, iterable)` -> $O(n \log k)$, returns the $k$ largest elements.
+- `heapq.nsmallest(k, iterable)` -> $O(n \log k)$, returns the smallest $k$ elements.
+- `heap[-1]` -> $O(1)$, Peek 
+
+**max-heap trick**
+- `heapq` only gives us min-heap, for max-heap, we can simply negate the values on the way in and way out.
+```python
+import heapq
+
+heap = []
+heapq.heappush(heap, -5)
+heapq.heappush(heap, -1)
+heapq.heappush(heap, -3)
+
+print(-heapq.heappop(heap)) # 5 -> largest
+print(-heapq.heappop(heap)) # 3 -> second largest
+```
+**Priority Queues with custom order (tuple)**
+- tuples should be of the format `(priority, value)`
+```python
+import heapq
+
+heap = []
+
+heapq.heappush(heap, (2, "task x"))
+heapq.heappush(heap, (1, "task l"))
+heapq.heappush(heap, (3, "task c"))
+
+print(heapq.heappop(heap)) # (1, "task l")
+```
+
+### Implementation of heaps from scratch
+- A binary heap is stored as an array, where the children of index $i$ element are at $2i + 1$, and $2i + 2$, and its parent lives at $(i-1)//2$.
+- `push` adds a value at the end and bubbles up (sift up).
+- `pop` swaps the last value with the root and bubbles down (sift down).
+- Both are $O(\log n)$, as the height of the tree is $\log n$. 
+```python
+class MinHeap:
+    def __init__(self):
+        self.heap = []
+
+    def _parent(self, i):
+        return (i-1)//2
+
+    def _left(self, i):
+        return 2*i+1
+
+    def _right(self, i):
+        return 2*i+2
+
+    def push(self, val):
+        self.heap.append(val)
+        self._sift_up(len(self.heap)-1)
+
+    def _sift_up(self, i):
+        while i> 0 and self.heap[i] < self.heap[self._parent(i)]:
+            p = self._parent(i)
+            self.heap[i], self.heap[p] = self.heap[p], self.heap[i]
+            i = p
+
+    def pop(self):
+        if not self.heap:
+            raise IndexError("Empty Heap")
+        top = self.heap[0]
+        last = self.heap.pop()
+        if self.heap:
+            self.heap[0] = last
+            self._sift_down(0)
+        return top
+
+    def _sift_down(self, i):
+        n = len(self.heap)
+        while True:
+            smallest = i
+            l, r = self._left(i), self._right(i)
+            if l < n and self.heap[l] < self.heap[smallest]:
+                smallest = l
+            if r < n and self.heap[r] < self.heap[smallest]:
+                smallest = r
+            if smallest == i:
+                break
+            self.heap[i], self.heap[smallest] = self.heap[smallest], self.heap[i]
+            i = smallest
+
+    def peek(self):
+        if not self.heap:
+            raise IndexError("Empty Heap")
+        return self.heap[0]
+
+    def is_empty(self):
+        return len(self.heap) == 0
+```
 
 ## Binary Trees
 ### Binary Trees Basics
