@@ -603,7 +603,7 @@ def inorder_dfs(root: TreeNode) -> None:
         print(root.data, end=" ")
         inorder_dfs(root.right)
 ```
-
+**Note** - Inorder traversal of a BST gives a sorted array.
 ```python
 # Postorder Traversal - DFS
 def postorder_dfs(root: TreeNode) -> Node:
@@ -626,10 +626,71 @@ def bfs(root: TreeNode) -> None:
         if node.left: queue.append(node.left)
         if node.right: queue.append(node.right)
 ```
-### Constructing a Binary Tree
+
 ```python
+# iterative traversal using explicit stack
+def iterative_traversal(root: TreeNode) -> List[int]:
+    result, stack = [], []
+    curr = root
+    while curr or stack:
+        while curr:
+            result.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        result.append(curr.val)
+        curr = curr.right
+    return result
+```
+### Constructing a Binary Tree from preoder and inorder traversals
+```python
+# naive implementation
+class TreeNode:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+def build_tree(preorder, inorder):
+    if not preoder or not inorder:
+        return None
+
+    root_val = preorder[0]
+    root = TreeNode(root_val)
+
+    mid = inorder.index(root_val)
+
+    root.left = build_tree(preoder[1:mid+1],inorder[:mid] )
+    root.right = build_tree(preorder[mid+1:], inorder[mid+1:])
+
+    return root
 ```
 
+```python
+# optimal implementation
+# we use a hashmap to lookup inorder index and used only pointers as opposed to copying the whole arrays
+
+def build_tree(preorder, inorder):
+    inorder_index = {val: i for i, val in enumerate(inorder)}
+    self_preorder_idx = 0
+
+    def helper(left, right):
+        nonlocal self_preorder_idx
+        if left > right:
+            return None
+        
+        root_val = preorder[self_preorder_idx]
+        root = TreeNode(root_val)
+        self_preorder_idx += 1
+
+        mid = inorder_index[root_val]
+
+        root.left = helper(left, mid-1)
+        root.right = helper(mid+1, right)
+
+        return root
+    
+    return helper(0, len(preoder)-1)
+```
 ### Height of a Binary Tree
 ```python
 def height(root: TreeNode) -> int:
@@ -677,4 +738,64 @@ def isSubtree(root: TreeNode, subRoot: TreeNode) -> bool:
         isSubtree(root.right, subRoot)
     )
 ```
+
+### Diameter of a binary tree
+- Maximum distance bw any two nodes, may or may not pass through root
+```python
+def diameter(root: TreeNode) -> int:
+    result = 0
+    def depth(root: TreeNode) -> int:
+        nonlocal result
+        if not root:
+            return 0
+        left = depth(root.left)
+        right = depth(root.right)
+        result = max(result, left+right)
+        return 1 + max(left, right)
+    depth(root)
+    return result
+```
+
+### Check if balanced
+```python
+# balanced tree - diff bw left height and right height is bounded
+
+```
+
+## Binary Search Trees
+### Basics
+- For each node, `left` <= `node` <= `right`.
+
+### Implementation from Scratch
+```python
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, val):
+        pass
+
+    def _insert(self, val):
+        pass
+
+    def delete(self, val):
+        pass
+
+    def _delete(self, val):
+        pass
+```
+
+### Validate a BST
+```python
+# check if a given tree is actually BST
+def is_valid_bst(root: TreeNode) -> bool:
+    pass
+```
+
+### Lowest Common Ancestor (LCA)
+```python
+def lca(root: TreeNode) -> int:
+    pass
+```
+
 
