@@ -6,13 +6,14 @@
 
 ## Table of Contents
 
-1. [27th July – Monday](#27th-july--monday)
-2. [29th July – Wednesday](#29th-july--wednesday)
-3. [3rd August – Monday](#3rd-august--monday)
+1. [27th July - Monday](#27th-july--monday)
+2. [29th July - Wednesday](#29th-july--wednesday)
+3. [3rd August - Monday](#3rd-august--monday)
+4. [10th August - Monday](#10th-august---monday)
 
 ---
 
-## 27th July – Monday
+## 27th July - Monday
 
 Finance can broadly be divided into three parts: **Personal Finance**, **Corporate Finance**, and **Financial Markets**.
 
@@ -52,7 +53,7 @@ According to McKinsey's India head, almost no Indian company uses real options i
 
 ---
 
-## 29th July – Wednesday
+## 29th July - Wednesday
 
 The focus of this course is on the management of **long-term assets** (not liabilities).
 
@@ -132,7 +133,7 @@ Across the three cases, **NPV increases as uncertainty increases** — because t
 
 ---
 
-## 3rd August – Monday
+## 3rd August - Monday
 
 ### Summary of the Last Class
 
@@ -192,3 +193,32 @@ Across the three cases, **NPV increases as uncertainty increases** — because t
 - Write a ~100-word description for each topic, explaining how it involves real options.
 - Submit a hard copy by **5:00 PM, August 7th**.
 - The project requires **primary data**, not desk-based research.
+
+
+## 10th August - Monday
+### Summary of the last classes
+- Financial Engg: Figuring out the options required to get a certain payoff.
+- Characterization of options: Strike price, time to expiry, stock price.
+- Put-Call Parity: $P + S = B + C$, where $S$ is the security, and $B$ is zero-coupon bond with face value equal to the strike of both options.
+- This can be seen by drawing the payoff curves.
+- We may also rearrange the equation and get the following: $S = C + B - P$.
+- We may estimate the stock price this way.
+
+### On Field Visit
+- If the payoff from a feature or an offer resembles that of an option, then the cost of the feature should be the same as that of an option.
+
+### The Black-Scholes Model
+- Options: European, and American
+- Discussion in this class, mostly on European.
+- For call option, the value decreases with the increase in Strike Price.
+- For call option, the value increases with the increase in time to maturity.
+- For call option, the value increases with the increase in underlying price.
+ $$C = S N(d_1) - e^{-rT} K N(d_2)$$
+- Here, $r$ is the risk-free rate.
+- $d_1 = \frac{\ln{S/K} + (r + \sigma^2/2)T}{\sigma \sqrt{T}}$
+- $d_2 = d_1 - \sigma \sqrt{T}$
+- T, time to expiry, must be in years, the same as $\sigma$.
+- $\sigma$, volatility is the annualised,which is also the standard deviation.
+- $\sigma^2$ is variance.
+- Technically, $\sigma$ should be the expected volatility from now to the time of expiry.
+- 
