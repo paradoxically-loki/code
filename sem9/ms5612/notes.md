@@ -221,4 +221,63 @@ Across the three cases, **NPV increases as uncertainty increases** — because t
 - $\sigma$, volatility is the annualised,which is also the standard deviation.
 - $\sigma^2$ is variance.
 - Technically, $\sigma$ should be the expected volatility from now to the time of expiry.
-- 
+
+
+## 12th August - Wednesday
+### Key Assumptions of the Black-Sholes
+- No dividends are paid out during the life of the options.
+- Markets are random.
+- There are no transaction costs in buying and selling the options.
+- The risk-free rate and volatility of the underlying are known and constant.
+- The returns of the underlying asset are normally distributed.
+- The option is European.
+- The underlying is liquid.
+
+
+| Factor | Call Option | Put Option |
+|------------|---------|-----------|
+| Stock Price | + | -|
+| Strike Price | - | + |
+| Stock Volatility | + | + |
+| Interest Rate | + | - |
+| Time to Expiry | + | + |
+
+### Report Submission
+- Follow report writing conventions.
+- Start with an introduction.
+- Focus should be on what did we interpret from what we saw.
+- High Standards.
+
+### Binomial Model for the Valuation of Options
+- After each time step, the price of the asset could be in either of the two possible states, i.e, upstate or downstate.
+- There is an opportunity of investing in a Chemical plant.
+- In year 0, 60 million needs to be invested in getting permits/clearances.
+- In year 1, 400 million needs to be invested in getting the designs ready.
+- In year 2, or year 3, 800 million needs to be invested in actual construction.
+- For DCF Analysis, the discount rate in 10%.
+- Value of a similar asset in the market is 1 billion.
+- $NPV = 1000 - 60 - 400/1.1 - 800/1.1^3 = -25$
+- Let's construct a binomial tree.
+- If we have $S$ at the start, the value of the upstate is $e^{\sigma \sqrt{T}}$, and that of the downstate is $e^{-\sigma \sqrt{T}}$.
+- In our example, we are using $\sigma = 18.23%$.
+- The upstate is $1200$, and the downstate is $833$.
+- At second state, we get $1440$, $1000$, and $684$.
+- At third state, we get $1728$, $1200$, $833$, and $578$.
+- Binomial model becomes much more realistic when the time period is very small, as the terminal values are almost continuous.
+- The $400$ million at year 1 is a compound option as it is an option on another option (the $800$ million option).
+- It's better to start analysis from the extreme right. 
+- We shall invest at the $1728$ leaf as it's more than $800$.
+
+### Replicating Portfolio Method to Value Options
+- Assume a stock with current price $50$. 
+- At the end of an year, it could either be $60$, or $40$.
+- Also, assume a call option with strike 50.
+- Payoff of Call option is $10$ if $S = 60$, else 0
+- Also consider the following portfolio: $0.5 Stock  + 18.18 @10\% $
+- Payoff of the call option, is equal to the payoff of this portfolio.
+- What is the value of this portfolio today is $0.5*50 - 18.18 = 6.82$ = value of the call option.
+- The above numbers can be derived from the following set of equations:
+$$ 60m - 1.1B = 10 \\
+40m - 1.1B = 0$$
+- Do the above example by hand, and calculate the option value at each state.
+
