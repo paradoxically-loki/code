@@ -6,19 +6,20 @@
 
 ## Table of Contents
 
-1. [28th July – Thursday](#28th-july--thursday)
-2. [31st July – Friday](#31st-july--friday)
-3. [4th August – Tuesday](#4th-august--tuesday)
+1. [28th July -- Thursday](#28th-july----thursday)
+2. [31st July -- Friday](#31st-july----friday)
+3. [4th August -- Tuesday](#4th-august----tuesday)
+4. [14th August -- Friday](#14th-august----friday)
 
 ---
 
-## 28th July – Thursday
+## 28th July -- Thursday
 
 *(No notes recorded for this session.)*
 
 ---
 
-## 31st July – Friday
+## 31st July -- Friday
 
 - The **52-week high/low** range is a decent reference band for a security's price.
 - Key valuation questions: what could the value be in the future? Is the security **overvalued** or **undervalued** relative to our future projections?
@@ -109,7 +110,7 @@ $$PBV = \frac{\text{Market Price}}{\text{Book Value per Share}}$$
 
 ---
 
-## 4th August – Tuesday
+## 4th August -- Tuesday
 
 ### Security Valuation (continued)
 
@@ -118,3 +119,63 @@ $$PBV = \frac{\text{Market Price}}{\text{Book Value per Share}}$$
 **Price to Sales Ratio (PSR):**
 
 $$PSR = \frac{\text{Share Price}}{\text{Revenue per Share}} = \frac{\text{Market Cap}}{\text{Annual Revenue}}$$
+
+---
+## 14th August -- Friday
+### Portfolio Risk
+#### Portfolio Risk Exposures
+- Sensitivity Measures: Deviation of market prices due to a unit change of a specific market parameter.
+- Volatility Measure: Variations of 
+
+#### Portfolio VaR Measurement
+- VaR measures the worst expected loss over a given horizon of normal market conditions at a given confidence level.
+- Estimated level of loss on an asset or portfolio for a specific probability (confidence interval) and time horizon.
+- $VaRa(X)$ is a lower a-percentile of the random variable X.
+
+#### Return Distribution
+- Exchange charges a VaR margin to investors.
+
+#### Requirements for VaR Measurements
+- Amount of exposure: mark-to-market value of the asset or portfolio
+- Risk factor of factors: source of variability of the market value of the asset or portfolio
+- Risk horizon: length of the risk period has to exceed the liquidation time of the portfolio
+- Data series of the risk factors: frequency of the data series equals the risk horizon for a long period
+- Level of confidence: confidence levels from 90-99.9 percent
+
+#### Measure of VaR
+- Parametric: assumes a normal dist
+- Nonparametric: historical simulation, and not assumption about the distribution
+- Monte Carlo Simulation: simulates multiple random scenario
+
+#### Expected Shortfall
+- VaR has tail risk when VaR fails to summarise the relative choice between portfolios as a result of its underestimation of the risk of portoflios properties and a high potential for large losses.
+- VaR measures only a single quantile of the distributions and disregards any loss beyond the VaR level.
+- Expected shortfall has tail risk when expected shortfall fails to summarise realtive choice between portfolios as a result of its underestimation of portfolios with fat-tailed porperties and a high potential for large losses.
+
+#### Parametric Method
+- Significance level: $\alpha$, portfolio standard deviation: $\sigma$
+$$VaR_{\text{portfolio}} = \alpha \sigma_{\text{portfolio}}$$
+
+#### Historical Method
+- Sort the portfolio returns in ascending order to arrive at an observed distribution of changes in portfolio value.
+- VaR number will be equal to that percentile associated with the level of confidence.
+- We may also find the distribution of VaR with historical data.
+
+#### Monte Carlo Simulation
+- 
+
+#### Marginal VaR
+- Partial derivative wrt to the component weight
+- It measures the change in portfolio VaR resulting from additional value (in one unit) to a component.
+$$\Delta VaR_i = \frac{\alpha \sigma_i}{}$$
+
+#### Component VaR
+- Component VaR is a partition of the portfolio VaR that indicates the change of VaR if a given component was deleted.
+$$\text{Component VaR} = (\Delta VaR_i) \omega_i P = VaR \beta_i \omega_i$$
+
+#### Incremental VaR
+- Measures the change in VaR due to a new position of the portfolio
+$$\text{Incremental VaR} = VaR_{p+a} - VaR_p$$
+
+### To prep before next class.
+- Two securities portfolios.
