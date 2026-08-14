@@ -1,5 +1,25 @@
 # DSA Notes in Python
 
+## List of Contents
+1. [Basics](#basics)
+2. [Arrays](#arrays) 
+3. [Linked Lists](#linked-lists)
+4. [Queue](#queue)
+5. [Double Ended Queue](#double-ended-queues)
+6. [Stacks](#stack)
+7. [Heaps/Priority Queue](#heaps--priority-queues)
+8. [Binary Trees](#binary-trees)
+9. [Binary Search Trees](#binary-search-trees)
+10. [Graphs](#graphs)
+
+
+## Basics
+### Sets
+
+### Dictionary
+
+### Hashmap
+
 ## Arrays
 ### Static Arrays
 - Fixed size, decided at the time of creation, allocated as a contiguous block of memory. 
@@ -849,4 +869,256 @@ def lca(root:TreeNode, p:int, q:int) -> TreeNode:
     return left if left else right
 ```
 
+## Graphs
+### Basics
+- Graphs is a set of nodes (or vertices) connected via edges.
+- No hierarchy, unlike trees.
+- Types of Graphs:
+    - Directed
+    - Undirected
+    - Weighted
+    - Unweighted
+    - Cylic
+    - Uncyclic
+    - Connected
+    - Sparse vs Dense
+### Representation
+#### Adjacency List
+- A dictionary mapping each node to a list of  its neighbors. Efficient for sparse graphs.
+```python
+graph = {
+    'A': ['B', 'C'],
+    'B': ['A', 'D'],
+    'C': ['A', 'D'],
+    'D': ['B', 'C']
+}
+```
+- For wieghted graphs, we store `(neighbor, weight)` pais.
+```python
+graph = {
+    'A': [('B', 4), ('C', 1)],
+    'B': [('A', 4), ('D', 2)],
+    'C': [('A', 1), ('D', 5)],
+    'D': [('B', 2), ('C', 5)]
+}
+```
+#### Adjacency Matrix
+- A 2d array, where `matrix[i][j] = 1` if there is an edge between `i` and `j`.
+```python
+# 4 nodes: 0, 1, 2, 3
+matrix = [
+    [0, 1, 1, 0],
+    [1, 0, 0, 1],
+    [1, 0, 0, 1],
+    [0, 1, 1, 0]
+]
+```
+#### Edge List
+- Just a flat list of edges. (rarely used for traversal but common way of input in Qs)
+```python
+edges = [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'D')]
+```
+
+#### Building an adjacency list from edge list
+```python
+from collections import defaultdict
+def build_adj_list(edges: List, directed = False) -> dict:
+    graph = defaultdict(list)
+    for u,v in edges:
+        graph[u].append(v)
+        if not directed:
+            graph[v].append(u)
+    return graph
+
+# defaultdict here handles the case when the node is not present in graph
+
+def build_adj_list(edges: List, directed: bool = False) -> dict:
+    graph = {}
+    for u,v in edges:
+        if u not in graph:
+            graph[u] = []
+        graph[u].append(v)
+        if not directed:
+            if v not in graph:
+                graph[v] = []
+            graph[v].append(u)
+    return graph
+```
+### Traversals
+#### DFS (Recursive)
+```python
+def dfs(graph, node, visited):
+    if visited is None:
+        visited = set()
+    visited.add(node)
+    result = [node]
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            result.extend(dfs(graph, neighbor, visited))
+    return visited
+```
+
+#### DFS (Iterative using Stack)
+```python
+def dfs_iterative(graph, start):
+    visited = set()
+    stack = [start]
+    result = []
+    while stack:
+        node = stack.pop()
+        if node not in visited:
+            visited.add(node)
+            result.append(node)
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    stack.append(neighbor)
+    return result
+```
+
+#### BFS (always iterative, uses Queue)
+```python
+from collections import deque
+
+def bfs(graph, start):
+    visited = {start}
+    q = deque([start])
+    result = []
+    while q:
+        node = q.popleft()
+        result.append(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                q.append(neighbor)
+    return result
+```
+
+### Common Algorithms
+#### Detect a Cycle (Undirected Graph)
+```python
+def detect_cycle_undirected(graph):
+    visited = set()
+
+    def dfs(node, parent):
+        visited.add(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                if dfs(neighbor, node):
+                    return True
+            elif neighbor != parent:
+                return True
+        return False
+
+    for node in graph:
+        if node not in visited:
+            if dfs(node, None): return True
+    return False
+```
+
+#### Detect a Cycle (Directed Graph)
+```python
+def detect_cycle_directed(graph):
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {node: WHITE for node in graph}
+
+    def dfs(node):
+        color[node] = GRAY
+        for neighbor in graph[node]:
+            if color[neighbor] == GRAY:
+                return True
+            if color[neighbor] == WHITE and dfs(neighbor):
+                return True
+        color[node] = BLACK
+        return False
+
+    for node in graph:
+        if color[node] == WHITE:
+            if dfs(node): return True
+    return False
+```
+
+#### Topological Sort (DAGs Only)
+```python
+def topological_sort(graph):
+    visited = set()
+    stack = []
+
+    def dfs(node):
+        visited.add(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                dfs(neighbor)
+        stack.append(node) # add after all descendants are processed
+
+    for node in graph:
+        if node not in visited:
+            dfs(node)
+    
+    return stack[::-1]
+```
+
+#### Kahn's Algorithms (BFS Alternative, detects cycle also)
+```python
+from collections import deque, defaultdict
+
+def topological_sort_kahn(graph, nodes):
+    in_degree = {n: 0 for n in nodes}
+    for node in graph:
+        for neighbor in graph[node]:
+            in_degree[neighbor] += 1
+
+    q = deque([n for n in nodes if in_degree[n] == 0])
+    result = []
+
+    while q:
+        node = q.popleft()
+        result.append(node)
+        for neighbor in graph[node]:
+            in_degree[neighbor] -= 1
+            if in_degree[neighbor] == 0:
+                q.append(neighbor)
+
+    if len(result) != len(nodes):
+        return None # cycle detected, no valid topological order
+    return result
+```
+
+#### Number of connected Components
+```python
+def count_components(graph,nodes):
+    visited = set()
+    count = 0
+
+    def dfs(node):
+        visited.add(node)
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                dfs(neighbor)
+    
+    for node in nodes:
+        if node not in visited:
+            dfs(node)
+            count += 1
+    return count
+```
+
+#### Dijkstra's Algorithm (only for non-negative weights)
+```python
+import heapq
+
+def dijkstra(graph, start):
+    dist = {start:0}
+    heap = [(0, start)]
+
+    while heap:
+        d, node = heapq.heappop(heap)
+        if d > dist.get(node, float('inf')):
+            continue
+        for neighbor, weight in graph[node]:
+            new_dist = d + weight
+            if new_dist < dist.get(neighbor, float('inf')):
+                dist[neighbor] = new_dist
+                heapq.heappush(heap, (new_dist, neighbor))
+    return dist
+```
 
