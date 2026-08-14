@@ -768,34 +768,85 @@ def diameter(root: TreeNode) -> int:
 
 ### Implementation from Scratch
 ```python
+class TreeNode:
+    def __init__(self, val: int):
+        self.val = val
+        self.left = None
+        self.right = None
+
 class BST:
     def __init__(self):
         self.root = None
 
-    def insert(self, val):
-        pass
+    def insert(self, val: int) -> None:
+        self.root = self._insert(self.root, val)
 
-    def _insert(self, val):
-        pass
+    def _insert(self, node: TreeNode, val: int) -> TreeNode:
+        if node is None:
+            return TreeNode(val)
+        if val < node.val:
+            node.left = self._insert(node.left, val)
+        else:
+            node.right = self._insert(node.right, val)
+        return node
 
-    def delete(self, val):
-        pass
+    def search(self, val: int) -> TreeNode:
+        return self._search(self.root, val)
 
-    def _delete(self, val):
-        pass
+    def _search(self, node: TreeNode, val: int) -> TreeNode:
+        if node is None or node.val == val:
+            return node
+        if val < node.val:
+            return self._search(node.left, val)
+        return self._serach(node.right, val)
+
+    def delete(self, val: int) -> None:
+        self.root = self._delete(self.root, val)
+
+    def _delete(self, node: TreeNode, val: int) -> TreeNode:
+        if node is None: return None
+        if val < node.val:
+            node.left = self._delete(node.left, val)
+        if val > node.val:
+            node.right = self._delete(node.right, val)
+        else: # found the match, now three cases
+            if not node.left:
+                return node.right
+            if not node.right:
+                return node.left
+            #when both children exist
+            # find inorder successor (smallest in the right subtree)
+            successor = node.right
+            while successor.left:
+                successor = successor.left
+            node.val = successor.val
+            node.right = self._delete(node.right, successor.val)
+        return node
 ```
 
 ### Validate a BST
 ```python
 # check if a given tree is actually BST
-def is_valid_bst(root: TreeNode) -> bool:
-    pass
+def is_valid_bst(node: TreeNode, low = float('-inf'), high = float('inf')) -> bool:
+    if not node: return True
+
+    if not (low < node.val < high): return False
+
+    return is_valid_bst(node.left, low, node.val) and is_valid_bst(node.right, node.val, high)
 ```
 
 ### Lowest Common Ancestor (LCA)
 ```python
-def lca(root: TreeNode) -> int:
-    pass
+def lca(root:TreeNode, p:int, q:int) -> TreeNode:
+    if root is None or root.val == p or root.val == q:
+        return root
+
+    left = lca(root.left, p, q)
+    right = lca(root.right, p, q)
+
+    if left and right: return root
+
+    return left if left else right
 ```
 
 
