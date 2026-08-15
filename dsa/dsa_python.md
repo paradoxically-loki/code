@@ -14,11 +14,74 @@
 
 
 ## Basics
-### Sets
-
 ### Dictionary
+```python
+d = {'a': 1, 'b': 2}
+```
+**Common Operations**
+| Operation | Syntax | Average case | Worst case |
+|---|---|---|---|
+| Access value | `d['a']` or `d.get('a')` | O(1) | O(n) |
+| Insert / update | `d['c'] = 3` | O(1) | O(n) |
+| Delete | `del d['a']` or `d.pop('a')` | O(1) | O(n) |
+| Check key exists | `'a' in d` | O(1) | O(n) |
+| Get with default | `d.get('x', default)` | O(1) | O(n) |
+| Get all keys | `d.keys()` | O(1) to get view, O(n) to iterate | — |
+| Get all values | `d.values()` | O(1) to get view, O(n) to iterate | — |
+| Get all items | `d.items()` | O(1) to get view, O(n) to iterate | — |
+| Length | `len(d)` | O(1) | — |
+| Pop last added item | `d.popitem()` | O(1) | — |
+| Merge | `d.update(other)` | O(len(other)) | — |
+| Copy | `d.copy()` | O(n) | — |
+| Clear | `d.clear()` | O(1)* | — |
+| setdefault | `d.setdefault('x', [])` | O(1) | O(n) |
 
-### Hashmap
+**Dict Comprehension in frequency counting**
+
+```python
+# vanilla dictionary
+freq = {}
+for x in arr:
+    freq[x] = freq.get(x,0) + 1
+
+# with defaultdic
+from collections import defaultdict
+freq = defaultdict(int) # int signifies that the keys are integers
+for x in arr:
+    freq[x] += 1
+
+# counter (especially for frequency calc)
+from collections import Counter
+freq = Counter(arr)
+```
+
+```python
+c = Counter("aabbbc")
+print(c) # Counter({'b':3, 'a':2, 'c':1})
+print(c.most_common(2)) # [('b':3),('a':2)]
+```
+### Sets
+```python
+s = {1,2,3} # initilisation with values
+s = set() # empty initialisation
+```
+
+**Common Operations**
+| Operation | Syntax | Average case | Worst case |
+|---|---|---|---|
+| Add element | `s.add(4)` | O(1) | O(n) |
+| Remove element | `s.remove(4)` (errors if missing) | O(1) | O(n) |
+| Discard element | `s.discard(4)` (no error if missing) | O(1) | O(n) |
+| Check membership | `4 in s` | O(1) | O(n) |
+| Length | `len(s)` | O(1) | ------ |
+| Pop arbitrary (random) | `s.pop()` | O(1) | ------ |
+| Union | `s1 \| s2` | O(len(s1) + len(s2)) | ------ |
+| Intersection | `s1 & s2` | O(min(len(s1), len(s2))) | ------ |
+| Difference | `s1 - s2` | O(len(s1)) | ------ |
+| Symmetric difference | `s1 ^ s2` | O(len(s1) + len(s2)) | ------ |
+| Subset check | `s1 <= s2` | O(len(s1)) | ------ |
+| Copy | `s.copy()` | O(n) | ------ |
+
 
 ## Arrays
 ### Static Arrays
