@@ -19,6 +19,7 @@
 d = {'a': 1, 'b': 2}
 ```
 **Common Operations**
+
 | Operation | Syntax | Average case | Worst case |
 |---|---|---|---|
 | Access value | `d['a']` or `d.get('a')` | O(1) | O(n) |
@@ -67,6 +68,7 @@ s = set() # empty initialisation
 ```
 
 **Common Operations**
+
 | Operation | Syntax | Average case | Worst case |
 |---|---|---|---|
 | Add element | `s.add(4)` | O(1) | O(n) |
@@ -97,41 +99,30 @@ s = set() # empty initialisation
 - Appending at the friend is anyway $O(n)$ in both cases, as we have to shift the entire list.
 
 ### Some important features/functions for Arrays
-**Access**
-- `arr[i]` -> access. $O(1)$
-- `len(arr)` -> $O(1)$, Python lists track their length. Not counted each time.
-- `arr[a:b]` -> Slicing, $O(k)$. Creates a new list, doesn't just view the original.
+| Category | Operation | Time Complexity | Notes |
+|---|---|---|---|
+| **Access** | `arr[i]` | O(1) | Direct index access |
+| | `len(arr)` | O(1) | Python lists track length, not counted each time |
+| | `arr[a:b]` | O(k) | Slicing creates a new list, doesn't view the original |
+| **Adding Elements** | `arr.append(x)` | O(1) amortized | Adds at the end |
+| | `arr.extend(iterable)` | O(k) amortized | Adds each element of another iterable |
+| | `arr.insert(i, x)` | O(n) | Everything from the index onwards needs to be shifted |
+| **Removing Elements** | `arr.pop()` | O(1) | Removes from the end, no shift needed |
+| | `arr.pop(i)` | O(n) | Everything past the index needs to be shifted |
+| | `arr.remove(x)` | O(n) | Searches for the first match, then shifts |
+| | `del arr[i]` | O(n) | Same cost as pop |
+| | `arr.clear()` | O(n) | — |
+| **Search** | `x in arr` | O(n) | Linear search |
+| | `arr.index(x)` | O(n) | Returns position |
+| | `arr.count(x)` | O(n) | — |
+| **Reordering** | `arr.sort()` | O(n log n) | TimSort under the hood, stable |
+| | `sorted(arr)` | O(n log n) | Returns a new list, instead of in-place sorting |
+| | `arr.reverse()` | O(n) | — |
+| | `arr[::-1]` | O(n) | Same idea, but returns a new list |
+| **Combining** | `arr1 + arr2` | O(n+m) | Creates a new list |
+| | `arr * k` | O(nk) | — |
 
-**Adding Elements**
-- `arr.append(x)` -> $O(1)$ amortized. Adds at the end.
-- `arr.extend(iterable)` -> $O(k)$ amortized. Adds each element of another iterable.
-- `arr.insert(i,x)` -> $O(n)$, everything from the index onwards need to be shifted.
-
-**Removing Elements**
-- `arr.pop()` -> $O(1)$, removes from the end, not shift needed.
-- `arr.pop(i)` -> $O(n)$, everything past the index needs to be changed.
-- `arr.remove(x)` -> $O(n)$, searches for the first match, then shifts.
-- `del arr[i]` -> $O(n)$, same cost as pop.
-- `arr.clear()` -> $O(n)$.
-
-**Search**
-- `x in arr` -> $O(n)$, linear search.
-- `arr.index(x)` -> $O(n)$, returns position.
-- `arr.count(x)` -> $O(n)$
-
-**Reordering**
-- `arr.sort()` -> $O(n \log(n))$, TimSort under the hood, stable.
-- `sorted(arr)` -> $O(n \log(n))$, returns a new list, instead on in-place sorting.
-- `arr.reverse()` -> $O(n)$.
-- `arr[::-1]` -> $O(n)$, same idea, but returns a new list.
-
-**Combining**
-- `arr1 + arr2` -> $O(n+m)$, creates a new list.
-- `arr*k` -> $O(nk)$.
-
-**Note**
-- `pop(0)`, and `insert(0,x)` are $O(n)$ and not $O(1)$, as we have to shift the whole list.
-
+**Note**: `pop(0)` and `insert(0, x)` are O(n), not O(1), since the whole list has to shift.
 ### Implementation of a Dynamic Array
 ```python
 class DynamicArray:
@@ -277,22 +268,24 @@ def detectCycle(head: Node) -> bool:
 from collections import deque
 d = deque([1,2,3])
 ```
-- `d.append(4)` -> $O(1)$, appends to the right.
-- `d.appendleft(0)` -> $O(1)$, appends to the left.
-- `d.pop()` -> $O(n)$, removes and return the rightmost element.
-- `d.popleft()` -> $O(1)$, removes and return the leftmost element.
-- `d.extend(iterable)` -> $O(k)$, appends multiple elements to the right.
-- `d.extendleft(iterable)` -> $O(k)$, appends multiple elements to the right (in the reverse order).
-- `d.insert(i,x)` -> $O(n)$, inserts $x$ at index $i$.
-- `d.remove(x)` -> $O(n)$, removes the first occurence of $x$.
-- `d.rotate(n)` -> $O(k)$, rotates by $n$ steps, (negative $n$ means rotate left)
-- `d.reverse()` -> $O(n)$, reverses the deque in place.
-- `d.clear()` -> $O(n)$ , removes all elements.
-- `d.count(x)` -> $O(n)$, counts all occurences of $x$.
-- `d.index(x)` -> $O(n)$, finds the index of $x$.
-- `d.copy()` -> $O(n)$, shallow copy of the queue.
-- `d[i]` -> $O(n)$, access by index (deque is not optimized for random access)
-- `len(d)` -> $O(1)$, length of the deque.
+| Operation | Time Complexity | Notes |
+|---|---|---|
+| `d.append(4)` | O(1) | Appends to the right |
+| `d.appendleft(0)` | O(1) | Appends to the left |
+| `d.pop()` | O(1) | Removes and returns the rightmost element |
+| `d.popleft()` | O(1) | Removes and returns the leftmost element |
+| `d.extend(iterable)` | O(k) | Appends multiple elements to the right |
+| `d.extendleft(iterable)` | O(k) | Appends multiple elements to the left (in reverse order) |
+| `d.insert(i, x)` | O(n) | Inserts x at index i |
+| `d.remove(x)` | O(n) | Removes the first occurrence of x |
+| `d.rotate(n)` | O(k) | Rotates by n steps (negative n means rotate left) |
+| `d.reverse()` | O(n) | Reverses the deque in place |
+| `d.clear()` | O(n) | Removes all elements |
+| `d.count(x)` | O(n) | Counts all occurrences of x |
+| `d.index(x)` | O(n) | Finds the index of x |
+| `d.copy()` | O(n) | Shallow copy of the deque |
+| `d[i]` | O(n) | Access by index, deque is not optimized for random access |
+| `len(d)` | O(1) | Length of the deque |
 
 ### An important note
 - `deque(maxlen=N)` creates a bounded `deque`, which is heavily used in sliding window approaches. If we add too much on the right, elements from the left starts popping.
