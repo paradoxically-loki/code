@@ -2,15 +2,43 @@
 
 ## List of Contents
 1. [Basics](#basics)
-2. [Arrays](#arrays) 
+   - [Dictionary](#dictionary)
+   - [Sets](#sets)
+2. [Arrays](#arrays)
+   - [Static Arrays](#static-arrays)
+   - [Dynamic Arrays](#dynamic-arrays)
+   - [Implementation of a Dynamic Array](#implementation-of-a-dynamic-array)
 3. [Linked Lists](#linked-lists)
+   - [Basic Structure](#basic-structure)
+   - [Reversing a Linked List](#reversing-a-linked-list)
+   - [Detecting Cycle](#detecting-cycle)
 4. [Queue](#queue)
+   - [`deque` functions](#some-important-featuresfunctions-on-deque)
+   - [Queue using Linked Lists](#implementation-of-queues-using-linkedlists)
+   - [Queue using two Stacks](#implementation-of-queues-using-two-stacks)
+   - [Circular Queue](#implementation-of-circular-queue)
 5. [Double Ended Queue](#double-ended-queues)
 6. [Stacks](#stack)
 7. [Heaps/Priority Queue](#heaps--priority-queues)
+   - [`heapq` module](#heapq-module)
+   - [Implementation from scratch](#implementation-of-heaps-from-scratch)
 8. [Binary Trees](#binary-trees)
+   - [Traversals (pre/in/post/BFS/iterative)](#binary-trees-traversal)
+   - [Build from Preorder + Inorder](#constructing-a-binary-tree-from-preoder-and-inorder-traversals)
+   - [Height / Node Count / Identical / Subtree](#height-of-a-binary-tree)
+   - [Diameter](#diameter-of-a-binary-tree)
+   - [Check if Balanced](#check-if-balanced)
 9. [Binary Search Trees](#binary-search-trees)
+   - [Insert / Search / Delete](#implementation-from-scratch)
+   - [Validate a BST](#validate-a-bst)
+   - [Lowest Common Ancestor](#lowest-common-ancestor-lca)
 10. [Graphs](#graphs)
+    - [Representation (Adjacency List/Matrix, Edge List)](#representation)
+    - [Traversals (DFS/BFS)](#traversals)
+    - [Cycle Detection (Directed/Undirected)](#common-algorithms)
+    - [Topological Sort / Kahn's Algorithm](#topological-sort-dags-only)
+    - [Connected Components](#number-of-connected-components)
+    - [Dijkstra's Algorithm](#dijkstras-algorithm-only-for-non-negative-weights)
 
 
 ## Basics
@@ -45,9 +73,9 @@ freq = {}
 for x in arr:
     freq[x] = freq.get(x,0) + 1
 
-# with defaultdic
+# with defaultdict
 from collections import defaultdict
-freq = defaultdict(int) # int signifies that the keys are integers
+freq = defaultdict(int) # int as factory means missing keys default to int() == 0
 for x in arr:
     freq[x] += 1
 
@@ -58,8 +86,8 @@ freq = Counter(arr)
 
 ```python
 c = Counter("aabbbc")
-print(c) # Counter({'b':3, 'a':2, 'c':1})
-print(c.most_common(2)) # [('b':3),('a':2)]
+print(c) # Counter({'b': 3, 'a': 2, 'c': 1})
+print(c.most_common(2)) # [('b', 3), ('a', 2)]
 ```
 ### Sets
 ```python
@@ -96,9 +124,10 @@ s = set() # empty initialisation
 - Same contiguous memory idea, but it can resize. 
 - If we exceed the size, it creates a new list double the size and copies everything over.
 - Append time is $O(1)$ *amortized* and not $O(1)$ *flat* like we have in static arrays.
-- Appending at the friend is anyway $O(n)$ in both cases, as we have to shift the entire list.
+- Inserting at the front is anyway $O(n)$ in both cases, as we have to shift the entire list.
 
 ### Some important features/functions for Arrays
+
 | Category | Operation | Time Complexity | Notes |
 |---|---|---|---|
 | **Access** | `arr[i]` | O(1) | Direct index access |
@@ -133,7 +162,7 @@ class DynamicArray:
         self.arr = [0]*self.capacity
 
     def get(self, i: int) -> int:
-        if not 0 <= i <= self.capacity-1:
+        if not 0 <= i <= self.length-1:
             raise IndexError('Index out of range')
         return self.arr[i]
 
@@ -148,8 +177,9 @@ class DynamicArray:
         self.length += 1
 
     def popback(self) -> int:
-        if self.length > 0:
-            self.length -= 1
+        if self.length == 0:
+            raise IndexError('pop from empty array')
+        self.length -= 1
         return self.arr[self.length]
 
     def resize(self) -> None:
@@ -268,6 +298,7 @@ def detectCycle(head: Node) -> bool:
 from collections import deque
 d = deque([1,2,3])
 ```
+
 | Operation | Time Complexity | Notes |
 |---|---|---|
 | `d.append(4)` | O(1) | Appends to the right |
@@ -321,7 +352,7 @@ class Queue:
 
     def dequeue(self) -> int:
         if not self.rear:
-            raise IndexError("deque from empty queue")
+            raise IndexError("dequeue from an empty queue")
         val = self.front.val
         self.front = self.front.next
         if not self.front:
@@ -356,10 +387,13 @@ class QueueUsingStacks:
             raise IndexError("dequeue from an empty queue")
         return self.out_stack.pop()
 
-    def peek(self) -> bool:
-        if len(self.in_stack) == 0:
-            raise IndexError("empty queue")
-        return self.in_stack[-1]:
+    def peek(self) -> int:
+        if not self.out_stack:
+            while self.in_stack:
+                self.out_stack.append(self.in_stack.pop())
+        if not self.out_stack:
+            raise IndexError("peek from an empty queue")
+        return self.out_stack[-1]
 
     def is_empty(self) -> bool:
         return len(self.in_stack) == 0
@@ -379,7 +413,7 @@ class CircularQueue:
             raise OverflowError("queue is full")
         rear = (self.front + self.count) % self.capacity
         self.q[rear] = val
-        count += 1
+        self.count += 1
 
     def dequeue(self) -> int:
         if self.count == 0:
@@ -523,7 +557,7 @@ class Stack:
 
     def peek(self) -> int:
         if not self.top:
-            raise IndexErro("Empty Stack")
+            raise IndexError("Empty Stack")
         return self.top.val
 
     def is_empty(self) -> bool:
@@ -544,17 +578,20 @@ heapq.heappush(heap, 1)
 heapq.heappush(heap, 3)
 
 print(heapq.heappop(heap)) # 1 -> smallest
-print(heapq.heahpop(heap)) # 3
+print(heapq.heappop(heap)) # 3
 ```
 **heapq functions**
-- `heapq.heappush(heap,x)` -> $O(\log n)$, push $x$ onto heap
-- `heaq.heappop(heap)` -> $O(\log n)$, pop and return smallest item
-- `heapq.heappushpop(heap,x)` -> $O(\log n)$, Push $x$ and then pop the smallest (more efficient than push + pop)
-- `heapq.heapreplace(heap,x)` -> $O(\log n)$, Pop the smallest, and then push $x$
-- `heapq.heapify(list)` -> $O(n)$, Convert an existing list into heap, in-place
-- `heapq.nlargest(k, iterable)` -> $O(n \log k)$, returns the $k$ largest elements.
-- `heapq.nsmallest(k, iterable)` -> $O(n \log k)$, returns the smallest $k$ elements.
-- `heap[-1]` -> $O(1)$, Peek 
+
+| Function | Time Complexity | Notes |
+|---|---|---|
+| `heapq.heappush(heap, x)` | $O(\log n)$ | Push $x$ onto heap |
+| `heapq.heappop(heap)` | $O(\log n)$ | Pop and return smallest item |
+| `heapq.heappushpop(heap, x)` | $O(\log n)$ | Push $x$ and then pop the smallest (more efficient than push + pop) |
+| `heapq.heapreplace(heap, x)` | $O(\log n)$ | Pop the smallest, and then push $x$ |
+| `heapq.heapify(list)` | $O(n)$ | Convert an existing list into a heap, in-place |
+| `heapq.nlargest(k, iterable)` | $O(n \log k)$ | Returns the $k$ largest elements |
+| `heapq.nsmallest(k, iterable)` | $O(n \log k)$ | Returns the smallest $k$ elements |
+| `heap[0]` | $O(1)$ | Peek (smallest element sits at index 0, not -1) |
 
 **max-heap trick**
 - `heapq` only gives us min-heap, for max-heap, we can simply negate the values on the way in and way out.
@@ -682,7 +719,7 @@ def inorder_dfs(root: TreeNode) -> None:
 **Note** - Inorder traversal of a BST gives a sorted array.
 ```python
 # Postorder Traversal - DFS
-def postorder_dfs(root: TreeNode) -> Node:
+def postorder_dfs(root: TreeNode) -> None:
     if root:
         postorder_dfs(root.left)
         postorder_dfs(root.right)
@@ -704,16 +741,16 @@ def bfs(root: TreeNode) -> None:
 ```
 
 ```python
-# iterative traversal using explicit stack
+# iterative inorder traversal using explicit stack
 def iterative_traversal(root: TreeNode) -> List[int]:
     result, stack = [], []
     curr = root
     while curr or stack:
         while curr:
-            result.append(curr)
+            stack.append(curr)
             curr = curr.left
         curr = stack.pop()
-        result.append(curr.val)
+        result.append(curr.data)
         curr = curr.right
     return result
 ```
@@ -727,7 +764,7 @@ class TreeNode:
         self.right = None
 
 def build_tree(preorder, inorder):
-    if not preoder or not inorder:
+    if not preorder or not inorder:
         return None
 
     root_val = preorder[0]
@@ -735,7 +772,7 @@ def build_tree(preorder, inorder):
 
     mid = inorder.index(root_val)
 
-    root.left = build_tree(preoder[1:mid+1],inorder[:mid] )
+    root.left = build_tree(preorder[1:mid+1], inorder[:mid])
     root.right = build_tree(preorder[mid+1:], inorder[mid+1:])
 
     return root
@@ -765,7 +802,7 @@ def build_tree(preorder, inorder):
 
         return root
     
-    return helper(0, len(preoder)-1)
+    return helper(0, len(preorder)-1)
 ```
 ### Height of a Binary Tree
 ```python
@@ -804,7 +841,7 @@ def isIdentical(p: TreeNode, q: TreeNode) -> bool:
 ```python
 def isSubtree(root: TreeNode, subRoot: TreeNode) -> bool:
 
-    if not subroot: return True
+    if not subRoot: return True
     if not root: return False
     
     if (root.data == subRoot.data and isIdentical(root, subRoot)): return True
@@ -833,9 +870,24 @@ def diameter(root: TreeNode) -> int:
 ```
 
 ### Check if balanced
+- Balanced tree: for every node, the height difference between left and right subtrees is at most 1.
+- Naive approach recomputes height at every node -> $O(n^2)$. Better: compute height and check balance in a single bottom-up pass -> $O(n)$.
 ```python
-# balanced tree - diff bw left height and right height is bounded
+def is_balanced(root: TreeNode) -> bool:
+    def height(node: TreeNode) -> int:
+        if not node:
+            return 0
+        left = height(node.left)
+        if left == -1:
+            return -1
+        right = height(node.right)
+        if right == -1:
+            return -1
+        if abs(left - right) > 1:
+            return -1
+        return 1 + max(left, right)
 
+    return height(root) != -1
 ```
 
 ## Binary Search Trees
@@ -874,7 +926,7 @@ class BST:
             return node
         if val < node.val:
             return self._search(node.left, val)
-        return self._serach(node.right, val)
+        return self._search(node.right, val)
 
     def delete(self, val: int) -> None:
         self.root = self._delete(self.root, val)
@@ -883,7 +935,7 @@ class BST:
         if node is None: return None
         if val < node.val:
             node.left = self._delete(node.left, val)
-        if val > node.val:
+        elif val > node.val:
             node.right = self._delete(node.right, val)
         else: # found the match, now three cases
             if not node.left:
@@ -934,8 +986,8 @@ def lca(root:TreeNode, p:int, q:int) -> TreeNode:
     - Undirected
     - Weighted
     - Unweighted
-    - Cylic
-    - Uncyclic
+    - Cyclic
+    - Acyclic
     - Connected
     - Sparse vs Dense
 ### Representation
@@ -949,7 +1001,7 @@ graph = {
     'D': ['B', 'C']
 }
 ```
-- For wieghted graphs, we store `(neighbor, weight)` pais.
+- For weighted graphs, we store `(neighbor, weight)` pairs.
 ```python
 graph = {
     'A': [('B', 4), ('C', 1)],
@@ -1003,7 +1055,7 @@ def build_adj_list(edges: List, directed: bool = False) -> dict:
 ### Traversals
 #### DFS (Recursive)
 ```python
-def dfs(graph, node, visited):
+def dfs(graph, node, visited=None):
     if visited is None:
         visited = set()
     visited.add(node)
@@ -1011,7 +1063,7 @@ def dfs(graph, node, visited):
     for neighbor in graph[node]:
         if neighbor not in visited:
             result.extend(dfs(graph, neighbor, visited))
-    return visited
+    return result
 ```
 
 #### DFS (Iterative using Stack)
@@ -1177,4 +1229,3 @@ def dijkstra(graph, start):
                 heapq.heappush(heap, (new_dist, neighbor))
     return dist
 ```
-
