@@ -1,38 +1,41 @@
 # DSA Notes in Python
 
 ## List of Contents
-1. [Basics](#basics)
+- [Basics](#basics)
    - [Dictionary](#dictionary)
    - [Sets](#sets)
-2. [Arrays](#arrays)
+- [Arrays](#arrays)
    - [Static Arrays](#static-arrays)
    - [Dynamic Arrays](#dynamic-arrays)
    - [Implementation of a Dynamic Array](#implementation-of-a-dynamic-array)
-3. [Linked Lists](#linked-lists)
+- [Sorting](#sorting)
+    - [Time Complexities](#time-complexities)
+    - [Comparison Based Algorithms](#comparison-based-algorithms)
+    - [Non-Comparison Based Algorithms](#non-comparison-based-algorithms)
+- [Linked Lists](#linked-lists)
    - [Basic Structure](#basic-structure)
    - [Reversing a Linked List](#reversing-a-linked-list)
    - [Detecting Cycle](#detecting-cycle)
-4. [Queue](#queue)
+- [Queue](#queue)
    - [`deque` functions](#some-important-featuresfunctions-on-deque)
    - [Queue using Linked Lists](#implementation-of-queues-using-linkedlists)
    - [Queue using two Stacks](#implementation-of-queues-using-two-stacks)
    - [Circular Queue](#implementation-of-circular-queue)
-5. [Double Ended Queue](#double-ended-queues)
-6. [Stacks](#stack)
-7. [Heaps/Priority Queue](#heaps--priority-queues)
+- [Double Ended Queue](#double-ended-queues)
+- [Stacks](#stack)
+- [Heaps/Priority Queue](#heaps--priority-queues)
    - [`heapq` module](#heapq-module)
    - [Implementation from scratch](#implementation-of-heaps-from-scratch)
-8. [Binary Trees](#binary-trees)
+- [Binary Trees](#binary-trees)
    - [Traversals (pre/in/post/BFS/iterative)](#binary-trees-traversal)
    - [Build from Preorder + Inorder](#constructing-a-binary-tree-from-preoder-and-inorder-traversals)
    - [Height / Node Count / Identical / Subtree](#height-of-a-binary-tree)
    - [Diameter](#diameter-of-a-binary-tree)
-   - [Check if Balanced](#check-if-balanced)
-9. [Binary Search Trees](#binary-search-trees)
+   - [Check if Balanced](#check-if-balanced)- [Binary Search Trees](#binary-search-trees)
    - [Insert / Search / Delete](#implementation-from-scratch)
    - [Validate a BST](#validate-a-bst)
    - [Lowest Common Ancestor](#lowest-common-ancestor-lca)
-10. [Graphs](#graphs)
+- [Graphs](#graphs)
     - [Representation (Adjacency List/Matrix, Edge List)](#representation)
     - [Traversals (DFS/BFS)](#traversals)
     - [Cycle Detection (Directed/Undirected)](#common-algorithms)
@@ -196,6 +199,169 @@ class DynamicArray:
     def getCapacity(self) -> int:
         return self.capacity
 
+```
+## Sorting
+### Time Complexities
+
+| Algorithm | Best | Average | Worst | Space | Stable? |
+|---|---|---|---|---|---|
+| Bubble Sort | O(n) | O(n²) | O(n²) | O(1) | Yes |
+| Selection Sort | O(n²) | O(n²) | O(n²) | O(1) | No |
+| Insertion Sort | O(n) | O(n²) | O(n²) | O(1) | Yes |
+| Merge Sort | O(n log n) | O(n log n) | O(n log n) | O(n) | Yes |
+| Quick Sort | O(n log n) | O(n log n) | O(n²) | O(log n) | No |
+| Heap Sort | O(n log n) | O(n log n) | O(n log n) | O(1) | No |
+| Counting Sort | O(n+k) | O(n+k) | O(n+k) | O(n+k) | Yes |
+| Radix Sort | O(nk) | O(nk) | O(nk) | O(n+k) | Yes |
+| Bucket Sort | O(n+k) | O(n+k) | O(n²) | O(n) | Yes (depends on inner sort) |
+| Tim Sort (Python's `sort()`) | O(n) | O(n log n) | O(n log n) | O(n) | Yes |
+
+**Stability:** If two elements are same, their relative order remains same.
+
+### Comparison based Algorithms
+#### Bubble Sort
+- Repeatedly swaps adjacent elements if they're out of order. 
+- Each pass "bubbles" the largest unsorted element to its corrent order.
+```python
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        swapped = False
+        for j in range(n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+                swapped = True
+        if swapped if False:
+            break #already sorted, break early
+    return arr
+```
+
+#### Selection Sort
+- Repeatedly finds the minimum of the unsorted portion and swaps it into place.
+```python
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i+1,n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+```
+
+#### Insertion Sort
+- Builds the sorted array, one element at a time.
+- Inserts each new element into its correct position among the already-sorted part.
+```python
+def insertion_sort(arr):
+    for i in range(1,len(arr)):
+        key = arr[i]
+        j = i-1
+        while j>= 0 and arr[j] > key:
+            arr[j+1] = arr[j]
+            j -= 1
+        arr[j+1] = key
+    return arr
+```
+
+#### Merge Sort
+- DnC: Divide the array into halves, sort them and merge back
+```python
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+
+    mid = len(arr)//2
+
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+
+    return merge(left,right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    
+    result.extend(left[i:])
+    result.extend(left[j:])
+
+    return result
+```
+
+#### Quick Sort
+- DnC: Pick a pivot, parition the array such that smaller elements are to the left of the pivot and the rest are on the right.
+- Recurse on each step.
+```python
+def quick_sort(arr, low=0, high=None):
+    if high is None:
+        high = len(arr)-1
+    if low < high:
+        pivot_idx = partition(arr,low,high)
+        quick_sort(arr,low,pivot_idx-1)
+        quick_sort(arr,pivot_idx+1,high)
+    return arr
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    return i+1
+```
+#### Heap Sort
+- Builds a max-heap from the array, then repeatedly extract the max and place it at the end.
+```python
+def heap_sort(arr):
+    n = len(arr)
+    for i in range(n//2 - 1, -1, -1):
+        heapify(arr, n, i)
+    for i in range(n-1, 0, -1):
+        arr[0], arr[i] = arr[i], arr[0]
+        heapify(arr, i, 0)
+    return arr
+
+def heapify(arr, n, i):
+    largest = i
+    left, right = 2*i + 1, 2*2 + 2
+
+    if left < n and arr[left] > arr[largest]:
+        largest = left
+    if right < n and arr[right] > arr[largest]:
+        largest = right
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+```
+
+### Non-comparison based Algorithms
+
+#### Counting Sort
+- Counts the occurences of each value and then reconstructs the sorted array
+```python
+def counting_sort(arr):
+    if not arr: return arr
+
+    max_val = max(arr)
+    count = [0]*(max_val + 1)
+
+    for x in arr:
+        count[x] += 1
+
+    result = []
+    for val, c in enumerate(count):
+        result.extend([val]*c)
 ```
 
 ## Linked Lists
