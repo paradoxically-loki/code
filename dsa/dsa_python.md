@@ -8,6 +8,9 @@
    - [Static Arrays](#static-arrays)
    - [Dynamic Arrays](#dynamic-arrays)
    - [Implementation of a Dynamic Array](#implementation-of-a-dynamic-array)
+- [Strings](#strings)
+    - [Basics of Strings](#basics-of-strings)
+    - [Common Built-in Methods](#common-built-in-methods)
 - [Sorting](#sorting)
     - [Time Complexities](#time-complexities)
     - [Comparison Based Algorithms](#comparison-based-algorithms)
@@ -200,6 +203,134 @@ class DynamicArray:
         return self.capacity
 
 ```
+
+## Strings
+### Basics of Strings
+- Strings are immutable, so every modification on them creates a new string.
+- So, `s += char` in a loop is $O(n^2)$.
+```python
+s = "hello"
+s[0] = 'H' # TypeError: Strings don't support item assignment
+```
+**Fix for building strings in a loop**
+```python
+# bad method - O(n^2)
+result = ""
+for c in some_list:
+    result += c
+
+# good method - O(n)
+result = []
+for c in some_list:
+    result.append(c)
+result = "".join(result)
+```
+
+**Access and Slicing**
+```python
+s = "hello world"
+
+s[0]        # 'h', O(1)
+s[-1]       # 'd', O(1)
+s[2:5]      # 'llo', O(k), slicing creates a new string
+s[::-1]     # reverses the string, O(n)
+s[::2]      # 'hlowrd', every second character 
+len(s)      # length, O(1)
+```
+### Common Built-in Methods
+**Case and Formatting**
+```python
+s = "hello"
+s.upper()         # "HELLO"
+s.lower()         # "hello"
+s.title()         # "Hello World"
+s.capitalize()    # "Hello world"
+s.swapcase()      # swap upper/lower
+```
+
+**Whitespace and cleaning**
+```python
+s.strip()           # removes leading and trailing whitespaces
+s.strip('xyz')      # removes leading and trailing chars from the given set
+s.lstrip()          # removes leading whitespaces
+s.rstrip()          # removes trailing whitespaces
+```
+
+**Searching**
+```python
+s.find('lo')         # finds first occurence, returns -1 if not found
+s.rfind('lo')        # finds first occurence from the end, returns -1 if not found
+s.index('lo')        # same as find, but gives ValueError if not found
+'lo' in s            # O(n), membership check
+s.count('l')         # counts non-overlapping occurences, O(n)
+s.startswith('hel')  # O(k)
+s.endswith('rld')    # O(k)
+```
+
+**Splitting and Joining**
+```python
+s = 'hello world'
+
+s.split()                   # ['hello', 'world'], splits on white space
+s.split(',')                # splits on a specified delimiter
+s.split(',', 1)             # maxsplit, only splits once
+s.rsplit(',', 1)            # splits from the right
+s.splitlines()              # splits on line breaks
+','.join(['a', 'b', 'c'])   # 'a,b,c', O(n)
+```
+`s.split()` also handles multiple spaces, leading/trailing whitespaces pretty cleanly.
+
+**Replacing**
+```python
+s.replace('l', 'L')       # replaces all occurences, O(n)
+s.replace('l', 'L', 1)    # replace only the first occurence
+```
+
+**Checking character types**
+```python
+c.isalpha()         # is alphabet
+c.isdigit()         # is digit
+c.isalnum()         # is digit or alphabet
+c.isupper()         # is uppercase
+c.islower()         # is lowercase
+c.isspace()         # is whitespace
+```
+
+**Padding and Alignment**
+```python
+s.zfill(5)          # '00042' for '42', pads with zeros on the left
+s.ljust(10, '*')    # left-justify, pad right
+s.rjust(10, '*')    # right-justify, pad left
+s.center(10, '*')   # center with padding
+```
+
+### Character <-> ASCII Coversion
+```python
+ord('a')   # 97, characted to ASCII/Unicode code point
+chr(97)    # 'a', code point to character
+
+# common pattern: map 'a'-'z' to indices 0-25
+index = ord(ch) - ord('a')
+letter = chr(index + ord('a'))
+```
+
+### String <-> list conversion (in-place-style manipulation)
+```python
+s = 'hello'
+chars = list(s)     # ['h', 'e', 'l', 'l', 'o']
+chars[0] = 'H'
+s = ''.join(chars)  # 'Hello'
+```
+
+### String Comparison
+```python
+"abc" == "abc"          # True, value comparison
+"abc" < "abd"           # True, lexicographic comparison, character by character
+
+sorted("cab")           # ['a', 'b', 'c'], returns a list, not a string
+''.join(sorted("cab"))  # 'abc'
+```
+
 ## Sorting
 ### Time Complexities
 
