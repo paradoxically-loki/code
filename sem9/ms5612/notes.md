@@ -10,6 +10,8 @@
 2. [29th July - Wednesday](#29th-july--wednesday)
 3. [3rd August - Monday](#3rd-august--monday)
 4. [10th August - Monday](#10th-august---monday)
+5. [12th August - Wednesday](#12th-august---wednesday)
+5. [17th August - Monday](#17th-august---monday)
 
 ---
 
@@ -221,7 +223,7 @@ Across the three cases, **NPV increases as uncertainty increases** — because t
 - $\sigma$, volatility is the annualised,which is also the standard deviation.
 - $\sigma^2$ is variance.
 - Technically, $\sigma$ should be the expected volatility from now to the time of expiry.
-
+---
 
 ## 12th August - Wednesday
 ### Key Assumptions of the Black-Sholes
@@ -280,4 +282,55 @@ Across the three cases, **NPV increases as uncertainty increases** — because t
 $$ 60m - 1.1B = 10 \\
 40m - 1.1B = 0$$
 - Do the above example by hand, and calculate the option value at each state.
+
+---
+## 17th August - Monday
+### Summary of the previous class
+- Revisiting the previous example.
+```
+                928
+          699
+    514         400
+71        259
+    168         33
+          21
+                0
+```
+- We can also find the probability of the project being abandoned in year n by using Pascal's triangle.
+
+### Risk Neutrality
+- Assume a gas distributor, 
+```
+September 1      December 1
+                 1.37
+
+1.00 
+
+                 0.73
+```
+- A consumer is willing to pay 0.5 million to buy 6 million unit at a price of 1.05.
+- The consumer is buying a call option.
+- Percentage raise = $1.37/1.00 - 1 = 37\%$
+- Percentage fall = $0.73/1.00 - 1 = -27\%$
+- Risk free interest rate, $R_f = 8\%$.
+- $P_R$: probability of raise
+- $$P_R * (\text{\% of rise}) + (1-P_R)*(\text{\% of fall}) = 2\%$$
+- $2\%$ reflects the interest rate of the quarter.
+- In our example, $P_R = 45\%$.
+- Consumer is paying $0.5/6$ premium per unit of gas.
+- Payoff for the distributor: $$(45\% (1.05 - 1.37)*6 + 55\% *0)/1.02  + 0.5$$
+- The minimum price for this contract must be 0.847 million, which is 0.14 per unit.
+#### Calculations using  the replicating portfolio method
+$$
+1.37m - 1.02b = 0.32 \\
+0.73m - 1.02b = 0
+$$
+- m = 0.5, b = 0.36. premium = 0.5*1 - 0.36 = 0.14.
+
+#### Option Delta
+$$\text{Option Delta} = \frac{\text{swing of the call}}{\text{swing of the stock}}$$
+- In our example, this comes out to be $\frac{0.32 - 0}{1.37 - 0.73} = 0.5$.
+- How much shall we borrow so that we'll be able to repay?
+- Delta can't be more than 1.
+---
 
