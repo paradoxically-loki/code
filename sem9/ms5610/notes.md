@@ -10,6 +10,7 @@
 2. [31st July -- Friday](#31st-july----friday)
 3. [4th August -- Tuesday](#4th-august----tuesday)
 4. [14th August -- Friday](#14th-august----friday)
+5. [21st August -- Friday](#21st-august----friday)
 
 ---
 
@@ -179,3 +180,18 @@ $$\text{Incremental VaR} = VaR_{p+a} - VaR_p$$
 
 ### To prep before next class.
 - Two securities portfolios.
+---
+
+## 21st August -- Friday
+### Benchmark Portfolios
+**Features**
+- Unambiguous
+- Investable
+- Measurable
+- Appropriate
+- Pre-specified
+
+Passive portfolios do not require market monitoring. Buy strategy outperforms a trade opportunity.
+
+### Growth Investing
+- 

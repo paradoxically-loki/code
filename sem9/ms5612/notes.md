@@ -12,6 +12,8 @@
 4. [10th August - Monday](#10th-august---monday)
 5. [12th August - Wednesday](#12th-august---wednesday)
 5. [17th August - Monday](#17th-august---monday)
+6. [19th August - Wednesday](#19th-august---wednesday)
+7. [24th August - Monday](#24th-august---monday)
 
 ---
 
@@ -334,3 +336,13 @@ $$\text{Option Delta} = \frac{\text{swing of the call}}{\text{swing of the stock
 - Delta can't be more than 1.
 ---
 
+## 19th August - Wednesday
+
+Absent
+
+
+---
+
+## 24th August - Monday
+
+Worked on paper
