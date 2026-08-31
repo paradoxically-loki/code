@@ -1,0 +1,226 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\title{Deriving Black--Scholes as the Limit of the Binomial Model}
+\author{Claude Sonnet 5}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+This note derives the Black--Scholes formula as the $n \to \infty$ limit of the
+Cox--Ross--Rubinstein (CRR) binomial option pricing model.
+
+\section*{Setup}
+
+Divide the option's life $T$ into $n$ steps, so each step has length
+\[
+  \Delta t = \frac{T}{n}.
+\]
+Using the CRR parameterization:
+\[
+  u = e^{\sigma \sqrt{\Delta t}}, \qquad
+  d = \frac{1}{u} = e^{-\sigma \sqrt{\Delta t}}, \qquad
+  p = \frac{e^{r \Delta t} - d}{u - d},
+\]
+where $\sigma$ is volatility, $r$ is the risk-free rate, $S_0$ is today's stock price,
+$K$ is the strike, and $p$ is the risk-neutral probability of an up move.
+
+After $n$ steps, with $j$ up-moves and $n-j$ down-moves, the stock price is
+\[
+  S(j) = S_0 u^j d^{\,n-j}.
+\]
+The binomial price of a European call is the discounted risk-neutral expected payoff:
+\[
+  C_0 = e^{-rT} \sum_{j=0}^{n} \binom{n}{j} p^j (1-p)^{n-j} \max\big(S(j) - K,\, 0\big).
+\]
+
+\section*{Step 1: Isolate the in-the-money terms}
+
+Let $a$ be the smallest integer $j$ such that $S_0 u^j d^{\,n-j} > K$. For $j \ge a$ the
+payoff is simply $S(j) - K$; for $j < a$ it is zero. The sum collapses to
+\[
+  C_0 = e^{-rT} \sum_{j=a}^{n} \binom{n}{j} p^j (1-p)^{n-j} \left( S_0 u^j d^{\,n-j} - K \right),
+\]
+which splits into two sums:
+\[
+  C_0 = S_0 e^{-rT} \sum_{j=a}^{n} \binom{n}{j} (pu)^j \big((1-p)d\big)^{n-j}
+        \;-\; K e^{-rT} \sum_{j=a}^{n} \binom{n}{j} p^j (1-p)^{n-j}.
+\]
+The second sum is $P(X \ge a)$ for $X \sim \text{Binomial}(n,p)$. Denote this
+complementary binomial CDF by
+\[
+  \Psi(a; n, p) := \sum_{j=a}^{n} \binom{n}{j} p^j (1-p)^{n-j}.
+\]
+So the second term is $K e^{-rT} \Psi(a; n, p)$ --- already shaped exactly like the
+$K e^{-rT} N(d_2)$ term in Black--Scholes.
+
+\section*{Step 2: The first sum under a shifted measure}
+
+Note the identity, directly from the definition of $p$:
+\[
+  pu + (1-p)d = e^{r\Delta t}.
+\]
+Define a new probability
+\[
+  p' := \frac{pu}{pu + (1-p)d} = pu\, e^{-r\Delta t}.
+\]
+Then
+\[
+  (pu)^j \big((1-p)d\big)^{n-j}
+  = \big[pu + (1-p)d\big]^n \, p'^{\,j} (1-p')^{n-j}
+  = e^{r n \Delta t} \, p'^{\,j} (1-p')^{n-j}
+  = e^{rT} \, p'^{\,j} (1-p')^{n-j}.
+\]
+Hence
+\[
+  \sum_{j=a}^{n} \binom{n}{j} (pu)^j \big((1-p)d\big)^{n-j} = e^{rT} \Psi(a; n, p').
+\]
+Substituting back, the $S_0 e^{-rT}$ prefactor cancels the $e^{rT}$, giving an
+\emph{exact} identity valid for every finite $n$:
+\[
+  \boxed{\; C_0 = S_0\, \Psi(a; n, p') \;-\; K e^{-rT} \Psi(a; n, p) \;}
+\]
+This already has the structural shape of Black--Scholes. It remains to show
+\[
+  \Psi(a; n, p) \;\longrightarrow\; N(d_2), \qquad
+  \Psi(a; n, p') \;\longrightarrow\; N(d_1)
+  \qquad \text{as } n \to \infty.
+\]
+
+\begin{quote}
+\emph{Interpretation:} $p'$ is the risk-neutral probability under the
+``stock as numeraire'' measure --- the discrete-time analogue of a Girsanov change of
+measure. In the It\^o's lemma derivation, $d_1$ and $d_2$ differ by exactly
+$\sigma\sqrt{T}$; that shift is precisely this same measure change, expressed here in
+purely combinatorial terms.
+\end{quote}
+
+\section*{Step 3: Log stock price as a sum of small steps}
+
+Under the true risk-neutral measure $p$, write
+\[
+  \ln\!\left(\frac{S_n}{S_0}\right) = \sum_{i=1}^n Y_i,
+  \qquad
+  Y_i =
+  \begin{cases}
+    +\sigma\sqrt{\Delta t} & \text{w.p. } p \\
+    -\sigma\sqrt{\Delta t} & \text{w.p. } 1-p
+  \end{cases}
+\]
+so that
+\[
+  \mathbb{E}[Y_i] = \sigma\sqrt{\Delta t}\,(2p-1), \qquad
+  \operatorname{Var}(Y_i) = \sigma^2 \Delta t \left[1 - (2p-1)^2\right].
+\]
+We need the asymptotic behavior of $p$ as $\Delta t \to 0$.
+
+\section*{Step 4: Expand $p$ for small $\Delta t$}
+
+Taylor-expand each term to first order in $\Delta t$:
+\[
+  e^{r\Delta t} \approx 1 + r\Delta t,
+\]
+\[
+  u = e^{\sigma\sqrt{\Delta t}} \approx 1 + \sigma\sqrt{\Delta t} + \tfrac{1}{2}\sigma^2 \Delta t + O(\Delta t^{3/2}),
+\]
+\[
+  d = e^{-\sigma\sqrt{\Delta t}} \approx 1 - \sigma\sqrt{\Delta t} + \tfrac{1}{2}\sigma^2 \Delta t + O(\Delta t^{3/2}).
+\]
+So
+\[
+  u - d \approx 2\sigma\sqrt{\Delta t}, \qquad
+  e^{r\Delta t} - d \approx \sigma\sqrt{\Delta t} + \left(r - \tfrac{\sigma^2}{2}\right)\Delta t + O(\Delta t^{3/2}).
+\]
+Dividing,
+\[
+  p \approx \frac{1}{2} + \frac{r - \sigma^2/2}{2\sigma}\sqrt{\Delta t}.
+\]
+This is the key asymptotic fact: $p \to 1/2$, with a correction carrying drift
+$r - \sigma^2/2$ --- the same It\^o-correction drift that appears in the Black--Scholes
+lognormal distribution, obtained here purely from a Taylor expansion.
+
+\section*{Step 5: Limiting mean and variance}
+
+\textbf{Mean of the sum:}
+\[
+  n\,\mathbb{E}[Y_i] = n\sigma\sqrt{\Delta t}\,(2p-1)
+  = n \sigma \sqrt{\Delta t} \cdot \frac{(r - \sigma^2/2)\sqrt{\Delta t}}{\sigma}
+  = n\left(r - \tfrac{\sigma^2}{2}\right)\Delta t
+  = \left(r - \tfrac{\sigma^2}{2}\right) T.
+\]
+
+\textbf{Variance of the sum:} since $(2p-1)^2 = O(\Delta t)$ is negligible next to $1$,
+\[
+  n \operatorname{Var}(Y_i) \approx n \sigma^2 \Delta t = \sigma^2 T.
+\]
+
+By the Central Limit Theorem (De Moivre--Laplace),
+\[
+  \ln\!\left(\frac{S_n}{S_0}\right) \;\xrightarrow{d}\;
+  \mathcal{N}\!\left( \left(r - \tfrac{\sigma^2}{2}\right) T,\; \sigma^2 T \right)
+  \qquad \text{as } n \to \infty.
+\]
+This is exactly the risk-neutral lognormal distribution Black--Scholes assumes ---
+derived here, not assumed.
+
+\section*{Step 6: $\Psi(a; n, p) \to N(d_2)$}
+
+The event $j \ge a$ is the event $S_n > K$. Standardizing the limiting normal
+distribution from Step 5,
+\[
+  \Psi(a; n, p) \;\longrightarrow\; N(d_2), \qquad
+  d_2 = \frac{\ln(S_0/K) + \left(r - \sigma^2/2\right) T}{\sigma\sqrt{T}}.
+\]
+
+\section*{Step 7: $\Psi(a; n, p') \to N(d_1)$}
+
+Repeating Step 4's expansion for $p'$ instead of $p$ gives the same form with the
+opposite sign on the volatility term:
+\[
+  p' \approx \frac{1}{2} + \frac{r + \sigma^2/2}{2\sigma}\sqrt{\Delta t}.
+\]
+Repeating Steps 5--6 with $p'$ gives
+\[
+  \Psi(a; n, p') \;\longrightarrow\; N(d_1), \qquad
+  d_1 = \frac{\ln(S_0/K) + \left(r + \sigma^2/2\right) T}{\sigma\sqrt{T}} = d_2 + \sigma\sqrt{T}.
+\]
+
+\section*{Conclusion}
+
+Taking $n \to \infty$ in the exact identity from Step 2,
+\[
+  C_0 = S_0\, \Psi(a; n, p') - K e^{-rT} \Psi(a; n, p),
+\]
+yields the Black--Scholes formula:
+\[
+  \boxed{\; C = S_0\, N(d_1) \;-\; K e^{-rT} N(d_2) \;}
+\]
+
+\section*{What this proof teaches}
+
+\begin{enumerate}
+  \item \textbf{Where $d_1$ and $d_2$ come from.} In the PDE derivation they emerge from
+  solving a differential equation. Here they are standardized counts of ``how many
+  up-moves are needed to finish in the money,'' under two different probability
+  measures. The gap $\sigma\sqrt{T}$ between them is the discrete footprint of a
+  measure change --- Girsanov's theorem, built from elementary combinatorics.
+
+  \item \textbf{Where the $-\sigma^2/2$ drift correction comes from.} In the It\^o's
+  lemma derivation this term comes from the second-order (quadratic variation) term in
+  It\^o's formula. Here it falls out of a plain Taylor expansion of $p$. Both routes
+  encode the same fact --- averaging a multiplicative (lognormal) process pulls the
+  median below the mean --- via entirely different machinery.
+
+  \item \textbf{The whole proof rests on the Central Limit Theorem.} Black--Scholes
+  pricing is fundamentally a CLT statement about a discrete random walk. The
+  continuous-time stochastic calculus version is more powerful and generalizes further,
+  but the essential content --- many small independent bets summing to a lognormal
+  outcome --- is 18th/19th century probability theory (De Moivre--Laplace).
+\end{enumerate}
+
+\end{document}
