@@ -1529,3 +1529,23 @@ def dijkstra(graph, start):
                 heapq.heappush(heap, (new_dist, neighbor))
     return dist
 ```
+
+#### Prin's Algorithm
+
+
+#### Floyd Warshall Algorithm
+
+
+#### Kruskal's Algorithm
+
+
+#### SPFA - Shortest Path Faster Algorithm
+
+
+#### Bellman Ford Algorithm
+
+
+#### Minimum Spanning Tree
+
+
+#### Minimum Height Tree
