@@ -1549,3 +1549,112 @@ def dijkstra(graph, start):
 
 
 #### Minimum Height Tree
+
+
+## Bit Manipulation
+### Basics
+#### Basic Operators
+```python
+a = 5           # 0101
+b = 3           # 0011
+
+a & b = 1       # 0001, and
+a | b = 7       # 0111, or
+a ^ b = 6       # 0110, xor
+
+~ a   = -6      # flips all bits, in python, conceptually defined as ~a = -(a+1)
+
+a << 1 = 10     # 1010, multiply by 2
+a >> 1 = 2      # 0010, (divide by 2, floor)
+```
+
+#### XOR Properties
+```python
+a ^ a = 0       # xor anything with itself is 0
+a ^ 0 = a       # xor with 0 preserves the value
+a ^ a ^ b = b   # xor-ing twice with the same value cancels out
+```
+
+#### NOT Properties
+- In python, integers are infinite-precision, so simply Not doesn't give bit flipping, and thus it is conceptually defined as $ \sim a = - (a + 1)$.
+- If we want the bit flipped version, we may get it by masking as follows:
+```python
+def not_8bit(a):
+    return ~a & 0xFF # 0xFF = 11111111, keeps only last 8 digits
+```
+
+#### Shifting
+```python
+1 << n # 2^n
+1 >> n # floor(1/(2^n))
+```
+
+### Common Algorithms
+#### Check if the i-th bit is set
+```python
+def is_bit_set(n,i):
+    return (n>>i) & 1 == 1
+```
+
+#### Set the i-th bit
+```python
+def set_bit(n,i):
+    return n | (1 << i)
+```
+
+#### Clear the i-th bit
+```python
+def clear_bit(n,i):
+    return n & ~(1 << i)
+```
+
+#### Toggle the i-th bit
+```python
+def toggle_bit(n,i):
+    return n ^ (1 << i)
+```
+
+#### Check if a number is a power of 2
+```python
+def is_power_of_two:
+    return n > 0 and (n & (n - 1)) == 0
+```
+
+#### XOR based pattern problems
+```python
+# find the only duplicate in a list of numbers
+def findDuplicate(nums: List[int]) -> int:
+    ans = nums[0]
+    for i in range(1, len(nums)):
+        ans ^= nums[i]
+    return ans
+```
+
+```python
+# find the missing number in a range 0-n
+def findMissing(nums: List[int]) -> int:
+    result = len(nums)
+    for i, num in enumerate(nums):
+        result ^= i^num
+    return result
+```
+
+```python
+# swapping two number
+a = a ^ b
+b = a ^ b # (a ^ b) ^ b = a
+a = a ^ b # (a ^ b) ^ ((a ^ b) ^ b) = b
+```
+
+```python
+# all subsets
+def allSubsets(nums: List[int]) -> List[List[int]]:
+    n = len(nums)
+    subsets = []
+
+    for mask in range(1 << n): # 2^n choices
+        subset = [nums[i] for i in range(n) is mask & (1<<i)]
+        subsets.append(subset)
+    
+    return subsets
+``` 
