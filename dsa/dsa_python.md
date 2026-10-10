@@ -1,56 +1,114 @@
 # DSA Notes in Python
 
-## List of Contents
-- [Basics](#basics)
-   - [Dictionary](#dictionary)
-   - [Sets](#sets)
+## Index
+
+- [Hash Tables: Dictionaries and Sets](#hash-tables-dictionaries-and-sets)
+    - [Dictionary](#dictionary)
+    - [Sets](#sets)
 - [Arrays](#arrays)
-   - [Static Arrays](#static-arrays)
-   - [Dynamic Arrays](#dynamic-arrays)
-   - [Implementation of a Dynamic Array](#implementation-of-a-dynamic-array)
+    - [Static Arrays](#static-arrays)
+    - [Dynamic Arrays](#dynamic-arrays)
+    - [Common Operations on Python Lists](#common-operations-on-python-lists)
+    - [Implementation of a Dynamic Array](#implementation-of-a-dynamic-array)
 - [Strings](#strings)
     - [Basics of Strings](#basics-of-strings)
     - [Common Built-in Methods](#common-built-in-methods)
-    - [Character ASCII](#character---ascii-coversion)
-    - [String list conversion](#string---list-conversion-in-place-style-manipulation)
+    - [Character <-> ASCII Conversion](#character---ascii-conversion)
+    - [String <-> list conversion (in-place-style manipulation)](#string---list-conversion-in-place-style-manipulation)
     - [String Comparison](#string-comparison)
 - [Sorting](#sorting)
     - [Time Complexities](#time-complexities)
-    - [Comparison Based Algorithms](#comparison-based-algorithms)
-    - [Non-Comparison Based Algorithms](#non-comparison-based-algorithms)
+    - [Comparison based Algorithms](#comparison-based-algorithms)
+        - [Bubble Sort](#bubble-sort)
+        - [Selection Sort](#selection-sort)
+        - [Insertion Sort](#insertion-sort)
+        - [Merge Sort](#merge-sort)
+        - [Quick Sort](#quick-sort)
+        - [Heap Sort](#heap-sort)
+    - [Non-comparison based Algorithms](#non-comparison-based-algorithms)
+        - [Counting Sort](#counting-sort)
+        - [Radix Sort](#radix-sort)
+        - [Bucket Sort](#bucket-sort)
 - [Linked Lists](#linked-lists)
-   - [Basic Structure](#basic-structure)
-   - [Reversing a Linked List](#reversing-a-linked-list)
-   - [Detecting Cycle](#detecting-cycle)
+    - [Basic Structure](#basic-structure)
+    - [Reversing a Linked List](#reversing-a-linked-list)
+    - [Detecting Cycle](#detecting-cycle)
 - [Queue](#queue)
-   - [`deque` functions](#some-important-featuresfunctions-on-deque)
-   - [Queue using Linked Lists](#implementation-of-queues-using-linkedlists)
-   - [Queue using two Stacks](#implementation-of-queues-using-two-stacks)
-   - [Circular Queue](#implementation-of-circular-queue)
-- [Double Ended Queue](#double-ended-queues)
-- [Stacks](#stack)
-- [Heaps/Priority Queue](#heaps--priority-queues)
-   - [`heapq` module](#heapq-module)
-   - [Implementation from scratch](#implementation-of-heaps-from-scratch)
+    - [Introduction](#introduction)
+    - [Some important features/functions on `deque`](#some-important-featuresfunctions-on-deque)
+    - [An important note](#an-important-note)
+    - [Implementation of Queues using LinkedLists](#implementation-of-queues-using-linkedlists)
+    - [Implementation of Queues using two stacks](#implementation-of-queues-using-two-stacks)
+    - [Implementation of Circular Queue](#implementation-of-circular-queue)
+- [Double-ended Queues](#double-ended-queues)
+    - [Introduction](#introduction-1)
+    - [Implementation using Doubly Linked Lists](#implementation-using-doubly-linked-lists)
+- [Stack](#stack)
+    - [Stack Basics](#stack-basics)
+    - [Implementation using LinkedLists](#implementation-using-linkedlists)
+- [Heaps / Priority Queues](#heaps--priority-queues)
+    - [Basics](#basics)
+    - [`heapq` module](#heapq-module)
+    - [Implementation of heaps from scratch](#implementation-of-heaps-from-scratch)
 - [Binary Trees](#binary-trees)
-   - [Traversals (pre/in/post/BFS/iterative)](#binary-trees-traversal)
-   - [Build from Preorder + Inorder](#constructing-a-binary-tree-from-preoder-and-inorder-traversals)
-   - [Height / Node Count / Identical / Subtree](#height-of-a-binary-tree)
-   - [Diameter](#diameter-of-a-binary-tree)
-   - [Check if Balanced](#check-if-balanced)- [Binary Search Trees](#binary-search-trees)
-   - [Insert / Search / Delete](#implementation-from-scratch)
-   - [Validate a BST](#validate-a-bst)
-   - [Lowest Common Ancestor](#lowest-common-ancestor-lca)
+    - [Binary Trees Basics](#binary-trees-basics)
+    - [Binary Trees Traversal](#binary-trees-traversal)
+    - [Constructing a Binary Tree from preorder and inorder traversals](#constructing-a-binary-tree-from-preorder-and-inorder-traversals)
+    - [Height of a Binary Tree](#height-of-a-binary-tree)
+    - [Number of Nodes in a Binary Tree](#number-of-nodes-in-a-binary-tree)
+    - [Is Identical](#is-identical)
+    - [Is Subtree](#is-subtree)
+    - [Diameter of a binary tree](#diameter-of-a-binary-tree)
+    - [Check if balanced](#check-if-balanced)
+- [Binary Search Trees](#binary-search-trees)
+    - [Basics](#basics-1)
+    - [Implementation from Scratch](#implementation-from-scratch)
+    - [Validate a BST](#validate-a-bst)
+    - [Lowest Common Ancestor (LCA)](#lowest-common-ancestor-lca)
 - [Graphs](#graphs)
-    - [Representation (Adjacency List/Matrix, Edge List)](#representation)
-    - [Traversals (DFS/BFS)](#traversals)
-    - [Cycle Detection (Directed/Undirected)](#common-algorithms)
-    - [Topological Sort / Kahn's Algorithm](#topological-sort-dags-only)
-    - [Connected Components](#number-of-connected-components)
-    - [Dijkstra's Algorithm](#dijkstras-algorithm-only-for-non-negative-weights)
+    - [Basics](#basics-2)
+    - [Representation](#representation)
+        - [Adjacency List](#adjacency-list)
+        - [Adjacency Matrix](#adjacency-matrix)
+        - [Edge List](#edge-list)
+        - [Building an adjacency list from edge list](#building-an-adjacency-list-from-edge-list)
+    - [Traversals](#traversals)
+        - [DFS (Recursive)](#dfs-recursive)
+        - [DFS (Iterative using Stack)](#dfs-iterative-using-stack)
+        - [BFS (always iterative, uses Queue)](#bfs-always-iterative-uses-queue)
+    - [Common Algorithms](#common-algorithms)
+        - [Detect a Cycle (Undirected Graph)](#detect-a-cycle-undirected-graph)
+        - [Detect a Cycle (Directed Graph)](#detect-a-cycle-directed-graph)
+        - [Topological Sort (DAGs Only)](#topological-sort-dags-only)
+        - [Kahn's Algorithm (BFS alternative, also detects cycles)](#kahns-algorithm-bfs-alternative-also-detects-cycles)
+        - [Number of connected Components](#number-of-connected-components)
+    - [Shortest Paths](#shortest-paths)
+        - [Dijkstra's Algorithm (only for non-negative weights)](#dijkstras-algorithm-only-for-non-negative-weights)
+        - [Bellman-Ford Algorithm](#bellman-ford-algorithm)
+        - [SPFA - Shortest Path Faster Algorithm](#spfa---shortest-path-faster-algorithm)
+        - [Floyd-Warshall Algorithm](#floyd-warshall-algorithm)
+    - [Minimum Spanning Tree](#minimum-spanning-tree)
+        - [Prim's Algorithm](#prims-algorithm)
+        - [Kruskal's Algorithm](#kruskals-algorithm)
+    - [Minimum Height Trees](#minimum-height-trees)
+- [Bit Manipulation](#bit-manipulation)
+    - [Basics](#basics-3)
+        - [Basic Operators](#basic-operators)
+        - [XOR Properties](#xor-properties)
+        - [NOT Properties](#not-properties)
+        - [Shifting](#shifting)
+    - [Common Algorithms](#common-algorithms-1)
+        - [Check if the i-th bit is set](#check-if-the-i-th-bit-is-set)
+        - [Set the i-th bit](#set-the-i-th-bit)
+        - [Clear the i-th bit](#clear-the-i-th-bit)
+        - [Toggle the i-th bit](#toggle-the-i-th-bit)
+        - [Check if a number is a power of 2](#check-if-a-number-is-a-power-of-2)
+        - [Count set bits](#count-set-bits)
+        - [XOR based pattern problems](#xor-based-pattern-problems)
 
 
-## Basics
+
+## Hash Tables: Dictionaries and Sets
 ### Dictionary
 ```python
 d = {'a': 1, 'b': 2}
@@ -71,10 +129,12 @@ d = {'a': 1, 'b': 2}
 | Pop last added item | `d.popitem()` | O(1) | — |
 | Merge | `d.update(other)` | O(len(other)) | — |
 | Copy | `d.copy()` | O(n) | — |
-| Clear | `d.clear()` | O(1)* | — |
+| Clear | `d.clear()` | O(n) | — |
 | setdefault | `d.setdefault('x', [])` | O(1) | O(n) |
 
-**Dict Comprehension in frequency counting**
+The $O(n)$ worst case only happens with pathological hash collisions; in practice treat these operations as $O(1)$.
+
+**Frequency counting**
 
 ```python
 # vanilla dictionary
@@ -94,14 +154,16 @@ freq = Counter(arr)
 ```
 
 ```python
+from collections import Counter
+
 c = Counter("aabbbc")
 print(c) # Counter({'b': 3, 'a': 2, 'c': 1})
 print(c.most_common(2)) # [('b', 3), ('a', 2)]
 ```
 ### Sets
 ```python
-s = {1,2,3} # initilisation with values
-s = set() # empty initialisation
+s = {1, 2, 3}   # initialisation with values
+s = set()       # empty set; note that {} creates an empty dict, not a set
 ```
 
 **Common Operations**
@@ -109,33 +171,35 @@ s = set() # empty initialisation
 | Operation | Syntax | Average case | Worst case |
 |---|---|---|---|
 | Add element | `s.add(4)` | O(1) | O(n) |
-| Remove element | `s.remove(4)` (errors if missing) | O(1) | O(n) |
+| Remove element | `s.remove(4)` (raises `KeyError` if missing) | O(1) | O(n) |
 | Discard element | `s.discard(4)` (no error if missing) | O(1) | O(n) |
 | Check membership | `4 in s` | O(1) | O(n) |
-| Length | `len(s)` | O(1) | ------ |
-| Pop arbitrary (random) | `s.pop()` | O(1) | ------ |
-| Union | `s1 \| s2` | O(len(s1) + len(s2)) | ------ |
-| Intersection | `s1 & s2` | O(min(len(s1), len(s2))) | ------ |
-| Difference | `s1 - s2` | O(len(s1)) | ------ |
-| Symmetric difference | `s1 ^ s2` | O(len(s1) + len(s2)) | ------ |
-| Subset check | `s1 <= s2` | O(len(s1)) | ------ |
-| Copy | `s.copy()` | O(n) | ------ |
+| Length | `len(s)` | O(1) | — |
+| Pop an arbitrary element | `s.pop()` | O(1) | — |
+| Union | `s1 \| s2` | O(len(s1) + len(s2)) | — |
+| Intersection | `s1 & s2` | O(min(len(s1), len(s2))) | — |
+| Difference | `s1 - s2` | O(len(s1)) | — |
+| Symmetric difference | `s1 ^ s2` | O(len(s1) + len(s2)) | — |
+| Subset check | `s1 <= s2` | O(len(s1)) | — |
+| Copy | `s.copy()` | O(n) | — |
 
+
+Dictionary keys and set elements must be *hashable*: numbers, strings and tuples (of hashables) are; lists, sets and dicts are not.
 
 ## Arrays
 ### Static Arrays
 - Fixed size, decided at the time of creation, allocated as a contiguous block of memory. 
 - Access by index is $O(1)$.
 - Insertion/deletion in the middle is $O(n)$, as a lot of values need to be shifted.
-- numpy.ndarrays are static arrays, resizing means allocating a new array, not just growing the previous one.
-- Python lists/arrays are dynamic in size.
+- `numpy.ndarray`s behave like static arrays: resizing means allocating a new array and copying, not growing the old one.
+- Python `list`s are dynamic arrays (next section).
 ### Dynamic Arrays
 - Same contiguous memory idea, but it can resize. 
-- If we exceed the size, it creates a new list double the size and copies everything over.
-- Append time is $O(1)$ *amortized* and not $O(1)$ *flat* like we have in static arrays.
-- Inserting at the front is anyway $O(n)$ in both cases, as we have to shift the entire list.
+- If we exceed the capacity, it allocates a bigger block and copies everything over. The textbook choice is to double the size; CPython actually over-allocates by only about 12.5%, which is still enough for amortized $O(1)$ appends.
+- Append is $O(1)$ *amortized*, not worst-case: the single append that triggers a resize costs $O(n)$, but this averages out over many appends. (A static array has no append at all.)
+- Inserting at the front is $O(n)$ in both cases, as every element has to be shifted.
 
-### Some important features/functions for Arrays
+### Common Operations on Python Lists
 
 | Category | Operation | Time Complexity | Notes |
 |---|---|---|---|
@@ -166,7 +230,7 @@ s = set() # empty initialisation
 class DynamicArray:
     
     def __init__(self, capacity: int):
-        self.capacity = capacity
+        self.capacity = max(1, capacity)   # a capacity of 0 could never grow by doubling
         self.length = 0
         self.arr = [0]*self.capacity
 
@@ -176,6 +240,8 @@ class DynamicArray:
         return self.arr[i]
 
     def set(self, i: int, n: int) -> None:
+        if not 0 <= i < self.length:
+            raise IndexError('Index out of range')
         self.arr[i] = n
 
     def pushback(self, n: int) -> None:
@@ -210,10 +276,10 @@ class DynamicArray:
 ## Strings
 ### Basics of Strings
 - Strings are immutable, so every modification on them creates a new string.
-- So, `s += char` in a loop is $O(n^2)$.
+- So, `s += char` in a loop is $O(n^2)$ in the worst case. (CPython sometimes optimises this in place, but that is an implementation detail you should not rely on.)
 ```python
 s = "hello"
-s[0] = 'H' # TypeError: Strings don't support item assignment
+s[0] = 'H' # TypeError: 'str' object does not support item assignment
 ```
 **Fix for building strings in a loop**
 ```python
@@ -243,12 +309,12 @@ len(s)      # length, O(1)
 ### Common Built-in Methods
 **Case and Formatting**
 ```python
-s = "hello"
-s.upper()         # "HELLO"
-s.lower()         # "hello"
+s = "hello world"
+s.upper()         # "HELLO WORLD"
+s.lower()         # "hello world"
 s.title()         # "Hello World"
 s.capitalize()    # "Hello world"
-s.swapcase()      # swap upper/lower
+s.swapcase()      # "HELLO WORLD", swaps upper/lower
 ```
 
 **Whitespace and cleaning**
@@ -261,11 +327,12 @@ s.rstrip()          # removes trailing whitespaces
 
 **Searching**
 ```python
-s.find('lo')         # finds first occurence, returns -1 if not found
-s.rfind('lo')        # finds first occurence from the end, returns -1 if not found
-s.index('lo')        # same as find, but gives ValueError if not found
+s = "hello world"
+s.find('lo')         # 3, first occurrence, returns -1 if not found
+s.rfind('lo')        # 3, last occurrence, returns -1 if not found
+s.index('lo')        # same as find, but raises ValueError if not found
 'lo' in s            # O(n), membership check
-s.count('l')         # counts non-overlapping occurences, O(n)
+s.count('l')         # 3, counts non-overlapping occurrences, O(n)
 s.startswith('hel')  # O(k)
 s.endswith('rld')    # O(k)
 ```
@@ -285,8 +352,8 @@ s.splitlines()              # splits on line breaks
 
 **Replacing**
 ```python
-s.replace('l', 'L')       # replaces all occurences, O(n)
-s.replace('l', 'L', 1)    # replace only the first occurence
+s.replace('l', 'L')       # replaces all occurrences, O(n)
+s.replace('l', 'L', 1)    # replace only the first occurrence
 ```
 
 **Checking character types**
@@ -298,6 +365,7 @@ c.isupper()         # is uppercase
 c.islower()         # is lowercase
 c.isspace()         # is whitespace
 ```
+These return `True` only if *every* character satisfies the condition (and the string is non-empty).
 
 **Padding and Alignment**
 ```python
@@ -307,12 +375,13 @@ s.rjust(10, '*')    # right-justify, pad left
 s.center(10, '*')   # center with padding
 ```
 
-### Character <-> ASCII Coversion
+### Character <-> ASCII Conversion
 ```python
-ord('a')   # 97, characted to ASCII/Unicode code point
+ord('a')   # 97, character to ASCII/Unicode code point
 chr(97)    # 'a', code point to character
 
 # common pattern: map 'a'-'z' to indices 0-25
+ch = 'c'
 index = ord(ch) - ord('a')
 letter = chr(index + ord('a'))
 ```
@@ -350,12 +419,14 @@ sorted("cab")           # ['a', 'b', 'c'], returns a list, not a string
 | Bucket Sort | O(n+k) | O(n+k) | O(n²) | O(n) | Yes (depends on inner sort) |
 | Tim Sort (Python's `sort()`) | O(n) | O(n log n) | O(n log n) | O(n) | Yes |
 
-**Stability:** If two elements are same, their relative order remains same.
+**Stability:** a sort is stable if elements with equal keys keep their original relative order (this matters when sorting records, e.g. by age after sorting by name).
+
+Notes on the table: the quick sort space is the average recursion depth (worst case $O(n)$); bubble and insertion sort reach $O(n)$ only on (nearly) sorted input; counting sort is stable only in its prefix-sum form (shown under radix sort); $k$ is the value range for counting/bucket sort and the number of digits for radix sort.
 
 ### Comparison based Algorithms
 #### Bubble Sort
 - Repeatedly swaps adjacent elements if they're out of order. 
-- Each pass "bubbles" the largest unsorted element to its corrent order.
+- Each pass "bubbles" the largest unsorted element to its correct position at the end.
 ```python
 def bubble_sort(arr):
     n = len(arr)
@@ -365,8 +436,8 @@ def bubble_sort(arr):
             if arr[j] > arr[j+1]:
                 arr[j], arr[j+1] = arr[j+1], arr[j]
                 swapped = True
-        if swapped if False:
-            break #already sorted, break early
+        if not swapped:
+            break  # already sorted, stop early
     return arr
 ```
 
@@ -400,7 +471,8 @@ def insertion_sort(arr):
 ```
 
 #### Merge Sort
-- DnC: Divide the array into halves, sort them and merge back
+- DnC: Divide the array into halves, sort them and merge back.
+- Stable (because of the `<=` in the merge step), but needs $O(n)$ extra space.
 ```python
 def merge_sort(arr):
     if len(arr) <= 1:
@@ -426,14 +498,15 @@ def merge(left, right):
             j += 1
     
     result.extend(left[i:])
-    result.extend(left[j:])
+    result.extend(right[j:])
 
     return result
 ```
 
 #### Quick Sort
-- DnC: Pick a pivot, parition the array such that smaller elements are to the left of the pivot and the rest are on the right.
+- DnC: Pick a pivot, partition the array such that smaller elements are to the left of the pivot and the rest are on the right.
 - Recurse on each step.
+- With the last element as pivot, already sorted input is the worst case ($O(n^2)$ time and $O(n)$ recursion depth); picking a random pivot avoids this in practice.
 ```python
 def quick_sort(arr, low=0, high=None):
     if high is None:
@@ -468,7 +541,7 @@ def heap_sort(arr):
 
 def heapify(arr, n, i):
     largest = i
-    left, right = 2*i + 1, 2*2 + 2
+    left, right = 2*i + 1, 2*i + 2
 
     if left < n and arr[left] > arr[largest]:
         largest = left
@@ -482,7 +555,7 @@ def heapify(arr, n, i):
 ### Non-comparison based Algorithms
 
 #### Counting Sort
-- Counts the occurences of each value and then reconstructs the sorted array
+- Counts the occurrences of each value and then reconstructs the sorted array. Works for non-negative integers; $k$ is the maximum value.
 ```python
 def counting_sort(arr):
     if not arr: return arr
@@ -496,17 +569,64 @@ def counting_sort(arr):
     result = []
     for val, c in enumerate(count):
         result.extend([val]*c)
+    return result
+```
+
+#### Radix Sort
+- Sorts integers digit by digit, least significant digit first, using a **stable** counting sort on each digit. $O(d \cdot (n + b))$ for $d$ digits in base $b$.
+- The prefix-sum form of counting sort below is what makes counting sort stable: `count[d]` becomes the end position of digit `d`, and the output is filled from the back.
+```python
+def radix_sort(arr):
+    """Non-negative integers only."""
+    if not arr: return arr
+    max_val = max(arr)
+    exp = 1
+    while max_val // exp > 0:
+        arr = counting_sort_by_digit(arr, exp)
+        exp *= 10
+    return arr
+
+def counting_sort_by_digit(arr, exp):
+    count = [0]*10
+    for x in arr:
+        count[(x // exp) % 10] += 1
+    for d in range(1, 10):
+        count[d] += count[d-1]           # prefix sums
+    out = [0]*len(arr)
+    for x in reversed(arr):              # go backwards to stay stable
+        d = (x // exp) % 10
+        count[d] -= 1
+        out[count[d]] = x
+    return out
+```
+
+#### Bucket Sort
+- Spread the values into buckets by range, sort every bucket, then concatenate. $O(n+k)$ on average for roughly uniformly distributed input, $O(n^2)$ if everything lands in one bucket.
+```python
+def bucket_sort(arr):
+    """Floats in [0, 1)."""
+    n = len(arr)
+    if n == 0: return arr
+    buckets = [[] for _ in range(n)]
+    for x in arr:
+        buckets[int(x * n)].append(x)
+    result = []
+    for b in buckets:
+        result.extend(sorted(b))
+    return result
 ```
 
 ## Linked Lists
 ### Basic Structure
+- Nodes hold a value and a pointer to the next node; there is no contiguous memory and no random access.
+- `get(i)`, `insertTail` and `remove(i)` are $O(n)$; `insertHead` is $O(1)$ (keeping a tail pointer would make `insertTail` $O(1)$ too).
 ```python
 # linked lists
 from typing import List
 
 class Node:
-    def __init__(self, data=None):
-        self.data = data
+    def __init__(self, val=None):
+        self.val = val
         self.next = None
 
 class LinkedList:
@@ -514,12 +634,14 @@ class LinkedList:
         self.head = None
 
     def get(self, index: int) -> int:
+        if index < 0:
+            return -1
         temp = self.head
         i = 0
         while i < index and temp:
             temp = temp.next
             i += 1
-        return temp.data if temp else -1
+        return temp.val if temp else -1
 
     def insertHead(self, val: int) -> None:
         temp = self.head
@@ -555,7 +677,7 @@ class LinkedList:
         result = []
         curr = self.head
         while curr:
-            result.append(curr.data)
+            result.append(curr.val)
             curr = curr.next
         return result
 ```
@@ -575,23 +697,24 @@ def reverseLL(head: Node) -> Node:
 ```
 
 ### Detecting Cycle
+- Floyd's tortoise and hare: `slow` moves one step, `fast` moves two; they meet if and only if the list has a cycle. $O(n)$ time, $O(1)$ space.
 ```python
 def detectCycle(head: Node) -> bool:
     slow = fast = head
 
     while fast and fast.next:
         slow = slow.next
-        fast = fast.next
+        fast = fast.next.next
 
-        if (slow == fast): return True
-    
+        if slow == fast: return True
+
     return False
 ```
 
 ## Queue
 ### Introduction
 - FIFO (First In, First Out) functionality
-- Heavily used in Graph BFS Traversals. `List.pop(0)` if $O(n)$, so, simple lists won't be feasible.
+- Heavily used in Graph BFS Traversals. `list.pop(0)` is $O(n)$, so a plain list is a poor fit.
 - We mostly use the `deque` (pronounced as deck) functionality from `collections` library.
 ### Some important features/functions on `deque`
 ```python
@@ -619,14 +742,14 @@ d = deque([1,2,3])
 | `len(d)` | O(1) | Length of the deque |
 
 ### An important note
-- `deque(maxlen=N)` creates a bounded `deque`, which is heavily used in sliding window approaches. If we add too much on the right, elements from the left starts popping.
+- `deque(maxlen=N)` creates a bounded `deque`, which is heavily used in sliding window approaches. If we append beyond `maxlen`, elements from the opposite end are discarded.
 ```python
 from collections import deque
 
 d = deque(maxlen=3)
 d.append(1); d.append(2); d.append(3); d.append(4)
 
-print(d) # deque([2,3,4]). 1 got dropped off.
+print(d) # deque([2, 3, 4], maxlen=3), the 1 got dropped off
 ```
 ### Implementation of Queues using LinkedLists
 ```python
@@ -651,7 +774,7 @@ class Queue:
         self.size += 1
 
     def dequeue(self) -> int:
-        if not self.rear:
+        if not self.front:
             raise IndexError("dequeue from an empty queue")
         val = self.front.val
         self.front = self.front.next
@@ -670,6 +793,7 @@ class Queue:
 ```
 
 ### Implementation of Queues using two stacks
+- `dequeue` and `peek` are $O(1)$ amortized: every element is moved from `in_stack` to `out_stack` at most once.
 ```python
 class QueueUsingStacks:
     def __init__(self):
@@ -696,10 +820,11 @@ class QueueUsingStacks:
         return self.out_stack[-1]
 
     def is_empty(self) -> bool:
-        return len(self.in_stack) == 0
+        return not self.in_stack and not self.out_stack
 ```
 
 ### Implementation of Circular Queue
+- A fixed-capacity ring buffer: `front` plus `count` determine the rear index, which avoids the empty-vs-full ambiguity of a two-pointer design.
 ```python
 class CircularQueue:
     def __init__(self, k):
@@ -799,9 +924,10 @@ class Deque:
 
 ## Stack
 ### Stack Basics
-- Stacks follows Last In, First Out (LIFO) protocol.
+- Stacks follow the Last In, First Out (LIFO) protocol.
 - We can generally use Python's default Lists as stacks.
-- We may also use `collections.deque`
+- We may also use `collections.deque`.
+- `append` and `pop` at the end of a list are $O(1)$ (amortized for `append`), so a plain list is enough for most problems.
 ```python
 stack = []
 stack.append(1)
@@ -840,14 +966,11 @@ class Stack:
 
     def push(self, val: int) -> None:
         newNode = Node(val)
-        if not self.top:
-            self.top = newNode
-        else:
-            newNode.next = self.top
-            self.top = newNode
+        newNode.next = self.top
+        self.top = newNode
         self.size += 1
 
-    def pop(self) -> None:
+    def pop(self) -> int:
         if not self.top:
             raise IndexError("Empty Stack")
         val = self.top.val
@@ -865,9 +988,10 @@ class Stack:
 ```
 ## Heaps / Priority Queues
 ### Basics
+- A binary heap is a complete binary tree in which every parent is $\le$ its children (min-heap), so the minimum always sits at the root.
 - Unlike LIFO or FIFO, PQs don't care about the insertion order but rather the priority order.
 ### `heapq` module
-- `heapq` workd directly on python `list`, turning it into a binary heap in-place.
+- `heapq` works directly on python `list`, turning it into a binary heap in-place.
 ```python
 import heapq
 
@@ -917,8 +1041,9 @@ heapq.heappush(heap, (2, "task x"))
 heapq.heappush(heap, (1, "task l"))
 heapq.heappush(heap, (3, "task c"))
 
-print(heapq.heappop(heap)) # (1, "task l")
+print(heapq.heappop(heap)) # (1, 'task l')
 ```
+- If two priorities tie, Python compares the next tuple element, which raises `TypeError` for non-comparable items (e.g. custom objects). Use `(priority, counter, item)` with an increasing counter as a tie-breaker.
 
 ### Implementation of heaps from scratch
 - A binary heap is stored as an array, where the children of index $i$ element are at $2i + 1$, and $2i + 2$, and its parent lives at $(i-1)//2$.
@@ -987,8 +1112,8 @@ class MinHeap:
 ```python
 # class for TreeNode
 class TreeNode:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, val):
+        self.val = val
         self.left = None
         self.right = None
 
@@ -1000,10 +1125,10 @@ tree.left.left = TreeNode(4)
 ```
 ### Binary Trees Traversal
 ```python
-# Preorder Travesal - DFS
+# Preorder Traversal - DFS
 def preorder_dfs(root: TreeNode) -> None:
     if root:
-        print(root.data, end=" ")
+        print(root.val, end=" ")
         preorder_dfs(root.left)
         preorder_dfs(root.right)
 ```
@@ -1013,7 +1138,7 @@ def preorder_dfs(root: TreeNode) -> None:
 def inorder_dfs(root: TreeNode) -> None:
     if root:
         inorder_dfs(root.left)
-        print(root.data, end=" ")
+        print(root.val, end=" ")
         inorder_dfs(root.right)
 ```
 **Note** - Inorder traversal of a BST gives a sorted array.
@@ -1023,11 +1148,11 @@ def postorder_dfs(root: TreeNode) -> None:
     if root:
         postorder_dfs(root.left)
         postorder_dfs(root.right)
-        print(root.data, end=" ")
+        print(root.val, end=" ")
 ```
 
 ```python
-# BFS Travesal using Queue
+# BFS Traversal using Queue
 from collections import deque
 def bfs(root: TreeNode) -> None:
     if not root: return 
@@ -1035,14 +1160,16 @@ def bfs(root: TreeNode) -> None:
     queue = deque([root])
     while queue:
         node = queue.popleft()
-        print(node.data, end=" ")
+        print(node.val, end=" ")
         if node.left: queue.append(node.left)
         if node.right: queue.append(node.right)
 ```
 
 ```python
 # iterative inorder traversal using explicit stack
-def iterative_traversal(root: TreeNode) -> List[int]:
+from typing import List
+
+def iterative_inorder(root: TreeNode) -> List[int]:
     result, stack = [], []
     curr = root
     while curr or stack:
@@ -1050,11 +1177,13 @@ def iterative_traversal(root: TreeNode) -> List[int]:
             stack.append(curr)
             curr = curr.left
         curr = stack.pop()
-        result.append(curr.data)
+        result.append(curr.val)
         curr = curr.right
     return result
 ```
-### Constructing a Binary Tree from preoder and inorder traversals
+### Constructing a Binary Tree from preorder and inorder traversals
+- Preorder gives the root first; its position in the inorder sequence splits the remaining nodes into the left and right subtrees. Assumes all values are unique.
+- The naive version is $O(n^2)$ (`index` plus slicing); the hashmap version below is $O(n)$.
 ```python
 # naive implementation
 class TreeNode:
@@ -1084,16 +1213,16 @@ def build_tree(preorder, inorder):
 
 def build_tree(preorder, inorder):
     inorder_index = {val: i for i, val in enumerate(inorder)}
-    self_preorder_idx = 0
+    pre_idx = 0
 
     def helper(left, right):
-        nonlocal self_preorder_idx
+        nonlocal pre_idx
         if left > right:
             return None
         
-        root_val = preorder[self_preorder_idx]
+        root_val = preorder[pre_idx]
         root = TreeNode(root_val)
-        self_preorder_idx += 1
+        pre_idx += 1
 
         mid = inorder_index[root_val]
 
@@ -1105,6 +1234,7 @@ def build_tree(preorder, inorder):
     return helper(0, len(preorder)-1)
 ```
 ### Height of a Binary Tree
+- Here the height counts **nodes** on the longest root-to-leaf path (an empty tree has height 0). To count edges instead, return `-1` for an empty tree.
 ```python
 def height(root: TreeNode) -> int:
     if not root: return 0
@@ -1132,19 +1262,20 @@ def isIdentical(p: TreeNode, q: TreeNode) -> bool:
     if not p or not q: return p == q
 
     return (
-        p.data ==  q.data and
+        p.val ==  q.val and
         isIdentical(p.left, q.left) and
         isIdentical(p.right, q.right)   
     )
 ```
 ### Is Subtree
+- Test `isIdentical` at every node of `root`: $O(m \cdot n)$ worst case for trees with $n$ and $m$ nodes.
 ```python
 def isSubtree(root: TreeNode, subRoot: TreeNode) -> bool:
 
     if not subRoot: return True
     if not root: return False
     
-    if (root.data == subRoot.data and isIdentical(root, subRoot)): return True
+    if (root.val == subRoot.val and isIdentical(root, subRoot)): return True
 
     return (
         isSubtree(root.left, subRoot) or
@@ -1153,7 +1284,7 @@ def isSubtree(root: TreeNode, subRoot: TreeNode) -> bool:
 ```
 
 ### Diameter of a binary tree
-- Maximum distance bw any two nodes, may or may not pass through root
+- Maximum distance (in edges) between any two nodes; the path may or may not pass through the root. The longest path through a node is `left_height + right_height`.
 ```python
 def diameter(root: TreeNode) -> int:
     result = 0
@@ -1192,7 +1323,8 @@ def is_balanced(root: TreeNode) -> bool:
 
 ## Binary Search Trees
 ### Basics
-- For each node, `left` <= `node` <= `right`.
+- For every node, all values in the left subtree are smaller and all values in the right subtree are larger (`left < node < right`). We assume distinct keys; the `insert` below ignores duplicates.
+- Search, insert and delete are $O(h)$ for height $h$: $O(\log n)$ when balanced, $O(n)$ for a degenerate tree (e.g. keys inserted in sorted order).
 
 ### Implementation from Scratch
 ```python
@@ -1214,8 +1346,9 @@ class BST:
             return TreeNode(val)
         if val < node.val:
             node.left = self._insert(node.left, val)
-        else:
+        elif val > node.val:
             node.right = self._insert(node.right, val)
+        # equal: duplicate, ignored
         return node
 
     def search(self, val: int) -> TreeNode:
@@ -1264,6 +1397,7 @@ def is_valid_bst(node: TreeNode, low = float('-inf'), high = float('inf')) -> bo
 ```
 
 ### Lowest Common Ancestor (LCA)
+- The first version works for any binary tree (it assumes both `p` and `q` are present): $O(n)$.
 ```python
 def lca(root:TreeNode, p:int, q:int) -> TreeNode:
     if root is None or root.val == p or root.val == q:
@@ -1277,9 +1411,22 @@ def lca(root:TreeNode, p:int, q:int) -> TreeNode:
     return left if left else right
 ```
 
+For a BST we can use the ordering instead of searching both subtrees, which is $O(h)$:
+```python
+def lca_bst(root: TreeNode, p: int, q: int) -> TreeNode:
+    while root:
+        if p < root.val and q < root.val:
+            root = root.left
+        elif p > root.val and q > root.val:
+            root = root.right
+        else:
+            return root   # p and q are split by root (or one equals root)
+    return None
+```
+
 ## Graphs
 ### Basics
-- Graphs is a set of nodes (or vertices) connected via edges.
+- A graph is a set of nodes (vertices) connected via edges. Below, $V$ is the number of vertices and $E$ the number of edges.
 - No hierarchy, unlike trees.
 - Types of Graphs:
     - Directed
@@ -1327,46 +1474,60 @@ matrix = [
 edges = [('A', 'B'), ('A', 'C'), ('B', 'D'), ('C', 'D')]
 ```
 
+**Adjacency list vs. adjacency matrix**
+
+| | Adjacency list | Adjacency matrix |
+|---|---|---|
+| Space | O(V+E) | O(V²) |
+| Is there an edge u–v? | O(deg(u)) | O(1) |
+| Iterate over neighbours of u | O(deg(u)) | O(V) |
+| Best for | sparse graphs | dense graphs |
+
 #### Building an adjacency list from edge list
 ```python
 from collections import defaultdict
-def build_adj_list(edges: List, directed = False) -> dict:
+from typing import List
+
+def build_adj_list(edges: List, directed: bool = False) -> dict:
     graph = defaultdict(list)
-    for u,v in edges:
+    for u, v in edges:
         graph[u].append(v)
-        if not directed:
+        if directed:
+            graph[v]                 # touch v, so that sink nodes also become keys
+        else:
             graph[v].append(u)
     return graph
 
-# defaultdict here handles the case when the node is not present in graph
-
-def build_adj_list(edges: List, directed: bool = False) -> dict:
+# the same with a plain dict (no import needed)
+def build_adj_list_plain(edges: List, directed: bool = False) -> dict:
     graph = {}
-    for u,v in edges:
-        if u not in graph:
-            graph[u] = []
-        graph[u].append(v)
-        if not directed:
-            if v not in graph:
-                graph[v] = []
-            graph[v].append(u)
+    for u, v in edges:
+        graph.setdefault(u, []).append(v)
+        if directed:
+            graph.setdefault(v, [])
+        else:
+            graph.setdefault(v, []).append(u)
     return graph
 ```
 ### Traversals
+- DFS and BFS both run in $O(V+E)$ time on an adjacency list; `visited` prevents revisiting nodes (and looping forever on cycles).
+- Recursive DFS is limited by Python's recursion limit (about 1000 frames by default); use the iterative version for deep graphs.
+- The cycle detection, topological sort and traversal code below looks up `graph[node]` for every node, so every node must be a key of `graph` (this is why the builder above also adds sink nodes).
 #### DFS (Recursive)
 ```python
-def dfs(graph, node, visited=None):
+def dfs(graph, node, visited=None, result=None):
     if visited is None:
-        visited = set()
+        visited, result = set(), []
     visited.add(node)
-    result = [node]
+    result.append(node)
     for neighbor in graph[node]:
         if neighbor not in visited:
-            result.extend(dfs(graph, neighbor, visited))
+            dfs(graph, neighbor, visited, result)
     return result
 ```
 
 #### DFS (Iterative using Stack)
+- Visits the neighbours in the opposite order to the recursive version (the last one pushed is popped first).
 ```python
 def dfs_iterative(graph, start):
     visited = set()
@@ -1384,6 +1545,7 @@ def dfs_iterative(graph, start):
 ```
 
 #### BFS (always iterative, uses Queue)
+- BFS visits nodes in order of distance from `start`, so it finds shortest paths in unweighted graphs.
 ```python
 from collections import deque
 
@@ -1403,6 +1565,7 @@ def bfs(graph, start):
 
 ### Common Algorithms
 #### Detect a Cycle (Undirected Graph)
+- DFS; a visited neighbour that is not the parent means a cycle. (Parallel edges between the same two nodes are not detected by this version.)
 ```python
 def detect_cycle_undirected(graph):
     visited = set()
@@ -1424,6 +1587,7 @@ def detect_cycle_undirected(graph):
 ```
 
 #### Detect a Cycle (Directed Graph)
+- Three colours: WHITE = unvisited, GRAY = on the current DFS path, BLACK = finished. An edge to a GRAY node closes a cycle.
 ```python
 def detect_cycle_directed(graph):
     WHITE, GRAY, BLACK = 0, 1, 2
@@ -1446,6 +1610,7 @@ def detect_cycle_directed(graph):
 ```
 
 #### Topological Sort (DAGs Only)
+- An ordering in which, for every edge `u -> v`, `u` comes before `v`. DFS gives it as the reverse of the finishing order; $O(V+E)$. On a graph with a cycle the result is meaningless, so check for cycles first (or use Kahn's algorithm).
 ```python
 def topological_sort(graph):
     visited = set()
@@ -1465,9 +1630,10 @@ def topological_sort(graph):
     return stack[::-1]
 ```
 
-#### Kahn's Algorithms (BFS Alternative, detects cycle also)
+#### Kahn's Algorithm (BFS alternative, also detects cycles)
+- Repeatedly remove nodes with in-degree 0. If some nodes are never removed, they lie on or behind a cycle.
 ```python
-from collections import deque, defaultdict
+from collections import deque
 
 def topological_sort_kahn(graph, nodes):
     in_degree = {n: 0 for n in nodes}
@@ -1481,28 +1647,29 @@ def topological_sort_kahn(graph, nodes):
     while q:
         node = q.popleft()
         result.append(node)
-        for neighbor in graph[node]:
+        for neighbor in graph.get(node, []):
             in_degree[neighbor] -= 1
             if in_degree[neighbor] == 0:
                 q.append(neighbor)
 
     if len(result) != len(nodes):
-        return None # cycle detected, no valid topological order
+        return None   # cycle detected, no valid topological order
     return result
 ```
 
 #### Number of connected Components
+- For undirected graphs: every DFS started from an unvisited node explores exactly one component.
 ```python
-def count_components(graph,nodes):
+def count_components(graph, nodes):
     visited = set()
     count = 0
 
     def dfs(node):
         visited.add(node)
-        for neighbor in graph[node]:
+        for neighbor in graph.get(node, []):
             if neighbor not in visited:
                 dfs(neighbor)
-    
+
     for node in nodes:
         if node not in visited:
             dfs(node)
@@ -1510,19 +1677,22 @@ def count_components(graph,nodes):
     return count
 ```
 
+### Shortest Paths
 #### Dijkstra's Algorithm (only for non-negative weights)
+- Greedy: always settle the closest unsettled node, using a min-heap. $O((V+E) \log V)$.
+- Heap entries that became outdated are skipped when popped (`d > dist[node]`) instead of being removed. Unreachable nodes are simply absent from `dist`.
 ```python
 import heapq
 
 def dijkstra(graph, start):
-    dist = {start:0}
+    dist = {start: 0}
     heap = [(0, start)]
 
     while heap:
         d, node = heapq.heappop(heap)
         if d > dist.get(node, float('inf')):
-            continue
-        for neighbor, weight in graph[node]:
+            continue                  # stale entry, a shorter path was already found
+        for neighbor, weight in graph.get(node, []):
             new_dist = d + weight
             if new_dist < dist.get(neighbor, float('inf')):
                 dist[neighbor] = new_dist
@@ -1530,26 +1700,163 @@ def dijkstra(graph, start):
     return dist
 ```
 
-#### Prin's Algorithm
-
-
-#### Floyd Warshall Algorithm
-
-
-#### Kruskal's Algorithm
-
+#### Bellman-Ford Algorithm
+- Single-source shortest paths that **allows negative edge weights**. Relax every edge $V-1$ times; if some edge can still be relaxed afterwards, a negative cycle is reachable from the source. $O(VE)$.
+```python
+def bellman_ford(nodes, edges, start):
+    """edges: list of (u, v, w). Returns the dist dict, or None on a negative cycle."""
+    dist = {n: float('inf') for n in nodes}
+    dist[start] = 0
+    for _ in range(len(dist) - 1):
+        updated = False
+        for u, v, w in edges:
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+                updated = True
+        if not updated:
+            break                      # converged early
+    for u, v, w in edges:
+        if dist[u] + w < dist[v]:
+            return None                # still improving -> negative cycle
+    return dist
+```
 
 #### SPFA - Shortest Path Faster Algorithm
+- Queue-based Bellman-Ford: only re-process a node when its distance has just improved. Fast on typical graphs, but still $O(VE)$ in the worst case. Also handles negative edges.
+- A node entering the queue $V$ times means a negative cycle.
+```python
+from collections import deque
 
+def spfa(graph, nodes, start):
+    """graph[u] = list of (v, w). Returns the dist dict, or None on a negative cycle."""
+    dist = {n: float('inf') for n in nodes}
+    dist[start] = 0
+    q = deque([start])
+    in_queue = {start}
+    count = {n: 0 for n in nodes}      # how often a node was enqueued
+    while q:
+        u = q.popleft()
+        in_queue.discard(u)
+        for v, w in graph.get(u, []):
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+                if v not in in_queue:
+                    count[v] += 1
+                    if count[v] >= len(dist):
+                        return None    # negative cycle
+                    q.append(v)
+                    in_queue.add(v)
+    return dist
+```
 
-#### Bellman Ford Algorithm
+#### Floyd-Warshall Algorithm
+- All-pairs shortest paths: after processing `k`, `dist[i][j]` is the shortest path from `i` to `j` that only uses intermediate nodes `0..k`. The `k` loop must be the outermost one.
+- $O(V^3)$ time, $O(V^2)$ space; works with negative edges. A negative cycle exists if some `dist[i][i] < 0` at the end.
+```python
+def floyd_warshall(n, edges):
+    """Nodes are 0..n-1, edges are (u, v, w). Returns the n x n distance matrix."""
+    INF = float('inf')
+    dist = [[INF] * n for _ in range(n)]
+    for i in range(n):
+        dist[i][i] = 0
+    for u, v, w in edges:
+        dist[u][v] = min(dist[u][v], w)
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    return dist
+```
 
+### Minimum Spanning Tree
+- For a connected, weighted, undirected graph: $V-1$ edges that connect all vertices with the smallest possible total weight (no cycles).
+- Two classic greedy algorithms: Prim grows one tree from a start node by always taking the cheapest edge leaving it; Kruskal sorts all edges and adds each one that does not close a cycle.
 
-#### Minimum Spanning Tree
+#### Prim's Algorithm
+- Heap of candidate edges. $O(E \log V)$. A good fit when the graph is given as an adjacency list.
+```python
+import heapq
 
+def prim(graph, start):
+    """graph[u] = list of (v, w), undirected (each edge stored in both directions).
+    Returns (total_weight, mst_edges) for the component containing start."""
+    visited = {start}
+    heap = [(w, start, v) for v, w in graph[start]]
+    heapq.heapify(heap)
+    total, mst = 0, []
+    while heap:
+        w, u, v = heapq.heappop(heap)
+        if v in visited:
+            continue
+        visited.add(v)
+        total += w
+        mst.append((u, v, w))
+        for nxt, nw in graph[v]:
+            if nxt not in visited:
+                heapq.heappush(heap, (nw, v, nxt))
+    return total, mst
+```
 
-#### Minimum Height Tree
+#### Kruskal's Algorithm
+- Sorting dominates: $O(E \log E)$. Cycle checks use **union-find** (disjoint set union), which is nearly $O(1)$ per operation with path compression and union by size. A good fit when the graph is given as an edge list.
+```python
+class DSU:
+    def __init__(self, nodes):
+        self.parent = {n: n for n in nodes}
+        self.size = {n: 1 for n in nodes}
 
+    def find(self, x):
+        while self.parent[x] != x:
+            self.parent[x] = self.parent[self.parent[x]]   # path halving
+            x = self.parent[x]
+        return x
+
+    def union(self, a, b):
+        ra, rb = self.find(a), self.find(b)
+        if ra == rb:
+            return False               # already connected, would form a cycle
+        if self.size[ra] < self.size[rb]:
+            ra, rb = rb, ra
+        self.parent[rb] = ra
+        self.size[ra] += self.size[rb]
+        return True
+
+def kruskal(nodes, edges):
+    """edges: list of (u, v, w). Returns (total_weight, mst_edges); a forest if disconnected."""
+    dsu = DSU(nodes)
+    total, mst = 0, []
+    for u, v, w in sorted(edges, key=lambda e: e[2]):
+        if dsu.union(u, v):
+            total += w
+            mst.append((u, v, w))
+    return total, mst
+```
+
+### Minimum Height Trees
+- Given a tree (connected, acyclic, undirected) with $n$ nodes, choose the root that minimises the height of the rooted tree. There are at most two such roots: the centre(s) of the tree.
+- Idea: repeatedly peel off all leaves, like Kahn's algorithm working from the outside in. The one or two nodes left at the end are the answer. $O(n)$.
+```python
+def find_min_height_trees(n, edges):
+    if n <= 2:
+        return list(range(n))
+    adj = [set() for _ in range(n)]
+    for u, v in edges:
+        adj[u].add(v)
+        adj[v].add(u)
+    leaves = [i for i in range(n) if len(adj[i]) == 1]
+    remaining = n
+    while remaining > 2:
+        remaining -= len(leaves)
+        new_leaves = []
+        for leaf in leaves:
+            nb = adj[leaf].pop()
+            adj[nb].remove(leaf)
+            if len(adj[nb]) == 1:
+                new_leaves.append(nb)
+        leaves = new_leaves
+    return leaves
+```
 
 ## Bit Manipulation
 ### Basics
@@ -1558,26 +1865,27 @@ def dijkstra(graph, start):
 a = 5           # 0101
 b = 3           # 0011
 
-a & b = 1       # 0001, and
-a | b = 7       # 0111, or
-a ^ b = 6       # 0110, xor
+a & b           # 1,  0001, and
+a | b           # 7,  0111, or
+a ^ b           # 6,  0110, xor
 
-~ a   = -6      # flips all bits, in python, conceptually defined as ~a = -(a+1)
+~a              # -6, flips all bits; in Python, ~a is defined as -(a+1)
 
-a << 1 = 10     # 1010, multiply by 2
-a >> 1 = 2      # 0010, (divide by 2, floor)
+a << 1          # 10, 1010, multiply by 2
+a >> 1          # 2,  0010, divide by 2 (floor)
 ```
 
 #### XOR Properties
+- XOR is commutative and associative, so the order does not matter and equal pairs cancel out.
 ```python
-a ^ a = 0       # xor anything with itself is 0
-a ^ 0 = a       # xor with 0 preserves the value
-a ^ a ^ b = b   # xor-ing twice with the same value cancels out
+a ^ a           # 0, xor anything with itself is 0
+a ^ 0           # a, xor with 0 preserves the value
+a ^ a ^ b       # b, xor-ing twice with the same value cancels out
 ```
 
 #### NOT Properties
-- In python, integers are infinite-precision, so simply Not doesn't give bit flipping, and thus it is conceptually defined as $ \sim a = - (a + 1)$.
-- If we want the bit flipped version, we may get it by masking as follows:
+- Python integers have arbitrary precision (there is no fixed width), so `~a` cannot flip *all* bits; it is defined as ${\sim}a = -(a + 1)$ instead.
+- If we want a fixed-width bit-flipped version, we can mask the result:
 ```python
 def not_8bit(a):
     return ~a & 0xFF # 0xFF = 11111111, keeps only last 8 digits
@@ -1585,8 +1893,8 @@ def not_8bit(a):
 
 #### Shifting
 ```python
-1 << n # 2^n
-1 >> n # floor(1/(2^n))
+1 << n          # 2^n
+x >> n          # floor(x / 2^n)
 ```
 
 ### Common Algorithms
@@ -1616,22 +1924,37 @@ def toggle_bit(n,i):
 
 #### Check if a number is a power of 2
 ```python
-def is_power_of_two:
+def is_power_of_two(n):
     return n > 0 and (n & (n - 1)) == 0
+```
+
+#### Count set bits
+- `n & (n - 1)` clears the lowest set bit, so the loop runs once per set bit. (This is also why the power-of-two test above works.)
+```python
+def count_bits(n):
+    count = 0
+    while n:
+        n &= n - 1
+        count += 1
+    return count
 ```
 
 #### XOR based pattern problems
 ```python
-# find the only duplicate in a list of numbers
-def findDuplicate(nums: List[int]) -> int:
-    ans = nums[0]
-    for i in range(1, len(nums)):
-        ans ^= nums[i]
+# every number appears twice except one: find the single one
+from typing import List
+
+def findSingle(nums: List[int]) -> int:
+    ans = 0
+    for x in nums:
+        ans ^= x
     return ans
 ```
 
 ```python
 # find the missing number in a range 0-n
+from typing import List
+
 def findMissing(nums: List[int]) -> int:
     result = len(nums)
     for i, num in enumerate(nums):
@@ -1640,7 +1963,8 @@ def findMissing(nums: List[int]) -> int:
 ```
 
 ```python
-# swapping two number
+# swapping two numbers without a temporary (in Python, a, b = b, a is the idiomatic way)
+a, b = 5, 3
 a = a ^ b
 b = a ^ b # (a ^ b) ^ b = a
 a = a ^ b # (a ^ b) ^ ((a ^ b) ^ b) = b
@@ -1648,13 +1972,15 @@ a = a ^ b # (a ^ b) ^ ((a ^ b) ^ b) = b
 
 ```python
 # all subsets
+from typing import List
+
 def allSubsets(nums: List[int]) -> List[List[int]]:
     n = len(nums)
     subsets = []
 
     for mask in range(1 << n): # 2^n choices
-        subset = [nums[i] for i in range(n) is mask & (1<<i)]
+        subset = [nums[i] for i in range(n) if mask & (1 << i)]
         subsets.append(subset)
     
     return subsets
-``` 
+```
