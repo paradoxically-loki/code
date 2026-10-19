@@ -16,3 +16,16 @@ https://claude.ai/share/c7b838cc-d296-4564-bf33-2f3b6b7ec9d1
 Given, the count of airport nodes, list of from_nodes, list of to_nodes, list of costs, and a query containing, start airport, end airport, and maximum number of layovers allowed. find the minimum cost possible. 
 
 https://claude.ai/share/1fd7fd60-15d2-4256-8c83-9a58c6165212
+
+
+# Honda - 17th october 2026
+
+### Q1
+Given the list of coordinates and an integer k. Find the minimum area corresponding to a rectangle whose sides are parallel to the primary axes and strictly enclosing at least k points. 
+
+https://claude.ai/share/8d6ae75c-046e-4e55-babe-a0050c52e166
+
+### Q4
+Insert and Shift identities
+
+https://claude.ai/share/3b730389-6be1-4032-a493-2d23cb7cf9ce
