@@ -1,0 +1,202 @@
+% ===== Backtracking (9 problems) =====
+\section{Backtracking {\normalsize\color{muted}$\cdot$ 9 problems}}
+\markboth{Backtracking}{}
+
+\begin{problem}{78}{Subsets}{Medium}
+\summary{Return all subsets of distinct integers.}
+\keyidea{At each index choose: include nums[i] or skip it.}
+\complexity{O(n * 2\textasciicircum{}n) time, O(n) recursion}
+\begin{code}
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        res, cur = [], []
+        def dfs(i):
+            if i == len(nums):
+                res.append(cur[:])
+                return
+            cur.append(nums[i]); dfs(i + 1); cur.pop()
+            dfs(i + 1)
+        dfs(0)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{39}{Combination Sum}{Medium}
+\summary{Unique combinations of candidates summing to target; each candidate may be reused.}
+\keyidea{Branch: use candidates[i] again (stay at i) or move to i+1. Stop when total \textgreater{}= target.}
+\complexity{O(2\textasciicircum{}(t/min)) time, O(t/min) recursion}
+\begin{code}
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        res, cur = [], []
+        def dfs(i, total):
+            if total == target:
+                res.append(cur[:])
+                return
+            if i == len(candidates) or total > target:
+                return
+            cur.append(candidates[i]); dfs(i, total + candidates[i]); cur.pop()
+            dfs(i + 1, total)
+        dfs(0, 0)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{46}{Permutations}{Medium}
+\summary{Return all orderings of distinct integers.}
+\keyidea{Build position by position, using each unused number once.}
+\complexity{O(n * n!) time, O(n) recursion}
+\begin{code}
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res, cur, used = [], [], [False] * len(nums)
+        def dfs():
+            if len(cur) == len(nums):
+                res.append(cur[:])
+                return
+            for i, n in enumerate(nums):
+                if not used[i]:
+                    used[i] = True
+                    cur.append(n); dfs(); cur.pop()
+                    used[i] = False
+        dfs()
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{90}{Subsets II}{Medium}
+\summary{All unique subsets when the input may contain duplicates.}
+\keyidea{Sort; after choosing to skip nums[i], also skip all equal values.}
+\complexity{O(n * 2\textasciicircum{}n) time, O(n) recursion}
+\begin{code}
+class Solution:
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        res, cur = [], []
+        def dfs(i):
+            if i == len(nums):
+                res.append(cur[:])
+                return
+            cur.append(nums[i]); dfs(i + 1); cur.pop()
+            while i + 1 < len(nums) and nums[i] == nums[i + 1]:
+                i += 1
+            dfs(i + 1)
+        dfs(0)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{40}{Combination Sum II}{Medium}
+\summary{Each candidate used at most once, input has duplicates; unique combos summing to target.}
+\keyidea{Sort; loop over choices from i, skipping j \textgreater{} i where c[j] == c[j-1]; break when too big.}
+\complexity{O(2\textasciicircum{}n) time, O(n) recursion}
+\begin{code}
+class Solution:
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        candidates.sort()
+        res, cur = [], []
+        def dfs(i, remain):
+            if remain == 0:
+                res.append(cur[:])
+                return
+            for j in range(i, len(candidates)):
+                if j > i and candidates[j] == candidates[j - 1]:
+                    continue
+                if candidates[j] > remain:
+                    break
+                cur.append(candidates[j]); dfs(j + 1, remain - candidates[j]); cur.pop()
+        dfs(0, target)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{79}{Word Search}{Medium}
+\summary{Can word be traced through adjacent grid cells, each cell used at most once?}
+\keyidea{DFS from each cell; mark visited in place, restore on backtrack.}
+\complexity{O(m * n * 4\textasciicircum{}L) time, O(L) recursion}
+\begin{code}
+class Solution:
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        R, C = len(board), len(board[0])
+        def dfs(r, c, i):
+            if i == len(word):
+                return True
+            if not (0 <= r < R and 0 <= c < C) or board[r][c] != word[i]:
+                return False
+            tmp, board[r][c] = board[r][c], "#"
+            found = (dfs(r + 1, c, i + 1) or dfs(r - 1, c, i + 1) or
+                     dfs(r, c + 1, i + 1) or dfs(r, c - 1, i + 1))
+            board[r][c] = tmp
+            return found
+        return any(dfs(r, c, 0) for r in range(R) for c in range(C))
+\end{code}
+\end{problem}
+
+\begin{problem}{131}{Palindrome Partitioning}{Medium}
+\summary{Split s every possible way so that every piece is a palindrome.}
+\keyidea{From index i, try every end j where s[i:j+1] is a palindrome; recurse from j+1.}
+\complexity{O(n * 2\textasciicircum{}n) time, O(n) recursion}
+\begin{code}
+class Solution:
+    def partition(self, s: str) -> List[List[str]]:
+        res, cur = [], []
+        def dfs(i):
+            if i == len(s):
+                res.append(cur[:])
+                return
+            for j in range(i, len(s)):
+                piece = s[i : j + 1]
+                if piece == piece[::-1]:
+                    cur.append(piece); dfs(j + 1); cur.pop()
+        dfs(0)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{17}{Letter Combinations of a Phone Number}{Medium}
+\summary{All letter strings a digit string (2-9) could represent on a phone keypad.}
+\keyidea{Backtrack over digits, appending each mapped letter.}
+\complexity{O(n * 4\textasciicircum{}n) time, O(n) recursion}
+\begin{code}
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        if not digits:
+            return []
+        keys = {"2": "abc", "3": "def", "4": "ghi", "5": "jkl",
+                "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz"}
+        res = []
+        def dfs(i, cur):
+            if i == len(digits):
+                res.append(cur)
+                return
+            for ch in keys[digits[i]]:
+                dfs(i + 1, cur + ch)
+        dfs(0, "")
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{51}{N-Queens}{Hard}
+\summary{All ways to place n queens on an n x n board with no two attacking.}
+\keyidea{Row by row; track used columns, (r + c) diagonals and (r - c) anti-diagonals in sets.}
+\complexity{O(n!) time, O(n\textasciicircum{}2) for board}
+\begin{code}
+class Solution:
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        cols, pos, neg = set(), set(), set()
+        board = [["."] * n for _ in range(n)]
+        res = []
+        def dfs(r):
+            if r == n:
+                res.append(["".join(row) for row in board])
+                return
+            for c in range(n):
+                if c in cols or (r + c) in pos or (r - c) in neg:
+                    continue
+                cols.add(c); pos.add(r + c); neg.add(r - c); board[r][c] = "Q"
+                dfs(r + 1)
+                cols.remove(c); pos.remove(r + c); neg.remove(r - c); board[r][c] = "."
+        dfs(0)
+        return res
+\end{code}
+\end{problem}

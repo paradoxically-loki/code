@@ -1,0 +1,206 @@
+% ===== 1-D Dynamic Programming (12 problems) =====
+\section{1-D Dynamic Programming {\normalsize\color{muted}$\cdot$ 12 problems}}
+\markboth{1-D Dynamic Programming}{}
+
+\begin{problem}{70}{Climbing Stairs}{Easy}
+\summary{Ways to climb n steps taking 1 or 2 at a time.}
+\keyidea{ways(n) = ways(n-1) + ways(n-2): Fibonacci with two variables.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def climbStairs(self, n: int) -> int:
+        a, b = 1, 1
+        for _ in range(n - 1):
+            a, b = b, a + b
+        return b
+\end{code}
+\end{problem}
+
+\begin{problem}{746}{Min Cost Climbing Stairs}{Easy}
+\summary{Pay cost[i] to step from stair i (1 or 2 steps); start at 0 or 1; min cost to reach the top.}
+\keyidea{dp[i] = cost[i] + min(dp[i+1], dp[i+2]); answer min(dp[0], dp[1]).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def minCostClimbingStairs(self, cost: List[int]) -> int:
+        a = b = 0                       # dp[i+1], dp[i+2]
+        for i in range(len(cost) - 1, -1, -1):
+            a, b = cost[i] + min(a, b), a
+        return min(a, b)
+\end{code}
+\end{problem}
+
+\begin{problem}{198}{House Robber}{Medium}
+\summary{Max money from houses in a line without robbing two adjacent ones.}
+\keyidea{best(i) = max(best(i-1), best(i-2) + nums[i]).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        prev2 = prev1 = 0
+        for n in nums:
+            prev2, prev1 = prev1, max(prev1, prev2 + n)
+        return prev1
+\end{code}
+\end{problem}
+
+\begin{problem}{213}{House Robber II}{Medium}
+\summary{Same as House Robber but houses form a circle (first and last are adjacent).}
+\keyidea{Run House Robber on nums[1:] and nums[:-1], take the max (handle n == 1).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def rob(self, nums: List[int]) -> int:
+        def line(arr):
+            a = b = 0
+            for n in arr:
+                a, b = b, max(b, a + n)
+            return b
+        if len(nums) == 1:
+            return nums[0]
+        return max(line(nums[1:]), line(nums[:-1]))
+\end{code}
+\end{problem}
+
+\begin{problem}{5}{Longest Palindromic Substring}{Medium}
+\summary{Return the longest palindromic substring.}
+\keyidea{Expand around every centre (odd: i,i and even: i,i+1).}
+\complexity{O(n\textasciicircum{}2) time, O(1) space}
+\begin{code}
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        res = ""
+        for i in range(len(s)):
+            for l, r in ((i, i), (i, i + 1)):
+                while l >= 0 and r < len(s) and s[l] == s[r]:
+                    l, r = l - 1, r + 1
+                if r - l - 1 > len(res):
+                    res = s[l + 1 : r]
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{647}{Palindromic Substrings}{Medium}
+\summary{Count all palindromic substrings.}
+\keyidea{Expand around every centre; each successful expansion is one more palindrome.}
+\complexity{O(n\textasciicircum{}2) time, O(1) space}
+\begin{code}
+class Solution:
+    def countSubstrings(self, s: str) -> int:
+        count = 0
+        for i in range(len(s)):
+            for l, r in ((i, i), (i, i + 1)):
+                while l >= 0 and r < len(s) and s[l] == s[r]:
+                    count += 1
+                    l, r = l - 1, r + 1
+        return count
+\end{code}
+\end{problem}
+
+\begin{problem}{91}{Decode Ways}{Medium}
+\summary{Digits map 1-\textgreater{}A ... 26-\textgreater{}Z. How many ways can the digit string be decoded?}
+\keyidea{dp[i] = dp[i+1] (if s[i] != '0') + dp[i+2] (if s[i:i+2] in 10..26).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def numDecodings(self, s: str) -> int:
+        one, two = 1, 0                   # dp[i+1], dp[i+2]
+        for i in range(len(s) - 1, -1, -1):
+            cur = 0
+            if s[i] != "0":
+                cur = one
+                if i + 1 < len(s) and 10 <= int(s[i : i + 2]) <= 26:
+                    cur += two
+            one, two = cur, one
+        return one
+\end{code}
+\end{problem}
+
+\begin{problem}{322}{Coin Change}{Medium}
+\summary{Fewest coins (unlimited supply) to make amount; -1 if impossible.}
+\keyidea{dp[a] = 1 + min(dp[a - c]) over coins c (unbounded knapsack).}
+\complexity{O(amount * coins) time, O(amount) space}
+\begin{code}
+class Solution:
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        dp = [0] + [amount + 1] * amount
+        for a in range(1, amount + 1):
+            for c in coins:
+                if c <= a:
+                    dp[a] = min(dp[a], 1 + dp[a - c])
+        return dp[amount] if dp[amount] <= amount else -1
+\end{code}
+\end{problem}
+
+\begin{problem}{152}{Maximum Product Subarray}{Medium}
+\summary{Largest product of a contiguous subarray.}
+\keyidea{Track both current max and min product (a negative can flip min into max).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def maxProduct(self, nums: List[int]) -> int:
+        res = max(nums)
+        cur_max = cur_min = 1
+        for n in nums:
+            cand = (n, n * cur_max, n * cur_min)
+            cur_max, cur_min = max(cand), min(cand)
+            res = max(res, cur_max)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{139}{Word Break}{Medium}
+\summary{Can s be split into a sequence of dictionary words (reuse allowed)?}
+\keyidea{dp[i] = True if some word w matches s[i:] start and dp[i + len(w)] is True.}
+\complexity{O(n * m * L) time, O(n) space}
+\begin{code}
+class Solution:
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        dp = [False] * (len(s) + 1)
+        dp[len(s)] = True
+        for i in range(len(s) - 1, -1, -1):
+            for w in wordDict:
+                if s.startswith(w, i) and dp[i + len(w)]:
+                    dp[i] = True
+                    break
+        return dp[0]
+\end{code}
+\end{problem}
+
+\begin{problem}{300}{Longest Increasing Subsequence}{Medium}
+\summary{Length of the longest strictly increasing subsequence.}
+\keyidea{Patience sorting: tails[k] = smallest tail of an increasing subsequence of length k+1; binary search to place each number.}
+\complexity{O(n log n) time, O(n) space}
+\begin{code}
+class Solution:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        tails = []
+        for n in nums:
+            i = bisect.bisect_left(tails, n)
+            if i == len(tails):
+                tails.append(n)
+            else:
+                tails[i] = n
+        return len(tails)
+\end{code}
+\end{problem}
+
+\begin{problem}{416}{Partition Equal Subset Sum}{Medium}
+\summary{Can the array be split into two subsets with equal sums?}
+\keyidea{Need a subset summing to total/2: keep a set (or bitset) of reachable sums.}
+\complexity{O(n * sum) time, O(sum) space}
+\begin{code}
+class Solution:
+    def canPartition(self, nums: List[int]) -> bool:
+        total = sum(nums)
+        if total % 2:
+            return False
+        target = total // 2
+        reach = {0}
+        for n in nums:
+            reach |= {r + n for r in reach if r + n <= target}
+            if target in reach:
+                return True
+        return target in reach
+\end{code}
+\end{problem}

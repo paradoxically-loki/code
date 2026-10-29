@@ -1,0 +1,147 @@
+% ===== Greedy (8 problems) =====
+\section{Greedy {\normalsize\color{muted}$\cdot$ 8 problems}}
+\markboth{Greedy}{}
+
+\begin{problem}{53}{Maximum Subarray}{Medium}
+\summary{Largest sum of a contiguous subarray.}
+\keyidea{Kadane: drop the running sum when it goes negative.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def maxSubArray(self, nums: List[int]) -> int:
+        best, cur = nums[0], 0
+        for n in nums:
+            cur = max(cur, 0) + n
+            best = max(best, cur)
+        return best
+\end{code}
+\end{problem}
+
+\begin{problem}{55}{Jump Game}{Medium}
+\summary{nums[i] is the max jump from i. Can you reach the last index?}
+\keyidea{Walk backwards moving a 'goal' left whenever i + nums[i] \textgreater{}= goal.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def canJump(self, nums: List[int]) -> bool:
+        goal = len(nums) - 1
+        for i in range(len(nums) - 2, -1, -1):
+            if i + nums[i] >= goal:
+                goal = i
+        return goal == 0
+\end{code}
+\end{problem}
+
+\begin{problem}{45}{Jump Game II}{Medium}
+\summary{Minimum jumps to reach the last index (always reachable).}
+\keyidea{BFS by windows: [l, r] is reachable in 'jumps'; next window ends at the farthest reach.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def jump(self, nums: List[int]) -> int:
+        jumps = l = r = 0
+        while r < len(nums) - 1:
+            farthest = max(i + nums[i] for i in range(l, r + 1))
+            l, r = r + 1, farthest
+            jumps += 1
+        return jumps
+\end{code}
+\end{problem}
+
+\begin{problem}{134}{Gas Station}{Medium}
+\summary{Circular route with gas[i] and cost[i]; find the unique start index to complete the loop, or -1.}
+\keyidea{If total gas \textless{} total cost: -1. Otherwise reset the start to i+1 whenever the tank goes negative.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+        if sum(gas) < sum(cost):
+            return -1
+        tank = start = 0
+        for i in range(len(gas)):
+            tank += gas[i] - cost[i]
+            if tank < 0:
+                tank, start = 0, i + 1
+        return start
+\end{code}
+\end{problem}
+
+\begin{problem}{846}{Hand of Straights}{Medium}
+\summary{Can the cards be split into groups of groupSize consecutive values?}
+\keyidea{Always start a group at the smallest remaining card (min-heap / sorted keys) and consume the run.}
+\complexity{O(n log n) time, O(n) space}
+\begin{code}
+class Solution:
+    def isNStraightHand(self, hand: List[int], groupSize: int) -> bool:
+        if len(hand) % groupSize:
+            return False
+        count = Counter(hand)
+        for start in sorted(count):
+            need = count[start]
+            if need:
+                for v in range(start, start + groupSize):
+                    if count[v] < need:
+                        return False
+                    count[v] -= need
+        return True
+\end{code}
+\end{problem}
+
+\begin{problem}{1899}{Merge Triplets to Form Target Triplet}{Medium}
+\summary{Merging takes element-wise max. Can some merges produce exactly the target triplet?}
+\keyidea{Ignore any triplet exceeding target anywhere; from the rest, check every target position is matched by someone.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def mergeTriplets(self, triplets: List[List[int]], target: List[int]) -> bool:
+        good = set()
+        for t in triplets:
+            if t[0] > target[0] or t[1] > target[1] or t[2] > target[2]:
+                continue
+            for i in range(3):
+                if t[i] == target[i]:
+                    good.add(i)
+        return len(good) == 3
+\end{code}
+\end{problem}
+
+\begin{problem}{763}{Partition Labels}{Medium}
+\summary{Split s into as many parts as possible so each letter appears in only one part; return part sizes.}
+\keyidea{Record each letter's last index; extend the current part's end to the max last index seen; cut when i == end.}
+\complexity{O(n) time, O(26) space}
+\begin{code}
+class Solution:
+    def partitionLabels(self, s: str) -> List[int]:
+        last = {c: i for i, c in enumerate(s)}
+        res, size, end = [], 0, 0
+        for i, c in enumerate(s):
+            size += 1
+            end = max(end, last[c])
+            if i == end:
+                res.append(size)
+                size = 0
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{678}{Valid Parenthesis String}{Medium}
+\summary{'(' , ')' and '*' (which may be '(', ')' or empty). Can the string be valid?}
+\keyidea{Track a range [lo, hi] of possible open counts; hi \textless{} 0 -\textgreater{} invalid; clamp lo at 0; valid if lo == 0 at end.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def checkValidString(self, s: str) -> bool:
+        lo = hi = 0
+        for c in s:
+            if c == "(":
+                lo, hi = lo + 1, hi + 1
+            elif c == ")":
+                lo, hi = lo - 1, hi - 1
+            else:
+                lo, hi = lo - 1, hi + 1
+            if hi < 0:
+                return False
+            lo = max(lo, 0)
+        return lo == 0
+\end{code}
+\end{problem}

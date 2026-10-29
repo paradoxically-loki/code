@@ -1,0 +1,149 @@
+% ===== Heap / Priority Queue (7 problems) =====
+\section{Heap / Priority Queue {\normalsize\color{muted}$\cdot$ 7 problems}}
+\markboth{Heap / Priority Queue}{}
+
+\begin{problem}{703}{Kth Largest Element in a Stream}{Easy}
+\summary{Class that returns the k-th largest after each added value.}
+\keyidea{Keep a min-heap of size k; its top is the k-th largest.}
+\complexity{O(log k) per add, O(k) space}
+\begin{code}
+class KthLargest:
+    def __init__(self, k: int, nums: List[int]):
+        self.k, self.heap = k, nums
+        heapq.heapify(self.heap)
+        while len(self.heap) > k:
+            heapq.heappop(self.heap)
+
+    def add(self, val: int) -> int:
+        heapq.heappush(self.heap, val)
+        if len(self.heap) > self.k:
+            heapq.heappop(self.heap)
+        return self.heap[0]
+\end{code}
+\end{problem}
+
+\begin{problem}{1046}{Last Stone Weight}{Easy}
+\summary{Repeatedly smash the two heaviest stones; return the last stone's weight (or 0).}
+\keyidea{Max-heap via negated values.}
+\complexity{O(n log n) time, O(n) space}
+\begin{code}
+class Solution:
+    def lastStoneWeight(self, stones: List[int]) -> int:
+        h = [-s for s in stones]
+        heapq.heapify(h)
+        while len(h) > 1:
+            a, b = -heapq.heappop(h), -heapq.heappop(h)
+            if a != b:
+                heapq.heappush(h, -(a - b))
+        return -h[0] if h else 0
+\end{code}
+\end{problem}
+
+\begin{problem}{973}{K Closest Points to Origin}{Medium}
+\summary{Return the k points nearest to (0, 0).}
+\keyidea{Max-heap of size k on squared distance (negated); drop the farthest when over k.}
+\complexity{O(n log k) time, O(k) space}
+\begin{code}
+class Solution:
+    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:
+        h = []
+        for x, y in points:
+            heapq.heappush(h, (-(x * x + y * y), x, y))
+            if len(h) > k:
+                heapq.heappop(h)
+        return [[x, y] for _, x, y in h]
+\end{code}
+\end{problem}
+
+\begin{problem}{215}{Kth Largest Element in an Array}{Medium}
+\summary{Return the k-th largest value in an unsorted array.}
+\keyidea{Min-heap of size k (or Quickselect for average O(n)).}
+\complexity{O(n log k) time, O(k) space}
+\begin{code}
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        h = []
+        for n in nums:
+            heapq.heappush(h, n)
+            if len(h) > k:
+                heapq.heappop(h)
+        return h[0]
+\end{code}
+\end{problem}
+
+\begin{problem}{621}{Task Scheduler}{Medium}
+\summary{Same tasks need n idle slots between them; minimum total time units to run all.}
+\keyidea{Formula: (maxCount - 1) * (n + 1) + numberOfTasksWithMaxCount, but at least len(tasks).}
+\complexity{O(N) time, O(26) space}
+\begin{code}
+class Solution:
+    def leastInterval(self, tasks: List[str], n: int) -> int:
+        count = Counter(tasks)
+        mx = max(count.values())
+        num_mx = sum(1 for v in count.values() if v == mx)
+        return max(len(tasks), (mx - 1) * (n + 1) + num_mx)
+\end{code}
+\end{problem}
+
+\begin{problem}{355}{Design Twitter}{Medium}
+\summary{postTweet, follow, unfollow, getNewsFeed (10 most recent from self + followees).}
+\keyidea{Global decreasing time counter; merge the followees' tweet lists with a heap (k-way merge).}
+\complexity{getNewsFeed O(F log F) for F followees; O(users + tweets) space}
+\begin{code}
+class Twitter:
+    def __init__(self):
+        self.time = 0
+        self.tweets = defaultdict(list)    # user -> [(time, tweetId)]
+        self.following = defaultdict(set)
+
+    def postTweet(self, userId: int, tweetId: int) -> None:
+        self.tweets[userId].append((self.time, tweetId))
+        self.time -= 1                     # smaller = newer (min-heap)
+
+    def getNewsFeed(self, userId: int) -> List[int]:
+        res, h = [], []
+        users = self.following[userId] | {userId}
+        for u in users:
+            if self.tweets[u]:
+                i = len(self.tweets[u]) - 1
+                t, tid = self.tweets[u][i]
+                h.append((t, tid, u, i - 1))
+        heapq.heapify(h)
+        while h and len(res) < 10:
+            t, tid, u, i = heapq.heappop(h)
+            res.append(tid)
+            if i >= 0:
+                t2, tid2 = self.tweets[u][i]
+                heapq.heappush(h, (t2, tid2, u, i - 1))
+        return res
+
+    def follow(self, followerId: int, followeeId: int) -> None:
+        if followerId != followeeId:
+            self.following[followerId].add(followeeId)
+
+    def unfollow(self, followerId: int, followeeId: int) -> None:
+        self.following[followerId].discard(followeeId)
+\end{code}
+\end{problem}
+
+\begin{problem}{295}{Find Median from Data Stream}{Hard}
+\summary{Support addNum and findMedian on a growing stream.}
+\keyidea{Max-heap for the lower half, min-heap for the upper half; keep sizes within 1.}
+\complexity{addNum O(log n), findMedian O(1)}
+\begin{code}
+class MedianFinder:
+    def __init__(self):
+        self.small, self.large = [], []    # small = max-heap (negated)
+
+    def addNum(self, num: int) -> None:
+        heapq.heappush(self.small, -num)
+        heapq.heappush(self.large, -heapq.heappop(self.small))
+        if len(self.large) > len(self.small):
+            heapq.heappush(self.small, -heapq.heappop(self.large))
+
+    def findMedian(self) -> float:
+        if len(self.small) > len(self.large):
+            return -self.small[0]
+        return (-self.small[0] + self.large[0]) / 2
+\end{code}
+\end{problem}

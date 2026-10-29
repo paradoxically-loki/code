@@ -1,0 +1,171 @@
+% ===== Arrays & Hashing (9 problems) =====
+\section{Arrays \& Hashing {\normalsize\color{muted}$\cdot$ 9 problems}}
+\markboth{Arrays \& Hashing}{}
+
+\begin{problem}{217}{Contains Duplicate}{Easy}
+\summary{Return True if any value appears at least twice in the array.}
+\keyidea{A set remembers what you've seen; a repeat hit means a duplicate.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        seen = set()
+        for n in nums:
+            if n in seen:
+                return True
+            seen.add(n)
+        return False
+\end{code}
+\end{problem}
+
+\begin{problem}{242}{Valid Anagram}{Easy}
+\summary{Check whether string t is a rearrangement of string s.}
+\keyidea{Same length and identical character counts.}
+\complexity{O(n) time, O(1) space (26 letters)}
+\begin{code}
+class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
+        count = {}
+        for a, b in zip(s, t):
+            count[a] = count.get(a, 0) + 1
+            count[b] = count.get(b, 0) - 1
+        return all(v == 0 for v in count.values())
+\end{code}
+\end{problem}
+
+\begin{problem}{1}{Two Sum}{Easy}
+\summary{Return indices of the two numbers that add up to target (exactly one answer exists).}
+\keyidea{For each number, look up its complement (target - n) in a value-\textgreater{}index map built so far.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        idx = {}
+        for i, n in enumerate(nums):
+            if target - n in idx:
+                return [idx[target - n], i]
+            idx[n] = i
+\end{code}
+\end{problem}
+
+\begin{problem}{49}{Group Anagrams}{Medium}
+\summary{Group the given strings so that anagrams sit in the same group.}
+\keyidea{Key each word by its 26-letter count tuple (or sorted string); bucket into a dict.}
+\complexity{O(n * k) time, O(n * k) space}
+\begin{code}
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        groups = defaultdict(list)
+        for s in strs:
+            count = [0] * 26
+            for c in s:
+                count[ord(c) - ord('a')] += 1
+            groups[tuple(count)].append(s)
+        return list(groups.values())
+\end{code}
+\end{problem}
+
+\begin{problem}{347}{Top K Frequent Elements}{Medium}
+\summary{Return the k values that occur most often.}
+\keyidea{Bucket sort: index = frequency, then walk buckets from high to low.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        count = Counter(nums)
+        buckets = [[] for _ in range(len(nums) + 1)]
+        for n, c in count.items():
+            buckets[c].append(n)
+        res = []
+        for i in range(len(buckets) - 1, 0, -1):
+            for n in buckets[i]:
+                res.append(n)
+                if len(res) == k:
+                    return res
+\end{code}
+\end{problem}
+
+\begin{problem}{238}{Product of Array Except Self}{Medium}
+\summary{For each index, output the product of every other element, without division, in O(n).}
+\keyidea{Answer = prefix product (left of i) x suffix product (right of i); do it in two passes.}
+\complexity{O(n) time, O(1) extra space (output excluded)}
+\begin{code}
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        res = [1] * len(nums)
+        prefix = 1
+        for i in range(len(nums)):
+            res[i] = prefix
+            prefix *= nums[i]
+        suffix = 1
+        for i in range(len(nums) - 1, -1, -1):
+            res[i] *= suffix
+            suffix *= nums[i]
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{36}{Valid Sudoku}{Medium}
+\summary{Decide if a partially filled 9x9 board breaks no Sudoku rule (rows, columns, 3x3 boxes).}
+\keyidea{Three sets of sets: rows[r], cols[c], boxes[(r//3, c//3)]. Any repeat is invalid.}
+\complexity{O(81) = O(1) time and space}
+\begin{code}
+class Solution:
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        rows, cols, boxes = defaultdict(set), defaultdict(set), defaultdict(set)
+        for r in range(9):
+            for c in range(9):
+                v = board[r][c]
+                if v == ".":
+                    continue
+                if v in rows[r] or v in cols[c] or v in boxes[(r // 3, c // 3)]:
+                    return False
+                rows[r].add(v)
+                cols[c].add(v)
+                boxes[(r // 3, c // 3)].add(v)
+        return True
+\end{code}
+\end{problem}
+
+\begin{problem}{271}{Encode and Decode Strings}{Medium}
+\summary{Design encode(list of strings) -\textgreater{} one string and decode back, for any characters.}
+\keyidea{Length-prefix each word: '4\#leet'. Read the number up to '\#', then slice that many chars.}
+\complexity{O(total chars) time and space}
+\begin{code}
+class Solution:
+    def encode(self, strs: List[str]) -> str:
+        return "".join(f"{len(s)}#{s}" for s in strs)
+
+    def decode(self, s: str) -> List[str]:
+        res, i = [], 0
+        while i < len(s):
+            j = i
+            while s[j] != "#":
+                j += 1
+            length = int(s[i:j])
+            res.append(s[j + 1 : j + 1 + length])
+            i = j + 1 + length
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{128}{Longest Consecutive Sequence}{Medium}
+\summary{Length of the longest run of consecutive integers in an unsorted array, in O(n).}
+\keyidea{Put all in a set; only start counting from n where n-1 is absent (a sequence start).}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def longestConsecutive(self, nums: List[int]) -> int:
+        s = set(nums)
+        best = 0
+        for n in s:
+            if n - 1 not in s:
+                length = 1
+                while n + length in s:
+                    length += 1
+                best = max(best, length)
+        return best
+\end{code}
+\end{problem}

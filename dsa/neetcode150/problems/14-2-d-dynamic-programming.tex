@@ -1,0 +1,204 @@
+% ===== 2-D Dynamic Programming (11 problems) =====
+\section{2-D Dynamic Programming {\normalsize\color{muted}$\cdot$ 11 problems}}
+\markboth{2-D Dynamic Programming}{}
+
+\begin{problem}{62}{Unique Paths}{Medium}
+\summary{Paths from top-left to bottom-right of an m x n grid moving only right/down.}
+\keyidea{paths(cell) = paths(below) + paths(right); keep one row.}
+\complexity{O(m * n) time, O(n) space}
+\begin{code}
+class Solution:
+    def uniquePaths(self, m: int, n: int) -> int:
+        row = [1] * n
+        for _ in range(m - 1):
+            for j in range(n - 2, -1, -1):
+                row[j] += row[j + 1]
+        return row[0]
+\end{code}
+\end{problem}
+
+\begin{problem}{1143}{Longest Common Subsequence}{Medium}
+\summary{Length of the longest subsequence common to two strings.}
+\keyidea{dp[i][j] = 1 + dp[i+1][j+1] if chars match else max(dp[i+1][j], dp[i][j+1]).}
+\complexity{O(m * n) time and space}
+\begin{code}
+class Solution:
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        m, n = len(text1), len(text2)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(m - 1, -1, -1):
+            for j in range(n - 1, -1, -1):
+                if text1[i] == text2[j]:
+                    dp[i][j] = 1 + dp[i + 1][j + 1]
+                else:
+                    dp[i][j] = max(dp[i + 1][j], dp[i][j + 1])
+        return dp[0][0]
+\end{code}
+\end{problem}
+
+\begin{problem}{309}{Best Time to Buy and Sell Stock with Cooldown}{Medium}
+\summary{Unlimited trades, but after selling you must wait one day before buying. Max profit.}
+\keyidea{State machine: hold, sold (cooldown today), rest. Transition each day.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        hold, sold, rest = float("-inf"), 0, 0
+        for p in prices:
+            hold, sold, rest = max(hold, rest - p), hold + p, max(rest, sold)
+        return max(sold, rest)
+\end{code}
+\end{problem}
+
+\begin{problem}{518}{Coin Change II}{Medium}
+\summary{Number of combinations (order doesn't matter) of coins that make amount.}
+\keyidea{Loop coins in the outer loop so each combination is counted once: dp[a] += dp[a - c].}
+\complexity{O(amount * coins) time, O(amount) space}
+\begin{code}
+class Solution:
+    def change(self, amount: int, coins: List[int]) -> int:
+        dp = [1] + [0] * amount
+        for c in coins:
+            for a in range(c, amount + 1):
+                dp[a] += dp[a - c]
+        return dp[amount]
+\end{code}
+\end{problem}
+
+\begin{problem}{494}{Target Sum}{Medium}
+\summary{Put + or - before each number; count expressions that equal target.}
+\keyidea{Map of reachable sum -\textgreater{} number of ways, updated number by number.}
+\complexity{O(n * sum) time, O(sum) space}
+\begin{code}
+class Solution:
+    def findTargetSumWays(self, nums: List[int], target: int) -> int:
+        ways = {0: 1}
+        for n in nums:
+            nxt = defaultdict(int)
+            for s, cnt in ways.items():
+                nxt[s + n] += cnt
+                nxt[s - n] += cnt
+            ways = nxt
+        return ways.get(target, 0)
+\end{code}
+\end{problem}
+
+\begin{problem}{97}{Interleaving String}{Medium}
+\summary{Is s3 formed by interleaving s1 and s2 while keeping each one's order?}
+\keyidea{dp[i][j] = can s1[i:] and s2[j:] form s3[i+j:].}
+\complexity{O(m * n) time and space}
+\begin{code}
+class Solution:
+    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:
+        m, n = len(s1), len(s2)
+        if m + n != len(s3):
+            return False
+        dp = [[False] * (n + 1) for _ in range(m + 1)]
+        dp[m][n] = True
+        for i in range(m, -1, -1):
+            for j in range(n, -1, -1):
+                if i < m and s1[i] == s3[i + j] and dp[i + 1][j]:
+                    dp[i][j] = True
+                if j < n and s2[j] == s3[i + j] and dp[i][j + 1]:
+                    dp[i][j] = True
+        return dp[0][0]
+\end{code}
+\end{problem}
+
+\begin{problem}{329}{Longest Increasing Path in a Matrix}{Hard}
+\summary{Longest strictly increasing path moving in 4 directions.}
+\keyidea{DFS + memo: lip(cell) = 1 + max lip(neighbour with larger value). No visited set needed (strictly increasing = no cycles).}
+\complexity{O(m * n) time and space}
+\begin{code}
+class Solution:
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+        R, C = len(matrix), len(matrix[0])
+        @functools.lru_cache(None)
+        def dfs(r, c):
+            best = 1
+            for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+                if 0 <= nr < R and 0 <= nc < C and matrix[nr][nc] > matrix[r][c]:
+                    best = max(best, 1 + dfs(nr, nc))
+            return best
+        return max(dfs(r, c) for r in range(R) for c in range(C))
+\end{code}
+\end{problem}
+
+\begin{problem}{115}{Distinct Subsequences}{Hard}
+\summary{How many distinct subsequences of s equal t?}
+\keyidea{dp[i][j] = dp[i+1][j] (skip s[i]) + dp[i+1][j+1] (use it, if s[i] == t[j]).}
+\complexity{O(m * n) time and space}
+\begin{code}
+class Solution:
+    def numDistinct(self, s: str, t: str) -> int:
+        m, n = len(s), len(t)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(m + 1):
+            dp[i][n] = 1
+        for i in range(m - 1, -1, -1):
+            for j in range(n - 1, -1, -1):
+                dp[i][j] = dp[i + 1][j]
+                if s[i] == t[j]:
+                    dp[i][j] += dp[i + 1][j + 1]
+        return dp[0][0]
+\end{code}
+\end{problem}
+
+\begin{problem}{72}{Edit Distance}{Hard}
+\summary{Minimum inserts, deletes and replacements to turn word1 into word2.}
+\keyidea{If chars match, dp[i+1][j+1]; else 1 + min(insert dp[i][j+1], delete dp[i+1][j], replace dp[i+1][j+1]).}
+\complexity{O(m * n) time and space}
+\begin{code}
+class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+        m, n = len(word1), len(word2)
+        dp = [[0] * (n + 1) for _ in range(m + 1)]
+        for i in range(m + 1): dp[i][n] = m - i
+        for j in range(n + 1): dp[m][j] = n - j
+        for i in range(m - 1, -1, -1):
+            for j in range(n - 1, -1, -1):
+                if word1[i] == word2[j]:
+                    dp[i][j] = dp[i + 1][j + 1]
+                else:
+                    dp[i][j] = 1 + min(dp[i + 1][j], dp[i][j + 1], dp[i + 1][j + 1])
+        return dp[0][0]
+\end{code}
+\end{problem}
+
+\begin{problem}{312}{Burst Balloons}{Hard}
+\summary{Bursting balloon i earns left * i * right (current neighbours). Maximise total coins.}
+\keyidea{Interval DP: choose which balloon in (l, r) is burst LAST; its neighbours are then fixed as l and r.}
+\complexity{O(n\textasciicircum{}3) time, O(n\textasciicircum{}2) space}
+\begin{code}
+class Solution:
+    def maxCoins(self, nums: List[int]) -> int:
+        a = [1] + nums + [1]
+        n = len(a)
+        dp = [[0] * n for _ in range(n)]
+        for length in range(2, n):
+            for l in range(0, n - length):
+                r = l + length
+                for k in range(l + 1, r):
+                    dp[l][r] = max(dp[l][r], a[l] * a[k] * a[r] + dp[l][k] + dp[k][r])
+        return dp[0][n - 1]
+\end{code}
+\end{problem}
+
+\begin{problem}{10}{Regular Expression Matching}{Hard}
+\summary{Full-string match supporting '.' (any char) and '*' (zero or more of the previous char).}
+\keyidea{Top-down DP on (i, j). If p[j+1] == '*': skip the pair, or use it if first chars match.}
+\complexity{O(m * n) time and space}
+\begin{code}
+class Solution:
+    def isMatch(self, s: str, p: str) -> bool:
+        @functools.lru_cache(None)
+        def dp(i, j):
+            if j == len(p):
+                return i == len(s)
+            first = i < len(s) and p[j] in (s[i], ".")
+            if j + 1 < len(p) and p[j + 1] == "*":
+                return dp(i, j + 2) or (first and dp(i + 1, j))
+            return first and dp(i + 1, j + 1)
+        return dp(0, 0)
+\end{code}
+\end{problem}

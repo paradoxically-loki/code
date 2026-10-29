@@ -1,0 +1,139 @@
+% ===== Advanced Graphs (6 problems) =====
+\section{Advanced Graphs {\normalsize\color{muted}$\cdot$ 6 problems}}
+\markboth{Advanced Graphs}{}
+
+\begin{problem}{332}{Reconstruct Itinerary}{Hard}
+\summary{Use every ticket exactly once starting at JFK; return the lexically smallest valid route.}
+\keyidea{Hierholzer's algorithm: adjacency lists sorted in reverse (pop smallest), DFS, append on backtrack, reverse at end.}
+\complexity{O(E log E) time, O(E) space}
+\begin{code}
+class Solution:
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        adj = defaultdict(list)
+        for src, dst in sorted(tickets, reverse=True):
+            adj[src].append(dst)            # pop() gives smallest
+        route, st = [], ["JFK"]
+        while st:
+            while adj[st[-1]]:
+                st.append(adj[st[-1]].pop())
+            route.append(st.pop())
+        return route[::-1]
+\end{code}
+\end{problem}
+
+\begin{problem}{1584}{Min Cost to Connect All Points}{Medium}
+\summary{Connect all points with minimum total Manhattan-distance edges.}
+\keyidea{Prim's MST with a min-heap starting from point 0.}
+\complexity{O(n\textasciicircum{}2 log n) time, O(n\textasciicircum{}2) space}
+\begin{code}
+class Solution:
+    def minCostConnectPoints(self, points: List[List[int]]) -> int:
+        n = len(points)
+        seen, h, total = set(), [(0, 0)], 0   # (cost, point)
+        while len(seen) < n:
+            cost, i = heapq.heappop(h)
+            if i in seen:
+                continue
+            seen.add(i)
+            total += cost
+            xi, yi = points[i]
+            for j in range(n):
+                if j not in seen:
+                    xj, yj = points[j]
+                    heapq.heappush(h, (abs(xi - xj) + abs(yi - yj), j))
+        return total
+\end{code}
+\end{problem}
+
+\begin{problem}{743}{Network Delay Time}{Medium}
+\summary{Signal sent from node k along weighted directed edges; time for all nodes to receive it (-1 if not all).}
+\keyidea{Dijkstra from k; answer is the largest shortest-distance.}
+\complexity{O(E log V) time, O(V + E) space}
+\begin{code}
+class Solution:
+    def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
+        adj = defaultdict(list)
+        for u, v, w in times:
+            adj[u].append((v, w))
+        dist, h = {}, [(0, k)]
+        while h:
+            d, u = heapq.heappop(h)
+            if u in dist:
+                continue
+            dist[u] = d
+            for v, w in adj[u]:
+                if v not in dist:
+                    heapq.heappush(h, (d + w, v))
+        return max(dist.values()) if len(dist) == n else -1
+\end{code}
+\end{problem}
+
+\begin{problem}{778}{Swim in Rising Water}{Hard}
+\summary{At time t you can swim through cells with height \textless{}= t. Earliest time to go from top-left to bottom-right.}
+\keyidea{Dijkstra-like: min-heap keyed by the max height seen on the path so far.}
+\complexity{O(n\textasciicircum{}2 log n) time, O(n\textasciicircum{}2) space}
+\begin{code}
+class Solution:
+    def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        h, seen = [(grid[0][0], 0, 0)], {(0, 0)}
+        while h:
+            t, r, c = heapq.heappop(h)
+            if r == c == n - 1:
+                return t
+            for nr, nc in ((r + 1, c), (r - 1, c), (r, c + 1), (r, c - 1)):
+                if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in seen:
+                    seen.add((nr, nc))
+                    heapq.heappush(h, (max(t, grid[nr][nc]), nr, nc))
+\end{code}
+\end{problem}
+
+\begin{problem}{269}{Alien Dictionary}{Hard}
+\summary{Words are sorted in an unknown alphabet; return a valid letter order, or '' if inconsistent.}
+\keyidea{Compare adjacent words: first differing letter gives an edge. Prefix trap: longer word before its prefix -\textgreater{} ''. Then topological sort.}
+\complexity{O(total chars) time, O(alphabet\textasciicircum{}2) space}
+\begin{code}
+class Solution:
+    def alienOrder(self, words: List[str]) -> str:
+        adj = {c: set() for w in words for c in w}
+        indeg = {c: 0 for c in adj}
+        for w1, w2 in zip(words, words[1:]):
+            if len(w1) > len(w2) and w1.startswith(w2):
+                return ""
+            for a, b in zip(w1, w2):
+                if a != b:
+                    if b not in adj[a]:
+                        adj[a].add(b)
+                        indeg[b] += 1
+                    break
+        q = deque(c for c in indeg if indeg[c] == 0)
+        res = []
+        while q:
+            c = q.popleft()
+            res.append(c)
+            for nb in adj[c]:
+                indeg[nb] -= 1
+                if indeg[nb] == 0:
+                    q.append(nb)
+        return "".join(res) if len(res) == len(adj) else ""
+\end{code}
+\end{problem}
+
+\begin{problem}{787}{Cheapest Flights Within K Stops}{Medium}
+\summary{Cheapest price from src to dst using at most k stops (-1 if none).}
+\keyidea{Bellman-Ford limited to k+1 rounds; update from a copy of last round's prices.}
+\complexity{O(k * E) time, O(n) space}
+\begin{code}
+class Solution:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        prices = [float("inf")] * n
+        prices[src] = 0
+        for _ in range(k + 1):
+            tmp = prices[:]
+            for u, v, w in flights:
+                if prices[u] != float("inf") and prices[u] + w < tmp[v]:
+                    tmp[v] = prices[u] + w
+            prices = tmp
+        return -1 if prices[dst] == float("inf") else prices[dst]
+\end{code}
+\end{problem}

@@ -1,0 +1,265 @@
+\markboth{Cheat sheet}{}
+\pdfbookmark[0]{Pattern cheat sheet}{cheat}
+\section*{Pattern cheat sheet}
+{\footnotesize\color{muted} One block per category: when to reach for it, the core move, a template, and the traps.\par}
+\vspace{6pt}
+
+% --- Arrays & Hashing ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Arrays \& Hashing}{Need O(1) lookup, counting, grouping, or 'have I seen this?'}{Hash set / hash map / Counter. Group by a canonical key (sorted string, count tuple). Prefix and suffix products/sums.}{Lists are unhashable: use tuple(count) as a key. Sequence-start trick: only count from n where n-1 is absent.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+seen = {}
+for i, x in enumerate(nums):
+    if target - x in seen: ...
+    seen[x] = i
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Two Pointers ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Two Pointers}{Sorted input, pair/triplet sums, palindromes, or shrinking from both ends.}{l at start, r at end; move the pointer that can improve the answer.}{Skip duplicates after a match (3Sum). Move the shorter wall (Container, Trap).}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+l, r = 0, len(a) - 1
+while l < r:
+    if cond: l += 1
+    else: r -= 1
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Sliding Window ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Sliding Window}{Longest/shortest contiguous substring or subarray satisfying a condition.}{Grow r every step; shrink l while the window is invalid; record the answer.}{Fixed-size window: slide by adding r and removing r-k. Window max: monotonic deque.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+l = 0
+for r in range(len(s)):
+    add(s[r])
+    while invalid(): remove(s[l]); l += 1
+    best = max(best, r - l + 1)
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Stack ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Stack}{Matching pairs, 'next greater/warmer', expression evaluation, nested structure.}{Push openers / indices; pop when the current element resolves the top. Monotonic stack for next-greater.}{RPN division in Python: int(a / b), not a // b. Histogram: popped bar's start carries over.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+st = []
+for i, x in enumerate(a):
+    while st and a[st[-1]] < x:
+        j = st.pop(); res[j] = i - j
+    st.append(i)
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Binary Search ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Binary Search}{Sorted data, rotated arrays, or 'minimum X such that condition holds'.}{Halve the search space; on answer-space problems search over the answer value.}{Rotated array: one half is always sorted; check that half first. Median: partition the shorter array.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+l, r = lo, hi
+while l <= r:
+    m = (l + r) // 2
+    if ok(m): res = m; r = m - 1
+    else: l = m + 1
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Linked List ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Linked List}{In-place pointer rewiring, middle of list, cycles, k-th from end.}{Dummy head; slow/fast pointers; reverse with prev/cur/nxt.}{Find the Duplicate: array as a linked list (Floyd). LRU: hash map + doubly linked list with sentinels.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+prev, cur = None, head
+while cur:
+    nxt = cur.next; cur.next = prev
+    prev, cur = cur, nxt
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Trees ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Trees}{Anything recursive over a hierarchy: depth, paths, validation, traversal order.}{DFS returning a value up (height, best arm), or BFS by level with a queue.}{BST: in-order is sorted; validate with (lo, hi) bounds, not just parent. Max path sum: clamp arms at 0.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+def dfs(node):
+    if not node: return 0
+    l, r = dfs(node.left), dfs(node.right)
+    # update global answer with l, r
+    return 1 + max(l, r)
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Tries ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Tries}{Prefix queries, word dictionaries, searching many words at once.}{Node = children dict + end flag. Walk character by character.}{Word Search II: prune found words and empty branches or it times out.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+node = root
+for c in word:
+    node = node.children.setdefault(c, TrieNode())
+node.end = True
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Heap / Priority Queue ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Heap / Priority Queue}{k largest/smallest, running median, merging sorted streams, scheduling.}{heapq is a min-heap. For max-heap push negatives. Keep a heap of size k for top-k.}{Median: two heaps (max-heap low half, min-heap high half). Tie-breakers in tuples avoid comparing nodes.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+h = []
+for x in nums:
+    heapq.heappush(h, x)
+    if len(h) > k: heapq.heappop(h)
+# h[0] is k-th largest
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Backtracking ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Backtracking}{'Return all' combinations, subsets, permutations, placements.}{Choose, recurse, un-choose. Sort first when duplicates must be skipped.}{Append a copy (cur[:]). Skip equal neighbours at the same depth for duplicate inputs.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+def dfs(i):
+    if done: res.append(cur[:]); return
+    cur.append(x); dfs(i + 1); cur.pop()
+    dfs(i + 1)
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Graphs ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Graphs}{Grids, connectivity, islands, dependencies, shortest steps in unweighted graphs.}{DFS/BFS flood fill; multi-source BFS for 'minutes/distance'; Kahn's topological sort; Union-Find.}{Mark visited when enqueuing, not when popping. Reverse the flow when it is easier (Pacific Atlantic, Surrounded Regions).}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+q = deque(sources)
+while q:
+    for _ in range(len(q)):
+        r, c = q.popleft()
+        for nr, nc in neighbours(r, c): ...
+    steps += 1
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Advanced Graphs ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Advanced Graphs}{Weighted shortest paths, minimum spanning tree, ordering from constraints, Euler paths.}{Dijkstra (heap), Prim (heap), Bellman-Ford (k rounds), Kahn (topo), Hierholzer (Euler path).}{K stops: Bellman-Ford with a copy each round. Alien Dictionary: a word before its own prefix is invalid.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+h = [(0, src)]; dist = {}
+while h:
+    d, u = heapq.heappop(h)
+    if u in dist: continue
+    dist[u] = d
+    for v, w in adj[u]: heapq.heappush(h, (d + w, v))
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- 1-D Dynamic Programming ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{1-D Dynamic Programming}{Count ways / min cost / max value where the answer at i depends on a few earlier states.}{Define dp[i], write the recurrence, then compress to two variables if possible.}{Palindromes: expand around centres. Max product: track min and max. LIS: patience sorting + bisect.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+a, b = base0, base1
+for x in arr:
+    a, b = b, max(b, a + x)   # House Robber
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- 2-D Dynamic Programming ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{2-D Dynamic Programming}{Two strings or a grid; choices at each (i, j); knapsack-style counting.}{dp[i][j] over suffixes (or prefixes); fill bottom-up or memoise top-down.}{Coin Change II: coins in the outer loop (combinations, not permutations). Burst Balloons: pick the LAST balloon.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+for i in range(m - 1, -1, -1):
+    for j in range(n - 1, -1, -1):
+        dp[i][j] = f(dp[i+1][j],
+                     dp[i][j+1],
+                     dp[i+1][j+1])
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Greedy ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Greedy}{A locally best move is provably safe: max subarray, reachability, partitioning.}{Keep one running quantity (sum, goal, reach, open-count range) and update it each step.}{Gas Station: total check first, then reset start. Parenthesis with *: track a [lo, hi] range.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+cur = best = nums[0]
+for x in nums[1:]:
+    cur = max(x, cur + x)
+    best = max(best, cur)
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Intervals ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Intervals}{Overlaps, merging, inserting, rooms needed, queries over ranges.}{Sort by start (or end); compare each interval's start with the previous end.}{Non-overlapping: on conflict keep the smaller end. Meeting Rooms II: separate sorted starts and ends.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+intervals.sort()
+res = [intervals[0]]
+for s, e in intervals[1:]:
+    if s <= res[-1][1]:
+        res[-1][1] = max(res[-1][1], e)
+    else:
+        res.append([s, e])
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Math & Geometry ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Math \& Geometry}{Matrix manipulation, digit arithmetic, cycles in number sequences.}{Transpose + reverse to rotate; boundary pointers for spirals; fast power by squaring.}{Set Matrix Zeroes in O(1) space: first row/col as markers plus one flag. Negative exponents: invert x.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+top, bottom, left, right = 0, R - 1, 0, C - 1
+while top <= bottom and left <= right: ...
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}
+
+% --- Bit Manipulation ---
+\noindent\begin{minipage}[t]{0.51\linewidth}
+\cheatentry{Bit Manipulation}{XOR cancellation, counting bits, arithmetic without + or -.}{x \textasciicircum{} x = 0; n \& (n - 1) clears the lowest set bit; shifts move bits.}{Python ints are unbounded: mask with 0xFFFFFFFF and convert back for negatives (Sum of Two Integers).}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.46\linewidth}\vspace{-6pt}
+\begin{smallcode}
+res = 0
+for x in nums: res ^= x
+\end{smallcode}
+\end{minipage}
+\par\vspace{3pt}{\color{rule}\hrule}\vspace{6pt}

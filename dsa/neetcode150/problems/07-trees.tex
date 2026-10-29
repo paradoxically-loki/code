@@ -1,0 +1,290 @@
+% ===== Trees (15 problems) =====
+\section{Trees {\normalsize\color{muted}$\cdot$ 15 problems}}
+\markboth{Trees}{}
+
+\begin{problem}{226}{Invert Binary Tree}{Easy}
+\summary{Mirror the tree (swap every left and right child).}
+\keyidea{Swap children, recurse on both.}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        if root:
+            root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
+        return root
+\end{code}
+\end{problem}
+
+\begin{problem}{104}{Maximum Depth of Binary Tree}{Easy}
+\summary{Number of nodes on the longest root-to-leaf path.}
+\keyidea{depth = 1 + max(depth(left), depth(right)).}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        if not root:
+            return 0
+        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
+\end{code}
+\end{problem}
+
+\begin{problem}{543}{Diameter of Binary Tree}{Easy}
+\summary{Longest path (in edges) between any two nodes.}
+\keyidea{DFS returns height; at each node update best with left height + right height.}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        best = 0
+        def height(node):
+            nonlocal best
+            if not node:
+                return 0
+            l, r = height(node.left), height(node.right)
+            best = max(best, l + r)
+            return 1 + max(l, r)
+        height(root)
+        return best
+\end{code}
+\end{problem}
+
+\begin{problem}{110}{Balanced Binary Tree}{Easy}
+\summary{Is every node's left/right height difference at most 1?}
+\keyidea{Bottom-up DFS returning height, or -1 as an 'unbalanced' sentinel.}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+        def h(node):
+            if not node:
+                return 0
+            l, r = h(node.left), h(node.right)
+            if l < 0 or r < 0 or abs(l - r) > 1:
+                return -1
+            return 1 + max(l, r)
+        return h(root) >= 0
+\end{code}
+\end{problem}
+
+\begin{problem}{100}{Same Tree}{Easy}
+\summary{Are two trees identical in structure and values?}
+\keyidea{Both None -\textgreater{} True; one None or values differ -\textgreater{} False; else recurse on both sides.}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        if not p and not q:
+            return True
+        if not p or not q or p.val != q.val:
+            return False
+        return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+\end{code}
+\end{problem}
+
+\begin{problem}{572}{Subtree of Another Tree}{Easy}
+\summary{Is subRoot an exact subtree somewhere inside root?}
+\keyidea{At every node of root, test sameTree(node, subRoot).}
+\complexity{O(m * n) time, O(h) space}
+\begin{code}
+class Solution:
+    def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
+        def same(a, b):
+            if not a and not b:
+                return True
+            if not a or not b or a.val != b.val:
+                return False
+            return same(a.left, b.left) and same(a.right, b.right)
+        if not subRoot:
+            return True
+        if not root:
+            return False
+        return (same(root, subRoot) or self.isSubtree(root.left, subRoot)
+                or self.isSubtree(root.right, subRoot))
+\end{code}
+\end{problem}
+
+\begin{problem}{235}{Lowest Common Ancestor of a Binary Search Tree}{Medium}
+\summary{Find the LCA of nodes p and q in a BST.}
+\keyidea{Both smaller -\textgreater{} go left; both larger -\textgreater{} go right; otherwise this node is where they split.}
+\complexity{O(h) time, O(1) space}
+\begin{code}
+class Solution:
+    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+        cur = root
+        while cur:
+            if p.val < cur.val and q.val < cur.val:
+                cur = cur.left
+            elif p.val > cur.val and q.val > cur.val:
+                cur = cur.right
+            else:
+                return cur
+\end{code}
+\end{problem}
+
+\begin{problem}{102}{Binary Tree Level Order Traversal}{Medium}
+\summary{Return node values level by level.}
+\keyidea{BFS with a queue; process len(queue) nodes per level.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        res, q = [], deque([root] if root else [])
+        while q:
+            level = []
+            for _ in range(len(q)):
+                node = q.popleft()
+                level.append(node.val)
+                if node.left: q.append(node.left)
+                if node.right: q.append(node.right)
+            res.append(level)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{199}{Binary Tree Right Side View}{Medium}
+\summary{Values visible when looking at the tree from the right, top to bottom.}
+\keyidea{BFS by level; take the last node of each level.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
+        res, q = [], deque([root] if root else [])
+        while q:
+            for i in range(len(q)):
+                node = q.popleft()
+                if i == 0:
+                    res.append(node.val)       # enqueue right first -> first is rightmost
+                if node.right: q.append(node.right)
+                if node.left: q.append(node.left)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{1448}{Count Good Nodes in Binary Tree}{Medium}
+\summary{A node is good if no node on the path from the root to it is larger. Count good nodes.}
+\keyidea{DFS carrying the max value seen on the path.}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def goodNodes(self, root: TreeNode) -> int:
+        def dfs(node, mx):
+            if not node:
+                return 0
+            good = 1 if node.val >= mx else 0
+            mx = max(mx, node.val)
+            return good + dfs(node.left, mx) + dfs(node.right, mx)
+        return dfs(root, root.val)
+\end{code}
+\end{problem}
+
+\begin{problem}{98}{Validate Binary Search Tree}{Medium}
+\summary{Is the tree a valid BST (strict ordering)?}
+\keyidea{DFS passing an open interval (low, high) that every node must sit inside.}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        def ok(node, lo, hi):
+            if not node:
+                return True
+            if not (lo < node.val < hi):
+                return False
+            return ok(node.left, lo, node.val) and ok(node.right, node.val, hi)
+        return ok(root, float("-inf"), float("inf"))
+\end{code}
+\end{problem}
+
+\begin{problem}{230}{Kth Smallest Element in a BST}{Medium}
+\summary{Return the k-th smallest value (1-indexed) in a BST.}
+\keyidea{In-order traversal visits values in sorted order; stop at the k-th pop.}
+\complexity{O(h + k) time, O(h) space}
+\begin{code}
+class Solution:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        st, cur = [], root
+        while st or cur:
+            while cur:
+                st.append(cur)
+                cur = cur.left
+            cur = st.pop()
+            k -= 1
+            if k == 0:
+                return cur.val
+            cur = cur.right
+\end{code}
+\end{problem}
+
+\begin{problem}{105}{Construct Binary Tree from Preorder and Inorder Traversal}{Medium}
+\summary{Rebuild the tree from its preorder and inorder sequences (unique values).}
+\keyidea{preorder[0] is the root; its index in inorder splits left/right subtrees. Use a value-\textgreater{}index map.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+        idx = {v: i for i, v in enumerate(inorder)}
+        pre = iter(preorder)
+        def build(l, r):
+            if l > r:
+                return None
+            val = next(pre)
+            node = TreeNode(val)
+            m = idx[val]
+            node.left = build(l, m - 1)
+            node.right = build(m + 1, r)
+            return node
+        return build(0, len(inorder) - 1)
+\end{code}
+\end{problem}
+
+\begin{problem}{124}{Binary Tree Maximum Path Sum}{Hard}
+\summary{Max sum of any path (any start and end node, must be connected).}
+\keyidea{DFS returns the best downward 'arm' (clamped at 0); at each node update answer with val + left + right.}
+\complexity{O(n) time, O(h) space}
+\begin{code}
+class Solution:
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        best = root.val
+        def arm(node):
+            nonlocal best
+            if not node:
+                return 0
+            l = max(arm(node.left), 0)
+            r = max(arm(node.right), 0)
+            best = max(best, node.val + l + r)
+            return node.val + max(l, r)
+        arm(root)
+        return best
+\end{code}
+\end{problem}
+
+\begin{problem}{297}{Serialize and Deserialize Binary Tree}{Hard}
+\summary{Convert a tree to a string and back.}
+\keyidea{Preorder with 'N' for nulls; deserialize by consuming tokens in the same preorder.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Codec:
+    def serialize(self, root):
+        out = []
+        def dfs(node):
+            if not node:
+                out.append("N")
+                return
+            out.append(str(node.val))
+            dfs(node.left)
+            dfs(node.right)
+        dfs(root)
+        return ",".join(out)
+
+    def deserialize(self, data):
+        vals = iter(data.split(","))
+        def dfs():
+            v = next(vals)
+            if v == "N":
+                return None
+            node = TreeNode(int(v))
+            node.left = dfs()
+            node.right = dfs()
+            return node
+        return dfs()
+\end{code}
+\end{problem}

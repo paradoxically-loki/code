@@ -1,0 +1,108 @@
+% ===== Tries (3 problems) =====
+\section{Tries {\normalsize\color{muted}$\cdot$ 3 problems}}
+\markboth{Tries}{}
+
+\begin{problem}{208}{Implement Trie (Prefix Tree)}{Medium}
+\summary{Build insert, search (whole word) and startsWith (prefix).}
+\keyidea{Each node: dict of children + end-of-word flag.}
+\complexity{O(L) per op, O(total chars) space}
+\begin{code}
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.end = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        cur = self.root
+        for c in word:
+            cur = cur.children.setdefault(c, TrieNode())
+        cur.end = True
+
+    def _walk(self, s):
+        cur = self.root
+        for c in s:
+            if c not in cur.children:
+                return None
+            cur = cur.children[c]
+        return cur
+
+    def search(self, word: str) -> bool:
+        node = self._walk(word)
+        return bool(node and node.end)
+
+    def startsWith(self, prefix: str) -> bool:
+        return self._walk(prefix) is not None
+\end{code}
+\end{problem}
+
+\begin{problem}{211}{Design Add and Search Words Data Structure}{Medium}
+\summary{Like a trie, but search may contain '.' matching any one letter.}
+\keyidea{Trie + DFS; on '.', try every child.}
+\complexity{add O(L); search O(26\textasciicircum{}dots * L) worst case}
+\begin{code}
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.end = False
+
+class WordDictionary:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def addWord(self, word: str) -> None:
+        cur = self.root
+        for c in word:
+            cur = cur.children.setdefault(c, TrieNode())
+        cur.end = True
+
+    def search(self, word: str) -> bool:
+        def dfs(i, node):
+            if i == len(word):
+                return node.end
+            c = word[i]
+            if c == ".":
+                return any(dfs(i + 1, ch) for ch in node.children.values())
+            return c in node.children and dfs(i + 1, node.children[c])
+        return dfs(0, self.root)
+\end{code}
+\end{problem}
+
+\begin{problem}{212}{Word Search II}{Hard}
+\summary{Find all dictionary words that can be traced on a letter grid (adjacent cells, no reuse).}
+\keyidea{Insert words into a trie; DFS from each cell following trie edges; prune found words.}
+\complexity{O(m * n * 4\textasciicircum{}L) worst case, O(total word chars) space}
+\begin{code}
+class Solution:
+    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        root = {}
+        for w in words:
+            node = root
+            for c in w:
+                node = node.setdefault(c, {})
+            node["$"] = w
+        R, C = len(board), len(board[0])
+        res = []
+        def dfs(r, c, parent):
+            ch = board[r][c]
+            node = parent[ch]
+            if "$" in node:
+                res.append(node.pop("$"))     # avoid duplicates
+            board[r][c] = "#"
+            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < R and 0 <= nc < C and board[nr][nc] in node:
+                    dfs(nr, nc, node)
+            board[r][c] = ch
+            if not node:                       # prune empty branch
+                parent.pop(ch)
+        for r in range(R):
+            for c in range(C):
+                if board[r][c] in root:
+                    dfs(r, c, root)
+        return res
+\end{code}
+\end{problem}

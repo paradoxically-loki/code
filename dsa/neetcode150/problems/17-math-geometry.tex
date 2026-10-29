@@ -1,0 +1,165 @@
+% ===== Math & Geometry (8 problems) =====
+\section{Math \& Geometry {\normalsize\color{muted}$\cdot$ 8 problems}}
+\markboth{Math \& Geometry}{}
+
+\begin{problem}{48}{Rotate Image}{Medium}
+\summary{Rotate an n x n matrix 90 degrees clockwise in place.}
+\keyidea{Transpose, then reverse each row.}
+\complexity{O(n\textasciicircum{}2) time, O(1) space}
+\begin{code}
+class Solution:
+    def rotate(self, matrix: List[List[int]]) -> None:
+        n = len(matrix)
+        for i in range(n):
+            for j in range(i + 1, n):
+                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+        for row in matrix:
+            row.reverse()
+\end{code}
+\end{problem}
+
+\begin{problem}{54}{Spiral Matrix}{Medium}
+\summary{Return all elements in clockwise spiral order.}
+\keyidea{Shrink four boundaries (top, bottom, left, right) after each side is read.}
+\complexity{O(m * n) time, O(1) extra space}
+\begin{code}
+class Solution:
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        res = []
+        top, bottom, left, right = 0, len(matrix) - 1, 0, len(matrix[0]) - 1
+        while top <= bottom and left <= right:
+            for c in range(left, right + 1): res.append(matrix[top][c])
+            top += 1
+            for r in range(top, bottom + 1): res.append(matrix[r][right])
+            right -= 1
+            if top <= bottom:
+                for c in range(right, left - 1, -1): res.append(matrix[bottom][c])
+                bottom -= 1
+            if left <= right:
+                for r in range(bottom, top - 1, -1): res.append(matrix[r][left])
+                left += 1
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{73}{Set Matrix Zeroes}{Medium}
+\summary{If a cell is 0, set its entire row and column to 0, in place.}
+\keyidea{Use the first row/column as marker arrays; keep a separate flag for row 0.}
+\complexity{O(m * n) time, O(1) space}
+\begin{code}
+class Solution:
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        R, C = len(matrix), len(matrix[0])
+        row0_zero = any(matrix[0][c] == 0 for c in range(C))
+        for r in range(1, R):
+            for c in range(C):
+                if matrix[r][c] == 0:
+                    matrix[0][c] = 0
+                    matrix[r][0] = 0
+        for r in range(1, R):
+            for c in range(1, C):
+                if matrix[0][c] == 0 or matrix[r][0] == 0:
+                    matrix[r][c] = 0
+        if matrix[0][0] == 0:
+            for r in range(R):
+                matrix[r][0] = 0
+        if row0_zero:
+            for c in range(C):
+                matrix[0][c] = 0
+\end{code}
+\end{problem}
+
+\begin{problem}{202}{Happy Number}{Easy}
+\summary{Repeatedly replace n with the sum of squares of its digits. Does it reach 1?}
+\keyidea{Either reaches 1 or loops: detect the loop with a set (or Floyd).}
+\complexity{O(log n) per step, O(log n) space}
+\begin{code}
+class Solution:
+    def isHappy(self, n: int) -> bool:
+        seen = set()
+        while n != 1 and n not in seen:
+            seen.add(n)
+            n = sum(int(d) ** 2 for d in str(n))
+        return n == 1
+\end{code}
+\end{problem}
+
+\begin{problem}{66}{Plus One}{Easy}
+\summary{Add one to a number stored as a list of digits.}
+\keyidea{From the end: 9 becomes 0 and carry; otherwise increment and return. All 9s -\textgreater{} prepend 1.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def plusOne(self, digits: List[int]) -> List[int]:
+        for i in range(len(digits) - 1, -1, -1):
+            if digits[i] < 9:
+                digits[i] += 1
+                return digits
+            digits[i] = 0
+        return [1] + digits
+\end{code}
+\end{problem}
+
+\begin{problem}{50}{Pow(x, n)}{Medium}
+\summary{Compute x raised to integer n (n may be negative).}
+\keyidea{Fast exponentiation: square x and halve n; multiply in x when the low bit is 1.}
+\complexity{O(log n) time, O(1) space}
+\begin{code}
+class Solution:
+    def myPow(self, x: float, n: int) -> float:
+        if n < 0:
+            x, n = 1 / x, -n
+        res = 1.0
+        while n:
+            if n & 1:
+                res *= x
+            x *= x
+            n >>= 1
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{43}{Multiply Strings}{Medium}
+\summary{Multiply two non-negative numbers given as strings, without converting to int.}
+\keyidea{Grade-school multiplication: digit i times digit j lands at position i + j (on reversed strings).}
+\complexity{O(m * n) time, O(m + n) space}
+\begin{code}
+class Solution:
+    def multiply(self, num1: str, num2: str) -> str:
+        if num1 == "0" or num2 == "0":
+            return "0"
+        res = [0] * (len(num1) + len(num2))
+        a, b = num1[::-1], num2[::-1]
+        for i in range(len(a)):
+            for j in range(len(b)):
+                res[i + j] += int(a[i]) * int(b[j])
+                res[i + j + 1] += res[i + j] // 10
+                res[i + j] %= 10
+        while len(res) > 1 and res[-1] == 0:
+            res.pop()
+        return "".join(map(str, res[::-1]))
+\end{code}
+\end{problem}
+
+\begin{problem}{2013}{Detect Squares}{Medium}
+\summary{add(point) to a multiset; count(point) returns how many axis-aligned squares it completes with stored points.}
+\keyidea{Treat each stored point as the diagonal corner; if it forms a square, multiply counts of the other two corners.}
+\complexity{add O(1), count O(n) time; O(n) space}
+\begin{code}
+class DetectSquares:
+    def __init__(self):
+        self.pts = Counter()
+
+    def add(self, point: List[int]) -> None:
+        self.pts[tuple(point)] += 1
+
+    def count(self, point: List[int]) -> int:
+        px, py = point
+        res = 0
+        for (x, y), c in list(self.pts.items()):
+            if abs(px - x) != abs(py - y) or x == px or y == py:
+                continue
+            res += c * self.pts[(x, py)] * self.pts[(px, y)]
+        return res
+\end{code}
+\end{problem}

@@ -1,0 +1,146 @@
+% ===== Stack (7 problems) =====
+\section{Stack {\normalsize\color{muted}$\cdot$ 7 problems}}
+\markboth{Stack}{}
+
+\begin{problem}{20}{Valid Parentheses}{Easy}
+\summary{Are brackets ()[]\{\} correctly matched and nested?}
+\keyidea{Push openers; on a closer, the top must be its matching opener.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def isValid(self, s: str) -> bool:
+        pairs = {")": "(", "]": "[", "}": "{"}
+        stack = []
+        for c in s:
+            if c in pairs:
+                if not stack or stack[-1] != pairs[c]:
+                    return False
+                stack.pop()
+            else:
+                stack.append(c)
+        return not stack
+\end{code}
+\end{problem}
+
+\begin{problem}{155}{Min Stack}{Medium}
+\summary{Stack supporting push, pop, top and getMin, all O(1).}
+\keyidea{Second stack storing the min at each depth.}
+\complexity{O(1) per op, O(n) space}
+\begin{code}
+class MinStack:
+    def __init__(self):
+        self.stack, self.mins = [], []
+
+    def push(self, val: int) -> None:
+        self.stack.append(val)
+        self.mins.append(min(val, self.mins[-1] if self.mins else val))
+
+    def pop(self) -> None:
+        self.stack.pop()
+        self.mins.pop()
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def getMin(self) -> int:
+        return self.mins[-1]
+\end{code}
+\end{problem}
+
+\begin{problem}{150}{Evaluate Reverse Polish Notation}{Medium}
+\summary{Evaluate an expression in postfix notation (+ - * /, division truncates toward zero).}
+\keyidea{Push numbers; on an operator pop b then a, push a op b. Use int(a / b) for truncation.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def evalRPN(self, tokens: List[str]) -> int:
+        st = []
+        for t in tokens:
+            if t in "+-*/":
+                b, a = st.pop(), st.pop()
+                if t == "+": st.append(a + b)
+                elif t == "-": st.append(a - b)
+                elif t == "*": st.append(a * b)
+                else: st.append(int(a / b))
+            else:
+                st.append(int(t))
+        return st[0]
+\end{code}
+\end{problem}
+
+\begin{problem}{22}{Generate Parentheses}{Medium}
+\summary{List every well-formed string of n pairs of parentheses.}
+\keyidea{Backtrack: add '(' if open \textless{} n; add ')' if close \textless{} open.}
+\complexity{O(4\textasciicircum{}n / sqrt(n)) time (Catalan), O(n) recursion}
+\begin{code}
+class Solution:
+    def generateParenthesis(self, n: int) -> List[str]:
+        res, cur = [], []
+        def bt(op, cl):
+            if op == cl == n:
+                res.append("".join(cur))
+                return
+            if op < n:
+                cur.append("("); bt(op + 1, cl); cur.pop()
+            if cl < op:
+                cur.append(")"); bt(op, cl + 1); cur.pop()
+        bt(0, 0)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{739}{Daily Temperatures}{Medium}
+\summary{For each day, how many days until a warmer temperature (0 if never)?}
+\keyidea{Monotonic decreasing stack of indices; a warmer day resolves everything colder on the stack.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        res = [0] * len(temperatures)
+        st = []  # indices
+        for i, t in enumerate(temperatures):
+            while st and temperatures[st[-1]] < t:
+                j = st.pop()
+                res[j] = i - j
+            st.append(i)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{853}{Car Fleet}{Medium}
+\summary{Cars drive to target; a faster car that catches a slower one joins it. Count arriving fleets.}
+\keyidea{Sort by position descending; compute arrival time. A car forms a new fleet only if it takes longer than the fleet ahead.}
+\complexity{O(n log n) time, O(n) space}
+\begin{code}
+class Solution:
+    def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
+        cars = sorted(zip(position, speed), reverse=True)
+        st = []
+        for p, s in cars:
+            t = (target - p) / s
+            if not st or t > st[-1]:
+                st.append(t)
+        return len(st)
+\end{code}
+\end{problem}
+
+\begin{problem}{84}{Largest Rectangle in Histogram}{Hard}
+\summary{Area of the largest rectangle that fits under the histogram bars.}
+\keyidea{Increasing stack of (start, height). When popping a taller bar, its rectangle ends here; the new bar inherits the popped start.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        best, st = 0, []  # (start index, height)
+        for i, h in enumerate(heights):
+            start = i
+            while st and st[-1][1] > h:
+                idx, height = st.pop()
+                best = max(best, height * (i - idx))
+                start = idx
+            st.append((start, h))
+        for idx, height in st:
+            best = max(best, height * (len(heights) - idx))
+        return best
+\end{code}
+\end{problem}

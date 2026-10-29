@@ -1,0 +1,115 @@
+% ===== Two Pointers (5 problems) =====
+\section{Two Pointers {\normalsize\color{muted}$\cdot$ 5 problems}}
+\markboth{Two Pointers}{}
+
+\begin{problem}{125}{Valid Palindrome}{Easy}
+\summary{After keeping only alphanumerics and lower-casing, is the string a palindrome?}
+\keyidea{Pointers from both ends, skip non-alphanumerics, compare lowercase.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def isPalindrome(self, s: str) -> bool:
+        l, r = 0, len(s) - 1
+        while l < r:
+            while l < r and not s[l].isalnum():
+                l += 1
+            while l < r and not s[r].isalnum():
+                r -= 1
+            if s[l].lower() != s[r].lower():
+                return False
+            l, r = l + 1, r - 1
+        return True
+\end{code}
+\end{problem}
+
+\begin{problem}{167}{Two Sum II - Input Array Is Sorted}{Medium}
+\summary{Sorted array; return 1-indexed positions of two numbers summing to target, O(1) space.}
+\keyidea{l at start, r at end: sum too big -\textgreater{} r--, too small -\textgreater{} l++.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def twoSum(self, numbers: List[int], target: int) -> List[int]:
+        l, r = 0, len(numbers) - 1
+        while l < r:
+            s = numbers[l] + numbers[r]
+            if s > target:
+                r -= 1
+            elif s < target:
+                l += 1
+            else:
+                return [l + 1, r + 1]
+\end{code}
+\end{problem}
+
+\begin{problem}{15}{3Sum}{Medium}
+\summary{Find all unique triplets that sum to zero.}
+\keyidea{Sort; fix a, then two-pointer for the pair. Skip duplicate a's and duplicate l's.}
+\complexity{O(n\textasciicircum{}2) time, O(1) extra space (besides sort)}
+\begin{code}
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        res = []
+        for i, a in enumerate(nums):
+            if a > 0:
+                break
+            if i > 0 and a == nums[i - 1]:
+                continue
+            l, r = i + 1, len(nums) - 1
+            while l < r:
+                s = a + nums[l] + nums[r]
+                if s > 0:
+                    r -= 1
+                elif s < 0:
+                    l += 1
+                else:
+                    res.append([a, nums[l], nums[r]])
+                    l += 1
+                    while l < r and nums[l] == nums[l - 1]:
+                        l += 1
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{11}{Container With Most Water}{Medium}
+\summary{Pick two vertical lines that, with the x-axis, hold the most water.}
+\keyidea{Start widest; always move the shorter wall inward (the taller one can't help).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        l, r, best = 0, len(height) - 1, 0
+        while l < r:
+            best = max(best, (r - l) * min(height[l], height[r]))
+            if height[l] < height[r]:
+                l += 1
+            else:
+                r -= 1
+        return best
+\end{code}
+\end{problem}
+
+\begin{problem}{42}{Trapping Rain Water}{Hard}
+\summary{Given bar heights, compute how much rain water is trapped between them.}
+\keyidea{Water at i = min(maxLeft, maxRight) - h[i]. Two pointers: process the side with the smaller max.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        if not height:
+            return 0
+        l, r = 0, len(height) - 1
+        leftMax, rightMax = height[l], height[r]
+        res = 0
+        while l < r:
+            if leftMax < rightMax:
+                l += 1
+                leftMax = max(leftMax, height[l])
+                res += leftMax - height[l]
+            else:
+                r -= 1
+                rightMax = max(rightMax, height[r])
+                res += rightMax - height[r]
+        return res
+\end{code}
+\end{problem}

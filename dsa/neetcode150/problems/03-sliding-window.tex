@@ -1,0 +1,130 @@
+% ===== Sliding Window (6 problems) =====
+\section{Sliding Window {\normalsize\color{muted}$\cdot$ 6 problems}}
+\markboth{Sliding Window}{}
+
+\begin{problem}{121}{Best Time to Buy and Sell Stock}{Easy}
+\summary{One buy then one later sell; maximise profit (0 if none).}
+\keyidea{Track the minimum price so far; profit = today - min.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        lo, best = float("inf"), 0
+        for p in prices:
+            lo = min(lo, p)
+            best = max(best, p - lo)
+        return best
+\end{code}
+\end{problem}
+
+\begin{problem}{3}{Longest Substring Without Repeating Characters}{Medium}
+\summary{Length of the longest substring with all distinct characters.}
+\keyidea{Window with a set; on a repeat, shrink from the left until the char is gone.}
+\complexity{O(n) time, O(alphabet) space}
+\begin{code}
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        seen = set()
+        l = best = 0
+        for r in range(len(s)):
+            while s[r] in seen:
+                seen.remove(s[l])
+                l += 1
+            seen.add(s[r])
+            best = max(best, r - l + 1)
+        return best
+\end{code}
+\end{problem}
+
+\begin{problem}{424}{Longest Repeating Character Replacement}{Medium}
+\summary{You may change up to k characters; longest substring that can become all one letter.}
+\keyidea{Window valid while (length - count of most frequent char) \textless{}= k. maxf never needs decreasing.}
+\complexity{O(n) time, O(26) space}
+\begin{code}
+class Solution:
+    def characterReplacement(self, s: str, k: int) -> int:
+        count = {}
+        l = maxf = best = 0
+        for r in range(len(s)):
+            count[s[r]] = count.get(s[r], 0) + 1
+            maxf = max(maxf, count[s[r]])
+            while (r - l + 1) - maxf > k:
+                count[s[l]] -= 1
+                l += 1
+            best = max(best, r - l + 1)
+        return best
+\end{code}
+\end{problem}
+
+\begin{problem}{567}{Permutation in String}{Medium}
+\summary{Does s2 contain some rearrangement of s1 as a contiguous substring?}
+\keyidea{Fixed-size window of len(s1); compare 26-letter counts as the window slides.}
+\complexity{O(n) time, O(26) space}
+\begin{code}
+class Solution:
+    def checkInclusion(self, s1: str, s2: str) -> bool:
+        if len(s1) > len(s2):
+            return False
+        need, have = [0] * 26, [0] * 26
+        for i in range(len(s1)):
+            need[ord(s1[i]) - 97] += 1
+            have[ord(s2[i]) - 97] += 1
+        if need == have:
+            return True
+        for r in range(len(s1), len(s2)):
+            have[ord(s2[r]) - 97] += 1
+            have[ord(s2[r - len(s1)]) - 97] -= 1
+            if need == have:
+                return True
+        return False
+\end{code}
+\end{problem}
+
+\begin{problem}{76}{Minimum Window Substring}{Hard}
+\summary{Smallest substring of s containing every character of t (with multiplicity).}
+\keyidea{Expand r until all needs met (have == need), then shrink l while still valid, recording best.}
+\complexity{O(\textbar{}s\textbar{} + \textbar{}t\textbar{}) time, O(alphabet) space}
+\begin{code}
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        if not t:
+            return ""
+        countT, window = Counter(t), {}
+        have, need = 0, len(countT)
+        res, resLen = (-1, -1), float("inf")
+        l = 0
+        for r, c in enumerate(s):
+            window[c] = window.get(c, 0) + 1
+            if c in countT and window[c] == countT[c]:
+                have += 1
+            while have == need:
+                if r - l + 1 < resLen:
+                    res, resLen = (l, r), r - l + 1
+                window[s[l]] -= 1
+                if s[l] in countT and window[s[l]] < countT[s[l]]:
+                    have -= 1
+                l += 1
+        l, r = res
+        return s[l : r + 1] if resLen != float("inf") else ""
+\end{code}
+\end{problem}
+
+\begin{problem}{239}{Sliding Window Maximum}{Hard}
+\summary{Return the maximum of every window of size k.}
+\keyidea{Monotonic decreasing deque of indices; front is the max; pop expired front.}
+\complexity{O(n) time, O(k) space}
+\begin{code}
+class Solution:
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        q, res = deque(), []
+        for r, n in enumerate(nums):
+            while q and nums[q[-1]] < n:
+                q.pop()
+            q.append(r)
+            if q[0] <= r - k:
+                q.popleft()
+            if r >= k - 1:
+                res.append(nums[q[0]])
+        return res
+\end{code}
+\end{problem}

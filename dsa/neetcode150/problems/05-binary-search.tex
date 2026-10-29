@@ -1,0 +1,167 @@
+% ===== Binary Search (7 problems) =====
+\section{Binary Search {\normalsize\color{muted}$\cdot$ 7 problems}}
+\markboth{Binary Search}{}
+
+\begin{problem}{704}{Binary Search}{Easy}
+\summary{Return the index of target in a sorted array, or -1.}
+\keyidea{Classic l \textless{}= r loop with mid = l + (r - l) // 2.}
+\complexity{O(log n) time, O(1) space}
+\begin{code}
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        l, r = 0, len(nums) - 1
+        while l <= r:
+            m = (l + r) // 2
+            if nums[m] == target:
+                return m
+            if nums[m] < target:
+                l = m + 1
+            else:
+                r = m - 1
+        return -1
+\end{code}
+\end{problem}
+
+\begin{problem}{74}{Search a 2D Matrix}{Medium}
+\summary{Rows sorted and each row starts after the previous ends. Is target present?}
+\keyidea{Treat it as one sorted array of m*n: index -\textgreater{} (i // n, i \% n).}
+\complexity{O(log(m*n)) time, O(1) space}
+\begin{code}
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        m, n = len(matrix), len(matrix[0])
+        l, r = 0, m * n - 1
+        while l <= r:
+            mid = (l + r) // 2
+            v = matrix[mid // n][mid % n]
+            if v == target:
+                return True
+            if v < target:
+                l = mid + 1
+            else:
+                r = mid - 1
+        return False
+\end{code}
+\end{problem}
+
+\begin{problem}{875}{Koko Eating Bananas}{Medium}
+\summary{Minimum eating speed k so all piles are finished within h hours (one pile per hour max).}
+\keyidea{Binary search on the answer k in [1, max(piles)]; hours(k) = sum(ceil(p / k)).}
+\complexity{O(n log max) time, O(1) space}
+\begin{code}
+class Solution:
+    def minEatingSpeed(self, piles: List[int], h: int) -> int:
+        l, r = 1, max(piles)
+        res = r
+        while l <= r:
+            k = (l + r) // 2
+            hours = sum((p + k - 1) // k for p in piles)
+            if hours <= h:
+                res = k
+                r = k - 1
+            else:
+                l = k + 1
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{153}{Find Minimum in Rotated Sorted Array}{Medium}
+\summary{A sorted array of distinct values was rotated; find its minimum in O(log n).}
+\keyidea{Compare mid with the right end: nums[m] \textgreater{} nums[r] means the min is right of m.}
+\complexity{O(log n) time, O(1) space}
+\begin{code}
+class Solution:
+    def findMin(self, nums: List[int]) -> int:
+        l, r = 0, len(nums) - 1
+        while l < r:
+            m = (l + r) // 2
+            if nums[m] > nums[r]:
+                l = m + 1
+            else:
+                r = m
+        return nums[l]
+\end{code}
+\end{problem}
+
+\begin{problem}{33}{Search in Rotated Sorted Array}{Medium}
+\summary{Find target's index in a rotated sorted array of distinct values, O(log n).}
+\keyidea{One half is always sorted. Check if target lies inside the sorted half; else go to the other half.}
+\complexity{O(log n) time, O(1) space}
+\begin{code}
+class Solution:
+    def search(self, nums: List[int], target: int) -> int:
+        l, r = 0, len(nums) - 1
+        while l <= r:
+            m = (l + r) // 2
+            if nums[m] == target:
+                return m
+            if nums[l] <= nums[m]:            # left half sorted
+                if nums[l] <= target < nums[m]:
+                    r = m - 1
+                else:
+                    l = m + 1
+            else:                              # right half sorted
+                if nums[m] < target <= nums[r]:
+                    l = m + 1
+                else:
+                    r = m - 1
+        return -1
+\end{code}
+\end{problem}
+
+\begin{problem}{981}{Time Based Key-Value Store}{Medium}
+\summary{set(key, value, timestamp); get(key, t) returns the value with the largest timestamp \textless{}= t.}
+\keyidea{Timestamps arrive increasing, so each key's list is sorted: binary search for the last ts \textless{}= t.}
+\complexity{set O(1), get O(log n); O(n) space}
+\begin{code}
+class TimeMap:
+    def __init__(self):
+        self.store = defaultdict(list)  # key -> [(ts, value)]
+
+    def set(self, key: str, value: str, timestamp: int) -> None:
+        self.store[key].append((timestamp, value))
+
+    def get(self, key: str, timestamp: int) -> str:
+        arr, res = self.store[key], ""
+        l, r = 0, len(arr) - 1
+        while l <= r:
+            m = (l + r) // 2
+            if arr[m][0] <= timestamp:
+                res = arr[m][1]
+                l = m + 1
+            else:
+                r = m - 1
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{4}{Median of Two Sorted Arrays}{Hard}
+\summary{Median of two sorted arrays combined, in O(log(min(m, n))).}
+\keyidea{Binary search a cut in the shorter array so left halves together hold half the elements and Aleft \textless{}= Bright, Bleft \textless{}= Aright.}
+\complexity{O(log min(m, n)) time, O(1) space}
+\begin{code}
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        A, B = nums1, nums2
+        if len(A) > len(B):
+            A, B = B, A
+        total = len(A) + len(B)
+        half = total // 2
+        l, r = 0, len(A)
+        while True:
+            i = (l + r) // 2          # elements taken from A
+            j = half - i              # elements taken from B
+            Aleft = A[i - 1] if i > 0 else float("-inf")
+            Aright = A[i] if i < len(A) else float("inf")
+            Bleft = B[j - 1] if j > 0 else float("-inf")
+            Bright = B[j] if j < len(B) else float("inf")
+            if Aleft <= Bright and Bleft <= Aright:
+                if total % 2:
+                    return min(Aright, Bright)
+                return (max(Aleft, Bleft) + min(Aright, Bright)) / 2
+            if Aleft > Bright:
+                r = i - 1
+            else:
+                l = i + 1
+\end{code}
+\end{problem}

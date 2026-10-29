@@ -1,0 +1,107 @@
+% ===== Bit Manipulation (7 problems) =====
+\section{Bit Manipulation {\normalsize\color{muted}$\cdot$ 7 problems}}
+\markboth{Bit Manipulation}{}
+
+\begin{problem}{136}{Single Number}{Easy}
+\summary{Every value appears twice except one; find it in O(1) space.}
+\keyidea{XOR everything: pairs cancel (a \textasciicircum{} a = 0).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def singleNumber(self, nums: List[int]) -> int:
+        res = 0
+        for n in nums:
+            res ^= n
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{191}{Number of 1 Bits}{Easy}
+\summary{Count the set bits of an unsigned integer.}
+\keyidea{n \&= n - 1 clears the lowest set bit; count iterations.}
+\complexity{O(number of set bits) time, O(1) space}
+\begin{code}
+class Solution:
+    def hammingWeight(self, n: int) -> int:
+        count = 0
+        while n:
+            n &= n - 1
+            count += 1
+        return count
+\end{code}
+\end{problem}
+
+\begin{problem}{338}{Counting Bits}{Easy}
+\summary{For every i in 0..n, return the number of 1 bits in i.}
+\keyidea{dp[i] = dp[i \textgreater{}\textgreater{} 1] + (i \& 1).}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def countBits(self, n: int) -> List[int]:
+        dp = [0] * (n + 1)
+        for i in range(1, n + 1):
+            dp[i] = dp[i >> 1] + (i & 1)
+        return dp
+\end{code}
+\end{problem}
+
+\begin{problem}{190}{Reverse Bits}{Easy}
+\summary{Reverse the bits of a 32-bit unsigned integer.}
+\keyidea{Take bit i from n and place it at position 31 - i.}
+\complexity{O(32) time, O(1) space}
+\begin{code}
+class Solution:
+    def reverseBits(self, n: int) -> int:
+        res = 0
+        for i in range(32):
+            bit = (n >> i) & 1
+            res |= bit << (31 - i)
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{268}{Missing Number}{Easy}
+\summary{Array holds n distinct numbers from 0..n; find the missing one.}
+\keyidea{XOR all indices 0..n with all values (or n(n+1)/2 - sum).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def missingNumber(self, nums: List[int]) -> int:
+        res = len(nums)
+        for i, n in enumerate(nums):
+            res ^= i ^ n
+        return res
+\end{code}
+\end{problem}
+
+\begin{problem}{371}{Sum of Two Integers}{Medium}
+\summary{Add two integers without using + or -.}
+\keyidea{sum = a \textasciicircum{} b, carry = (a \& b) \textless{}\textless{} 1; repeat. In Python, mask to 32 bits and fix the sign at the end.}
+\complexity{O(32) time, O(1) space}
+\begin{code}
+class Solution:
+    def getSum(self, a: int, b: int) -> int:
+        mask = 0xFFFFFFFF
+        while b & mask:
+            a, b = a ^ b, (a & b) << 1
+        a &= mask
+        return a if a <= 0x7FFFFFFF else ~(a ^ mask)
+\end{code}
+\end{problem}
+
+\begin{problem}{7}{Reverse Integer}{Medium}
+\summary{Reverse the digits of a 32-bit signed integer; return 0 if the result overflows.}
+\keyidea{Pop digits with \% and //, building the result; check the 32-bit bounds.}
+\complexity{O(log x) time, O(1) space}
+\begin{code}
+class Solution:
+    def reverse(self, x: int) -> int:
+        sign = -1 if x < 0 else 1
+        x, res = abs(x), 0
+        while x:
+            res = res * 10 + x % 10
+            x //= 10
+        res *= sign
+        return res if -2**31 <= res <= 2**31 - 1 else 0
+\end{code}
+\end{problem}

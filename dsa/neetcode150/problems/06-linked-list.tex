@@ -1,0 +1,252 @@
+% ===== Linked List (11 problems) =====
+\section{Linked List {\normalsize\color{muted}$\cdot$ 11 problems}}
+\markboth{Linked List}{}
+
+\begin{problem}{206}{Reverse Linked List}{Easy}
+\summary{Reverse a singly linked list.}
+\keyidea{Walk once, pointing each node back to prev.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        prev, cur = None, head
+        while cur:
+            nxt = cur.next
+            cur.next = prev
+            prev, cur = cur, nxt
+        return prev
+\end{code}
+\end{problem}
+
+\begin{problem}{21}{Merge Two Sorted Lists}{Easy}
+\summary{Splice two sorted lists into one sorted list.}
+\keyidea{Dummy head; attach the smaller node each step; append the leftover.}
+\complexity{O(m + n) time, O(1) space}
+\begin{code}
+class Solution:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = tail = ListNode()
+        while list1 and list2:
+            if list1.val <= list2.val:
+                tail.next, list1 = list1, list1.next
+            else:
+                tail.next, list2 = list2, list2.next
+            tail = tail.next
+        tail.next = list1 or list2
+        return dummy.next
+\end{code}
+\end{problem}
+
+\begin{problem}{143}{Reorder List}{Medium}
+\summary{Rearrange L0,L1,...,Ln into L0,Ln,L1,Ln-1,... in place.}
+\keyidea{Three steps: find middle (slow/fast), reverse the second half, merge alternately.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        slow, fast = head, head.next
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+        second = slow.next
+        slow.next = None
+        prev = None
+        while second:                      # reverse second half
+            nxt = second.next
+            second.next = prev
+            prev, second = second, nxt
+        first, second = head, prev
+        while second:                      # merge
+            t1, t2 = first.next, second.next
+            first.next = second
+            second.next = t1
+            first, second = t1, t2
+\end{code}
+\end{problem}
+
+\begin{problem}{19}{Remove Nth Node From End of List}{Medium}
+\summary{Delete the n-th node from the end in one pass.}
+\keyidea{Dummy head; move right pointer n ahead, then move both until right is None; left.next is the target.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        dummy = ListNode(0, head)
+        left, right = dummy, head
+        for _ in range(n):
+            right = right.next
+        while right:
+            left, right = left.next, right.next
+        left.next = left.next.next
+        return dummy.next
+\end{code}
+\end{problem}
+
+\begin{problem}{138}{Copy List with Random Pointer}{Medium}
+\summary{Deep-copy a list where each node also has a random pointer.}
+\keyidea{Pass 1: map old -\textgreater{} new node. Pass 2: wire next and random through the map.}
+\complexity{O(n) time, O(n) space}
+\begin{code}
+class Solution:
+    def copyRandomList(self, head: "Optional[Node]") -> "Optional[Node]":
+        old_to_new = {None: None}
+        cur = head
+        while cur:
+            old_to_new[cur] = Node(cur.val)
+            cur = cur.next
+        cur = head
+        while cur:
+            copy = old_to_new[cur]
+            copy.next = old_to_new[cur.next]
+            copy.random = old_to_new[cur.random]
+            cur = cur.next
+        return old_to_new[head]
+\end{code}
+\end{problem}
+
+\begin{problem}{2}{Add Two Numbers}{Medium}
+\summary{Two numbers stored as reversed digit lists; return their sum as a list.}
+\keyidea{Add digit by digit with a carry; keep going while either list or carry remains.}
+\complexity{O(max(m, n)) time, O(1) extra space}
+\begin{code}
+class Solution:
+    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = cur = ListNode()
+        carry = 0
+        while l1 or l2 or carry:
+            v = (l1.val if l1 else 0) + (l2.val if l2 else 0) + carry
+            carry, v = divmod(v, 10)
+            cur.next = ListNode(v)
+            cur = cur.next
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+        return dummy.next
+\end{code}
+\end{problem}
+
+\begin{problem}{141}{Linked List Cycle}{Easy}
+\summary{Does the list contain a cycle?}
+\keyidea{Floyd's tortoise and hare: if fast ever meets slow, there is a cycle.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        slow = fast = head
+        while fast and fast.next:
+            slow, fast = slow.next, fast.next.next
+            if slow is fast:
+                return True
+        return False
+\end{code}
+\end{problem}
+
+\begin{problem}{287}{Find the Duplicate Number}{Medium}
+\summary{Array of n+1 ints in [1, n] has one repeated value; find it without modifying the array, O(1) space.}
+\keyidea{Treat i -\textgreater{} nums[i] as a linked list; the duplicate is the cycle entrance (Floyd, phase 2).}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def findDuplicate(self, nums: List[int]) -> int:
+        slow = fast = 0
+        while True:
+            slow = nums[slow]
+            fast = nums[nums[fast]]
+            if slow == fast:
+                break
+        slow2 = 0
+        while slow != slow2:
+            slow, slow2 = nums[slow], nums[slow2]
+        return slow
+\end{code}
+\end{problem}
+
+\begin{problem}{146}{LRU Cache}{Medium}
+\summary{Fixed-capacity cache with O(1) get/put that evicts the least recently used key.}
+\keyidea{Hash map key -\textgreater{} node, plus a doubly linked list ordered by recency (LRU at left, MRU at right).}
+\complexity{O(1) per op, O(capacity) space}
+\begin{code}
+class DNode:
+    def __init__(self, key=0, val=0):
+        self.key, self.val = key, val
+        self.prev = self.next = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cap, self.cache = capacity, {}
+        self.left, self.right = DNode(), DNode()      # left = LRU, right = MRU
+        self.left.next, self.right.prev = self.right, self.left
+
+    def _remove(self, node):
+        node.prev.next, node.next.prev = node.next, node.prev
+
+    def _insert(self, node):                         # insert before right
+        prev = self.right.prev
+        prev.next = node
+        node.prev, node.next = prev, self.right
+        self.right.prev = node
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        node = self.cache[key]
+        self._remove(node)
+        self._insert(node)
+        return node.val
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self._remove(self.cache[key])
+        self.cache[key] = DNode(key, value)
+        self._insert(self.cache[key])
+        if len(self.cache) > self.cap:
+            lru = self.left.next
+            self._remove(lru)
+            del self.cache[lru.key]
+\end{code}
+\end{problem}
+
+\begin{problem}{23}{Merge k Sorted Lists}{Hard}
+\summary{Merge k sorted linked lists into one sorted list.}
+\keyidea{Min-heap of (value, list index, node); pop the smallest and push its next.}
+\complexity{O(N log k) time, O(k) space}
+\begin{code}
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        heap = [(node.val, i, node) for i, node in enumerate(lists) if node]
+        heapq.heapify(heap)
+        dummy = tail = ListNode()
+        while heap:
+            _, i, node = heapq.heappop(heap)
+            tail.next = node
+            tail = node
+            if node.next:
+                heapq.heappush(heap, (node.next.val, i, node.next))
+        return dummy.next
+\end{code}
+\end{problem}
+
+\begin{problem}{25}{Reverse Nodes in k-Group}{Hard}
+\summary{Reverse the list k nodes at a time; a leftover tail shorter than k stays as is.}
+\keyidea{For each group: find the k-th node; reverse the group; reconnect the previous group's tail.}
+\complexity{O(n) time, O(1) space}
+\begin{code}
+class Solution:
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        dummy = ListNode(0, head)
+        group_prev = dummy
+        while True:
+            kth = group_prev
+            for _ in range(k):
+                kth = kth.next
+                if not kth:
+                    return dummy.next
+            group_next = kth.next
+            prev, cur = group_next, group_prev.next
+            while cur is not group_next:
+                nxt = cur.next
+                cur.next = prev
+                prev, cur = cur, nxt
+            first = group_prev.next          # becomes the group's tail
+            group_prev.next = kth
+            group_prev = first
+\end{code}
+\end{problem}
