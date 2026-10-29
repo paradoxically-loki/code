@@ -1,168 +1,168 @@
-\contentsline {section}{Arrays \& Hashing {\normalsize \color {muted}$\cdot $ 9 problems}}{5}{section*.1}%
-\contentsline {subsection}{217. Contains Duplicate \tocdiff {Easy}}{5}{section*.2}%
-\contentsline {subsection}{242. Valid Anagram \tocdiff {Easy}}{5}{section*.3}%
-\contentsline {subsection}{1. Two Sum \tocdiff {Easy}}{5}{section*.4}%
-\contentsline {subsection}{49. Group Anagrams \tocdiff {Medium}}{5}{section*.5}%
-\contentsline {subsection}{347. Top K Frequent Elements \tocdiff {Medium}}{6}{section*.6}%
-\contentsline {subsection}{238. Product of Array Except Self \tocdiff {Medium}}{6}{section*.7}%
-\contentsline {subsection}{36. Valid Sudoku \tocdiff {Medium}}{6}{section*.8}%
-\contentsline {subsection}{271. Encode and Decode Strings \tocdiff {Medium}}{6}{section*.9}%
-\contentsline {subsection}{128. Longest Consecutive Sequence \tocdiff {Medium}}{7}{section*.10}%
-\contentsline {section}{Two Pointers {\normalsize \color {muted}$\cdot $ 5 problems}}{8}{section*.11}%
-\contentsline {subsection}{125. Valid Palindrome \tocdiff {Easy}}{8}{section*.12}%
-\contentsline {subsection}{167. Two Sum II - Input Array Is Sorted \tocdiff {Medium}}{8}{section*.13}%
-\contentsline {subsection}{15. 3Sum \tocdiff {Medium}}{8}{section*.14}%
-\contentsline {subsection}{11. Container With Most Water \tocdiff {Medium}}{9}{section*.15}%
-\contentsline {subsection}{42. Trapping Rain Water \tocdiff {Hard}}{9}{section*.16}%
-\contentsline {section}{Sliding Window {\normalsize \color {muted}$\cdot $ 6 problems}}{10}{section*.17}%
-\contentsline {subsection}{121. Best Time to Buy and Sell Stock \tocdiff {Easy}}{10}{section*.18}%
-\contentsline {subsection}{3. Longest Substring Without Repeating Characters \tocdiff {Medium}}{10}{section*.19}%
-\contentsline {subsection}{424. Longest Repeating Character Replacement \tocdiff {Medium}}{10}{section*.20}%
-\contentsline {subsection}{567. Permutation in String \tocdiff {Medium}}{10}{section*.21}%
-\contentsline {subsection}{76. Minimum Window Substring \tocdiff {Hard}}{11}{section*.22}%
-\contentsline {subsection}{239. Sliding Window Maximum \tocdiff {Hard}}{11}{section*.23}%
-\contentsline {section}{Stack {\normalsize \color {muted}$\cdot $ 7 problems}}{12}{section*.24}%
-\contentsline {subsection}{20. Valid Parentheses \tocdiff {Easy}}{12}{section*.25}%
-\contentsline {subsection}{155. Min Stack \tocdiff {Medium}}{12}{section*.26}%
-\contentsline {subsection}{150. Evaluate Reverse Polish Notation \tocdiff {Medium}}{12}{section*.27}%
-\contentsline {subsection}{22. Generate Parentheses \tocdiff {Medium}}{13}{section*.28}%
-\contentsline {subsection}{739. Daily Temperatures \tocdiff {Medium}}{13}{section*.29}%
-\contentsline {subsection}{853. Car Fleet \tocdiff {Medium}}{13}{section*.30}%
-\contentsline {subsection}{84. Largest Rectangle in Histogram \tocdiff {Hard}}{13}{section*.31}%
-\contentsline {section}{Binary Search {\normalsize \color {muted}$\cdot $ 7 problems}}{14}{section*.32}%
-\contentsline {subsection}{704. Binary Search \tocdiff {Easy}}{14}{section*.33}%
-\contentsline {subsection}{74. Search a 2D Matrix \tocdiff {Medium}}{14}{section*.34}%
-\contentsline {subsection}{875. Koko Eating Bananas \tocdiff {Medium}}{14}{section*.35}%
-\contentsline {subsection}{153. Find Minimum in Rotated Sorted Array \tocdiff {Medium}}{14}{section*.36}%
-\contentsline {subsection}{33. Search in Rotated Sorted Array \tocdiff {Medium}}{15}{section*.37}%
-\contentsline {subsection}{981. Time Based Key-Value Store \tocdiff {Medium}}{15}{section*.38}%
-\contentsline {subsection}{4. Median of Two Sorted Arrays \tocdiff {Hard}}{15}{section*.39}%
-\contentsline {section}{Linked List {\normalsize \color {muted}$\cdot $ 11 problems}}{17}{section*.40}%
-\contentsline {subsection}{206. Reverse Linked List \tocdiff {Easy}}{17}{section*.41}%
-\contentsline {subsection}{21. Merge Two Sorted Lists \tocdiff {Easy}}{17}{section*.42}%
-\contentsline {subsection}{143. Reorder List \tocdiff {Medium}}{17}{section*.43}%
-\contentsline {subsection}{19. Remove Nth Node From End of List \tocdiff {Medium}}{17}{section*.44}%
-\contentsline {subsection}{138. Copy List with Random Pointer \tocdiff {Medium}}{18}{section*.45}%
-\contentsline {subsection}{2. Add Two Numbers \tocdiff {Medium}}{18}{section*.46}%
-\contentsline {subsection}{141. Linked List Cycle \tocdiff {Easy}}{18}{section*.47}%
-\contentsline {subsection}{287. Find the Duplicate Number \tocdiff {Medium}}{18}{section*.48}%
-\contentsline {subsection}{146. LRU Cache \tocdiff {Medium}}{19}{section*.49}%
-\contentsline {subsection}{23. Merge k Sorted Lists \tocdiff {Hard}}{19}{section*.50}%
-\contentsline {subsection}{25. Reverse Nodes in k-Group \tocdiff {Hard}}{19}{section*.51}%
-\contentsline {section}{Trees {\normalsize \color {muted}$\cdot $ 15 problems}}{21}{section*.52}%
-\contentsline {subsection}{226. Invert Binary Tree \tocdiff {Easy}}{21}{section*.53}%
-\contentsline {subsection}{104. Maximum Depth of Binary Tree \tocdiff {Easy}}{21}{section*.54}%
-\contentsline {subsection}{543. Diameter of Binary Tree \tocdiff {Easy}}{21}{section*.55}%
-\contentsline {subsection}{110. Balanced Binary Tree \tocdiff {Easy}}{21}{section*.56}%
-\contentsline {subsection}{100. Same Tree \tocdiff {Easy}}{22}{section*.57}%
-\contentsline {subsection}{572. Subtree of Another Tree \tocdiff {Easy}}{22}{section*.58}%
-\contentsline {subsection}{235. Lowest Common Ancestor of a Binary Search Tree \tocdiff {Medium}}{22}{section*.59}%
-\contentsline {subsection}{102. Binary Tree Level Order Traversal \tocdiff {Medium}}{22}{section*.60}%
-\contentsline {subsection}{199. Binary Tree Right Side View \tocdiff {Medium}}{23}{section*.61}%
-\contentsline {subsection}{1448. Count Good Nodes in Binary Tree \tocdiff {Medium}}{23}{section*.62}%
-\contentsline {subsection}{98. Validate Binary Search Tree \tocdiff {Medium}}{23}{section*.63}%
-\contentsline {subsection}{230. Kth Smallest Element in a BST \tocdiff {Medium}}{23}{section*.64}%
-\contentsline {subsection}{105. Construct Binary Tree from Preorder and Inorder Traversal \tocdiff {Medium}}{24}{section*.65}%
-\contentsline {subsection}{124. Binary Tree Maximum Path Sum \tocdiff {Hard}}{24}{section*.66}%
-\contentsline {subsection}{297. Serialize and Deserialize Binary Tree \tocdiff {Hard}}{24}{section*.67}%
-\contentsline {section}{Tries {\normalsize \color {muted}$\cdot $ 3 problems}}{25}{section*.68}%
-\contentsline {subsection}{208. Implement Trie (Prefix Tree) \tocdiff {Medium}}{25}{section*.69}%
-\contentsline {subsection}{211. Design Add and Search Words Data Structure \tocdiff {Medium}}{25}{section*.70}%
-\contentsline {subsection}{212. Word Search II \tocdiff {Hard}}{26}{section*.71}%
-\contentsline {section}{Heap / Priority Queue {\normalsize \color {muted}$\cdot $ 7 problems}}{27}{section*.72}%
-\contentsline {subsection}{703. Kth Largest Element in a Stream \tocdiff {Easy}}{27}{section*.73}%
-\contentsline {subsection}{1046. Last Stone Weight \tocdiff {Easy}}{27}{section*.74}%
-\contentsline {subsection}{973. K Closest Points to Origin \tocdiff {Medium}}{27}{section*.75}%
-\contentsline {subsection}{215. Kth Largest Element in an Array \tocdiff {Medium}}{27}{section*.76}%
-\contentsline {subsection}{621. Task Scheduler \tocdiff {Medium}}{28}{section*.77}%
-\contentsline {subsection}{355. Design Twitter \tocdiff {Medium}}{28}{section*.78}%
-\contentsline {subsection}{295. Find Median from Data Stream \tocdiff {Hard}}{28}{section*.79}%
-\contentsline {section}{Backtracking {\normalsize \color {muted}$\cdot $ 9 problems}}{29}{section*.80}%
-\contentsline {subsection}{78. Subsets \tocdiff {Medium}}{29}{section*.81}%
-\contentsline {subsection}{39. Combination Sum \tocdiff {Medium}}{29}{section*.82}%
-\contentsline {subsection}{46. Permutations \tocdiff {Medium}}{29}{section*.83}%
-\contentsline {subsection}{90. Subsets II \tocdiff {Medium}}{29}{section*.84}%
-\contentsline {subsection}{40. Combination Sum II \tocdiff {Medium}}{30}{section*.85}%
-\contentsline {subsection}{79. Word Search \tocdiff {Medium}}{30}{section*.86}%
-\contentsline {subsection}{131. Palindrome Partitioning \tocdiff {Medium}}{30}{section*.87}%
-\contentsline {subsection}{17. Letter Combinations of a Phone Number \tocdiff {Medium}}{31}{section*.88}%
-\contentsline {subsection}{51. N-Queens \tocdiff {Hard}}{31}{section*.89}%
-\contentsline {section}{Graphs {\normalsize \color {muted}$\cdot $ 13 problems}}{32}{section*.90}%
-\contentsline {subsection}{200. Number of Islands \tocdiff {Medium}}{32}{section*.91}%
-\contentsline {subsection}{133. Clone Graph \tocdiff {Medium}}{32}{section*.92}%
-\contentsline {subsection}{695. Max Area of Island \tocdiff {Medium}}{32}{section*.93}%
-\contentsline {subsection}{417. Pacific Atlantic Water Flow \tocdiff {Medium}}{32}{section*.94}%
-\contentsline {subsection}{130. Surrounded Regions \tocdiff {Medium}}{33}{section*.95}%
-\contentsline {subsection}{994. Rotting Oranges \tocdiff {Medium}}{33}{section*.96}%
-\contentsline {subsection}{286. Walls and Gates \tocdiff {Medium}}{33}{section*.97}%
-\contentsline {subsection}{207. Course Schedule \tocdiff {Medium}}{34}{section*.98}%
-\contentsline {subsection}{210. Course Schedule II \tocdiff {Medium}}{34}{section*.99}%
-\contentsline {subsection}{684. Redundant Connection \tocdiff {Medium}}{34}{section*.100}%
-\contentsline {subsection}{323. Number of Connected Components in an Undirected Graph \tocdiff {Medium}}{35}{section*.101}%
-\contentsline {subsection}{261. Graph Valid Tree \tocdiff {Medium}}{35}{section*.102}%
-\contentsline {subsection}{127. Word Ladder \tocdiff {Hard}}{35}{section*.103}%
-\contentsline {section}{Advanced Graphs {\normalsize \color {muted}$\cdot $ 6 problems}}{36}{section*.104}%
-\contentsline {subsection}{332. Reconstruct Itinerary \tocdiff {Hard}}{36}{section*.105}%
-\contentsline {subsection}{1584. Min Cost to Connect All Points \tocdiff {Medium}}{36}{section*.106}%
-\contentsline {subsection}{743. Network Delay Time \tocdiff {Medium}}{36}{section*.107}%
-\contentsline {subsection}{778. Swim in Rising Water \tocdiff {Hard}}{37}{section*.108}%
-\contentsline {subsection}{269. Alien Dictionary \tocdiff {Hard}}{37}{section*.109}%
-\contentsline {subsection}{787. Cheapest Flights Within K Stops \tocdiff {Medium}}{37}{section*.110}%
-\contentsline {section}{1-D Dynamic Programming {\normalsize \color {muted}$\cdot $ 12 problems}}{38}{section*.111}%
-\contentsline {subsection}{70. Climbing Stairs \tocdiff {Easy}}{38}{section*.112}%
-\contentsline {subsection}{746. Min Cost Climbing Stairs \tocdiff {Easy}}{38}{section*.113}%
-\contentsline {subsection}{198. House Robber \tocdiff {Medium}}{38}{section*.114}%
-\contentsline {subsection}{213. House Robber II \tocdiff {Medium}}{38}{section*.115}%
-\contentsline {subsection}{5. Longest Palindromic Substring \tocdiff {Medium}}{38}{section*.116}%
-\contentsline {subsection}{647. Palindromic Substrings \tocdiff {Medium}}{39}{section*.117}%
-\contentsline {subsection}{91. Decode Ways \tocdiff {Medium}}{39}{section*.118}%
-\contentsline {subsection}{322. Coin Change \tocdiff {Medium}}{39}{section*.119}%
-\contentsline {subsection}{152. Maximum Product Subarray \tocdiff {Medium}}{39}{section*.120}%
-\contentsline {subsection}{139. Word Break \tocdiff {Medium}}{40}{section*.121}%
-\contentsline {subsection}{300. Longest Increasing Subsequence \tocdiff {Medium}}{40}{section*.122}%
-\contentsline {subsection}{416. Partition Equal Subset Sum \tocdiff {Medium}}{40}{section*.123}%
-\contentsline {section}{2-D Dynamic Programming {\normalsize \color {muted}$\cdot $ 11 problems}}{41}{section*.124}%
-\contentsline {subsection}{62. Unique Paths \tocdiff {Medium}}{41}{section*.125}%
-\contentsline {subsection}{1143. Longest Common Subsequence \tocdiff {Medium}}{41}{section*.126}%
-\contentsline {subsection}{309. Best Time to Buy and Sell Stock with Cooldown \tocdiff {Medium}}{41}{section*.127}%
-\contentsline {subsection}{518. Coin Change II \tocdiff {Medium}}{41}{section*.128}%
-\contentsline {subsection}{494. Target Sum \tocdiff {Medium}}{41}{section*.129}%
-\contentsline {subsection}{97. Interleaving String \tocdiff {Medium}}{42}{section*.130}%
-\contentsline {subsection}{329. Longest Increasing Path in a Matrix \tocdiff {Hard}}{42}{section*.131}%
-\contentsline {subsection}{115. Distinct Subsequences \tocdiff {Hard}}{42}{section*.132}%
-\contentsline {subsection}{72. Edit Distance \tocdiff {Hard}}{42}{section*.133}%
-\contentsline {subsection}{312. Burst Balloons \tocdiff {Hard}}{43}{section*.134}%
-\contentsline {subsection}{10. Regular Expression Matching \tocdiff {Hard}}{43}{section*.135}%
-\contentsline {section}{Greedy {\normalsize \color {muted}$\cdot $ 8 problems}}{44}{section*.136}%
-\contentsline {subsection}{53. Maximum Subarray \tocdiff {Medium}}{44}{section*.137}%
-\contentsline {subsection}{55. Jump Game \tocdiff {Medium}}{44}{section*.138}%
-\contentsline {subsection}{45. Jump Game II \tocdiff {Medium}}{44}{section*.139}%
-\contentsline {subsection}{134. Gas Station \tocdiff {Medium}}{44}{section*.140}%
-\contentsline {subsection}{846. Hand of Straights \tocdiff {Medium}}{45}{section*.141}%
-\contentsline {subsection}{1899. Merge Triplets to Form Target Triplet \tocdiff {Medium}}{45}{section*.142}%
-\contentsline {subsection}{763. Partition Labels \tocdiff {Medium}}{45}{section*.143}%
-\contentsline {subsection}{678. Valid Parenthesis String \tocdiff {Medium}}{45}{section*.144}%
-\contentsline {section}{Intervals {\normalsize \color {muted}$\cdot $ 6 problems}}{46}{section*.145}%
-\contentsline {subsection}{57. Insert Interval \tocdiff {Medium}}{46}{section*.146}%
-\contentsline {subsection}{56. Merge Intervals \tocdiff {Medium}}{46}{section*.147}%
-\contentsline {subsection}{435. Non-overlapping Intervals \tocdiff {Medium}}{46}{section*.148}%
-\contentsline {subsection}{252. Meeting Rooms \tocdiff {Easy}}{46}{section*.149}%
-\contentsline {subsection}{253. Meeting Rooms II \tocdiff {Medium}}{47}{section*.150}%
-\contentsline {subsection}{1851. Minimum Interval to Include Each Query \tocdiff {Hard}}{47}{section*.151}%
-\contentsline {section}{Math \& Geometry {\normalsize \color {muted}$\cdot $ 8 problems}}{48}{section*.152}%
-\contentsline {subsection}{48. Rotate Image \tocdiff {Medium}}{48}{section*.153}%
-\contentsline {subsection}{54. Spiral Matrix \tocdiff {Medium}}{48}{section*.154}%
-\contentsline {subsection}{73. Set Matrix Zeroes \tocdiff {Medium}}{48}{section*.155}%
-\contentsline {subsection}{202. Happy Number \tocdiff {Easy}}{49}{section*.156}%
-\contentsline {subsection}{66. Plus One \tocdiff {Easy}}{49}{section*.157}%
-\contentsline {subsection}{50. Pow(x, n) \tocdiff {Medium}}{49}{section*.158}%
-\contentsline {subsection}{43. Multiply Strings \tocdiff {Medium}}{49}{section*.159}%
-\contentsline {subsection}{2013. Detect Squares \tocdiff {Medium}}{50}{section*.160}%
-\contentsline {section}{Bit Manipulation {\normalsize \color {muted}$\cdot $ 7 problems}}{51}{section*.161}%
-\contentsline {subsection}{136. Single Number \tocdiff {Easy}}{51}{section*.162}%
-\contentsline {subsection}{191. Number of 1 Bits \tocdiff {Easy}}{51}{section*.163}%
-\contentsline {subsection}{338. Counting Bits \tocdiff {Easy}}{51}{section*.164}%
-\contentsline {subsection}{190. Reverse Bits \tocdiff {Easy}}{51}{section*.165}%
-\contentsline {subsection}{268. Missing Number \tocdiff {Easy}}{51}{section*.166}%
-\contentsline {subsection}{371. Sum of Two Integers \tocdiff {Medium}}{52}{section*.167}%
-\contentsline {subsection}{7. Reverse Integer \tocdiff {Medium}}{52}{section*.168}%
+\contentsline {section}{Arrays \& Hashing {\normalsize \color {muted}$\cdot $ 9 problems}}{6}{section*.1}%
+\contentsline {subsection}{217. Contains Duplicate \tocdiff {Easy}}{6}{section*.2}%
+\contentsline {subsection}{242. Valid Anagram \tocdiff {Easy}}{6}{section*.3}%
+\contentsline {subsection}{1. Two Sum \tocdiff {Easy}}{6}{section*.4}%
+\contentsline {subsection}{49. Group Anagrams \tocdiff {Medium}}{6}{section*.5}%
+\contentsline {subsection}{347. Top K Frequent Elements \tocdiff {Medium}}{7}{section*.6}%
+\contentsline {subsection}{238. Product of Array Except Self \tocdiff {Medium}}{7}{section*.7}%
+\contentsline {subsection}{36. Valid Sudoku \tocdiff {Medium}}{7}{section*.8}%
+\contentsline {subsection}{271. Encode and Decode Strings \tocdiff {Medium}}{7}{section*.9}%
+\contentsline {subsection}{128. Longest Consecutive Sequence \tocdiff {Medium}}{8}{section*.10}%
+\contentsline {section}{Two Pointers {\normalsize \color {muted}$\cdot $ 5 problems}}{9}{section*.11}%
+\contentsline {subsection}{125. Valid Palindrome \tocdiff {Easy}}{9}{section*.12}%
+\contentsline {subsection}{167. Two Sum II - Input Array Is Sorted \tocdiff {Medium}}{9}{section*.13}%
+\contentsline {subsection}{15. 3Sum \tocdiff {Medium}}{9}{section*.14}%
+\contentsline {subsection}{11. Container With Most Water \tocdiff {Medium}}{10}{section*.15}%
+\contentsline {subsection}{42. Trapping Rain Water \tocdiff {Hard}}{10}{section*.16}%
+\contentsline {section}{Sliding Window {\normalsize \color {muted}$\cdot $ 6 problems}}{11}{section*.17}%
+\contentsline {subsection}{121. Best Time to Buy and Sell Stock \tocdiff {Easy}}{11}{section*.18}%
+\contentsline {subsection}{3. Longest Substring Without Repeating Characters \tocdiff {Medium}}{11}{section*.19}%
+\contentsline {subsection}{424. Longest Repeating Character Replacement \tocdiff {Medium}}{11}{section*.20}%
+\contentsline {subsection}{567. Permutation in String \tocdiff {Medium}}{11}{section*.21}%
+\contentsline {subsection}{76. Minimum Window Substring \tocdiff {Hard}}{12}{section*.22}%
+\contentsline {subsection}{239. Sliding Window Maximum \tocdiff {Hard}}{12}{section*.23}%
+\contentsline {section}{Stack {\normalsize \color {muted}$\cdot $ 7 problems}}{13}{section*.24}%
+\contentsline {subsection}{20. Valid Parentheses \tocdiff {Easy}}{13}{section*.25}%
+\contentsline {subsection}{155. Min Stack \tocdiff {Medium}}{13}{section*.26}%
+\contentsline {subsection}{150. Evaluate Reverse Polish Notation \tocdiff {Medium}}{13}{section*.27}%
+\contentsline {subsection}{22. Generate Parentheses \tocdiff {Medium}}{14}{section*.28}%
+\contentsline {subsection}{739. Daily Temperatures \tocdiff {Medium}}{14}{section*.29}%
+\contentsline {subsection}{853. Car Fleet \tocdiff {Medium}}{14}{section*.30}%
+\contentsline {subsection}{84. Largest Rectangle in Histogram \tocdiff {Hard}}{14}{section*.31}%
+\contentsline {section}{Binary Search {\normalsize \color {muted}$\cdot $ 7 problems}}{15}{section*.32}%
+\contentsline {subsection}{704. Binary Search \tocdiff {Easy}}{15}{section*.33}%
+\contentsline {subsection}{74. Search a 2D Matrix \tocdiff {Medium}}{15}{section*.34}%
+\contentsline {subsection}{875. Koko Eating Bananas \tocdiff {Medium}}{15}{section*.35}%
+\contentsline {subsection}{153. Find Minimum in Rotated Sorted Array \tocdiff {Medium}}{15}{section*.36}%
+\contentsline {subsection}{33. Search in Rotated Sorted Array \tocdiff {Medium}}{16}{section*.37}%
+\contentsline {subsection}{981. Time Based Key-Value Store \tocdiff {Medium}}{16}{section*.38}%
+\contentsline {subsection}{4. Median of Two Sorted Arrays \tocdiff {Hard}}{16}{section*.39}%
+\contentsline {section}{Linked List {\normalsize \color {muted}$\cdot $ 11 problems}}{18}{section*.40}%
+\contentsline {subsection}{206. Reverse Linked List \tocdiff {Easy}}{18}{section*.41}%
+\contentsline {subsection}{21. Merge Two Sorted Lists \tocdiff {Easy}}{18}{section*.42}%
+\contentsline {subsection}{143. Reorder List \tocdiff {Medium}}{18}{section*.43}%
+\contentsline {subsection}{19. Remove Nth Node From End of List \tocdiff {Medium}}{18}{section*.44}%
+\contentsline {subsection}{138. Copy List with Random Pointer \tocdiff {Medium}}{19}{section*.45}%
+\contentsline {subsection}{2. Add Two Numbers \tocdiff {Medium}}{19}{section*.46}%
+\contentsline {subsection}{141. Linked List Cycle \tocdiff {Easy}}{19}{section*.47}%
+\contentsline {subsection}{287. Find the Duplicate Number \tocdiff {Medium}}{19}{section*.48}%
+\contentsline {subsection}{146. LRU Cache \tocdiff {Medium}}{20}{section*.49}%
+\contentsline {subsection}{23. Merge k Sorted Lists \tocdiff {Hard}}{20}{section*.50}%
+\contentsline {subsection}{25. Reverse Nodes in k-Group \tocdiff {Hard}}{20}{section*.51}%
+\contentsline {section}{Trees {\normalsize \color {muted}$\cdot $ 15 problems}}{22}{section*.52}%
+\contentsline {subsection}{226. Invert Binary Tree \tocdiff {Easy}}{22}{section*.53}%
+\contentsline {subsection}{104. Maximum Depth of Binary Tree \tocdiff {Easy}}{22}{section*.54}%
+\contentsline {subsection}{543. Diameter of Binary Tree \tocdiff {Easy}}{22}{section*.55}%
+\contentsline {subsection}{110. Balanced Binary Tree \tocdiff {Easy}}{22}{section*.56}%
+\contentsline {subsection}{100. Same Tree \tocdiff {Easy}}{23}{section*.57}%
+\contentsline {subsection}{572. Subtree of Another Tree \tocdiff {Easy}}{23}{section*.58}%
+\contentsline {subsection}{235. Lowest Common Ancestor of a Binary Search Tree \tocdiff {Medium}}{23}{section*.59}%
+\contentsline {subsection}{102. Binary Tree Level Order Traversal \tocdiff {Medium}}{23}{section*.60}%
+\contentsline {subsection}{199. Binary Tree Right Side View \tocdiff {Medium}}{24}{section*.61}%
+\contentsline {subsection}{1448. Count Good Nodes in Binary Tree \tocdiff {Medium}}{24}{section*.62}%
+\contentsline {subsection}{98. Validate Binary Search Tree \tocdiff {Medium}}{24}{section*.63}%
+\contentsline {subsection}{230. Kth Smallest Element in a BST \tocdiff {Medium}}{24}{section*.64}%
+\contentsline {subsection}{105. Construct Binary Tree from Preorder and Inorder Traversal \tocdiff {Medium}}{25}{section*.65}%
+\contentsline {subsection}{124. Binary Tree Maximum Path Sum \tocdiff {Hard}}{25}{section*.66}%
+\contentsline {subsection}{297. Serialize and Deserialize Binary Tree \tocdiff {Hard}}{25}{section*.67}%
+\contentsline {section}{Tries {\normalsize \color {muted}$\cdot $ 3 problems}}{26}{section*.68}%
+\contentsline {subsection}{208. Implement Trie (Prefix Tree) \tocdiff {Medium}}{26}{section*.69}%
+\contentsline {subsection}{211. Design Add and Search Words Data Structure \tocdiff {Medium}}{26}{section*.70}%
+\contentsline {subsection}{212. Word Search II \tocdiff {Hard}}{27}{section*.71}%
+\contentsline {section}{Heap / Priority Queue {\normalsize \color {muted}$\cdot $ 7 problems}}{28}{section*.72}%
+\contentsline {subsection}{703. Kth Largest Element in a Stream \tocdiff {Easy}}{28}{section*.73}%
+\contentsline {subsection}{1046. Last Stone Weight \tocdiff {Easy}}{28}{section*.74}%
+\contentsline {subsection}{973. K Closest Points to Origin \tocdiff {Medium}}{28}{section*.75}%
+\contentsline {subsection}{215. Kth Largest Element in an Array \tocdiff {Medium}}{28}{section*.76}%
+\contentsline {subsection}{621. Task Scheduler \tocdiff {Medium}}{29}{section*.77}%
+\contentsline {subsection}{355. Design Twitter \tocdiff {Medium}}{29}{section*.78}%
+\contentsline {subsection}{295. Find Median from Data Stream \tocdiff {Hard}}{29}{section*.79}%
+\contentsline {section}{Backtracking {\normalsize \color {muted}$\cdot $ 9 problems}}{30}{section*.80}%
+\contentsline {subsection}{78. Subsets \tocdiff {Medium}}{30}{section*.81}%
+\contentsline {subsection}{39. Combination Sum \tocdiff {Medium}}{30}{section*.82}%
+\contentsline {subsection}{46. Permutations \tocdiff {Medium}}{30}{section*.83}%
+\contentsline {subsection}{90. Subsets II \tocdiff {Medium}}{30}{section*.84}%
+\contentsline {subsection}{40. Combination Sum II \tocdiff {Medium}}{31}{section*.85}%
+\contentsline {subsection}{79. Word Search \tocdiff {Medium}}{31}{section*.86}%
+\contentsline {subsection}{131. Palindrome Partitioning \tocdiff {Medium}}{31}{section*.87}%
+\contentsline {subsection}{17. Letter Combinations of a Phone Number \tocdiff {Medium}}{32}{section*.88}%
+\contentsline {subsection}{51. N-Queens \tocdiff {Hard}}{32}{section*.89}%
+\contentsline {section}{Graphs {\normalsize \color {muted}$\cdot $ 13 problems}}{33}{section*.90}%
+\contentsline {subsection}{200. Number of Islands \tocdiff {Medium}}{33}{section*.91}%
+\contentsline {subsection}{133. Clone Graph \tocdiff {Medium}}{33}{section*.92}%
+\contentsline {subsection}{695. Max Area of Island \tocdiff {Medium}}{33}{section*.93}%
+\contentsline {subsection}{417. Pacific Atlantic Water Flow \tocdiff {Medium}}{33}{section*.94}%
+\contentsline {subsection}{130. Surrounded Regions \tocdiff {Medium}}{34}{section*.95}%
+\contentsline {subsection}{994. Rotting Oranges \tocdiff {Medium}}{34}{section*.96}%
+\contentsline {subsection}{286. Walls and Gates \tocdiff {Medium}}{34}{section*.97}%
+\contentsline {subsection}{207. Course Schedule \tocdiff {Medium}}{35}{section*.98}%
+\contentsline {subsection}{210. Course Schedule II \tocdiff {Medium}}{35}{section*.99}%
+\contentsline {subsection}{684. Redundant Connection \tocdiff {Medium}}{35}{section*.100}%
+\contentsline {subsection}{323. Number of Connected Components in an Undirected Graph \tocdiff {Medium}}{36}{section*.101}%
+\contentsline {subsection}{261. Graph Valid Tree \tocdiff {Medium}}{36}{section*.102}%
+\contentsline {subsection}{127. Word Ladder \tocdiff {Hard}}{36}{section*.103}%
+\contentsline {section}{Advanced Graphs {\normalsize \color {muted}$\cdot $ 6 problems}}{37}{section*.104}%
+\contentsline {subsection}{332. Reconstruct Itinerary \tocdiff {Hard}}{37}{section*.105}%
+\contentsline {subsection}{1584. Min Cost to Connect All Points \tocdiff {Medium}}{37}{section*.106}%
+\contentsline {subsection}{743. Network Delay Time \tocdiff {Medium}}{37}{section*.107}%
+\contentsline {subsection}{778. Swim in Rising Water \tocdiff {Hard}}{38}{section*.108}%
+\contentsline {subsection}{269. Alien Dictionary \tocdiff {Hard}}{38}{section*.109}%
+\contentsline {subsection}{787. Cheapest Flights Within K Stops \tocdiff {Medium}}{38}{section*.110}%
+\contentsline {section}{1-D Dynamic Programming {\normalsize \color {muted}$\cdot $ 12 problems}}{39}{section*.111}%
+\contentsline {subsection}{70. Climbing Stairs \tocdiff {Easy}}{39}{section*.112}%
+\contentsline {subsection}{746. Min Cost Climbing Stairs \tocdiff {Easy}}{39}{section*.113}%
+\contentsline {subsection}{198. House Robber \tocdiff {Medium}}{39}{section*.114}%
+\contentsline {subsection}{213. House Robber II \tocdiff {Medium}}{39}{section*.115}%
+\contentsline {subsection}{5. Longest Palindromic Substring \tocdiff {Medium}}{39}{section*.116}%
+\contentsline {subsection}{647. Palindromic Substrings \tocdiff {Medium}}{40}{section*.117}%
+\contentsline {subsection}{91. Decode Ways \tocdiff {Medium}}{40}{section*.118}%
+\contentsline {subsection}{322. Coin Change \tocdiff {Medium}}{40}{section*.119}%
+\contentsline {subsection}{152. Maximum Product Subarray \tocdiff {Medium}}{40}{section*.120}%
+\contentsline {subsection}{139. Word Break \tocdiff {Medium}}{41}{section*.121}%
+\contentsline {subsection}{300. Longest Increasing Subsequence \tocdiff {Medium}}{41}{section*.122}%
+\contentsline {subsection}{416. Partition Equal Subset Sum \tocdiff {Medium}}{41}{section*.123}%
+\contentsline {section}{2-D Dynamic Programming {\normalsize \color {muted}$\cdot $ 11 problems}}{42}{section*.124}%
+\contentsline {subsection}{62. Unique Paths \tocdiff {Medium}}{42}{section*.125}%
+\contentsline {subsection}{1143. Longest Common Subsequence \tocdiff {Medium}}{42}{section*.126}%
+\contentsline {subsection}{309. Best Time to Buy and Sell Stock with Cooldown \tocdiff {Medium}}{42}{section*.127}%
+\contentsline {subsection}{518. Coin Change II \tocdiff {Medium}}{42}{section*.128}%
+\contentsline {subsection}{494. Target Sum \tocdiff {Medium}}{42}{section*.129}%
+\contentsline {subsection}{97. Interleaving String \tocdiff {Medium}}{43}{section*.130}%
+\contentsline {subsection}{329. Longest Increasing Path in a Matrix \tocdiff {Hard}}{43}{section*.131}%
+\contentsline {subsection}{115. Distinct Subsequences \tocdiff {Hard}}{43}{section*.132}%
+\contentsline {subsection}{72. Edit Distance \tocdiff {Hard}}{43}{section*.133}%
+\contentsline {subsection}{312. Burst Balloons \tocdiff {Hard}}{44}{section*.134}%
+\contentsline {subsection}{10. Regular Expression Matching \tocdiff {Hard}}{44}{section*.135}%
+\contentsline {section}{Greedy {\normalsize \color {muted}$\cdot $ 8 problems}}{45}{section*.136}%
+\contentsline {subsection}{53. Maximum Subarray \tocdiff {Medium}}{45}{section*.137}%
+\contentsline {subsection}{55. Jump Game \tocdiff {Medium}}{45}{section*.138}%
+\contentsline {subsection}{45. Jump Game II \tocdiff {Medium}}{45}{section*.139}%
+\contentsline {subsection}{134. Gas Station \tocdiff {Medium}}{45}{section*.140}%
+\contentsline {subsection}{846. Hand of Straights \tocdiff {Medium}}{46}{section*.141}%
+\contentsline {subsection}{1899. Merge Triplets to Form Target Triplet \tocdiff {Medium}}{46}{section*.142}%
+\contentsline {subsection}{763. Partition Labels \tocdiff {Medium}}{46}{section*.143}%
+\contentsline {subsection}{678. Valid Parenthesis String \tocdiff {Medium}}{46}{section*.144}%
+\contentsline {section}{Intervals {\normalsize \color {muted}$\cdot $ 6 problems}}{47}{section*.145}%
+\contentsline {subsection}{57. Insert Interval \tocdiff {Medium}}{47}{section*.146}%
+\contentsline {subsection}{56. Merge Intervals \tocdiff {Medium}}{47}{section*.147}%
+\contentsline {subsection}{435. Non-overlapping Intervals \tocdiff {Medium}}{47}{section*.148}%
+\contentsline {subsection}{252. Meeting Rooms \tocdiff {Easy}}{47}{section*.149}%
+\contentsline {subsection}{253. Meeting Rooms II \tocdiff {Medium}}{48}{section*.150}%
+\contentsline {subsection}{1851. Minimum Interval to Include Each Query \tocdiff {Hard}}{48}{section*.151}%
+\contentsline {section}{Math \& Geometry {\normalsize \color {muted}$\cdot $ 8 problems}}{49}{section*.152}%
+\contentsline {subsection}{48. Rotate Image \tocdiff {Medium}}{49}{section*.153}%
+\contentsline {subsection}{54. Spiral Matrix \tocdiff {Medium}}{49}{section*.154}%
+\contentsline {subsection}{73. Set Matrix Zeroes \tocdiff {Medium}}{49}{section*.155}%
+\contentsline {subsection}{202. Happy Number \tocdiff {Easy}}{50}{section*.156}%
+\contentsline {subsection}{66. Plus One \tocdiff {Easy}}{50}{section*.157}%
+\contentsline {subsection}{50. Pow(x, n) \tocdiff {Medium}}{50}{section*.158}%
+\contentsline {subsection}{43. Multiply Strings \tocdiff {Medium}}{50}{section*.159}%
+\contentsline {subsection}{2013. Detect Squares \tocdiff {Medium}}{51}{section*.160}%
+\contentsline {section}{Bit Manipulation {\normalsize \color {muted}$\cdot $ 7 problems}}{52}{section*.161}%
+\contentsline {subsection}{136. Single Number \tocdiff {Easy}}{52}{section*.162}%
+\contentsline {subsection}{191. Number of 1 Bits \tocdiff {Easy}}{52}{section*.163}%
+\contentsline {subsection}{338. Counting Bits \tocdiff {Easy}}{52}{section*.164}%
+\contentsline {subsection}{190. Reverse Bits \tocdiff {Easy}}{52}{section*.165}%
+\contentsline {subsection}{268. Missing Number \tocdiff {Easy}}{52}{section*.166}%
+\contentsline {subsection}{371. Sum of Two Integers \tocdiff {Medium}}{53}{section*.167}%
+\contentsline {subsection}{7. Reverse Integer \tocdiff {Medium}}{53}{section*.168}%

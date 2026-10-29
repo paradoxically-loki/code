@@ -17,6 +17,7 @@
 % ------------------------------------------------------------------
 
 \usepackage[margin=16mm,top=15mm,bottom=16mm]{geometry}
+\usepackage[T1]{fontenc}
 \usepackage[scaled=0.92]{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage{textcomp}
@@ -105,7 +106,7 @@
 \newenvironment{problem}[3]{%
   \Needspace{12\baselineskip}%
   \phantomsection
-  \addcontentsline{toc}{subsection}{#1. #2 \protect\tocdiff{#3}}%
+  \addcontentsline{toc}{subsection}{#1. #2 \texorpdfstring{\protect\tocdiff{#3}}{(#3)}}%
   \label{p#1}%
   \par\noindent{\large\bfseries #1. #2}\enspace\diff{#3}\par\vspace{2pt}%
   \small
