@@ -1,0 +1,2732 @@
+\documentclass[11pt,a4paper,openany]{report}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{array,booktabs,multicol}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\titleformat{\chapter}[hang]{\Large\bfseries}{\thechapter.}{0.6em}{}
+\titlespacing*{\chapter}{0pt}{-10pt}{12pt}
+
+% ---------- boxes ----------
+\newtcolorbox{idea}[1][Key idea]{colback=blue!4,colframe=blue!50!black,title=#1,fonttitle=\bfseries,breakable}
+\newtcolorbox{why}[1][Why it works]{colback=yellow!6,colframe=orange!70!black,title=#1,fonttitle=\bfseries,breakable}
+\newtcolorbox{trap}[1][Common trap]{colback=red!4,colframe=red!60!black,title=#1,fonttitle=\bfseries,breakable}
+\newtcolorbox{shortcut}[1][Speed shortcut]{colback=green!5,colframe=green!45!black,title=#1,fonttitle=\bfseries,breakable}
+\newcounter{exmp}[chapter]
+\newtcolorbox{example}[1][]{colback=gray!5,colframe=gray!60!black,fonttitle=\bfseries,breakable,
+  code={\refstepcounter{exmp}},title={Example \thechapter.\theexmp\ifx\relax#1\relax\else\ (#1)\fi}}
+\newenvironment{exercises}{\subsection*{Exercises \thechapter}\begin{enumerate}[label=\textbf{\thechapter.\arabic*},leftmargin=3.2em]}{\end{enumerate}}
+\newcommand{\C}[2]{\binom{#1}{#2}}
+\newcommand{\Rs}{Rs.\,}
+\newcommand{\sol}[1]{\par\smallskip\textbf{#1}\ }
+\newcommand{\E}{\mathbb{E}}
+
+\title{\textbf{Quantitative Aptitude \& Probability}\\[6pt]
+\Large A Placement Preparation Booklet\\[4pt]
+\large Counting $\cdot$ Advanced Combinatorics $\cdot$ Arithmetic $\cdot$ Reasoning $\cdot$ Probability}
+\author{Prepared for Hardik Patel}
+\date{October 2026 \quad (Second edition, expanded)}
+
+\begin{document}
+\maketitle
+
+\begin{idea}[How to use this booklet]
+This edition has five parts:
+\begin{itemize}[nosep]
+\item \textbf{Part I -- Counting fundamentals.} From the multiplication principle to Catalan numbers, now with ``Why it works'' boxes that explain the reasoning behind each formula.
+\item \textbf{Part II -- Advanced counting.} Recurrences, generating functions, Burnside's lemma, bijections, Stirling numbers and partitions.
+\item \textbf{Part III -- Arithmetic aptitude.} Percentages, profit \& loss, interest, ratio \& partnership, mixtures \& alligation, time \& work.
+\item \textbf{Part IV -- Logical reasoning.} Ranking, linear and circular seating, multi-attribute puzzles, blood relations, syllogisms, data sufficiency.
+\item \textbf{Part V -- Probability.} From basics to quant-interview level: Bayes, expectation tricks, Markov chains, geometric probability, optimal stopping and famous puzzles.
+\end{itemize}
+Each chapter follows the same rhythm: idea $\to$ why it works $\to$ worked examples $\to$ traps $\to$ exercises.
+\textbf{All exercise solutions are at the end}, organised by chapter. Every numerical answer was
+cross-checked by computer (brute-force enumeration, exact fractions, or simulation for the probability puzzles),
+and each seating/floor puzzle was checked to have exactly one solution.
+
+\textbf{Box legend:} \colorbox{blue!8}{Key idea} \colorbox{yellow!15}{Why it works}
+\colorbox{red!8}{Common trap} \colorbox{green!10}{Speed shortcut}.
+\end{idea}
+
+\tableofcontents
+%=====================================================================
+\part{Counting Fundamentals}
+%=====================================================================
+\chapter{The Master Decision: What Kind of Problem Is This?}
+
+Most counting mistakes in an exam are not arithmetic mistakes. They come from using the
+\emph{wrong model}. Before writing a single formula, answer these questions:
+
+\begin{center}
+\begin{tabular}{>{\raggedright}p{5.2cm} >{\raggedright\arraybackslash}p{9.5cm}}
+\toprule
+\textbf{Question to ask} & \textbf{What it decides}\\
+\midrule
+Does order matter? & Arrangement (permutation) vs selection (combination)\\
+Can things repeat? & $n^r$ vs $^nP_r$; stars \& bars vs plain $^nC_r$\\
+Are objects / boxes identical or distinct? & Which distribution formula (Chapter~\ref{ch:dist} table)\\
+Is there an ``at least / at most / not''? & Complement or inclusion--exclusion\\
+Is it a circle? & Divide by rotations (and reflections for necklaces)\\
+Does each step's \emph{number} of options stay fixed? & If not, split into cases\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{The swap test for order.} Swap two of the chosen items. If you get a \emph{different}
+outcome (President and VP swapped; two digits of a PIN swapped), order matters. If you get the
+\emph{same} outcome (two members of a committee swapped), it does not.
+
+\textbf{The ``who chooses whom'' test for repetition.} When $n$ things are each assigned one of $k$
+options independently, the answer is $k^n$ -- the base is the number of \emph{options}, the exponent is
+the number of \emph{things making a choice}. Five letters into three post boxes: each letter chooses a
+box, so $3^5$, not $5^3$.
+
+\begin{idea}[Four lenses that solve almost everything]
+\begin{enumerate}[nosep]
+\item \textbf{Direct construction:} build the object step by step and multiply.
+\item \textbf{Complement:} count what you don't want and subtract.
+\item \textbf{Overcount then divide:} count with fake labels, then divide by how many times each real object was counted (repeated letters, circles, unlabelled groups).
+\item \textbf{Bijection:} translate into a problem you already know (stars and bars, lattice paths, binary strings).
+\end{enumerate}
+\end{idea}
+
+%=====================================================================
+\chapter{Fundamental Principles}
+
+\section{Addition principle (OR)}
+If a task can be done in \emph{one of} several mutually exclusive ways -- $m$ ways of type A
+\textbf{or} $n$ ways of type B -- the total is $m+n$.
+
+\textit{Real life:} You travel Chennai$\to$Bengaluru by one of 4 trains or one
+of 7 buses. Total options $=4+7=11$.
+
+The key word is \textbf{mutually exclusive}: no option is counted in both groups. If some
+trains are also listed as buses (impossible here, but think of overlapping categories like
+``students in finance club'' and ``students in consulting club''), you need inclusion--exclusion (Chapter~\ref{ch:ie}).
+
+\section{Multiplication principle (AND)}
+If a task is a sequence of stages -- $m$ ways for stage 1 \textbf{and then} $n$ ways for
+stage 2 -- the total is $m\times n$, \emph{provided the number of options at stage 2 is the same
+whatever was chosen at stage 1}. (The options themselves may differ; only their count must not.)
+
+\textit{Real life:} A food-delivery combo: 3 breads, 5 curries, 2 drinks. Combos $=3\cdot5\cdot2=30$.
+
+\begin{why}
+Draw a tree. Stage 1 has $m$ branches. From \emph{each} of them grow $n$ branches for stage 2.
+The leaves (complete outcomes) number $m$ groups of $n$, i.e.\ $mn$. If the second-stage count
+varied (say 5 branches after one choice and 3 after another), the leaves would be $5+3$, not a
+product -- and you must add the cases separately. This is exactly why ``split into cases'' is
+needed when digits like 0 behave differently.
+\end{why}
+
+\section{Complement principle}
+$\text{(Wanted)} = \text{(Total)} - \text{(Unwanted)}$.
+Use it whenever you see ``\textbf{at least one}'' -- the unwanted case (``none'') is usually one clean term.
+
+\begin{shortcut}
+Fill the \emph{most restricted} position first. For a 4-digit even number with distinct
+digits, the units digit and the thousands digit are both restricted -- and they interact
+through 0. Split into cases on the digit that causes the interaction.
+\end{shortcut}
+
+\begin{example}
+From city A to B there are 3 roads, from B to C there are 4 roads, and there are 2 direct
+roads from A to C. How many ways to go from A to C?
+
+\textbf{Solution.} Via B: $3\times4=12$ (AND). Direct: 2. These are alternatives (OR): $12+2=14$.
+\end{example}
+
+\begin{example}
+How many 4-digit even numbers have all digits distinct?
+
+\textbf{Solution.} The units digit is restricted (even) and the thousands digit can't be 0.
+\begin{itemize}[nosep]
+\item Units $=0$: thousands 9 choices, then $8\cdot7$ for the middle: $9\cdot8\cdot7=504$.
+\item Units $\in\{2,4,6,8\}$: 4 ways; thousands: not 0, not the units digit $\Rightarrow 8$;
+middle two: $8\cdot7$. Total $4\cdot8\cdot8\cdot7=1792$.
+\end{itemize}
+Total $=504+1792=\mathbf{2296}$.
+\end{example}
+
+\begin{example}
+How many 4-digit numbers have at least one repeated digit?
+
+\textbf{Solution.} Total 4-digit numbers $=9000$. All distinct $=9\cdot9\cdot8\cdot7=4536$.
+Wanted $=9000-4536=\mathbf{4464}$.
+\end{example}
+
+\begin{trap}
+In the even-number example, if you fill the thousands digit first (9 ways) and then say ``units: 5 even
+digits'', you go wrong, because whether 0 is still available for the units place depends on the
+first choice. When one choice changes the \emph{number} of options for another, \textbf{split into cases}.
+\end{trap}
+
+\begin{exercises}
+\item A restaurant has 4 starters, 6 mains and 3 desserts. A meal must have exactly one main,
+and may optionally include one starter and optionally one dessert. How many different meals are possible?
+\item How many 3-digit numbers contain at least one digit 7?
+\item How many odd numbers between 3000 and 8000 have all four digits distinct?
+\item In how many ways can 5 letters be posted in 3 letter boxes?
+\item How many of the integers from 1 to 999 contain no digit 0?
+\end{exercises}
+
+%=====================================================================
+\chapter{Permutations (Arrangements)}
+
+\section{Core formulas}
+\begin{itemize}
+\item $n$ distinct objects in a row: $n!$
+\item $r$ out of $n$ distinct objects in a row: $^nP_r=\dfrac{n!}{(n-r)!}=n(n-1)\cdots(n-r+1)$
+\item With repetition allowed, $r$ positions from $n$ symbols: $n^r$
+\item $n$ objects where $p$ are alike of one kind, $q$ alike of another\dots:
+$\dfrac{n!}{p!\,q!\cdots}$
+\end{itemize}
+
+\begin{why}
+\textbf{The slot method.} For $^nP_r$, think of $r$ empty slots. Slot 1 can take any of $n$ objects,
+slot 2 any of the remaining $n-1$, \dots, slot $r$ any of $n-r+1$. Multiply.
+
+\textbf{Overcount then divide.} For repeated letters, pretend the 3 S's in a word are different:
+S$_1$, S$_2$, S$_3$. Now every real arrangement appears $3!=6$ times (once for each way of ordering the
+labels among the S-positions). Dividing by $3!$ removes the fake distinctions. With several repeated
+letters the divisions multiply: $\frac{n!}{p!q!\cdots}$.
+\end{why}
+
+\section{Number formation and divisibility}
+Many questions ask for numbers formed from given digits that are divisible by something. Know the tests:
+\begin{center}\small
+\begin{tabular}{ll|ll}
+\toprule
+Divisor & Test & Divisor & Test\\\midrule
+2 & last digit even & 8 & last three digits divisible by 8\\
+3 & digit sum divisible by 3 & 9 & digit sum divisible by 9\\
+4 & last two digits divisible by 4 & 11 & (alternate sum) divisible by 11\\
+5 & last digit 0 or 5 & 6 & divisible by 2 and 3\\
+\bottomrule
+\end{tabular}
+\end{center}
+For ``divisible by 3 or 9'' questions the order of digits doesn't matter -- first choose the
+\emph{set} of digits with the right sum, then arrange.
+
+\begin{example}[divisibility by 3]
+How many 3-digit numbers can be formed from 1, 2, 3, 4, 5 without repetition that are divisible by 3?
+
+\textbf{Solution.} Find 3-element subsets with digit sum divisible by 3: $\{1,2,3\}$ (6), $\{1,3,5\}$ (9),
+$\{2,3,4\}$ (9), $\{3,4,5\}$ (12). Four subsets, each arranged in $3!$ ways: $4\times6=\mathbf{24}$.
+\end{example}
+
+\section{Restriction toolkit}
+\begin{idea}[Three standard restrictions]
+\textbf{1. ``Together'' $\to$ glue.} Treat the group as one block; arrange blocks; multiply by
+the internal arrangements of the block.
+
+\textbf{2. ``No two together'' $\to$ gap method.} Arrange the \emph{unrestricted} items first,
+then place restricted items in the gaps between them (including both ends).
+If $k$ items are arranged in a row, there are $k+1$ gaps.
+
+\textbf{3. ``A before B'' (not necessarily adjacent) $\to$ symmetry.} Exactly half of all
+arrangements have A before B. For A before B before C: $1/3!$ of all arrangements.
+\end{idea}
+
+\begin{why}
+\textbf{Gap method:} once the consonants are placed, two vowels are adjacent only if they go into
+the \emph{same} gap. Putting each vowel into a \emph{different} gap guarantees separation, and every
+valid arrangement arises this way exactly once.
+
+\textbf{Symmetry:} pair every arrangement with the one obtained by swapping A and B. This pairing is a
+perfect matching between ``A before B'' and ``B before A'' arrangements, so the two classes are equal in size.
+\end{why}
+
+\begin{trap}
+``Not all together'' $\neq$ ``no two together''. For vowels in a word:
+``not all together'' $=$ total $-$ all together (complement). ``No two together'' needs the gap method.
+For three vowels, ``AE together but O apart'' is neither -- it needs its own construction.
+\end{trap}
+
+\begin{example}[glue]
+In how many arrangements of SOFTWARE are the vowels together?
+
+\textbf{Solution.} Vowels O, A, E form one block. Units: [OAE], S, F, T, W, R $=6$ units $\Rightarrow 6!$.
+Block internally: $3!$. Total $=720\times6=\mathbf{4320}$.
+\end{example}
+
+\begin{example}[gap method]
+In how many arrangements of SOFTWARE are no two vowels adjacent?
+
+\textbf{Solution.} Arrange 5 consonants: $5!=120$. They create 6 gaps
+(\_\,S\,\_\,F\,\_\,T\,\_\,W\,\_\,R\,\_). Place 3 distinct vowels in 3 different gaps:
+$^6P_3=120$. Total $=120\times120=\mathbf{14400}$.
+\end{example}
+
+\begin{example}[repeated letters]
+How many arrangements of MISSISSIPPI are there?
+
+\textbf{Solution.} 11 letters: I$\times4$, S$\times4$, P$\times2$, M$\times1$.
+$\dfrac{11!}{4!\,4!\,2!}=\mathbf{34650}$.
+\end{example}
+
+\section{Rank of a word (dictionary order)}
+Very common in TCS/Infosys-style papers. Method: go letter by letter. At each position, count
+the words that agree with the target so far but have a \emph{smaller} letter at this position.
+Each such block is ``arrangements of the remaining letters''. Add all blocks, then add 1 for the word itself.
+
+\begin{example}
+Find the rank of SURITI if all its arrangements are listed in dictionary order.
+
+\textbf{Solution.} Letters sorted: I, I, R, S, T, U (I repeated twice).
+\begin{itemize}[nosep]
+\item Position 1 is S. Words starting with I: remaining $\{I,R,S,T,U\}$, all distinct $\Rightarrow5!=120$.
+Starting with R: remaining $\{I,I,S,T,U\}\Rightarrow 5!/2!=60$. Running total 180.
+\item Fix S. Position 2 is U; remaining $\{I,I,R,T,U\}$. Smaller than U: I, R, T.
+S-I-: $\{I,R,T,U\}\to4!=24$; S-R-: $\{I,I,T,U\}\to12$; S-T-: $\{I,I,R,U\}\to12$. Total so far $180+48=228$.
+\item Fix SU. Position 3 is R; remaining $\{I,I,R,T\}$. Smaller: I. SUI-: $\{I,R,T\}\to3!=6$. Total 234.
+\item Fix SUR. Position 4 is I; remaining $\{I,I,T\}$: nothing smaller. Position 5 is T; remaining $\{I,T\}$. Smaller: I $\to$ SURIIT: 1 word. Total 235.
+\item SURITI itself is next: rank $=\mathbf{236}$.
+\end{itemize}
+\end{example}
+
+\begin{shortcut}
+Always use the \emph{distinct} smaller letters. If the remaining pool has two I's, ``starting with I''
+is one block, not two.
+\end{shortcut}
+
+\begin{exercises}
+\item How many arrangements of BANANA are there? In how many of them are the two N's not adjacent?
+\item Find the rank of MOTHER in the dictionary listing of its arrangements.
+\item How many 5-digit numbers formed from 0, 1, 2, 3, 4 (no repetition) are divisible by 4?
+\item How many arrangements of the word ENGINEERING are possible?
+\item How many arrangements of ALLAHABAD are possible?
+\item Seven people stand in a row. In how many arrangements is A somewhere to the left of B?
+\end{exercises}
+
+%=====================================================================
+\chapter{Combinations (Selections)}
+
+\section{Core facts}
+\begin{itemize}
+\item $^nC_r=\dfrac{n!}{r!(n-r)!}=\dfrac{^nP_r}{r!}$
+\item $^nC_r={}^nC_{n-r}$ (choosing who's in $=$ choosing who's out).
+\item $^nC_0+{}^nC_1+\dots+{}^nC_n=2^n$ (each item: in or out).
+\item Pascal: $^nC_r={}^{n-1}C_{r-1}+{}^{n-1}C_r$ (a specific item is either chosen or not).
+\end{itemize}
+
+\begin{why}
+$^nP_r$ counts ordered lists of $r$ items. Each unordered selection of $r$ items can be listed in
+$r!$ orders, so it was counted $r!$ times. Hence $^nC_r={}^nP_r/r!$ -- another instance of
+``overcount then divide''.
+\end{why}
+
+\textit{Real life:} A placement committee of 5 from 10 students: $^{10}C_5=252$. A President
+and VP from 10: $^{10}P_2=90$ -- order matters because the roles differ.
+
+\textbf{``Select then arrange''.} When you choose a group and then give them distinct roles, multiply:
+e.g.\ choose 5 from 10 and then a chairperson among them: $\C{10}5\times5=1260$.
+(Equivalently: choose the chair first, 10 ways, then 4 others from 9: $10\times\C94=1260$. Two ways of
+counting the same thing must agree -- this ``double counting'' idea returns in Chapter~\ref{ch:bij}.)
+
+\section{``At least'' selections -- split into exact cases}
+For ``at least $k$ of type X'', either add the exact cases $k, k+1,\dots$, or use the complement
+-- pick whichever has fewer terms.
+
+\begin{trap}
+The classic wrong method for ``at least 2 women'': ``choose 2 women first ($^4C_2$), then fill the
+remaining 3 seats from the other 8 people ($^8C_3$)''. This \textbf{overcounts}, because a committee
+with 3 women is counted once for each choice of which 2 were the ``first'' two. Always split into exact cases.
+\end{trap}
+
+\begin{example}
+A committee of 5 is formed from 6 men and 4 women. How many committees contain at least 2 women?
+
+\textbf{Solution.}
+$\C42\C63+\C43\C62+\C44\C61=6\cdot20+4\cdot15+1\cdot6=\mathbf{186}$.
+(The wrong method in the trap box gives $6\times56=336$.)
+\end{example}
+
+\section{Selecting from identical objects}
+If there are $p$ identical items of one type, you can take $0,1,\dots,p$ of them: $(p+1)$ choices.
+For distinct items, each is in or out: a factor 2 each.
+
+Number of selections (at least one item) from $p$ alike, $q$ alike, $r$ alike and $n$ distinct items:
+\[(p+1)(q+1)(r+1)\cdot 2^n-1.\]
+
+\begin{example}
+A fruit basket has 3 identical apples, 4 identical oranges and 5 different exotic fruits.
+How many ways to select at least one fruit?
+
+\textbf{Solution.} $(3+1)(4+1)\cdot2^5-1=4\cdot5\cdot32-1=\mathbf{639}$.
+\end{example}
+
+\section{Number of divisors}
+If $N=p_1^{a_1}p_2^{a_2}\cdots p_k^{a_k}$, a divisor picks an exponent $0..a_i$ for each prime --
+exactly ``selection from identical objects'' with the primes as the identical items.
+\[\text{Number of divisors}=(a_1+1)(a_2+1)\cdots(a_k+1).\]
+Variants: \emph{even} divisors force the exponent of 2 to be $\ge1$; \emph{odd} divisors force it to be 0;
+\emph{perfect-square} divisors need every exponent even; ways to write $N$ as a product of two factors
+$=\frac{d(N)}2$ (round up if $N$ is a perfect square).
+
+\begin{example}
+How many divisors does 1800 have, and how many are even?
+
+\textbf{Solution.} $1800=2^3\cdot3^2\cdot5^2$. Divisors $=4\cdot3\cdot3=\mathbf{36}$.
+Even divisors need exponent of 2 at least 1: $3\cdot3\cdot3=\mathbf{27}$.
+\end{example}
+
+\section{Selection of letters from a word with repeats}
+Split by \emph{pattern}. For selecting 4 letters: all distinct / one pair $+$ 2 distinct / two pairs /
+a triple $+$ 1 / four alike. Count each pattern separately; if the question asks for
+\emph{arrangements} rather than selections, multiply each pattern by $\frac{4!}{\text{repeats}!}$ before adding.
+
+\begin{exercises}
+\item At a networking event of 12 people, everyone shakes hands once with everyone else. How many handshakes?
+\item A student must answer 7 of 10 questions, with at least 3 from the first 5. How many choices?
+\item How many diagonals does a 12-sided polygon have?
+\item In how many ways can you choose at least one item from 5 different fruits and 3 identical mangoes?
+\item In how many ways can 3 numbers be chosen from $\{1,2,\dots,20\}$ so that their sum is even?
+\item How many selections of 4 letters can be made from the letters of EXAMINATION?
+\end{exercises}
+
+%=====================================================================
+\chapter{Circular Arrangements}
+
+\section{Why $(n-1)!$}
+In a row there are $n!$ arrangements. Around a round table, rotating everyone one seat gives the
+\emph{same} seating (only relative positions matter). Each circular arrangement corresponds
+to $n$ row arrangements, so $n!/n=(n-1)!$.
+
+\begin{why}
+Take A, B, C, D. The row arrangements ABCD, BCDA, CDAB, DABC all describe the \emph{same} circle
+(everyone has the same left and right neighbour). So the 24 rows collapse in groups of 4 into
+$24/4=6=3!$ circles. Practical method: \textbf{fix one person's seat} -- this kills rotations --
+then arrange the remaining $n-1$ people as if in a row.
+\end{why}
+
+\section{Necklaces and garlands}
+If the arrangement can also be \emph{flipped} (beads on a necklace, flowers on a garland), clockwise
+and anticlockwise readings are the same object: $\dfrac{(n-1)!}{2}$ for $n\ge3$.
+When beads are \emph{not} all distinct, this simple formula fails -- use Burnside's lemma (Chapter~\ref{ch:burn}).
+
+\begin{trap}
+People around a table: $(n-1)!$, \textbf{not} divided by 2 -- a person's left neighbour and right
+neighbour are different, unless the question says clockwise and anticlockwise are the same.
+Seats that are numbered/distinguishable (a table with labelled chairs) $\Rightarrow$ it's just a row: $n!$.
+\end{trap}
+
+\begin{example}
+8 people sit around a round table. In how many ways can they sit if two particular people must sit together?
+
+\textbf{Solution.} Glue them: 7 units around a circle $\Rightarrow6!$. Internal order: $2$.
+Total $=720\times2=\mathbf{1440}$.
+\end{example}
+
+\begin{example}
+How many different necklaces can be made with 7 distinct beads?
+
+\textbf{Solution.} $\dfrac{(7-1)!}{2}=\mathbf{360}$.
+\end{example}
+
+\begin{example}[alternating]
+5 men and 5 women sit around a table, alternating. How many ways?
+
+\textbf{Solution.} Seat the men around the circle: $4!$. This creates 5 \emph{distinguishable} gaps between
+men (each gap is identified by its neighbours), so the women fill them like a row: $5!$.
+Total $=24\times120=\mathbf{2880}$.
+\end{example}
+
+\begin{exercises}
+\item 10 people sit at a round table. In how many ways can they sit if 3 specific people must sit together?
+\item How many garlands can be made from 8 different flowers?
+\item 6 people sit at a round table. In how many ways can they sit if two specific people must \emph{not} sit next to each other?
+\item Five boys and five girls sit at a round table such that boys and girls alternate. How many arrangements? (Re-derive without looking at the example.)
+\item Four married couples sit at a round table. In how many ways can they sit if (a) every couple sits together; (b) men and women alternate?
+\end{exercises}
+
+%=====================================================================
+\chapter{Distributions: Stars \& Bars and Grouping}\label{ch:dist}
+
+\section{Identical objects into distinct boxes -- stars and bars}
+Distribute $n$ identical items among $r$ distinct people. Write $n$ stars and $r-1$ bars;
+each arrangement is one distribution.
+\[
+\text{Empty allowed: } \C{n+r-1}{r-1} \qquad\qquad
+\text{Each gets at least 1: } \C{n-1}{r-1}
+\]
+Equivalent: number of non-negative integer solutions of $x_1+\dots+x_r=n$.
+
+\begin{why}
+Seven identical sweets for three children: the string
+\[\star\star\,|\,\star\star\star\star\,|\,\star \qquad\text{means}\qquad (2,4,1),\qquad\qquad
+\star\star\star\star\star\star\star\,|\,| \quad\text{means}\quad (7,0,0).\]
+Every distribution corresponds to exactly one string of 7 stars and 2 bars, and vice versa. The number of
+such strings is the number of ways to choose the 2 bar positions among 9 symbols: $\C92=36$.
+
+\textbf{At least one each:} line the 7 stars up; there are 6 internal gaps. Choosing 2 different gaps for the
+bars guarantees no empty group: $\C62=15$. (Equivalently, hand one sweet to each child first, then
+distribute the remaining 4 freely: $\C{4+2}{2}=15$.)
+\end{why}
+
+\textit{Real life:} 10 identical \Rs100 gift vouchers among 4 interns. If someone may get none:
+$\C{13}{3}=286$.
+
+\textbf{Lower bounds} ($x_1\ge2$): pre-give 2 to that person, reduce $n$. \textbf{Upper bounds}
+($x_1\le3$): use complement / inclusion--exclusion (Chapter~\ref{ch:ie}) or generating functions (Chapter~\ref{ch:gf}).
+
+\begin{example}
+How many non-negative integer solutions does $x+y+z=10$ have?
+
+\textbf{Solution.} $\C{12}{2}=\mathbf{66}$.
+\end{example}
+
+\begin{example}
+How many positive integer solutions does $a+b+c+d=12$ have?
+
+\textbf{Solution.} $\C{11}{3}=\mathbf{165}$.
+\end{example}
+
+\section{Distinct objects into groups}
+\begin{itemize}
+\item Into groups of sizes $p, q, r$ (all different sizes): $\dfrac{n!}{p!\,q!\,r!}$.
+\item Into $k$ groups of \emph{equal} size $m$ (groups unlabelled): $\dfrac{(km)!}{(m!)^k\,k!}$.
+\item If those equal groups are then \emph{given to $k$ different people}: multiply by $k!$, which cancels the $k!$.
+\end{itemize}
+
+\begin{why}
+Line all $n$ objects up in $n!$ ways and cut the line into consecutive chunks of the required sizes.
+Shuffling inside a chunk doesn't change the group, so divide by $p!\,q!\,r!$. If several chunks have the same
+size and the groups are unlabelled, swapping whole chunks also doesn't change anything -- divide again by
+$k!$ for $k$ equal-sized groups.
+\end{why}
+
+\begin{trap}
+Dividing 8 people into two teams of 4 for a match: $\C84/2=35$, not 70. Choosing team A
+automatically makes team B, and ``\{A,B,C,D\} vs rest'' is the same split as ``rest vs \{A,B,C,D\}''.
+If the teams have names (Red team / Blue team), it is 70.
+\end{trap}
+
+\begin{example}
+In how many ways can 12 different books be divided into 3 bundles of 4? Into 3 bundles given to 3 students?
+
+\textbf{Solution.} $\dfrac{12!}{(4!)^3\,3!}=\mathbf{5775}$. Given to 3 students: $5775\times3!=\mathbf{34650}$.
+\end{example}
+
+\section{The four distribution cases (summary)}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Objects & Boxes & Count ($n$ objects, $r$ boxes, empty allowed)\\
+\midrule
+Distinct & Distinct & $r^n$\\
+Identical & Distinct & $\C{n+r-1}{r-1}$\\
+Distinct & Identical & $S(n,1)+\dots+S(n,r)$ (Stirling numbers, Ch.~\ref{ch:bij})\\
+Identical & Identical & Partitions of $n$ into at most $r$ parts (Ch.~\ref{ch:bij})\\
+\bottomrule
+\end{tabular}
+\end{center}
+For the last two rows, aptitude questions keep numbers small: \textbf{list the cases systematically}.
+Add ``no box empty'' by using $S(n,r)$ alone, or partitions into \emph{exactly} $r$ parts.
+
+\begin{example}
+In how many ways can 6 identical balls be put into 3 identical boxes (empty allowed)?
+
+\textbf{Solution.} List partitions of 6 into at most 3 parts:
+6; 5+1; 4+2; 3+3; 4+1+1; 3+2+1; 2+2+2. Total $\mathbf{7}$.
+\end{example}
+
+\begin{exercises}
+\item 10 identical chocolates are distributed among 4 children so that each gets at least one. How many ways?
+\item How many non-negative integer solutions of $a+b+c+d=15$ have $a\ge2$ and $b\ge3$?
+\item In how many ways can 9 different people be divided into 3 groups of 3?
+\item In how many ways can 4 different toys be put into 2 identical boxes (a box may be empty)?
+\item How many distinct terms are there in the expansion of $(a+b+c+d)^8$?
+\item How many 3-digit numbers have digit sum 10?
+\item How many non-negative integer solutions of $x+y+z=6$ have each variable at most 3?
+\end{exercises}
+
+%=====================================================================
+\chapter{Inclusion--Exclusion}\label{ch:ie}
+
+\section{The formula}
+For two sets: $|A\cup B|=|A|+|B|-|A\cap B|$.\\
+For three: $|A\cup B\cup C|=\sum|A|-\sum|A\cap B|+|A\cap B\cap C|$.\\
+General pattern: add singles, subtract pairs, add triples, subtract quadruples, \dots
+
+\begin{why}
+Take an element that lies in exactly $k\ge1$ of the sets. The singles count it $\C k1$ times, the pairs
+$\C k2$ times, the triples $\C k3$ times, and so on. Net count:
+\[\C k1-\C k2+\C k3-\cdots=1-(1-1)^k=1.\]
+So every element of the union is counted exactly once, and elements in none of the sets are counted zero times.
+\end{why}
+
+\textit{Real life:} In a batch, 60 students opted for a finance elective, 45 for marketing, and 25
+for both. Students with at least one of these: $60+45-25=80$.
+
+\textbf{Useful forms:}
+\begin{itemize}[nosep]
+\item ``None of the properties'' $=$ Total $-|A\cup B\cup\cdots|$.
+\item \textbf{Exactly one} of three sets: $\sum|A|-2\sum|A\cap B|+3|A\cap B\cap C|$.
+\item \textbf{Exactly two} of three sets: $\sum|A\cap B|-3|A\cap B\cap C|$.
+\end{itemize}
+
+\section{Onto (surjective) functions}
+Distribute $n$ distinct items to $r$ distinct people, \textbf{everyone gets at least one}:
+\[r^n-\C r1(r-1)^n+\C r2(r-2)^n-\cdots\]
+(Subtract assignments where a particular person is left out, add back where two are left out, \dots)
+
+\begin{example}
+How many integers from 1 to 1000 are divisible by 2, 3 or 5?
+
+\textbf{Solution.} $500+333+200-(166+100+66)+33=1033-332+33=\mathbf{734}$.
+\end{example}
+
+\begin{example}
+In how many ways can 5 different projects be assigned to 3 analysts so that each analyst gets at least one?
+
+\textbf{Solution.} $3^5-3\cdot2^5+3\cdot1^5=243-96+3=\mathbf{150}$.
+\end{example}
+
+\begin{trap}
+Answering ``each gets at least one'' by ``give one each first, then distribute the rest freely''
+($^5P_3\cdot3^2$) is the same overcounting error as in Chapter 4: the project given ``first'' is an
+artificial label. Use inclusion--exclusion.
+\end{trap}
+
+\begin{exercises}
+\item Of 100 students, 60 study finance, 45 study marketing and 25 study both. How many study neither?
+\item How many integers from 1 to 500 are divisible by neither 3 nor 7?
+\item In how many ways can 6 different tasks be assigned to 3 analysts so that each gets at least one?
+\item In how many arrangements of A, B, C, D, E is A not in position 1 and B not in position 2?
+\item How many non-negative integer solutions of $x+y+z=15$ have each variable at most 6?
+\end{exercises}
+
+%=====================================================================
+\chapter{Derangements}
+
+A derangement is an arrangement where \textbf{nobody is in their own place} -- letters in wrong
+envelopes, a Secret Santa where nobody draws their own name.
+\[D_n=n!\left(1-\frac1{1!}+\frac1{2!}-\frac1{3!}+\cdots+\frac{(-1)^n}{n!}\right),\qquad D_n=(n-1)(D_{n-1}+D_{n-2}).\]
+
+\begin{why}
+\textbf{Formula:} inclusion--exclusion over the events ``person $i$ gets their own item''. Fixing a
+specific set of $k$ people in place leaves $(n-k)!$ arrangements, and there are $\C nk$ such sets:
+$D_n=\sum_k(-1)^k\C nk(n-k)!=n!\sum_k\frac{(-1)^k}{k!}$.
+
+\textbf{Recurrence:} letter 1 goes into some wrong envelope $k$ ($n-1$ choices). Now either letter $k$ goes
+into envelope 1 (a swap; the other $n-2$ letters must be deranged: $D_{n-2}$), or it doesn't (then treat
+envelope 1 as letter $k$'s ``forbidden'' envelope, and the $n-1$ letters other than 1 form a derangement: $D_{n-1}$).
+\end{why}
+
+\begin{center}
+\begin{tabular}{c|ccccccc}
+$n$ & 1&2&3&4&5&6&7\\\hline
+$D_n$ & 0&1&2&9&44&265&1854
+\end{tabular}
+\end{center}
+\textbf{Memorise this table up to $n=6$} -- it is faster than the formula in an exam.
+A sanity check: $D_n\approx n!/e$, rounded to the nearest integer. So the probability that a random
+permutation is a derangement is $\approx 1/e\approx 0.368$, for any reasonably large $n$.
+
+\textbf{Exactly $k$ in the right place:} choose which $k$ are correct, derange the rest:
+$\C nk D_{n-k}$.
+
+\begin{example}
+4 letters are put into 4 addressed envelopes at random. In how many ways do all go into wrong envelopes?
+
+\textbf{Solution.} $D_4=\mathbf{9}$.
+\end{example}
+
+\begin{example}
+In how many ways can 5 letters be placed so that exactly 2 are in the correct envelopes?
+
+\textbf{Solution.} $\C52D_3=10\times2=\mathbf{20}$.
+\end{example}
+
+\begin{exercises}
+\item In a 5-person Secret Santa, in how many ways can nobody draw their own name?
+\item 6 letters, 6 envelopes. In how many ways are exactly 3 letters correctly placed?
+\item 6 people leave their bags at a counter and get them back at random. In how many ways does at least one person get their own bag?
+\item 7 students' answer sheets are randomly redistributed for peer grading. In how many ways does no student get their own sheet?
+\end{exercises}
+
+%=====================================================================
+\chapter{Geometry and Grid Counting}
+
+\section{Points, lines, triangles}
+From $n$ points with no three collinear: lines $=\C n2$, triangles $=\C n3$.\\
+If $m$ of them are collinear: lines $=\C n2-\C m2+1$; triangles $=\C n3-\C m3$.\\
+Diagonals of an $n$-gon: $\C n2-n=\dfrac{n(n-3)}2$.
+
+\begin{why}
+$m$ collinear points would give $\C m2$ ``lines'' if they were in general position, but they all lie on
+one line -- so remove $\C m2$ and add back 1. Any 3 of them form a degenerate (flat) triangle, so remove $\C m3$.
+\end{why}
+
+\section{Rectangles and squares}
+A grid of $m\times n$ unit squares has $(m+1)$ vertical and $(n+1)$ horizontal lines. A rectangle
+is fixed by 2 vertical lines and 2 horizontal lines: $\C{m+1}2\C{n+1}2$.\\
+Squares on an $n\times n$ board: $1^2+2^2+\dots+n^2=\frac{n(n+1)(2n+1)}6$ (there are $(n-k+1)^2$ squares of side $k$).
+
+\section{Lattice paths}
+Moving only Right or Up from $(0,0)$ to $(m,n)$: a path is a word with $m$ R's and $n$ U's:
+$\C{m+n}{m}$.\\
+Through point P: (paths to P)$\times$(paths from P). Avoiding P: total $-$ through P.
+
+\textit{Real life:} In a grid of city blocks, the number of shortest walking routes
+between two corners is a lattice-path count.
+
+\begin{example}
+10 points in a plane, of which exactly 4 are collinear. How many lines and how many triangles?
+
+\textbf{Solution.} Lines: $45-6+1=\mathbf{40}$. Triangles: $120-4=\mathbf{116}$.
+\end{example}
+
+\begin{example}
+How many rectangles and how many squares are on a chessboard?
+
+\textbf{Solution.} Rectangles: $\C92^2=36^2=\mathbf{1296}$. Squares: $1+4+9+\dots+64=\mathbf{204}$.
+\end{example}
+
+\begin{example}
+Shortest paths from $(0,0)$ to $(5,4)$: how many in total, and how many pass through $(2,2)$?
+
+\textbf{Solution.} Total $\C94=\mathbf{126}$. Through $(2,2)$: $\C42\cdot\C{5}{2}=6\cdot10=\mathbf{60}$.
+\end{example}
+
+\begin{exercises}
+\item 12 points lie in a plane, 5 of which are collinear (no other 3 collinear). How many triangles can be formed?
+\item How many rectangles are there in a $5\times4$ grid of unit squares?
+\item How many triangles can be formed using vertices of a regular decagon such that no side of the triangle is a side of the decagon?
+\item A set of 4 parallel lines intersects another set of 5 parallel lines. How many parallelograms are formed?
+\item How many shortest paths from $(0,0)$ to $(6,6)$ avoid the point $(3,3)$?
+\end{exercises}
+
+%=====================================================================
+\chapter{Catalan Numbers}
+
+\[C_n=\frac{1}{n+1}\C{2n}{n}=\C{2n}{n}-\C{2n}{n-1}:\qquad 1,\ 1,\ 2,\ 5,\ 14,\ 42,\ 132,\ \dots\quad (n=0,1,2,\dots)\]
+
+\begin{why}[Why it works: the reflection principle]
+Count paths from $(0,0)$ to $(n,n)$ (R/U steps) that never go \emph{above} the diagonal $y=x$.
+Total paths: $\C{2n}n$. A bad path touches the line $y=x+1$ at some first point. Reflect the part of the
+path \emph{after} that first touch across $y=x+1$ (swap R and U). The reflected path ends at $(n-1,n+1)$.
+This reflection is a one-to-one correspondence between bad paths and \emph{all} paths to $(n-1,n+1)$, of which
+there are $\C{2n}{n-1}$. So good paths $=\C{2n}n-\C{2n}{n-1}=\frac1{n+1}\C{2n}n$.
+\end{why}
+
+The same number appears in many disguises -- the skill is \textbf{recognising} them:
+\begin{itemize}
+\item Balanced arrangements of $n$ pairs of brackets.
+\item Lattice paths from $(0,0)$ to $(n,n)$ that never go above the diagonal.
+\item A queue of $2n$ people, $n$ holding \Rs100 and $n$ holding \Rs200 notes, ticket \Rs100, cashier starts with no change: orders in which the cashier never runs out of change.
+\item Ways to triangulate a convex polygon with $n+2$ sides.
+\item $2n$ people round a table shaking hands in pairs with no arms crossing.
+\end{itemize}
+Common thread: a sequence of $n$ ``up'' and $n$ ``down'' moves where the running count must never go negative.
+
+\begin{example}
+How many balanced strings of 3 pairs of parentheses are there?
+
+\textbf{Solution.} $C_3=5$: ((())), (()()), (())(), ()(()), ()()().
+\end{example}
+
+\begin{example}
+8 people queue for a \Rs100 ticket; 4 have \Rs100 notes and 4 have \Rs200 notes. The cashier starts with no
+change. Treating people with the same note as identical, how many orderings let the cashier always give change?
+
+\textbf{Solution.} At every point, \Rs100-holders so far $\ge$ \Rs200-holders so far. This is $C_4=\mathbf{14}$.
+(If people are distinct, multiply by $4!\cdot4!$.)
+\end{example}
+
+\begin{exercises}
+\item In how many ways can a convex hexagon be divided into triangles by non-intersecting diagonals?
+\item 10 people queue with 5 holding \Rs100 and 5 holding \Rs200 notes (otherwise as in the example). How many valid orderings (same-note people identical)?
+\item How many shortest paths from $(0,0)$ to $(5,5)$ never go above the line $y=x$?
+\item 6 people sit around a round table and simultaneously shake hands in 3 pairs so that no two handshakes cross. How many ways?
+\end{exercises}
+
+%=====================================================================
+\chapter{Pigeonhole Principle}
+
+If more than $n\cdot k$ items go into $n$ boxes, some box has at least $k+1$ items.
+General form: if $N$ items go into $n$ boxes, some box has at least $\lceil N/n\rceil$ items.
+In aptitude tests this appears as \textbf{``minimum number to guarantee''} questions.
+
+\textbf{Method: build the worst case.} Imagine the most unlucky sequence of draws that still
+fails, then add 1. In proofs, the art is choosing the right ``boxes''.
+
+\begin{example}
+A drawer has 10 black and 10 white socks. Minimum socks drawn (in the dark) to guarantee a matching pair?
+
+\textbf{Solution.} Worst case: 1 black, 1 white. The next one must match. $\mathbf{3}$.
+To guarantee a \emph{black} pair: worst case all 10 white, then 2 black $\Rightarrow \mathbf{12}$.
+\end{example}
+
+\begin{example}
+How many people are needed to guarantee that two share a birth month?
+
+\textbf{Solution.} 12 people could all differ; $\mathbf{13}$ guarantees a repeat.
+\end{example}
+
+\begin{exercises}
+\item How many people must be in a room to guarantee that at least 3 share a birth month?
+\item Show that if 6 numbers are chosen from $\{1,2,\dots,10\}$, two of them must sum to 11.
+\item A bag has 5 red, 7 blue and 9 green balls. (a) Minimum draws to guarantee 4 of the same colour? (b) Minimum draws to guarantee at least one of each colour?
+\end{exercises}
+
+%=====================================================================
+\chapter{Number-Based Counting}
+
+\section{Sum of all numbers formed by permuting digits}
+With $n$ distinct non-zero digits used once each, each digit appears $(n-1)!$ times in every place:
+\[\text{Sum}=(n-1)!\times(\text{sum of digits})\times\underbrace{111\ldots1}_{n}.\]
+If 0 is among the digits, subtract the ``numbers'' that start with 0 (compute them the same way with $n-1$ digits).
+
+\begin{why}
+Fix a place, say the units place. By symmetry each of the $n$ digits sits there in exactly $(n-1)!$ of
+the $n!$ arrangements. So the units column adds up to $(n-1)!\times$(digit sum). The tens column is the same
+times 10, and so on, giving the factor $1+10+100+\cdots=111\ldots1$.
+\end{why}
+
+\section{Highest power of a prime in $n!$ (Legendre)}
+\[\text{Power of } p \text{ in } n! = \left\lfloor\frac np\right\rfloor+\left\lfloor\frac n{p^2}\right\rfloor+\left\lfloor\frac n{p^3}\right\rfloor+\cdots\]
+$\lfloor n/p\rfloor$ counts the multiples of $p$ up to $n$ (one factor each); multiples of $p^2$ contribute an
+extra factor, counted by $\lfloor n/p^2\rfloor$, and so on.
+Trailing zeros of $n!$ = power of 5 (there are always more 2's).
+For a composite like $12=2^2\cdot3$: find powers of 2 and 3, then take $\min(\lfloor e_2/2\rfloor,\ e_3)$.
+
+\begin{example}
+Find the sum of all 4-digit numbers formed using 1, 2, 3, 4 without repetition. Repeat with 0, 1, 2, 3.
+
+\textbf{Solution.} $3!\times10\times1111=\mathbf{66660}$.\\
+With 0, 1, 2, 3: all 24 arrangements give $6\times6\times1111=39996$. Arrangements starting with 0
+are 3-digit arrangements of 1, 2, 3: $2!\times6\times111=1332$. Answer $39996-1332=\mathbf{38664}$.
+\end{example}
+
+\begin{example}
+Number of trailing zeros in $100!$, and the highest power of 12 dividing $40!$.
+
+\textbf{Solution.} $\lfloor100/5\rfloor+\lfloor100/25\rfloor=20+4=\mathbf{24}$.\\
+In $40!$: power of 2 $=20+10+5+2+1=38$; power of 3 $=13+4+1=18$. $12^k$ needs $2^{2k}3^k$:
+$\min(19,18)=\mathbf{18}$.
+\end{example}
+
+\begin{exercises}
+\item Find the sum of all 3-digit numbers formed using 2, 5, 7 without repetition.
+\item How many trailing zeros does $250!$ have?
+\item What is the highest power of 2 that divides $30!$?
+\item What is the highest power of 3 that divides $50!$?
+\item How many times is the digit 3 written when listing the integers from 1 to 100?
+\item How many digits are used to number the pages of a 250-page report?
+\end{exercises}
+%=====================================================================
+\part{Advanced Counting}
+%=====================================================================
+\chapter{Recurrence Relations}\label{ch:rec}
+
+When a direct formula is hard to see, count \textbf{small cases} and find how the answer for size $n$
+depends on answers for smaller sizes. This is the single most powerful technique in combinatorics,
+and it is also how dynamic programming works in coding rounds.
+
+\begin{idea}[The recipe]
+\begin{enumerate}[nosep]
+\item Let $a_n$ be the answer for size $n$.
+\item Look at the \textbf{first (or last) step} and split into cases by what happens there.
+\item In each case, recognise the rest as a smaller instance of the same problem.
+\item Write down base cases ($a_0$, $a_1$, \dots) by hand, then iterate. In an exam, a table of 8--10 values takes under a minute.
+\end{enumerate}
+\end{idea}
+
+\section{The Fibonacci family}
+\begin{example}[staircase]
+You climb a 10-step staircase taking 1 or 2 steps at a time. How many ways?
+
+\textbf{Solution.} Look at the \emph{last} move. If it was a 1-step, before it you climbed $n-1$ steps
+($a_{n-1}$ ways); if it was a 2-step, you climbed $n-2$ ($a_{n-2}$ ways). So $a_n=a_{n-1}+a_{n-2}$,
+with $a_1=1$, $a_2=2$:
+\[1,\ 2,\ 3,\ 5,\ 8,\ 13,\ 21,\ 34,\ 55,\ 89.\qquad a_{10}=\mathbf{89}.\]
+\end{example}
+
+\begin{example}[binary strings]
+How many binary strings of length 8 have no two consecutive 1s?
+
+\textbf{Solution.} Look at the first character. If it is 0, the rest is any valid string of length $n-1$.
+If it is 1, the next must be 0, and the rest is any valid string of length $n-2$.
+So $b_n=b_{n-1}+b_{n-2}$, $b_1=2$ (0, 1), $b_2=3$ (00, 01, 10):
+\[2,\ 3,\ 5,\ 8,\ 13,\ 21,\ 34,\ 55.\qquad b_8=\mathbf{55}.\]
+\end{example}
+
+\begin{example}[domino tiling]
+In how many ways can a $2\times 8$ board be tiled with $1\times2$ dominoes?
+
+\textbf{Solution.} Look at the leftmost column. Either a vertical domino covers it (leaving $2\times(n-1)$),
+or two horizontal dominoes stacked cover the first two columns (leaving $2\times(n-2)$). A single horizontal
+domino can't be alone -- the cell below it would be stranded. So $t_n=t_{n-1}+t_{n-2}$, $t_1=1$, $t_2=2$, and
+$t_8=\mathbf{34}$.
+\end{example}
+
+\begin{why}[Seeing the common structure]
+All three problems are ``sequences built from pieces of size 1 and size 2''. Whenever the objects are
+sequences of pieces, the recurrence is $a_n=\sum_{\text{piece sizes } s} a_{n-s}$. With sizes $\{1,2,3\}$
+you get the ``Tribonacci'' recurrence $a_n=a_{n-1}+a_{n-2}+a_{n-3}$.
+\end{why}
+
+\section{Other classic recurrences}
+\begin{itemize}
+\item \textbf{Tower of Hanoi:} $h_n=2h_{n-1}+1$ (move $n-1$ disks off, move the largest, move $n-1$ back on) $\Rightarrow h_n=2^n-1$.
+\item \textbf{Regions made by $n$ lines} (no two parallel, no three concurrent): the $n$-th line crosses the
+previous $n-1$ lines at $n-1$ points, is cut into $n$ pieces, and each piece splits a region in two:
+$r_n=r_{n-1}+n \Rightarrow r_n=1+\frac{n(n+1)}2$.
+\item \textbf{Regions made by $n$ circles} (each pair meets in 2 points, no three through a point): the $n$-th circle meets the
+others in $2(n-1)$ points, is cut into $2(n-1)$ arcs: $c_n=c_{n-1}+2(n-1)$, $c_1=2 \Rightarrow c_n=n^2-n+2$.
+\item \textbf{Derangements:} $D_n=(n-1)(D_{n-1}+D_{n-2})$ (Chapter 8).
+\item \textbf{Catalan:} $C_{n+1}=\sum_{k=0}^{n}C_kC_{n-k}$ (split at the bracket that matches the first one).
+\end{itemize}
+
+\section{Recurrences with states}
+Sometimes one sequence isn't enough; track several ``states''.
+
+\begin{example}[strings with a forbidden pattern]
+How many strings of length $n$ over $\{A,B,C\}$ have no two consecutive A's? Find the answer for $n=4$.
+
+\textbf{Solution.} Let $x_n$ = valid strings ending in A, $y_n$ = valid strings ending in B or C.
+\[x_n=y_{n-1}\ (\text{append A only after a non-A}),\qquad y_n=2(x_{n-1}+y_{n-1}).\]
+Start: $x_1=1$, $y_1=2$. Then $(x_2,y_2)=(2,6)$, $(x_3,y_3)=(6,16)$, $(x_4,y_4)=(16,44)$. Answer for $n=4$: $16+44=\mathbf{60}$.
+Eliminating $x$ gives a single recurrence $a_n=2a_{n-1}+2a_{n-2}$ (check: $3, 8, 22, 60$).
+\end{example}
+
+\section{Solving linear recurrences (closed forms)}
+For $a_n=pa_{n-1}+qa_{n-2}$, solve the \textbf{characteristic equation} $x^2=px+q$. If the roots $\alpha\neq\beta$, then
+$a_n=A\alpha^n+B\beta^n$, with $A,B$ fixed by the base cases. (Repeated root $\alpha$: $a_n=(A+Bn)\alpha^n$.)
+For Fibonacci, $x^2=x+1$ gives $\alpha,\beta=\frac{1\pm\sqrt5}2$ -- the golden ratio appears.
+In aptitude tests you almost never need the closed form; iterate the table instead. In quant interviews,
+knowing that solutions grow like $\alpha^n$ (the largest root) is often enough.
+
+\begin{trap}
+Get the base cases right -- most errors are there. Check by brute-forcing $n=1,2,3$ by hand. For the staircase,
+$a_0=1$ (one way to climb zero steps: do nothing) makes the recurrence work from $n=2$.
+\end{trap}
+
+\begin{exercises}
+\item In how many ways can you climb 8 steps if each move is 1, 2 or 3 steps?
+\item How many binary strings of length 10 have no three consecutive 1s? (Hint: condition on how the string starts: 0, 10, 110.)
+\item How many strings of length 7 over $\{A,B,C\}$ have no two consecutive A's?
+\item What is the maximum number of regions into which 8 straight lines can divide a plane?
+\item What is the minimum number of moves to solve the Tower of Hanoi with 7 disks?
+\item What is the maximum number of regions into which 5 circles can divide a plane?
+\item (Challenge) In how many ways can a $3\times6$ board be tiled with $1\times2$ dominoes? (Hint: $f(2)=3$, $f(4)=11$ and $f(n)=4f(n-2)-f(n-4)$ with $f(0)=1$.)
+\end{exercises}
+
+%=====================================================================
+\chapter{Generating Functions}\label{ch:gf}
+
+A generating function turns a counting question into polynomial multiplication. It shines when variables
+have \textbf{irregular constraints} (upper bounds, only even values, coin denominations, dice).
+
+\begin{idea}[The dictionary]
+For each variable, write a polynomial whose exponents are the \emph{allowed values}:
+\begin{center}
+\begin{tabular}{ll}
+Any value $\ge0$ & $1+x+x^2+\cdots=\dfrac1{1-x}$\\
+Between 0 and $m$ & $1+x+\cdots+x^m=\dfrac{1-x^{m+1}}{1-x}$\\
+At least 2 & $x^2+x^3+\cdots=\dfrac{x^2}{1-x}$\\
+Even only & $1+x^2+x^4+\cdots=\dfrac{1}{1-x^2}$\\
+A die face & $x+x^2+\cdots+x^6$\\
+\end{tabular}
+\end{center}
+Multiply the polynomials. The number of solutions with total $n$ is the \textbf{coefficient of $x^n$}.
+\end{idea}
+
+\begin{why}
+When you expand $(1+x+x^2)(1+x)$, each term of the product is $x^{a}\cdot x^{b}=x^{a+b}$, one term for every
+choice $(a,b)$. Collecting like powers groups together exactly the choices with the same total $a+b$. So
+the coefficient of $x^n$ \emph{counts} the choices whose values add to $n$.
+\end{why}
+
+\textbf{Two expansions you need:}
+\[\frac1{(1-x)^k}=\sum_{n\ge0}\C{n+k-1}{k-1}x^n \quad(\text{this \emph{is} stars and bars}),\qquad
+(1-x^m)^k=\sum_j(-1)^j\C kj x^{mj}.\]
+The second one, multiplied with the first, is how inclusion--exclusion for upper bounds falls out automatically.
+
+\begin{example}[three dice]
+In how many ways can three dice show a total of 10?
+
+\textbf{Solution.} We need the coefficient of $x^{10}$ in $(x+\cdots+x^6)^3=x^3(1-x^6)^3(1-x)^{-3}$, i.e.\ the
+coefficient of $x^7$ in $(1-3x^6+\cdots)(1-x)^{-3}$:
+\[\C{7+2}{2}-3\C{1+2}{2}=36-9=\mathbf{27}.\]
+(The famous Galileo puzzle: 10 comes up 27 ways, 9 only 25 ways, although both have six ``partitions''.)
+\end{example}
+
+\begin{example}[coins]
+In how many ways can you make \Rs10 using \Rs1, \Rs2 and \Rs5 coins?
+
+\textbf{Solution.} Coefficient of $x^{10}$ in $\frac1{(1-x)(1-x^2)(1-x^5)}$. By hand, case on the \Rs5 coins:
+0 fives $\Rightarrow$ make 10 from 1s and 2s: twos $=0..5$, 6 ways; 1 five $\Rightarrow$ make 5: twos $=0..2$, 3 ways;
+2 fives: 1 way. Total $\mathbf{10}$.
+\end{example}
+
+\begin{shortcut}
+For coin problems, a quick table (the coding-round ``coin change'' DP) beats algebra: start with an array
+$[1,0,0,\dots]$ and for each coin $c$ do $a[i]\mathrel{+}=a[i-c]$ for $i$ increasing.
+\end{shortcut}
+
+\begin{example}[mixed constraints]
+A fruit seller packs 10 fruits from apples, bananas and mangoes. Apples come in pairs (so an even number),
+at most 3 bananas, and at least 2 mangoes. How many packs?
+
+\textbf{Solution.} Coefficient of $x^{10}$ in $(1+x^2+x^4+\cdots)(1+x+x^2+x^3)(x^2+x^3+\cdots)$.
+Equivalently, list by apples $a$: we need $b\le3$ and $a+b\le8$. $a=0,2,4$: 4 choices of $b$ each; $a=6$: $b\le2$, 3 choices; $a=8$: $b=0$, 1.
+Total $4+4+4+3+1=\mathbf{16}$.
+\end{example}
+
+\section{Partitions and Euler's theorem}
+The number of ways to write $n$ as a sum of positive integers \emph{ignoring order} has the generating function
+$\prod_{k\ge1}\frac1{1-x^k}$. Partitions into \emph{distinct} parts: $\prod(1+x^k)$. Partitions into \emph{odd} parts:
+$\prod_{k\text{ odd}}\frac1{1-x^k}$. Since $1+x^k=\frac{1-x^{2k}}{1-x^k}$, the two products are equal (the even
+factors cancel) -- \textbf{Euler's theorem}: distinct-part partitions and odd-part partitions are equinumerous.
+
+\begin{example}
+Check Euler's theorem for $n=7$.
+
+\textbf{Solution.} Distinct parts: 7, 6+1, 5+2, 4+3, 4+2+1 $\to5$. Odd parts: 7, 5+1+1, 3+3+1, 3+1+1+1+1, 1$\times$7 $\to5$. \checkmark
+\end{example}
+
+\begin{exercises}
+\item In how many ways can four dice show a total of 15?
+\item In how many ways can you pay \Rs20 using \Rs1, \Rs2, \Rs5 and \Rs10 coins?
+\item How many solutions does $a+b+c+d=20$ have with each variable an integer from 0 to 8?
+\item With three dice, in how many ways can the total be 9? Compare with the total 10.
+\item List and count the partitions of 8 into distinct parts and into odd parts.
+\item Four friends each take 0, 1 or 2 laddoos from a plate, 5 laddoos in all. In how many ways? (Find the coefficient of $x^5$ in $(1+x+x^2)^4$.)
+\end{exercises}
+
+%=====================================================================
+\chapter{Symmetry: Burnside's Lemma}\label{ch:burn}
+
+``How many different necklaces can be made with 6 beads, each red or blue?'' The answer is \textbf{not}
+$2^6/6$ (that isn't even an integer). Some colourings look the same after fewer rotations than others, so
+simple division fails. Burnside's lemma fixes this.
+
+\begin{idea}[Burnside's lemma]
+\[\text{Number of distinct objects}=\frac{1}{|G|}\sum_{g\in G}\text{Fix}(g),\]
+where $G$ is the set of symmetries (rotations, and reflections if allowed) and $\text{Fix}(g)$ is the number
+of colourings that look \emph{unchanged} under symmetry $g$. In words: \textbf{average the number of colourings
+fixed by each symmetry}.
+\end{idea}
+
+\begin{why}
+Count pairs (symmetry, colouring it fixes) in two ways. Grouped by symmetry, the count is $\sum_g\text{Fix}(g)$.
+Grouped by colouring: a colouring with a ``large'' family of look-alikes (its orbit) is fixed by few
+symmetries, and a very symmetric colouring has few look-alikes but is fixed by many symmetries. Precisely,
+(orbit size)$\times$(number of symmetries fixing it) $=|G|$. So each orbit contributes exactly $|G|$ pairs
+in total, and dividing by $|G|$ counts the orbits.
+\end{why}
+
+\textbf{How to compute Fix($g$):} break the positions into \textbf{cycles} under $g$ (positions that $g$ moves
+into each other). A colouring is fixed iff each cycle is a single colour. With $k$ colours,
+$\text{Fix}(g)=k^{\text{number of cycles}}$.
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+Object & Symmetries & Cycle facts\\\midrule
+$n$-bead necklace & $n$ rotations & rotation by $j$ has $\gcd(n,j)$ cycles\\
+$n$-bead bracelet & $n$ rotations $+$ $n$ reflections & $n$ odd: each reflection has $\frac{n+1}2$ cycles\\
+ & & $n$ even: half have $\frac n2+1$, half have $\frac n2$\\
+Cube faces & 24 rotations & see example\\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Necklace formula:} with $k$ colours and $n$ beads, $\dfrac1n\sum_{d\mid n}\varphi(d)\,k^{n/d}$, where $\varphi$ is Euler's totient.
+
+\begin{example}[square corners]
+Colour the 4 corners of a square, each black or white. How many distinct colourings up to rotation?
+
+\textbf{Solution.} Rotations: $0^\circ$ (4 cycles, $2^4=16$ fixed), $90^\circ$ and $270^\circ$ (1 cycle each, $2$ fixed),
+$180^\circ$ (2 cycles, $4$ fixed). Average: $\frac{16+2+4+2}{4}=\mathbf{6}$.
+(Check: all white, all black, one black, two adjacent black, two opposite black, three black.)
+\end{example}
+
+\begin{example}[necklace and bracelet]
+6 beads, each red or blue. (a) Necklaces up to rotation? (b) Bracelets (rotation and flipping)?
+
+\textbf{Solution.} (a) Rotation by $j=0,1,2,3,4,5$ has $\gcd(6,j)=6,1,2,3,2,1$ cycles:
+\[\tfrac16(2^6+2+2^2+2^3+2^2+2)=\tfrac{84}6=\mathbf{14}.\]
+(b) Add 6 reflections: 3 pass through two opposite beads (4 cycles: $2^4=16$ each), 3 pass between beads (3 cycles: $8$ each):
+\[\tfrac1{12}(84+48+24)=\tfrac{156}{12}=\mathbf{13}.\]
+\end{example}
+
+\begin{example}[cube]
+How many ways to colour the faces of a cube with 2 colours, up to rotation?
+
+\textbf{Solution.} The cube has 24 rotations:
+\begin{center}\small
+\begin{tabular}{lccc}
+\toprule
+Rotation type & How many & Face cycles & Fixed ($k=2$)\\\midrule
+Identity & 1 & 6 & 64\\
+$90^\circ/270^\circ$ about face axes & 6 & 3 (top, bottom, a 4-cycle) & $8$\\
+$180^\circ$ about face axes & 3 & 4 & $16$\\
+$120^\circ/240^\circ$ about vertex diagonals & 8 & 2 & $4$\\
+$180^\circ$ about edge axes & 6 & 3 & $8$\\
+\bottomrule
+\end{tabular}
+\end{center}
+$\frac{64+48+48+32+48}{24}=\frac{240}{24}=\mathbf{10}$.
+\end{example}
+
+\begin{trap}
+Burnside counts colourings where colours \emph{may} repeat or be unused. For ``exactly 3 red and 3 blue'', $\text{Fix}(g)$
+must count only fixed colourings with that exact colour count -- do it by hand for each $g$.
+\end{trap}
+
+\begin{exercises}
+\item How many necklaces (rotation only) of 5 beads can be made using 3 colours?
+\item How many bracelets (rotation and reflection) of 5 beads can be made using 3 colours?
+\item How many ways can the faces of a cube be coloured with 3 colours (repetition allowed), up to rotation?
+\item Each cell of a $3\times3$ grid is coloured black or white. How many distinct patterns are there up to rotation of the grid?
+\item How many necklaces (rotation only) of 6 beads have exactly 3 red and 3 blue beads?
+\item How many bracelets of 4 beads can be made from 3 colours?
+\end{exercises}
+
+%=====================================================================
+\chapter{Bijections, Identities, Stirling Numbers and Partitions}\label{ch:bij}
+
+\section{Double counting}
+If you count the same set in two different ways, the answers are equal. This proves identities and,
+more usefully in exams, lets you swap a hard sum for a single binomial coefficient.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Identity & Story\\\midrule
+$\sum_k\C nk=2^n$ & choose any subset\\
+$\sum_k k\C nk=n2^{n-1}$ & committee with a chairperson: choose chair, then any subset of the rest\\
+$\sum_k\C mk\C n{r-k}=\C{m+n}r$ & (Vandermonde) choose $r$ from $m$ men and $n$ women\\
+$\sum_k\C nk^2=\C{2n}n$ & Vandermonde with $m=n=r$, using $\C nk=\C n{n-k}$\\
+$\sum_{i=r}^{n}\C ir=\C{n+1}{r+1}$ & (hockey stick) choose $r+1$ from $\{0,\dots,n\}$; condition on the largest\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{example}
+Evaluate $\sum_{k=0}^{n} k\C nk$ for $n=6$ without adding terms.
+
+\textbf{Solution.} Committees with a chair from 6 people: $6\cdot2^5=\mathbf{192}$.
+(Check: $6+30+60+60+30+6=192$.)
+\end{example}
+
+\section{The non-consecutive selection bijection}
+\textbf{Choose $k$ numbers from $\{1,\dots,n\}$ with no two consecutive: $\C{n-k+1}k$.}
+\begin{why}
+If $a_1<a_2<\dots<a_k$ have gaps of at least 2, then $b_i=a_i-(i-1)$ are strictly increasing numbers from
+$\{1,\dots,n-k+1\}$ with no restriction. The map is reversible ($a_i=b_i+i-1$), so the two sets have the same size.
+\end{why}
+Around a circle of $n$ seats, choosing $k$ with no two adjacent: $\dfrac{n}{n-k}\C{n-k}{k}$.
+
+\begin{example}
+In how many ways can 3 numbers be chosen from 1 to 10 so that no two are consecutive?
+
+\textbf{Solution.} $\C{10-3+1}3=\C83=\mathbf{56}$.
+\end{example}
+
+\section{Stirling numbers of the second kind: distinct objects into identical boxes}
+$S(n,k)$ = number of ways to split $n$ distinct objects into $k$ non-empty \emph{unlabelled} groups.
+\[S(n,k)=k\,S(n-1,k)+S(n-1,k-1).\]
+(Object $n$ either joins one of the $k$ groups formed by the others, or forms a group on its own.)
+\begin{center}\small
+\begin{tabular}{c|ccccccc}
+$n\backslash k$ & 1&2&3&4&5&6&7\\\hline
+1&1\\
+2&1&1\\
+3&1&3&1\\
+4&1&7&6&1\\
+5&1&15&25&10&1\\
+6&1&31&90&65&15&1\\
+7&1&63&301&350&140&21&1\\
+\end{tabular}
+\end{center}
+Connections: $S(n,2)=2^{n-1}-1$; onto functions to $k$ labelled people $=k!\,S(n,k)$ (Chapter~\ref{ch:ie});
+the \textbf{Bell number} $B_n=\sum_kS(n,k)$ counts all ways to partition a set: $1,1,2,5,15,52,203,\dots$
+
+\section{Stirling numbers of the first kind: round tables}
+$c(n,k)$ = ways to seat $n$ people at $k$ identical round tables, none empty (equivalently, permutations of
+$n$ with $k$ cycles). $c(n,k)=(n-1)\,c(n-1,k)+c(n-1,k-1)$: person $n$ either sits to the left of one of the other
+$n-1$ people, or sits alone. Small values: $c(n,1)=(n-1)!$, $c(4,2)=11$, $c(5,2)=50$, $c(5,3)=35$.
+
+\section{Integer partitions}
+$p(n)$ = ways to write $n$ as an unordered sum of positive integers (identical objects into identical boxes).
+\begin{center}\small
+\begin{tabular}{c|cccccccccc}
+$n$&1&2&3&4&5&6&7&8&9&10\\\hline
+$p(n)$&1&2&3&5&7&11&15&22&30&42
+\end{tabular}
+\end{center}
+\textbf{Conjugation bijection:} draw a partition as rows of dots (a Ferrers diagram); reading columns instead
+of rows gives another partition. This shows ``partitions into at most $k$ parts'' $=$ ``partitions with largest part at most $k$''.
+
+\begin{example}
+In how many ways can 6 different gifts be packed into 3 identical bags with no bag empty?
+
+\textbf{Solution.} $S(6,3)=\mathbf{90}$. (If the bags are given to 3 different people: $3!\times90=540$, matching
+the onto-function count $3^6-3\cdot2^6+3=540$.)
+\end{example}
+
+\begin{exercises}
+\item Evaluate $\sum_{k=0}^{10}k\C{10}k$.
+\item Evaluate $\C80^2+\C81^2+\cdots+\C88^2$.
+\item An analyst must pick 4 of the next 15 days for site visits, with no two visits on consecutive days. How many ways?
+\item In how many ways can 7 different jobs be split among 3 identical teams, each team getting at least one job?
+\item In how many ways can the set $\{1,2,3,4,5\}$ be partitioned into non-empty subsets?
+\item In how many ways can 5 people be seated at 2 identical round tables, neither table empty?
+\item In how many ways can 10 be written as a sum of positive integers, ignoring order?
+\item Evaluate $\C44+\C54+\C64+\cdots+\C{12}4$.
+\item 10 chairs stand around a round table. In how many ways can 3 people choose chairs so that no two sit next to each other? (Count sets of chairs, ignoring who sits where.)
+\end{exercises}
+
+%=====================================================================
+\chapter{Mixed Counting Practice (Exam Simulation)}
+These are not labelled by chapter -- identifying the model is part of the test. Aim for under
+90 seconds each.
+
+\begin{exercises}
+\item In how many arrangements of ALLAHABAD are all the A's together?
+\item How many 6-digit numbers have their digits strictly increasing from left to right?
+\item How many 6-digit numbers have digits that never decrease from left to right?
+\item 4 identical red flags and 3 identical green flags are placed in a row so that no two green flags are adjacent. How many arrangements?
+\item How many 4-letter codes (letters A--Z, repetition allowed) contain at least one vowel?
+\item In how many ways can 8 people be split into two teams of 4 for a match?
+\item In how many ways can two squares be chosen on a chessboard so that they are neither in the same row nor in the same column?
+\item A lift with 5 people stops at 7 floors. In how many ways can they get off if no two get off at the same floor?
+\item A 4-digit PIN uses digits 0--9 (leading zeros allowed). How many PINs use exactly two distinct digits?
+\item How many binary strings of length 12 have no two consecutive 0s?
+\end{exercises}
+%=====================================================================
+\part{Arithmetic Aptitude}
+%=====================================================================
+\chapter{Percentages}\label{ch:pct}
+
+\section{The multiplier mindset}
+Never think ``add 20\%''. Think ``multiply by 1.2''. A $r\%$ increase is a multiplier of $(1+\frac r{100})$; a
+$r\%$ decrease is $(1-\frac r{100})$. Successive changes \emph{multiply}:
+\[\text{Net multiplier}=(1+a)(1+b)(1+c)\cdots\qquad\Rightarrow\qquad\text{two changes: } a+b+\frac{ab}{100}\ \%.\]
+
+\begin{why}
+$(1+\frac a{100})(1+\frac b{100})=1+\frac{a+b}{100}+\frac{ab}{100^2}$. The cross term $\frac{ab}{100}$\% is
+``the change on the change''. With $a=+20$, $b=-20$: $20-20-4=-4\%$, which is why a 20\% rise followed by a 20\% fall
+leaves you 4\% poorer.
+\end{why}
+
+\section{Fraction--percent table (memorise)}
+\begin{center}\small
+\begin{tabular}{cccccccccc}
+\toprule
+$\frac12$&$\frac13$&$\frac14$&$\frac15$&$\frac16$&$\frac17$&$\frac18$&$\frac19$&$\frac1{11}$&$\frac1{12}$\\
+50\%&33.33\%&25\%&20\%&16.67\%&14.29\%&12.5\%&11.11\%&9.09\%&8.33\%\\
+\bottomrule
+\end{tabular}
+\end{center}
+These turn ``what is 37.5\% of 640'' into ``$\frac38\times640=240$'' in two seconds.
+
+\section{Base effect and the ``reverse'' percentage}
+If A is $r\%$ more than B, then B is $\dfrac{r}{100+r}\times100\%$ \emph{less} than A. The base changes.
+
+\textbf{Constant expenditure rule.} If price rises by $r\%$, consumption must fall by $\frac{r}{100+r}\times100\%$
+to keep spending constant (since price $\times$ quantity is fixed, the multipliers must cancel: $(1+r)(1-s)=1$).
+
+\textbf{Percent vs percentage points.} If the repo rate goes from 6.5\% to 6\%, it fell by 0.5 \emph{percentage points},
+which is a $\frac{0.5}{6.5}=7.69\%$ fall. Finance interviews love this distinction.
+
+\begin{example}[real life: fuel prices]
+Petrol price rises 25\%. By what percentage should a household cut consumption so its fuel bill is unchanged?
+
+\textbf{Solution.} $\frac{25}{125}=\frac15=\mathbf{20\%}$. (Multipliers: $1.25\times0.8=1$.)
+\end{example}
+
+\begin{example}
+A town's population grows 10\% in year 1, 20\% in year 2, and falls 10\% in year 3. Net change?
+
+\textbf{Solution.} $1.1\times1.2\times0.9=1.188\Rightarrow$ \textbf{+18.8\%}.
+\end{example}
+
+\begin{example}[elections]
+In a two-candidate election, 10\% of votes cast were invalid. The winner got 58\% of the valid votes and won by
+2880 votes. How many votes were cast?
+
+\textbf{Solution.} Margin $=58\%-42\%=16\%$ of valid votes $=2880\Rightarrow$ valid $=18000$. Valid is 90\% of total:
+total $=\mathbf{20000}$.
+\end{example}
+
+\begin{trap}
+Percentages of different bases can't be added. ``Sales rose 10\% in Q1 and 10\% in Q2'' is a 21\% rise, not 20\%.
+And an average of percentages is not the percentage of the totals unless the bases are equal.
+\end{trap}
+
+\begin{exercises}
+\item A's salary is 25\% more than B's. By what percentage is B's salary less than A's?
+\item The length of a rectangle increases by 20\% and its breadth decreases by 10\%. Percentage change in area?
+\item What single discount is equivalent to successive discounts of 20\% and 10\%?
+\item Rent is 30\% of a person's income. Income rises 20\% and rent rises 10\%. What percentage of the new income is the new rent?
+\item A number is increased by 40\% and then decreased by 40\%. The result is 168 less than the original. Find the number.
+\item The pass mark is 40\%. A student scores 178 and fails by 22 marks. What are the maximum marks?
+\item A bank's lending rate falls from 6.5\% to 6\%. State the fall in percentage points and in percent.
+\end{exercises}
+
+%=====================================================================
+\chapter{Profit, Loss and Discount}
+
+\section{Vocabulary and the master equation}
+Cost Price (CP), Selling Price (SP), Marked Price (MP, the list price). Profit\% is \textbf{always on CP};
+discount\% is \textbf{always on MP}.
+\[SP=CP\,(1+p)=MP\,(1-d)\qquad\Rightarrow\qquad\frac{MP}{CP}=\frac{1+p}{1-d}.\]
+This single equation answers most ``markup, discount, profit'' questions.
+
+\section{Standard results}
+\begin{itemize}
+\item \textbf{Same SP, $x\%$ profit on one and $x\%$ loss on the other} $\Rightarrow$ always a net \emph{loss} of $\frac{x^2}{100}\%$ (because the loss-making item had a higher CP).
+\item \textbf{CP of $a$ items $=$ SP of $b$ items} $\Rightarrow$ profit\% $=\frac{a-b}{b}\times100$.
+\item \textbf{False weights:} a dealer who gives $w$ grams instead of 1000 g while charging for 1 kg at CP makes
+$\frac{1000-w}{w}\times100\%$ profit (profit is measured against what he actually gave).
+\item \textbf{Successive discounts} $d_1,d_2$: single equivalent $=d_1+d_2-\frac{d_1d_2}{100}$.
+\end{itemize}
+
+\begin{why}[Why the false-weight formula divides by $w$]
+He receives the price of 1000 g but his cost is the cost of $w$ g. Profit $=$ cost of $(1000-w)$ g; profit\% is
+profit over \emph{his} cost, i.e.\ over $w$. Dividing by 1000 is the classic slip.
+\end{why}
+
+\begin{example}[retail markup]
+An electronics store marks goods 40\% above cost and offers a 15\% festive discount. Profit\%?
+
+\textbf{Solution.} $1.4\times0.85=1.19\Rightarrow\mathbf{19\%}$ profit.
+\end{example}
+
+\begin{example}[same selling price trap]
+Two phones are sold at \Rs24,000 each, one at 20\% profit and the other at 20\% loss. Net result?
+
+\textbf{Solution.} CPs: $24000/1.2=20000$ and $24000/0.8=30000$. Total CP $50000$, total SP $48000$: loss \Rs2000
+$=\mathbf{4\%}$ (matches $\frac{20^2}{100}$).
+\end{example}
+
+\begin{example}[dishonest dealer]
+A grocer claims to sell at cost price but uses a 900 g weight for 1 kg. Profit\%?
+
+\textbf{Solution.} $\frac{100}{900}=\mathbf{11.11\%}$.
+\end{example}
+
+\begin{example}
+The CP of 15 pens equals the SP of 12 pens. Profit\%?
+
+\textbf{Solution.} $\frac{15-12}{12}=\mathbf{25\%}$.
+\end{example}
+
+\begin{exercises}
+\item An article is sold at a 12\% loss. Had it been sold for \Rs180 more, there would have been an 8\% profit. Find the CP.
+\item A trader wants a 26\% profit after allowing a 10\% discount. By what percentage above CP should he mark the goods?
+\item A dealer claims to sell at cost price but gives 20\% less weight. Profit\%?
+\item A dealer marks goods 50\% above CP, uses an 800 g weight for 1 kg, and allows a 20\% discount. Profit\%?
+\item A vendor buys bananas at 11 for \Rs10 and sells them at 10 for \Rs11. Profit\%?
+\item What single discount is equivalent to successive discounts of 20\%, 15\% and 10\%?
+\item Selling an item for \Rs840 gives a 20\% profit. At what price should it be sold for a 35\% profit?
+\end{exercises}
+
+%=====================================================================
+\chapter{Simple and Compound Interest}
+
+\section{Formulas}
+\[\text{SI}=\frac{P\,R\,T}{100},\qquad A_{\text{CI}}=P\left(1+\frac{R}{100\,m}\right)^{mT}\ (m=\text{compounding periods per year}).\]
+\textbf{Effective annual rate} for nominal rate $R$ compounded $m$ times a year: $\left(1+\frac R{100m}\right)^m-1$.
+
+\textit{Real life:} A bank FD quoted at 7\% ``compounded quarterly'' actually earns $(1.0175)^4-1=7.19\%$ a year.
+That is why banks quote both a rate and an ``annualised yield''.
+
+\section{The CI--SI difference}
+On the same $P$ and $R$:
+\[\text{2 years: } \text{CI}-\text{SI}=P\left(\frac R{100}\right)^2,\qquad
+\text{3 years: } \text{CI}-\text{SI}=P\left(\frac R{100}\right)^2\left(3+\frac R{100}\right).\]
+\begin{why}
+In year 2, compound interest also earns interest on year 1's interest: $P\cdot r\cdot r$. In 3 years, the
+interest-on-interest terms are $3Pr^2$ (from years 1--2 feeding years 2--3) plus $Pr^3$ (interest on interest on interest).
+\end{why}
+
+\section{Doubling times}
+\begin{itemize}[nosep]
+\item SI: money doubles when total interest $=100\%$, i.e.\ in $\frac{100}{R}$ years; it becomes $k$ times in $\frac{100(k-1)}R$ years.
+\item CI: if money doubles in $t$ years, it becomes 4 times in $2t$, 8 times in $3t$ (multipliers compound).
+\item \textbf{Rule of 72:} at $R\%$ compounded annually, doubling time $\approx\frac{72}{R}$ years.
+\end{itemize}
+
+\section{Equal instalments}
+A loan $P$ at $r$ per year repaid by $n$ equal annual instalments $x$ (first one a year from now):
+the present value of the instalments equals the loan:
+\[P=\frac x{1+r}+\frac x{(1+r)^2}+\cdots+\frac x{(1+r)^n}.\]
+This is exactly the annuity/EMI logic from corporate finance.
+
+\begin{example}
+\Rs10,000 at 8\% for 2 years: compare CI and SI.
+
+\textbf{Solution.} CI amount $=10000\times1.08^2=11664$; SI amount $=11600$. Difference $\mathbf{\Rs64}=10000\times0.08^2$. \checkmark
+\end{example}
+
+\begin{example}
+A sum doubles in 5 years at simple interest. In how many years will it become 4 times? What if the interest were compound?
+
+\textbf{Solution.} SI: doubling means 100\% in 5 years, so 20\% a year; 4 times needs 300\%: \textbf{15 years}.
+CI: doubling every 5 years, so $\times4$ in \textbf{10 years}.
+\end{example}
+
+\begin{example}[EMI-style instalments]
+A loan of \Rs21,000 is repaid in 2 equal annual instalments at 10\% compound interest. Find the instalment.
+
+\textbf{Solution.} $\frac x{1.1}+\frac x{1.21}=21000\Rightarrow x\cdot\frac{1.1+1}{1.21}=21000\Rightarrow x=\frac{21000\times1.21}{2.1}=\mathbf{\Rs12,100}$.
+\end{example}
+
+\begin{exercises}
+\item The difference between CI and SI on a sum for 2 years at 10\% per annum is \Rs150. Find the sum.
+\item Find the difference between CI and SI on \Rs8,000 for 3 years at 10\% per annum.
+\item A sum amounts to \Rs1,210 in 2 years and \Rs1,331 in 3 years at compound interest. Find the rate and the principal.
+\item At what rate of simple interest does a sum triple in 12.5 years?
+\item What is the effective annual rate of 12\% per annum compounded monthly?
+\item A loan is repaid in 3 equal annual instalments of \Rs1,331 at 10\% compound interest. What was the loan amount?
+\item Using the rule of 72, roughly how long does money take to double at 9\% compounded annually? How close is this to the exact value?
+\end{exercises}
+
+%=====================================================================
+\chapter{Ratio, Proportion, Partnership and Ages}
+
+\section{Working with ratios}
+\begin{itemize}
+\item \textbf{The $k$-method:} if $A:B=3:5$, write $A=3k$, $B=5k$. Every ratio problem becomes one equation in $k$.
+\item \textbf{Chaining:} $A:B=2:3$ and $B:C=4:5$. Make the common term equal (LCM of 3 and 4 is 12): $A:B:C=8:12:15$.
+\item \textbf{Dividing in inverse ratio:} ``in the ratio $\frac12:\frac13:\frac14$'' $=$ multiply by LCM 12 $=6:4:3$.
+\item \textbf{Componendo--dividendo:} if $\frac ab=\frac cd$ then $\frac{a+b}{a-b}=\frac{c+d}{c-d}$.
+\end{itemize}
+
+\section{Partnership}
+Profit is shared in the ratio of \textbf{capital $\times$ time} (in a common unit, usually months). A working
+partner's salary is paid first; the rest is shared.
+
+\textit{Real life:} This is the same logic as weighted-average capital in a startup's cap table before
+priced rounds: money that stayed in longer earns a proportionally larger share.
+
+\section{Ages}
+Let present ages be $x$ (or $k$-multiples of a ratio). Translate ``$n$ years ago'' into $x-n$ for \emph{every} person.
+The difference between two ages never changes -- a quick consistency check.
+
+\begin{example}[partnership]
+A invests \Rs50,000 for 12 months, B invests \Rs75,000 for 8 months, and C invests \Rs60,000 for 6 months. The
+year's profit is \Rs1,30,000. Shares?
+
+\textbf{Solution.} Capital-months: $6,00,000 : 6,00,000 : 3,60,000=5:5:3$. Shares: \Rs50,000, \Rs50,000, \Rs30,000.
+\end{example}
+
+\begin{example}[ages]
+The ratio of two people's present ages is $3:4$. Five years ago it was $5:7$. Find their ages.
+
+\textbf{Solution.} $\frac{3k-5}{4k-5}=\frac57\Rightarrow21k-35=20k-25\Rightarrow k=10$: ages \textbf{30 and 40}.
+\end{example}
+
+\begin{example}[coins]
+A bag has \Rs1, 50 paise and 25 paise coins in the ratio $5:6:8$ by number. The total value is \Rs210. How many coins of each?
+
+\textbf{Solution.} Value ratio $=5\times1:6\times0.5:8\times0.25=5:3:2$, so values are \Rs105, \Rs63, \Rs42.
+Coins: 105, 126, 168.
+\end{example}
+
+\begin{exercises}
+\item If $A:B=3:4$, $B:C=6:7$ and $C:D=14:15$, find $A:D$.
+\item Divide \Rs7,800 among A, B, C in the ratio $\frac12:\frac13:\frac14$.
+\item Two numbers are in the ratio $3:5$. If 10 is added to each, the ratio becomes $5:7$. Find the numbers.
+\item A starts a business with \Rs40,000. After 4 months B joins with \Rs60,000. The year-end profit is \Rs34,000. Find each share.
+\item A father is three times as old as his son. After 15 years he will be twice as old. Find their present ages.
+\item The salaries of A and B are in the ratio $4:5$ and their expenses in the ratio $7:9$. Each saves \Rs5,000 a month. Find their salaries.
+\end{exercises}
+
+%=====================================================================
+\chapter{Mixtures and Alligation}
+
+\section{Weighted averages}
+If quantity $q_1$ has value $v_1$ and $q_2$ has $v_2$, the mixture's value is $\bar v=\frac{q_1v_1+q_2v_2}{q_1+q_2}$.
+``Value'' can be price per kg, concentration, marks, speed, interest rate -- anything averaged by quantity.
+
+\section{The alligation rule}
+To get a mean value $m$ by mixing a cheaper ingredient (value $c$) and a dearer one (value $d$):
+\[\frac{\text{Quantity of cheaper}}{\text{Quantity of dearer}}=\frac{d-m}{m-c}.\]
+\begin{center}
+\begin{tikzpicture}[node distance=1.2cm and 1.6cm]
+\node (c) {Cheaper $c$}; \node[right=3cm of c] (d) {Dearer $d$};
+\node[below=0.8cm of $(c)!0.5!(d)$] (m) {Mean $m$};
+\node[below left=0.8cm and 0.6cm of m] (q1) {$d-m$}; \node[below right=0.8cm and 0.6cm of m] (q2) {$m-c$};
+\draw[-{Latex}] (c) -- (m); \draw[-{Latex}] (d) -- (m); \draw[-{Latex}] (m) -- (q1); \draw[-{Latex}] (m) -- (q2);
+\end{tikzpicture}
+\end{center}
+\begin{why}
+Balance the deviations: $q_c(m-c)=q_d(d-m)$. Whatever the cheaper part ``loses'' relative to the mean must be
+made up by what the dearer part ``gains''. Rearranging gives the rule. It's the see-saw principle: the mean sits closer to the larger quantity.
+\end{why}
+
+\section{Repeated replacement}
+From a vessel of volume $V$ of pure liquid, remove $x$ litres and replace with water, $n$ times. Pure liquid left:
+\[V\left(1-\frac xV\right)^n.\]
+Each operation keeps the fraction $1-\frac xV$ of whatever pure liquid is there -- a compound \emph{decay}, just like CI with a negative rate.
+
+\begin{example}[rice blend]
+Rice at \Rs40/kg and \Rs55/kg is mixed to sell at a cost of \Rs45/kg. Ratio?
+
+\textbf{Solution.} Cheaper : dearer $=(55-45):(45-40)=10:5=\mathbf{2:1}$.
+\end{example}
+
+\begin{example}[replacement]
+A 40 L can of milk: 4 L is removed and replaced by water, three times. How much milk remains?
+
+\textbf{Solution.} $40\times(0.9)^3=\mathbf{29.16}$ L.
+\end{example}
+
+\begin{example}[mixing two mixtures]
+Vessel 1 has milk:water $=3:1$, vessel 2 has $5:3$. In what ratio should they be mixed to get $2:1$?
+
+\textbf{Solution.} Work with milk fractions: $\frac34$, $\frac58$, target $\frac23$. Cheaper (vessel 2) : dearer (vessel 1)
+$=(\frac34-\frac23):(\frac23-\frac58)=\frac1{12}:\frac1{24}=2:1$. So vessel 1 : vessel 2 $=\mathbf{1:2}$.
+\end{example}
+
+\begin{example}[milkman's profit]
+A milkman buys milk at \Rs60/L, adds water, and sells the mixture at \Rs60/L, making a 20\% profit. Ratio of milk to water?
+
+\textbf{Solution.} Effective CP of the mixture $=60/1.2=50$ per litre. Water costs 0. Alligation:
+water : milk $=(60-50):(50-0)=1:5$, so milk : water $=\mathbf{5:1}$.
+\end{example}
+
+\begin{trap}
+In mixture-of-mixtures problems, always alligate on \emph{one component's fraction} (e.g.\ milk fraction), never on the ratios themselves.
+\end{trap}
+
+\begin{exercises}
+\item Tea at \Rs320/kg is mixed with tea at \Rs420/kg to give a blend worth \Rs350/kg. In what ratio?
+\item 60 L of a mixture contains 20\% water. How much water must be added to make water 25\% of the mixture?
+\item An 80 L cask of wine: 8 L is drawn off and replaced with water, twice. Final ratio of wine to water?
+\item Two alloys have gold and copper in ratios $7:2$ and $7:11$. Equal weights are melted together. Ratio of gold to copper in the new alloy?
+\item The average weight of 8 people rises by 2.5 kg when one of them, weighing 65 kg, is replaced. Weight of the new person?
+\item How much water must be added to 48 L of milk costing \Rs60/L so that the mixture costs \Rs48/L?
+\item \Rs10,000 is invested partly at 6\% and partly at 9\% simple interest. The total annual interest is \Rs780. How much is at each rate?
+\end{exercises}
+
+%=====================================================================
+\chapter{Time and Work, Pipes and Cisterns}
+
+\section{The LCM (work-units) method}
+If A finishes a job in 12 days and B in 18, \textbf{let the job be LCM$(12,18)=36$ units}. Then A does 3 units/day
+and B does 2. Everything becomes integer arithmetic. Together: $36/5=7.2$ days.
+
+\begin{idea}[Core relations]
+\begin{itemize}[nosep]
+\item Rate $=\frac1{\text{time}}$; rates add when people work together.
+\item Efficiency is inversely proportional to time: if A is twice as efficient as B, A takes half the time.
+\item Together time for two: $\frac{xy}{x+y}$.
+\item \textbf{Man-days formula:} $\dfrac{M_1D_1H_1}{W_1}=\dfrac{M_2D_2H_2}{W_2}$ (men, days, hours/day, work done).
+\item \textbf{Wages} are shared in the ratio of \emph{work done}, not time spent.
+\item \textbf{Pipes:} inlets have positive rates, outlets/leaks negative rates. Same algebra.
+\end{itemize}
+\end{idea}
+
+\begin{why}
+``Work'' is just quantity $=$ rate $\times$ time, like distance $=$ speed $\times$ time. Choosing the total as the LCM
+just picks a convenient unit -- like measuring in paise instead of rupees to avoid fractions.
+\end{why}
+
+\begin{example}
+A, B and C together finish a job in 10 days; A and B together in 15 days. How long would C take alone?
+
+\textbf{Solution.} C's rate $=\frac1{10}-\frac1{15}=\frac1{30}$: \textbf{30 days}.
+\end{example}
+
+\begin{example}[man-days, real life: a project deadline]
+12 people working 8 hours a day complete $\frac25$ of a project in 10 days. How many \emph{additional} people are needed to
+finish the rest in 10 more days at 6 hours a day?
+
+\textbf{Solution.} $\frac{12\cdot10\cdot8}{2/5}=\frac{M\cdot10\cdot6}{3/5}\Rightarrow2400=100M\Rightarrow M=24$. Additional: \textbf{12}.
+\end{example}
+
+\begin{example}[alternate days]
+A can do a job in 10 days, B in 15. They work on alternate days, A starting. When is it done?
+
+\textbf{Solution.} Total 30 units; A 3/day, B 2/day; each 2-day cycle does 5 units. 6 cycles $=12$ days do exactly 30 units: \textbf{12 days}.
+(Watch out: if the total is not a multiple of the cycle, finish the leftover with whoever's turn it is.)
+\end{example}
+
+\begin{example}[pipes]
+Pipe A fills a tank in 20 min, B in 30 min, and C empties it in 15 min. All three are opened. Time to fill?
+
+\textbf{Solution.} $\frac1{20}+\frac1{30}-\frac1{15}=\frac{3+2-4}{60}=\frac1{60}$: \textbf{60 minutes}.
+\end{example}
+
+\begin{example}[wages]
+A can do a job in 6 days and B in 8 days. With C's help they finish it in 3 days and are paid \Rs3,200. How is it split?
+
+\textbf{Solution.} In 3 days A does $\frac36=\frac12$, B does $\frac38$, so C does $\frac18$. Split $4:3:1$: A \Rs1,600, B \Rs1,200, C \Rs400.
+\end{example}
+
+\begin{exercises}
+\item A is twice as efficient as B. Together they finish a job in 14 days. How long would A take alone?
+\item A can do a job in 20 days and B in 30 days. They start together, but A leaves 5 days before the job is finished. How many days does the job take?
+\item A, B and C can do a job in 12, 15 and 20 days. All three start, but C leaves after 2 days. How long does the job take in total?
+\item A pipe fills a tank in 6 hours, but because of a leak it takes 8 hours. How long would the leak take to empty a full tank?
+\item 15 workers build a wall in 12 days working 8 hours a day. How many days would 20 workers take working 9 hours a day?
+\item A and B can do a job in 12 days, B and C in 15 days, C and A in 20 days. How long would all three take together, and A alone?
+\item Pipes A and B fill a tank in 12 and 15 minutes. They are opened alternately for 1 minute each, starting with A. When is the tank full?
+\item A can do a job in 10 days. A works for 4 days and then B finishes the rest in 9 days. How long would B take alone?
+\end{exercises}
+%=====================================================================
+\part{Logical Reasoning}
+%=====================================================================
+\chapter{Ordering, Ranking and Linear Arrangements}
+
+\section{Ranking formulas}
+\begin{itemize}
+\item Total $=$ (rank from top) $+$ (rank from bottom) $-1$. (The person is counted in both ranks.)
+\item Position from the left $=$ Total $-$ (position from the right) $+1$.
+\item People between A and B (both positions from the left): $|p_A-p_B|-1$.
+\item If two people \textbf{swap} places, each takes the other's position -- use the new position of one to learn the old position of the other.
+\end{itemize}
+
+\begin{example}
+In a row of 50 people, A is 15th from the left and B is 20th from the right. How many people sit between them?
+
+\textbf{Solution.} B from the left $=50-20+1=31$. Between: $31-15-1=\mathbf{15}$.
+\end{example}
+
+\section{Linear seating: conventions}
+\begin{idea}[Directions in a row]
+\begin{itemize}[nosep]
+\item Facing \textbf{north} (towards you on paper, i.e.\ the usual default): your left is the left of the page.
+\item Facing \textbf{south}: left and right are \emph{reversed} relative to the page.
+\item ``A is second to the right of B'' $=$ exactly one person between them, A on B's right.
+\item ``A is to the right of B'' (no number) $=$ anywhere to the right, not necessarily adjacent.
+\end{itemize}
+\end{idea}
+
+\section{A method that always works}
+\begin{enumerate}[nosep]
+\item Draw blank seats.
+\item Place \textbf{definite} clues first (extreme ends, fixed positions, ``immediately'' relations).
+\item For clues with two possibilities, draw \textbf{one diagram per case} side by side -- don't keep cases in your head.
+\item Apply negative clues (``not adjacent'', ``not at an end'') last, to kill cases.
+\end{enumerate}
+
+\begin{example}[seven in a row]
+Seven friends A--G sit in a row facing north.
+\begin{enumerate}[nosep,label=(\roman*)]
+\item D sits at one of the extreme ends.
+\item Exactly two people sit between D and B.
+\item E sits immediately to the right of B.
+\item C sits third to the left of G.
+\item A does not sit at either end.
+\item Exactly one person sits between D and C.
+\end{enumerate}
+Find the arrangement.
+
+\textbf{Solution.} Number seats 1 (left) to 7.
+By (i), D is at 1 or 7. By (vi), C is then at 3 or 5.
+\begin{itemize}[nosep]
+\item \textbf{Case D = 1:} (ii) gives B $=4$, (iii) gives E $=5$. C $=3$ (by (vi)), so G $=6$ by (iv). Remaining A and F take 2 and 7; (v) puts A at 2, F at 7.
+\item \textbf{Case D = 7:} B $=4$, E $=5$, C $=5$ by (vi) -- clash with E. Rejected.
+\end{itemize}
+Arrangement (left to right): \textbf{D A C B E G F}. Every clue checks.
+\end{example}
+
+\begin{exercises}
+\item In a queue, Ravi is 12th from the front and 18th from the back. How many people are in the queue?
+\item In a row of 40 students, A is 11th from the left and B is 15th from the right. How many students sit between them?
+\item In a class, Meera is 7th from the top and 28th from the bottom among students who passed. 5 students failed and 3 were absent. How many students are in the class?
+\item A is 10th from the left and B is 12th from the right in a row. They swap places, and A is now 17th from the left. How many people are in the row?
+\item Six people J, K, L, M, N, O sit in a row facing north.
+K sits second to the right of J. M sits at one of the ends. L is not adjacent to K. N sits next to M.
+L does not sit at either end.
+\begin{enumerate}[nosep,label=(\alph*)]
+\item Who sits at the right end?
+\item How many people sit between M and O?
+\item Who sits immediately to the left of J?
+\item Who sits third to the left of K?
+\end{enumerate}
+\end{exercises}
+
+%=====================================================================
+\chapter{Circular Seating Arrangements}
+
+\section{The left/right convention (the most common trap)}
+\begin{idea}[Facing centre vs facing outward]
+Draw the table as seen from above and go round \textbf{clockwise}.
+\begin{itemize}[nosep]
+\item \textbf{Facing the centre:} your \emph{left} is the \textbf{clockwise} neighbour; your right is anticlockwise.
+\item \textbf{Facing outward:} reversed -- your left is \textbf{anticlockwise}.
+\item Mixed facing (some in, some out): apply the rule person by person.
+\end{itemize}
+Check it physically: stand at the bottom of a table facing its centre (facing ``up'' the page). Your left hand points to the left of the page -- which is the clockwise direction from the bottom of a circle.
+\end{idea}
+
+In a circle of $2n$ people, ``opposite'' means $n$ seats away. ``Second to the left'' means skip one person.
+Since only relative positions matter, \textbf{anchor one person at the top} and place others relative to them.
+
+\begin{example}[eight around a table, facing centre]
+P, Q, R, S, T, U, V, W sit around a circular table facing the centre.
+\begin{enumerate}[nosep,label=(\roman*)]
+\item R sits second to the left of P.
+\item T sits opposite P.
+\item V sits immediately to the right of T.
+\item Q is not an immediate neighbour of P.
+\item U sits immediately to the left of Q.
+\item W sits immediately to the right of P.
+\item Exactly one person sits between W and S.
+\end{enumerate}
+
+\textbf{Solution.} Number seats 0--7 clockwise with P at 0. Facing centre, left $=$ clockwise ($+$), right $=$ anticlockwise ($-$).
+(i) R $=2$. (ii) T $=4$. (iii) V $=3$. (vi) W $=7$. (vii) S is two seats from W: seat 1 or seat 5.
+Free seats: 1, 5, 6 for Q, S, U. (iv) Q is not at 1. (v) U is at Q$+1$: Q $=5$, U $=6$ works (Q $=6$ would need U $=7$, taken). So S $=1$, which satisfies (vii).
+\begin{center}
+\begin{tikzpicture}[scale=1.25]
+\draw (0,0) circle (1.2);
+\foreach \n/\a in {P/90,S/45,R/0,V/-45,T/-90,Q/-135,U/180,W/135}{
+  \node[circle,fill=blue!10,draw,minimum size=6mm,inner sep=0pt] at (\a:1.2) {\small\n};}
+\draw[-{Latex},gray] (100:1.75) arc (100:40:1.75) node[midway,above right]{\scriptsize clockwise};
+\end{tikzpicture}
+\end{center}
+Clockwise from P: \textbf{P, S, R, V, T, Q, U, W}. Note how the clockwise neighbour of P (S) is on P's left.
+\end{example}
+
+\begin{trap}
+Many exam takers draw the table, then read ``left'' as the left of the \emph{page}. For a person at the top of the table facing
+the centre (facing down the page), their left is the page's \emph{right}. Use the clockwise rule instead of the page.
+\end{trap}
+
+\begin{exercises}
+\item Six people A, B, C, D, E, F sit around a hexagonal table \textbf{facing outward}.
+C sits opposite A. B sits immediately to the left of A. E is not a neighbour of C. D sits second to the right of F.
+\begin{enumerate}[nosep,label=(\alph*)]
+\item Who sits immediately to the right of A?
+\item Who sits opposite B?
+\item Who sits second to the left of E?
+\item List everyone in clockwise order starting from A.
+\end{enumerate}
+\item Eight people sit around a table facing the centre. How many people sit between X and Y (counting the shorter way round) if Y is third to the left of X?
+\item In the worked example, who sits third to the right of U, and what is W's position relative to Q?
+\end{exercises}
+
+%=====================================================================
+\chapter{Multi-Attribute Puzzles (Floors, Schedules, Grids)}
+
+These puzzles combine positions (floors 1--5, days Mon--Fri) with attributes (company, city, topic).
+\textbf{Use a grid}: rows are positions, columns are attributes. Fill definite information, then branch into cases.
+
+\begin{idea}[Habits of fast solvers]
+\begin{itemize}[nosep]
+\item Translate ``immediately above'' into an equation (Floor$_X$ $=$ Floor$_Y+1$) and ``above'' into an inequality.
+\item Look for \textbf{pinch points}: a clue that allows only one or two positions (``on an even floor'', ``on the top floor'').
+\item Combine an attribute clue with a position clue (``the IT person lives immediately below Anil'' -- so Anil can't be on floor 1).
+\item When stuck, \textbf{try each case of the most constrained person} and run the clues until a contradiction appears.
+\end{itemize}
+\end{idea}
+
+\begin{example}[a five-storey building]
+Anil, Bina, Chetan, Divya and Esha live on floors 1 (bottom) to 5, one per floor. Each works in a different sector: Banking, Consulting, FMCG, IT, Pharma.
+\begin{enumerate}[nosep,label=(\roman*)]
+\item Bina lives immediately above Esha.
+\item The consultant lives on the top floor.
+\item The IT professional lives immediately below Anil.
+\item Divya works neither in Pharma nor in Consulting.
+\item The banker lives on some floor below the FMCG professional.
+\item Esha lives on one of the two lowest floors.
+\item Bina works in Pharma.
+\item Anil lives on an even-numbered floor.
+\end{enumerate}
+
+\textbf{Solution.} From (viii), Anil is on 2 or 4.
+From (i) and (vi), (Esha, Bina) is (1, 2) or (2, 3).
+If Anil $=2$, both options clash with floor 2. So \textbf{Anil $=4$}, and by (iii) the IT person is on 3.
+Bina is in Pharma (vii), so Bina is not on 3: hence Esha $=1$, Bina $=2$. Chetan and Divya take floors 3 and 5.
+Floor 5 is the consultant (ii) and Divya isn't a consultant (iv), so Divya $=3$ (IT) and Chetan $=5$ (Consulting).
+Esha and Anil share Banking and FMCG; (v) puts the banker lower: Esha $=$ Banking, Anil $=$ FMCG.
+
+\begin{center}
+\begin{tabular}{ccc}
+\toprule Floor & Person & Sector\\\midrule
+5 & Chetan & Consulting\\ 4 & Anil & FMCG\\ 3 & Divya & IT\\ 2 & Bina & Pharma\\ 1 & Esha & Banking\\\bottomrule
+\end{tabular}
+\end{center}
+(Every one of the eight clues is necessary -- removing any one leaves multiple solutions.)
+\end{example}
+
+\begin{exercises}
+\item Five analysts -- Ravi, Sana, Tara, Uday, Veer -- each present once from Monday to Friday, on five different topics: Valuation, Credit, Equity, Macro, Risk.
+\begin{enumerate}[nosep,label=(\roman*)]
+\item The Macro presentation is on Monday or Friday.
+\item Sana presents the day after Ravi.
+\item Tara presents Risk, but not on Wednesday.
+\item Valuation is presented on Wednesday.
+\item Uday presents on some day before Tara.
+\item Credit is presented the day immediately after Equity.
+\item Veer presents on Monday or Friday, but not Macro.
+\end{enumerate}
+Find the full schedule. Then answer: who presents Equity, and on which day is Credit?
+\end{exercises}
+
+%=====================================================================
+\chapter{Blood Relations}
+
+\section{Method: draw the family tree}
+\begin{itemize}[nosep]
+\item Use a standard notation: $+$ for male, $-$ for female, a horizontal double line for a married couple, a single horizontal line for siblings, a vertical line for parent--child.
+\item Keep generations on separate levels. Grandparents on top.
+\item Don't assume a gender unless it's stated or implied (``brother'', ``mother'', ``he'').
+\end{itemize}
+
+\textbf{Relation vocabulary:} father's/mother's brother $=$ uncle; sibling's son $=$ nephew; spouse's sibling or sibling's spouse $=$ brother/sister-in-law;
+son's wife $=$ daughter-in-law; ``only son of my grandfather'' $=$ my father (if paternal).
+
+\begin{example}[pointing to a photo]
+Pointing to a photo, Ramesh says, ``She is the daughter of my grandfather's only son.'' How is she related to Ramesh?
+
+\textbf{Solution.} Grandfather's only son $=$ Ramesh's father. His daughter $=$ Ramesh's \textbf{sister}.
+\end{example}
+
+\begin{example}[coded relations]
+$A+B$: A is the mother of B. $A-B$: A is the brother of B. $A\times B$: A is the husband of B. $A\div B$: A is the daughter of B.
+What does $P\times Q+R-S$ mean about P and S?
+
+\textbf{Solution.} P is the husband of Q; Q is the mother of R; R is the brother of S. So R and S are children of P and Q: P is the \textbf{father} of S.
+(S's gender is unknown, so we can't say son or daughter.)
+\end{example}
+
+\begin{trap}
+``Only daughter of my mother'' spoken by a woman is \emph{herself}. And with codes, read strictly left to right in pairs -- don't skip intermediate links.
+\end{trap}
+
+\begin{exercises}
+\item Introducing a man, a woman says, ``His mother is the only daughter of my mother.'' How is the woman related to the man?
+\item A is B's sister. C is B's mother. D is C's father. E is D's mother. How is A related to D?
+\item Using the codes in the example, what does $M\div N+O\times P$ tell you about M and P?
+\item Pointing to a boy, Neha says, ``He is the son of my paternal grandmother's only son.'' How is the boy related to Neha?
+\item P is the father of Q. Q is the sister of R. R is the son of S. How is S related to P? (Assume a single family.)
+\item ``$A\ \$\ B$'' means A is the father of B; ``$A\ \#\ B$'' means A is the sister of B; ``$A\ @\ B$'' means A is the wife of B. In $K\ @\ L\ \$\ M\ \#\ N$, how is K related to N?
+\end{exercises}
+
+%=====================================================================
+\chapter{Syllogisms}
+
+\section{The four statement types and their Venn pictures}
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule Statement & Meaning & Converts to\\\midrule
+All A are B & circle A inside circle B & Some B are A\\
+No A is B & circles disjoint & No B is A\\
+Some A are B & circles overlap (at least one common member) & Some B are A\\
+Some A are not B & part of A outside B & \emph{no valid conversion}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Combination rules (premise 1 + premise 2, sharing a middle term B)}
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule Premise 1 & Premise 2 & Definite conclusion\\\midrule
+All A are B & All B are C & All A are C\\
+All A are B & No B is C & No A is C\\
+Some A are B & All B are C & Some A are C\\
+Some A are B & No B is C & Some A are not C\\
+No A is B & All B are C & Some C are not A\\
+All A are B & Some B are C & \emph{no definite conclusion}\\
+Some A are B & Some B are C & \emph{no definite conclusion}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{idea}[Three question types]
+\begin{enumerate}[nosep]
+\item \textbf{Definite conclusions:} a conclusion follows only if it is true in \emph{every} possible Venn diagram consistent with the statements.
+\item \textbf{Either--or:} if two conclusions are about the same pair of terms, neither follows on its own, and together they cover all cases (``Some A are B'' / ``No A is B''; or ``All A are B'' / ``Some A are not B''), then answer ``either I or II follows''.
+\item \textbf{Possibility:} ``X is a possibility'' follows if at least \emph{one} valid diagram makes X true.
+\end{enumerate}
+\end{idea}
+
+\begin{why}
+A syllogism question is really asking about the set of all diagrams compatible with the premises. ``Follows'' $=$ true in all of them; ``is a possibility'' $=$ true in at least one. The minimal diagram (draw only what's forced) is your tool for finding counterexamples.
+\end{why}
+
+\begin{example}
+Statements: All analysts are graduates. All graduates are readers.
+Conclusions: I. All analysts are readers. II. Some readers are analysts.
+
+\textbf{Solution.} I follows (All$+$All). II is the conversion of I. \textbf{Both follow.}
+\end{example}
+
+\begin{example}
+Statements: Some bankers are traders. No trader is an auditor.
+Conclusions: I. Some bankers are not auditors. II. No banker is an auditor.
+
+\textbf{Solution.} Some$+$No $\Rightarrow$ Some bankers are not auditors: I follows. II is not forced (other bankers might be auditors). \textbf{Only I.}
+\end{example}
+
+\begin{example}
+Statements: Some pens are books. Some books are bags.
+Conclusions: I. Some pens are bags. II. No pen is a bag.
+
+\textbf{Solution.} No definite conclusion links pens and bags. I and II form a complementary pair: \textbf{either I or II follows.}
+\end{example}
+
+\begin{example}[possibility]
+Statements: All cats are dogs. Some dogs are rats.
+Conclusions: I. Some cats being rats is a possibility. II. All rats being cats is a possibility.
+
+\textbf{Solution.} I: draw rats overlapping the cat circle -- valid. II: put the rat circle inside the cat circle (inside dogs) -- still ``some dogs are rats''. \textbf{Both follow.}
+\end{example}
+
+\begin{exercises}
+\item All managers are leaders. No leader is lazy. I. No manager is lazy. II. Some lazy people are leaders.
+\item Some apples are mangoes. All mangoes are fruits. I. Some apples are fruits. II. All fruits are mangoes.
+\item No stock is a bond. Some bonds are funds. I. Some funds are not stocks. II. Some stocks are funds.
+\item All rings are circles. All squares are rings. I. All squares are circles. II. Some circles are squares.
+\item Some desks are chairs. Some chairs are tables. I. Some desks are tables. II. No desk is a table.
+\item All cars are bikes. No bike is a truck. I. No car is a truck. II. Some trucks being cars is a possibility.
+\item Some X are Y. No Y is Z. I. Some X are not Z. II. All Z being X is a possibility.
+\end{exercises}
+For each, state: only I / only II / both / neither / either I or II.
+
+%=====================================================================
+\chapter{Data Sufficiency}
+
+\textbf{Format.} A question is followed by two statements. Decide whether the data is enough to answer it -- you usually don't need the answer itself. Standard options:
+\begin{center}\small
+\begin{tabular}{cl}
+\toprule
+A & Statement I alone is sufficient; II alone is not\\
+B & Statement II alone is sufficient; I alone is not\\
+C & Each statement alone is sufficient\\
+D & Both together are sufficient, neither alone is\\
+E & Not sufficient even together\\
+\bottomrule
+\end{tabular}
+\end{center}
+(Some papers use a different letter order. Read the options every time.)
+
+\begin{idea}[Discipline]
+\begin{enumerate}[nosep]
+\item Test I alone, \emph{forgetting} II. Then II alone, forgetting I. Only then combine.
+\item ``Sufficient'' means \textbf{exactly one} answer. For a yes/no question, a definite ``no'' is sufficient too.
+\item Try to break sufficiency with two different numbers that satisfy the statement but give different answers.
+\item Don't solve to the end -- just check that a unique answer exists.
+\end{enumerate}
+\end{idea}
+
+\begin{example}
+Is the integer $x$ even? I. $x^2$ is even. II. $3x$ is even.
+
+\textbf{Solution.} I: $x^2$ even $\Rightarrow x$ even. Sufficient. II: $3x$ even $\Rightarrow x$ even (3 is odd). Sufficient. Answer \textbf{C}.
+\end{example}
+
+\begin{example}
+What is the value of $n$? I. $n$ is a prime between 20 and 30. II. $n+2$ is also prime.
+
+\textbf{Solution.} I: 23 or 29 -- not sufficient. II: many twin primes -- not sufficient. Together: $23+2=25$ is not prime, $29+2=31$ is. Unique. Answer \textbf{D}.
+\end{example}
+
+\begin{example}
+How many people sit around a circular table? I. A sits exactly opposite B. II. There are exactly 3 people between A and B going clockwise from A.
+
+\textbf{Solution.} I alone gives no count. II alone tells one side only. Together: ``opposite'' means equal numbers on both sides, so $3+3+2=8$. Answer \textbf{D}.
+\end{example}
+
+\begin{trap}
+Don't let what you learn from one statement leak into your test of the other alone. Also beware ``it seems sufficient because the obvious case works'' -- look for a second case.
+\end{trap}
+
+\begin{exercises}
+\item What is the cost price of an item? I. Its selling price is \Rs1,200. II. The profit is 20\% of the cost price.
+\item Is the integer $n$ divisible by 6? I. $n$ is divisible by 3. II. $n$ is divisible by 4.
+\item What is $x$? I. $x^2=9$. II. $x>0$.
+\item In a row of 30 people, what is P's position from the left? I. P is 12th from the right. II. Q is 5th from the left and P is 14 places to Q's right.
+\item Is $x+y$ odd, for integers $x$ and $y$? I. $x$ is even. II. $y$ is odd.
+\item What is the area of a rectangle? I. Its perimeter is 28 cm. II. Its diagonal is 10 cm.
+\end{exercises}
+%=====================================================================
+\part{Probability: From Basics to Quant-Interview Puzzles}
+%=====================================================================
+\chapter{Foundations}
+
+\section{The language}
+An \textbf{experiment} has a \textbf{sample space} $\Omega$ of outcomes; an \textbf{event} is a subset. When outcomes are equally likely,
+\[P(A)=\frac{|A|}{|\Omega|}\]
+-- which is why Parts I and II matter: most aptitude probability is counting in disguise.
+
+\begin{idea}[Rules you use constantly]
+\begin{itemize}[nosep]
+\item Complement: $P(\text{not }A)=1-P(A)$. ``At least one'' $\Rightarrow$ $1-P(\text{none})$.
+\item Addition: $P(A\cup B)=P(A)+P(B)-P(A\cap B)$.
+\item Conditional: $P(A\mid B)=\dfrac{P(A\cap B)}{P(B)}$; multiplication: $P(A\cap B)=P(B)\,P(A\mid B)$.
+\item Independence: $P(A\cap B)=P(A)P(B)$, i.e.\ knowing $B$ doesn't change the chance of $A$.
+\item Law of total probability: $P(A)=\sum_iP(A\mid B_i)P(B_i)$ over a partition $B_1,B_2,\dots$
+\end{itemize}
+\end{idea}
+
+\begin{trap}[Common trap: mutually exclusive $\neq$ independent]
+Mutually exclusive events (can't both happen) with positive probabilities are \emph{never} independent: if one happens, the other's probability drops to zero.
+\end{trap}
+
+\begin{trap}[Common trap: make outcomes equally likely]
+``Two dice: the sum is 2, 3, \dots, 12, eleven outcomes, so $P(7)=\frac1{11}$'' is wrong. The 36 ordered pairs are equally likely; the sums are not. Always label the dice (red/blue) to count ordered outcomes.
+\end{trap}
+
+\begin{example}
+Two dice are rolled. Probability that the sum is 7? That at least one shows a 6?
+
+\textbf{Solution.} Sum 7: $(1,6),(2,5),\dots,(6,1)$ $\to\frac6{36}=\frac16$. At least one 6: $1-\left(\frac56\right)^2=\frac{11}{36}$.
+\end{example}
+
+\begin{example}[real life: two independent approvals]
+A loan file needs approval from Credit (probability 0.8) and Compliance (0.9), decided independently. Probability it gets through? Probability that exactly one approves?
+
+\textbf{Solution.} Both: $0.8\times0.9=0.72$. Exactly one: $0.8\times0.1+0.2\times0.9=0.26$.
+\end{example}
+
+\begin{exercises}
+\item Two dice are rolled. What is the probability that the sum is a prime number?
+\item From a bag of 5 red and 3 blue balls, two are drawn without replacement. Probability they are of different colours?
+\item A 3-digit number is chosen at random. Probability that its digits are all distinct?
+\item $P(A)=0.5$, $P(B)=0.4$, $P(A\cap B)=0.2$. Find $P(\text{neither})$. Are $A$ and $B$ independent?
+\item A card is drawn from a standard deck. Probability it is a king or a heart?
+\item Five people are chosen at random. Probability that at least two share a birth month (months equally likely)?
+\end{exercises}
+
+%=====================================================================
+\chapter{Conditional Probability and Bayes' Theorem}
+
+\section{Bayes' theorem}
+\[P(H\mid E)=\frac{P(E\mid H)\,P(H)}{P(E\mid H)P(H)+P(E\mid \bar H)P(\bar H)}.\]
+In words: \textbf{posterior $\propto$ likelihood $\times$ prior}. The denominator just rescales so the posteriors add to 1.
+
+\begin{shortcut}[Speed shortcut: natural frequencies]
+Imagine 10{,}000 people (or 1{,}000 items) and push them through the tree. Count, don't multiply fractions. This avoids almost every Bayes error and is how strong interview candidates talk through these problems.
+\end{shortcut}
+
+\begin{example}[the false-positive paradox]
+A disease affects 1\% of people. A test catches 99\% of true cases but also gives a positive result for 5\% of healthy people. You test positive. Probability you have the disease?
+
+\textbf{Solution.} Of 10{,}000 people: 100 are sick, 99 test positive. 9{,}900 are healthy, 495 test positive. Total positives 594, of which 99 are sick:
+\[P=\frac{99}{594}=\frac16\approx\mathbf{16.7\%}.\]
+The low base rate dominates. This is the same logic as fraud-detection alerts in banking: most flagged transactions are false alarms when fraud is rare.
+\end{example}
+
+\section{Classic puzzles}
+\begin{example}[Monty Hall]
+Three doors: a car behind one, goats behind two. You pick door 1. The host, who \emph{knows} where the car is, opens another door showing a goat and offers a switch. Should you switch?
+
+\textbf{Solution.} Your first pick is right with probability $\frac13$; then switching loses. With probability $\frac23$ your pick is wrong; the host is \emph{forced} to reveal the only other goat, and switching wins. Switch: $P(\text{win})=\mathbf{\frac23}$.
+\end{example}
+
+\begin{why}[Why it works: the host's knowledge carries the information]
+The host's action depends on where the car is -- that's what makes it informative. If the host opened a door at random and it merely \emph{happened} to show a goat, switching would win only $\frac12$ of the time (see Exercise 31.5). With 100 doors and the host opening 98 goat doors, the intuition becomes obvious: switch.
+\end{why}
+
+\begin{example}[Bertrand's box]
+Three boxes: gold--gold, silver--silver, gold--silver. You pick a box at random and draw a coin: it's gold. Probability the other coin in that box is gold?
+
+\textbf{Solution.} Count gold \emph{coins}, not boxes: there are 3 gold coins, equally likely to be drawn, and 2 of them sit in the gold--gold box. Answer $\mathbf{\frac23}$ (not $\frac12$).
+\end{example}
+
+\begin{example}[the two-child problems]
+A family has two children.
+(a) At least one is a boy. Probability both are boys?
+(b) At least one is a boy born on a Tuesday. Probability both are boys?
+
+\textbf{Solution.} (a) Equally likely: BB, BG, GB, GG. ``At least one boy'' leaves 3, one of which is BB: $\mathbf{\frac13}$.
+(b) Each child is one of 14 equally likely (sex, day) types, so $14^2=196$ families. Families with at least one Tuesday-boy: $196-13^2=27$. Among them, both boys: $7^2-6^2=13$. Answer $\mathbf{\frac{13}{27}}$ -- close to $\frac12$, because the extra detail almost identifies \emph{which} child we're talking about.
+\end{example}
+
+\begin{trap}
+The answer depends on \emph{how the information was obtained}. ``The older child is a boy'' gives $\frac12$; ``at least one is a boy'' gives $\frac13$. In interviews, state your assumption about how you learned the fact.
+\end{trap}
+
+\begin{exercises}
+\item A family has two children and the older one is a girl. Probability both are girls? What if you only know at least one is a girl?
+\item Of three coins, one is double-headed and two are fair. A coin is picked at random and tossed; it shows heads. Probability it is the double-headed coin?
+\item Machines A, B, C produce 50\%, 30\% and 20\% of a factory's output, with defect rates 1\%, 2\% and 3\%. A randomly chosen item is defective. Probability it came from C?
+\item Monty Hall with 4 doors: you pick one, the host (who knows) opens one goat door, and you switch to one of the two other closed doors at random. Probability of winning? Compare with staying.
+\item Monty Hall where the host does \emph{not} know where the car is, opens one of the other two doors at random, and it happens to show a goat. Probability of winning if you switch?
+\item A test is 95\% sensitive (catches 95\% of true cases) and 90\% specific (10\% false positives). Prevalence is 2\%. Probability of disease given a positive test?
+\item A coin has an unknown bias $p$, uniformly distributed on $[0,1]$. It lands heads in all of 3 tosses. Probability that the next toss is heads? (Laplace's rule of succession: $\frac{h+1}{n+2}$.)
+\end{exercises}
+
+%=====================================================================
+\chapter{Counting-Based Probability}
+
+\section{Cards, dice, birthdays}
+\textbf{Deck facts:} 52 cards, 4 suits of 13, 12 face cards. $\C{52}5=2{,}598{,}960$ five-card hands.
+
+\begin{example}[the birthday problem]
+How many people do you need for a better than even chance that two share a birthday (365 equally likely days)?
+
+\textbf{Solution.} $P(\text{all distinct among }n)=\frac{365}{365}\cdot\frac{364}{365}\cdots\frac{365-n+1}{365}$. At $n=23$ this drops to $0.493$, so the chance of a match is $\mathbf{50.7\%}$.
+\textbf{Intuition:} with 23 people there are $\C{23}2=253$ \emph{pairs}, each matching with probability $\frac1{365}$. Rough estimate: $P(\text{no match})\approx e^{-253/365}\approx0.50$. With 70 people it's 99.9\%.
+\end{example}
+
+\begin{example}[poker hands]
+Probability of a full house (three of one rank, two of another)?
+
+\textbf{Solution.} Choose the rank of the triple (13) and its suits ($\C43$), then the pair's rank (12) and suits ($\C42$):
+$13\cdot4\cdot12\cdot6=3744$. $P=\frac{3744}{2598960}\approx\mathbf{0.144\%}$.
+\end{example}
+
+\begin{example}[de M\'er\'e's paradox]
+Which is more likely: at least one six in 4 rolls of a die, or at least one double-six in 24 rolls of two dice?
+
+\textbf{Solution.} $1-\left(\frac56\right)^4=0.518$ vs $1-\left(\frac{35}{36}\right)^{24}=0.491$. The first. (Gamblers in the 1650s noticed this from experience; the puzzle helped launch probability theory.)
+\end{example}
+
+\section{The hypergeometric pattern}
+Drawing $n$ items without replacement from $N$, of which $K$ are ``special'':
+\[P(\text{exactly }k\text{ special})=\frac{\C Kk\C{N-K}{n-k}}{\C Nn}.\]
+
+\begin{exercises}
+\item What is the probability that a 5-card hand contains exactly 2 aces?
+\item What is the probability that a 5-card hand is a flush (all one suit) but not a straight flush? (There are 40 straight flushes, including royal flushes.)
+\item (Newton--Pepys) Which is most likely: at least one six with 6 dice, at least two sixes with 12 dice, or at least three sixes with 18 dice?
+\item A committee of 4 is chosen at random from 6 men and 4 women. Probability it has at least 2 women?
+\item 8 people sit randomly around a round table. Probability that A and B sit together?
+\item The letters of BANANA are arranged at random. Probability that the two N's are not adjacent?
+\end{exercises}
+
+%=====================================================================
+\chapter{Distributions Toolkit}
+
+\begin{center}\small
+\begin{tabular}{llll}
+\toprule
+Distribution & Story & $P(X=k)$ & Mean, variance\\\midrule
+Bernoulli$(p)$ & one trial & $p$ or $1-p$ & $p$, $p(1-p)$\\
+Binomial$(n,p)$ & successes in $n$ independent trials & $\C nk p^k(1-p)^{n-k}$ & $np$, $np(1-p)$\\
+Geometric$(p)$ & trials until first success & $(1-p)^{k-1}p$ & $\frac1p$, $\frac{1-p}{p^2}$\\
+Hypergeometric & successes without replacement & see Ch.~32 & $n\frac KN$\\
+Poisson$(\lambda)$ & count of rare events in an interval & $e^{-\lambda}\frac{\lambda^k}{k!}$ & $\lambda$, $\lambda$\\
+Uniform$(a,b)$ & continuous, flat & density $\frac1{b-a}$ & $\frac{a+b}2$, $\frac{(b-a)^2}{12}$\\
+Exponential$(\lambda)$ & waiting time between Poisson events & density $\lambda e^{-\lambda x}$ & $\frac1\lambda$, $\frac1{\lambda^2}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{why}[Why the geometric mean is $1/p$]
+Let $E$ be the expected number of trials. The first trial succeeds with probability $p$ (done in 1); otherwise you've used 1 trial and are back at the start: $E=1+(1-p)E\Rightarrow E=\frac1p$. This ``first-step'' argument is the engine of Chapter~35.
+\end{why}
+
+\textbf{Memorylessness.} Geometric and exponential waiting times ``forget'' the past: having waited 10 minutes for a Poisson-process bus, your expected remaining wait is unchanged. Real buses aren't Poisson -- that's the inspection paradox (Chapter 36).
+
+\begin{example}[real life: call centre]
+A support desk gets 3 calls per hour on average (Poisson). Probability of no calls in an hour? At least 2?
+
+\textbf{Solution.} $P(0)=e^{-3}\approx\mathbf{0.050}$. $P(\ge2)=1-e^{-3}(1+3)\approx\mathbf{0.801}$.
+\end{example}
+
+\begin{exercises}
+\item A family has 4 children (boys and girls equally likely). Probability of exactly 2 boys?
+\item A student guesses all 10 questions of an MCQ test, each with 4 options. Probability of at least 8 correct? Expected number correct?
+\item Probability that the first six appears on the third roll of a die?
+\item Using the call-centre numbers, what is the probability of exactly 3 calls in an hour?
+\item Expected number of rolls to get a six, and the variance of that number?
+\end{exercises}
+
+%=====================================================================
+\chapter{Expectation and the Linearity Trick}\label{ch:exp}
+
+\[\E[X]=\sum_x x\,P(X=x),\qquad \E[X+Y]=\E[X]+\E[Y]\ \ \textbf{always -- even if $X$ and $Y$ are dependent}.\]
+
+\begin{idea}[Indicator variables]
+To find the expected \emph{number} of things that happen, write $X=I_1+I_2+\dots+I_n$, where $I_j=1$ if thing $j$ happens. Then
+\[\E[X]=P(\text{thing 1})+P(\text{thing 2})+\cdots+P(\text{thing }n).\]
+You never need the distribution of $X$. This turns many ``impossible'' puzzles into one-liners.
+\end{idea}
+
+\begin{example}[hat-check]
+$n$ people's hats are returned at random. Expected number of people who get their own hat?
+
+\textbf{Solution.} Each person gets their own hat with probability $\frac1n$. Sum over $n$ people: $\mathbf1$, for every $n$. (Compare with derangements: the \emph{probability} of zero matches is about $\frac1e$.)
+\end{example}
+
+\begin{example}[distinct faces]
+A die is rolled 6 times. Expected number of distinct faces seen?
+
+\textbf{Solution.} Face $j$ is seen with probability $1-\left(\frac56\right)^6$. Six faces: $6\left(1-\left(\frac56\right)^6\right)\approx\mathbf{3.99}$.
+\end{example}
+
+\begin{example}[coupon collector]
+Expected number of rolls to see all six faces?
+
+\textbf{Solution.} After seeing $k$ faces, each roll shows a new face with probability $\frac{6-k}6$, so the wait is geometric with mean $\frac6{6-k}$. Add the stages:
+\[6\left(\frac16+\frac15+\frac14+\frac13+\frac12+1\right)=\mathbf{14.7}.\]
+In general $nH_n\approx n\ln n$. (Real life: how many packs of cricket cards until you complete the set.)
+\end{example}
+
+\begin{example}[maximum of two dice]
+Expected value of the larger of two dice?
+
+\textbf{Solution.} $P(\max\le k)=\left(\frac k6\right)^2$, so $P(\max=k)=\frac{k^2-(k-1)^2}{36}=\frac{2k-1}{36}$.
+$\E=\frac{1\cdot1+2\cdot3+3\cdot5+4\cdot7+5\cdot9+6\cdot11}{36}=\frac{161}{36}\approx\mathbf{4.47}$.
+\end{example}
+
+\begin{example}[couples at a round table]
+Four couples sit at random around a round table. Expected number of couples sitting together?
+
+\textbf{Solution.} A given person's partner is one of 7 others, 2 of whom are neighbours: probability $\frac27$. Four couples: $\frac87\approx\mathbf{1.14}$.
+\end{example}
+
+\begin{shortcut}[Speed shortcut: the tail-sum formula]
+For a non-negative integer variable, $\E[X]=\sum_{k\ge1}P(X\ge k)$. For a non-negative continuous variable, $\E[X]=\int_0^\infty P(X>x)\,dx$.
+\end{shortcut}
+
+\begin{exercises}
+\item Expected value of the smaller of two dice?
+\item 10 balls are thrown at random into 5 boxes. Expected number of empty boxes?
+\item Cards are drawn one by one without replacement from a shuffled deck. Expected number of cards drawn up to and including the first ace? (Hint: the 4 aces split the 48 other cards into 5 gaps, each of expected size $\frac{48}5$.)
+\item Expected number of runs (maximal blocks of identical outcomes) in 10 fair coin tosses?
+\item A die is rolled until a six appears. Expected sum of all the rolls, including the six?
+\item Among 30 people, expected number of pairs who share a birthday?
+\end{exercises}
+
+%=====================================================================
+\chapter{First-Step Analysis and Markov Chains}
+
+\section{The method}
+\begin{idea}[First-step analysis]
+Define a \textbf{state} that captures everything relevant about the past. Let $E_s$ be the expected time (or $p_s$ the probability of winning) from state $s$. Condition on the \emph{first step}:
+\[E_s=1+\sum_{t}P(s\to t)\,E_t,\qquad p_s=\sum_tP(s\to t)\,p_t.\]
+Solve the linear equations.
+\end{idea}
+
+\begin{example}[waiting for HH]
+Expected number of fair-coin tosses until two heads in a row?
+
+\textbf{Solution.} States: $S_0$ (no progress), $S_1$ (last toss H).
+\[E_0=1+\tfrac12E_1+\tfrac12E_0,\qquad E_1=1+\tfrac12\cdot0+\tfrac12E_0.\]
+From the first, $E_0=2+E_1$; substituting, $E_1=1+\frac12(2+E_1)\Rightarrow E_1=4$, $E_0=\mathbf6$.
+\end{example}
+
+\begin{example}[HT is faster than HH]
+Expected tosses until HT?
+
+\textbf{Solution.} Wait for the first H (expected 2), then wait for a T (expected 2): \textbf{4}. Unlike HH, a failure (another H) doesn't destroy progress -- you're still one step away.
+\end{example}
+
+\begin{shortcut}[Speed shortcut: Conway's formula for pattern waiting times]
+For a fair coin, the expected wait for a pattern is $\sum 2^k$ over all $k$ such that the first $k$ symbols of the pattern equal its last $k$ symbols (always including $k=$ full length). HH: $2+4=6$. HT: $4$. HHH: $2+4+8=14$. HTH: $2+8=10$. With a die, replace 2 by 6: two consecutive sixes take $6+36=42$ rolls.
+\end{shortcut}
+
+\section{Races between patterns (Penney's game)}
+\begin{example}
+A fair coin is tossed until either HH or TH appears. Probability HH comes first?
+
+\textbf{Solution.} If the first two tosses are HH (probability $\frac14$), HH wins. Otherwise a T appears before any HH, and from then on the first HH must be preceded by a T, so TH appears first. $P=\mathbf{\frac14}$.
+\end{example}
+
+\textbf{Penney's game:} for any pattern of length 3 your opponent picks, there is a pattern that beats it. If they pick HHT, you pick THH and win with probability $\frac34$. Patterns are \emph{non-transitive}, like rock--paper--scissors.
+
+\section{Gambler's ruin}
+You have \Rs$i$; each round you win \Rs1 with probability $p$ or lose \Rs1 with probability $q=1-p$. You stop at \Rs0 or \Rs$N$.
+\[P(\text{reach }N)=\begin{cases}\dfrac iN & p=\frac12\\[8pt] \dfrac{1-(q/p)^i}{1-(q/p)^N} & p\neq\frac12\end{cases}\qquad\E[\text{duration}]=i(N-i)\ \text{ when }p=\tfrac12.\]
+\begin{why}
+For $p=\frac12$, first-step analysis gives $p_i=\frac12p_{i+1}+\frac12p_{i-1}$, so the $p_i$ lie on a straight line from $p_0=0$ to $p_N=1$. A fair game keeps your expected wealth constant: $i=N\cdot P(\text{reach }N)$.
+\end{why}
+
+\textit{Real life:} This is why a small edge for the house is fatal over many rounds: at $p=0.4$, starting with \Rs5 and aiming for \Rs10, you reach your target only about 12\% of the time.
+
+\begin{example}[ant on a cube]
+An ant walks along the edges of a cube, choosing one of the 3 edges at random at each vertex. Expected number of moves from one vertex to the opposite vertex?
+
+\textbf{Solution.} Use distance from the target as the state: $E_3=1+E_2$; $E_2=1+\frac23E_1+\frac13E_3$; $E_1=1+\frac13\cdot0+\frac23E_2$. Solving: $E_1=7$, $E_2=9$, $E_3=\mathbf{10}$.
+\end{example}
+
+\begin{exercises}
+\item Expected number of fair-coin tosses until HHH?
+\item Expected number of die rolls until two consecutive sixes?
+\item Expected tosses until HTH? Until HHT?
+\item You start with \Rs5 and bet \Rs1 per round on a fair coin, stopping at \Rs0 or \Rs10. Probability of reaching \Rs10? Expected number of rounds?
+\item Same as above, but you win each round with probability 0.4. Probability of reaching \Rs10?
+\item A random walk starts at 0 and moves $\pm1$ with equal probability. Probability it hits $+3$ before $-2$?
+\item Your opponent chooses HHT in Penney's game. Which pattern should you choose, and what is your probability of winning?
+\end{exercises}
+
+%=====================================================================
+\chapter{Continuous and Geometric Probability}
+
+When outcomes are points chosen uniformly in a region, \textbf{probability $=$ favourable area (or length) $\div$ total area}.
+
+\begin{example}[the meeting problem]
+Two friends agree to meet between 5 and 6 pm. Each arrives at a uniformly random time and waits 15 minutes, then leaves. Probability they meet?
+
+\textbf{Solution.} Plot arrival times $(x,y)$ in a $60\times60$ square. They meet if $|x-y|\le15$. The ``no meeting'' region is two corner triangles, each with legs 45: total area $45^2$.
+\[P=1-\frac{45^2}{60^2}=1-\frac9{16}=\mathbf{\frac7{16}}.\]
+\begin{center}
+\begin{tikzpicture}[scale=0.045]
+\fill[blue!15] (0,0)--(15,0)--(60,45)--(60,60)--(45,60)--(0,15)--cycle;
+\draw (0,0) rectangle (60,60);
+\draw (15,0)--(60,45); \draw (0,15)--(45,60);
+\node at (30,30) {\small meet}; \node at (48,12) {\scriptsize no}; \node at (12,48) {\scriptsize no};
+\node[below] at (30,0) {\scriptsize $x$}; \node[left] at (0,30) {\scriptsize $y$};
+\end{tikzpicture}
+\end{center}
+\end{example}
+
+\begin{example}[broken stick]
+A stick is broken at two uniformly random points. Probability the three pieces form a triangle?
+
+\textbf{Solution.} A triangle needs every piece shorter than $\frac12$. With break points $(x,y)$ in the unit square, the valid region consists of two triangles of total area $\frac14$. $P=\mathbf{\frac14}$.
+\end{example}
+
+\begin{example}[points on a circle]
+Three points are chosen uniformly on a circle. Probability they all lie in some semicircle?
+
+\textbf{Solution.} For each point, the event ``the other two lie within the semicircle starting at this point and going clockwise'' has probability $\left(\frac12\right)^2$. These three events are disjoint (at most one point can be the ``first'' of a semicircle containing all). Total $3\times\frac14=\mathbf{\frac34}$. In general, $n$ points: $\frac n{2^{n-1}}$.
+(The triangle they form is acute exactly when they are \emph{not} in a semicircle: probability $\frac14$.)
+\end{example}
+
+\textbf{Order statistics of uniforms:} for $n$ independent Uniform$(0,1)$ variables, $\E[\max]=\frac n{n+1}$, $\E[\min]=\frac1{n+1}$. The $n$ points split $[0,1]$ into $n+1$ pieces of equal expected length.
+
+\begin{trap}[Bertrand's paradox]
+``A random chord of a circle'' has no single meaning: choosing random endpoints, a random midpoint, or a random distance from the centre give different answers ($\frac13$, $\frac14$, $\frac12$ for ``longer than the side of the inscribed triangle''). In an interview, define your randomness before computing.
+\end{trap}
+
+\begin{exercises}
+\item Two friends arrive uniformly at random between 5 and 6 pm and each waits 20 minutes. Probability they meet?
+\item A stick of length 1 is broken at a uniformly random point. Expected length of the longer piece?
+\item Expected value of the maximum of three independent Uniform$(0,1)$ variables?
+\item $X,Y$ are independent Uniform$(0,1)$. Find $P(X+Y<1)$ and $P(X^2+Y^2<1)$.
+\item Four points are chosen uniformly on a circle. Probability they all lie in some semicircle?
+\item A point is chosen uniformly in a unit square. Probability that it lies within 0.1 of the nearest side?
+\item (Inspection paradox) Buses come exactly every 10 minutes and you arrive at a random time: expected wait? If instead buses arrive as a Poisson process averaging one every 10 minutes: expected wait?
+\end{exercises}
+
+%=====================================================================
+\chapter{Optimal Stopping, Games and Betting}
+
+\section{Backward induction}
+\begin{example}[the reroll game]
+Roll a die and receive its face value in rupees -- but you may reroll once (and must accept the second roll). What's the game worth, and when should you reroll?
+
+\textbf{Solution.} Work backwards. The final roll is worth 3.5. On the first roll, keep it if it beats 3.5, i.e.\ keep 4, 5, 6; reroll 1, 2, 3.
+\[V_2=\frac{4+5+6}6+\frac36\times3.5=2.5+1.75=\mathbf{4.25}.\]
+With up to three rolls, keep the first roll only if it beats 4.25 (5 or 6): $V_3=\frac{11}6+\frac46\times4.25=\frac{14}3\approx4.67$.
+\end{example}
+
+\begin{why}
+At each decision, compare what you have with the \emph{expected value of continuing optimally}. That continuation value is computed from the end first, hence ``backward'' induction. It's the same logic as valuing an American option on a binomial tree: at each node, take the maximum of exercising now and the discounted value of continuing.
+\end{why}
+
+\section{The secretary problem}
+$n$ candidates arrive in random order; you see each one's relative rank and must accept or reject on the spot. To maximise the chance of picking the very best: \textbf{reject the first $n/e\approx37\%$, then take the first candidate better than all of them}. Success probability $\to\frac1e\approx\mathbf{37\%}$.
+
+\section{Betting: expectation is not everything}
+\begin{itemize}
+\item \textbf{St Petersburg paradox:} a coin is tossed until the first head; if that takes $k$ tosses you win \Rs$2^k$. The expected payout is $\sum_k\frac1{2^k}\cdot2^k=\infty$, yet nobody would pay much to play. Resolution: utility (diminishing value of money) and finite bankrolls.
+\item \textbf{Martingale (doubling) strategy:} doubling after every loss ``guarantees'' a \Rs1 profit, but a finite bankroll means a rare, huge loss exactly cancels the frequent small wins. Expected profit stays 0 in a fair game and is negative in an unfair one.
+\item \textbf{Kelly criterion:} for a bet paying $b$-to-1 that you win with probability $p$, the fraction of wealth that maximises long-run growth is
+\[f^*=\frac{bp-q}{b}=p-\frac qb.\]
+Bet nothing if $f^*\le0$. Many traders use a fraction (like half-Kelly) because the true $p$ is uncertain.
+\end{itemize}
+
+\begin{example}[Russian roulette decision]
+A 6-chamber revolver has 2 bullets in \emph{adjacent} chambers. The cylinder is spun, the trigger pulled on you, and it clicks (empty). It's your turn again: is it better to pull again immediately or to spin first?
+
+\textbf{Solution.} Spinning: survival $\frac46=\frac23$. Not spinning: the 4 empty chambers form a block; the one just fired is one of these 4, and only the last of the block is followed by a bullet. Survival $\frac34$. \textbf{Don't spin.}
+\end{example}
+
+\begin{trap}[The two-envelope paradox]
+One envelope has twice the money of the other. You hold one with amount $x$. ``The other has $2x$ or $x/2$ with equal probability, so its expected value is $1.25x$; always switch'' -- and then switch back, forever. The flaw: $x$ is not fixed while the ``other'' varies; the equal-probability assumption can't hold for every $x$ under any proper prior. Switching gains nothing on average.
+\end{trap}
+
+\begin{exercises}
+\item In the reroll game with up to 3 rolls, state the full strategy and check the value $\frac{14}3$.
+\item You may roll a die repeatedly, paying \Rs1 per roll (including the first), and you may stop at any time and receive the face value of your last roll. What is the game worth, and when should you stop?
+\item Kelly fractions: (a) an even-money bet you win with probability 0.55; (b) a bet paying 2-to-1 that you win with probability 0.4.
+\item With 100 candidates in the secretary problem, roughly how many should you reject outright, and what is your chance of picking the best?
+\item A martingale gambler has \Rs1023, starts with a \Rs1 bet on a fair coin, and doubles after each loss. How many consecutive losses can he cover, and what is the probability of going broke in one ``cycle''? What is his expected profit per cycle?
+\end{exercises}
+
+%=====================================================================
+\chapter{Famous Puzzles Collection}
+
+Quick-fire puzzles that appear in quant and consulting interviews. Try each before reading the solution at the end. Most have a short, clever argument -- find it.
+
+\begin{exercises}
+\item \textbf{Airplane seating.} 100 passengers board a plane with 100 seats, each with an assigned seat. The first passenger has lost their boarding pass and sits in a random seat. Each later passenger takes their own seat if free, otherwise a random free seat. Probability that the last passenger gets their own seat?
+\item \textbf{Ants on a triangle.} Three ants sit at the corners of a triangle. Each picks a direction at random and walks along an edge. Probability that no two ants collide? What about 4 ants on a square?
+\item \textbf{Ballot problem.} In an election, A gets 6 votes and B gets 4. The votes are counted in random order. Probability that A stays strictly ahead throughout the count? (Use the ballot theorem: $\frac{a-b}{a+b}$.)
+\item \textbf{Socks.} A drawer contains red and blue socks. Two socks drawn at random are both red with probability exactly $\frac12$. What is the smallest possible number of socks? The smallest if the number of blue socks is even?
+\item \textbf{100 prisoners.} Each of 100 prisoners may open 50 of 100 boxes looking for their own number. All must succeed. With the ``follow the cycle'' strategy (open the box with your own number, then the box numbered by what you found, and so on), roughly what is the success probability?
+\item \textbf{Fair coin from a biased coin.} You have a coin with unknown bias $p$. How do you simulate a fair coin toss?
+\item \textbf{Coprime integers.} Two positive integers are chosen ``at random''. Roughly what is the probability that they are coprime?
+\item \textbf{Boy born on Tuesday.} Re-derive the $\frac{13}{27}$ answer from Chapter 31 by listing what the 27 families look like.
+\end{exercises}
+%=====================================================================
+\part*{Solutions}
+\addcontentsline{toc}{part}{Solutions}
+%=====================================================================
+\chapter*{Solutions to Exercises}
+\addcontentsline{toc}{chapter}{Solutions to Exercises}
+\small
+Final answers are in \textbf{bold} at the start of each solution, so you can use this section as an answer key.
+Solutions are grouped by chapter number.
+
+\section*{Part I -- Counting Fundamentals}
+
+\subsection*{Chapter 2: Fundamental Principles}
+\sol{2.1} \textbf{120.} Main: 6. Starter: 4 options or none $=5$. Dessert: 3 or none $=4$. $6\cdot5\cdot4=120$.
+
+\sol{2.2} \textbf{252.} Total 3-digit numbers: 900. With no 7: first digit 8 choices (1--9 except 7), others 9 each: $8\cdot9\cdot9=648$. $900-648=252$.
+
+\sol{2.3} \textbf{1232.} First digit $\in\{3,4,5,6,7\}$, last digit odd, all distinct.
+First digit odd (3, 5, 7): last digit is one of the other 4 odd digits; middle two: $8\cdot7$. $3\cdot4\cdot56=672$.
+First digit even (4, 6): last digit any of 5 odd digits: $2\cdot5\cdot56=560$. Total $1232$. (8000 is even, so the upper bound doesn't matter.)
+
+\sol{2.4} \textbf{243.} Each letter independently chooses a box: $3^5$. (The letters choose boxes, not the other way round.)
+
+\sol{2.5} \textbf{819.} 1-digit: 9; 2-digit: $9^2=81$; 3-digit: $9^3=729$.
+
+\subsection*{Chapter 3: Permutations}
+\sol{3.1} \textbf{60; 40.} $\frac{6!}{3!\,2!}=60$. N's together: block [NN] $+$ B, A, A, A $\to\frac{5!}{3!}=20$. Not adjacent: $60-20=40$.
+
+\sol{3.2} \textbf{309.} Sorted letters: E, H, M, O, R, T. Before M: E, H $\to 2\cdot5!=240$.
+Fix M; next O -- smaller available: E, H $\to2\cdot4!=48$ (288).
+Fix MO; next T -- smaller: E, H, R $\to3\cdot3!=18$ (306).
+Fix MOT; next H -- smaller: E $\to 2!=2$ (308). Then E, R: nothing smaller. MOTHER is next: 309.
+
+\sol{3.3} \textbf{30.} Need the last two digits divisible by 4: possible endings 04, 12, 20, 24, 32, 40.
+Endings containing 0 (04, 20, 40): the other 3 non-zero digits fill the first three places: $3!=6$ each $\to18$.
+Endings without 0 (12, 24, 32): the remaining 3 digits include 0, which can't lead: $3!-2!=4$ each $\to12$.
+
+\sol{3.4} \textbf{277200.} E$\times3$, N$\times3$, G$\times2$, I$\times2$, R: $\frac{11!}{3!\,3!\,2!\,2!}$.
+
+\sol{3.5} \textbf{7560.} A$\times4$, L$\times2$, H, B, D: $\frac{9!}{4!\,2!}$.
+
+\sol{3.6} \textbf{2520.} By symmetry, half of $7!$.
+
+\subsection*{Chapter 4: Combinations}
+\sol{4.1} \textbf{66.} $\C{12}2$.
+
+\sol{4.2} \textbf{110.} $\C53\C54+\C54\C53+\C55\C52=50+50+10$.
+
+\sol{4.3} \textbf{54.} $\frac{12\cdot9}{2}$.
+
+\sol{4.4} \textbf{127.} Mangoes 0--3 (4 choices) $\times$ $2^5$ for the fruits, minus the empty selection: $128-1$.
+
+\sol{4.5} \textbf{570.} 10 odd and 10 even numbers. The sum is even iff the number of odd numbers is 0 or 2: $\C{10}3+\C{10}2\C{10}1=120+450$.
+
+\sol{4.6} \textbf{136.} EXAMINATION: E, X, M, T, O once; A, I, N twice -- 8 distinct letters, 3 of them doubled.
+All different: $\C84=70$. One pair $+$ 2 others: $3\cdot\C72=63$. Two pairs: $\C32=3$.
+
+\subsection*{Chapter 5: Circular Arrangements}
+\sol{5.1} \textbf{30240.} Block of 3 $+$ 7 others $=8$ units: $7!\times3!$.
+\sol{5.2} \textbf{2520.} $7!/2$.
+\sol{5.3} \textbf{72.} Total $5!=120$; together $4!\cdot2=48$.
+\sol{5.4} \textbf{2880.} $4!\cdot5!$.
+\sol{5.5} \textbf{(a) 96; (b) 144.} (a) 4 couple-blocks: $3!$, internal $2^4$: $6\cdot16$. (b) Men $3!$, women in gaps $4!$.
+
+\subsection*{Chapter 6: Distributions}
+\sol{6.1} \textbf{84.} $\C93$.
+\sol{6.2} \textbf{286.} Pre-give: $a'+b'+c+d=10$: $\C{13}3$.
+\sol{6.3} \textbf{280.} $\frac{9!}{(3!)^3\,3!}$.
+\sol{6.4} \textbf{8.} All in one box: 1; split 3$+$1: 4; split 2$+$2: $\C42/2=3$. (Or $2^4/2$.)
+\sol{6.5} \textbf{165.} $i+j+k+l=8$: $\C{11}3$.
+\sol{6.6} \textbf{54.} $a+b+c=10$, $a\ge1$, all $\le9$. With $a'=a-1$: $\C{11}2=55$, minus the one case $a'=9$.
+\sol{6.7} \textbf{10.} $\C82=28$ minus $3\cdot\C42=18$ (one variable $\ge4$).
+
+\subsection*{Chapter 7: Inclusion--Exclusion}
+\sol{7.1} \textbf{20.} $100-(60+45-25)$.
+\sol{7.2} \textbf{286.} Multiples of 3: 166, of 7: 71, of 21: 23. $500-(166+71-23)$.
+\sol{7.3} \textbf{540.} $3^6-3\cdot2^6+3$.
+\sol{7.4} \textbf{78.} $120-(24+24-6)$.
+\sol{7.5} \textbf{10.} $\C{17}2-3\C{10}2+3\C32=136-135+9$.
+
+\subsection*{Chapter 8: Derangements}
+\sol{8.1} \textbf{44.} $D_5$.
+\sol{8.2} \textbf{40.} $\C63D_3=20\cdot2$.
+\sol{8.3} \textbf{455.} $6!-D_6=720-265$.
+\sol{8.4} \textbf{1854.} $D_7=7D_6-1$ (using $D_n=nD_{n-1}+(-1)^n$).
+
+\subsection*{Chapter 9: Geometry and Grids}
+\sol{9.1} \textbf{210.} $\C{12}3-\C53=220-10$.
+\sol{9.2} \textbf{150.} $\C62\C52$.
+\sol{9.3} \textbf{50.} Total 120; sharing exactly one side with the decagon: $10\times6=60$; sharing two sides: 10. $120-70=50$. (Shortcut: $\frac{n(n-4)(n-5)}6$.)
+\sol{9.4} \textbf{60.} $\C42\C52$.
+\sol{9.5} \textbf{524.} $\C{12}6-\C63^2=924-400$.
+
+\subsection*{Chapter 10: Catalan Numbers}
+\sol{10.1} \textbf{14.} $n+2=6\Rightarrow C_4$.
+\sol{10.2} \textbf{42.} $C_5$.
+\sol{10.3} \textbf{42.} $C_5$.
+\sol{10.4} \textbf{5.} $C_3$.
+
+\subsection*{Chapter 11: Pigeonhole}
+\sol{11.1} \textbf{25.} Worst case: 2 per month $=24$.
+\sol{11.2} Boxes $\{1,10\},\{2,9\},\{3,8\},\{4,7\},\{5,6\}$; 6 numbers in 5 boxes force a full box, whose two numbers sum to 11. (With 5 numbers it can fail: $\{1,2,3,4,5\}$.)
+\sol{11.3} \textbf{(a) 10; (b) 17.} (a) 3 of each colour $=9$, then one more. (b) All 9 green and 7 blue $=16$, then one more.
+
+\subsection*{Chapter 12: Number-Based Counting}
+\sol{12.1} \textbf{3108.} $2!\cdot14\cdot111$.
+\sol{12.2} \textbf{62.} $50+10+2$.
+\sol{12.3} \textbf{26.} $15+7+3+1$.
+\sol{12.4} \textbf{22.} $16+5+1$.
+\sol{12.5} \textbf{20.} Units place: 10; tens place (30--39): 10.
+\sol{12.6} \textbf{642.} $9+90\cdot2+151\cdot3$.
+
+\section*{Part II -- Advanced Counting}
+
+\subsection*{Chapter 13: Recurrences}
+\sol{13.1} \textbf{81.} $a_n=a_{n-1}+a_{n-2}+a_{n-3}$, $a_0=1$: $1,1,2,4,7,13,24,44,81$.
+
+\sol{13.2} \textbf{504.} A valid string starts with 0, 10 or 110, followed by a valid shorter string: $b_n=b_{n-1}+b_{n-2}+b_{n-3}$ with $b_0=1,b_1=2,b_2=4$: $7,13,24,44,81,149,274,504$.
+
+\sol{13.3} \textbf{1224.} $a_n=2a_{n-1}+2a_{n-2}$, $a_1=3$, $a_2=8$: $22,60,164,448,1224$.
+
+\sol{13.4} \textbf{37.} $1+\frac{8\cdot9}2$.
+\sol{13.5} \textbf{127.} $2^7-1$.
+\sol{13.6} \textbf{22.} $5^2-5+2$.
+\sol{13.7} \textbf{41.} $f(6)=4\cdot11-3$.
+
+\subsection*{Chapter 14: Generating Functions}
+\sol{14.1} \textbf{140.} Coefficient of $x^{11}$ in $(1-x^6)^4(1-x)^{-4}$: $\C{14}3-4\C83=364-224$.
+
+\sol{14.2} \textbf{40.} Case on \Rs10 coins: 0 tens $\to$ ways to make 20 from \{1,2,5\} $=29$; 1 ten $\to$ make 10 $=10$; 2 tens $\to1$.
+(Making 20 from \{1,2,5\}: fives $=0..4$ leave $20,15,10,5,0$, with $11,8,6,3,1$ ways using 1s and 2s.)
+
+\sol{14.3} \textbf{375.} $\C{23}3-4\C{14}3+6\C53=1771-1456+60$.
+
+\sol{14.4} \textbf{25 (vs 27).} Coefficient of $x^6$ in $(1-x^6)^3(1-x)^{-3}$: $\C82-3=25$.
+
+\sol{14.5} \textbf{6 each.} Distinct: 8, 7$+$1, 6$+$2, 5$+$3, 5$+$2$+$1, 4$+$3$+$1. Odd: 7$+$1, 5$+$3, 5$+$1$+$1$+$1, 3$+$3$+$1$+$1, 3$+$1$\times$5, 1$\times$8.
+
+\sol{14.6} \textbf{16.} $(1+x+x^2)^4$ has coefficients $1,4,10,16,19,16,10,4,1$.
+
+\subsection*{Chapter 15: Burnside's Lemma}
+\sol{15.1} \textbf{51.} $\frac15(3^5+4\cdot3)=\frac{255}5$ (the 4 non-trivial rotations of a 5-cycle each have 1 cycle).
+
+\sol{15.2} \textbf{39.} Add 5 reflections, each with 3 cycles ($3^3=27$): $\frac1{10}(255+135)$.
+
+\sol{15.3} \textbf{57.} $\frac1{24}(3^6+6\cdot3^3+3\cdot3^4+8\cdot3^2+6\cdot3^3)=\frac{729+162+243+72+162}{24}$.
+
+\sol{15.4} \textbf{140.} Identity $2^9=512$; $90^\circ$/$270^\circ$: centre $+$ two 4-cycles $\to2^3=8$ each; $180^\circ$: centre $+$ four 2-cycles $\to2^5=32$. $\frac{512+8+8+32}4$.
+
+\sol{15.5} \textbf{4.} Identity: $\C63=20$. Rotations by 1, 5: none (would need one colour). Rotations by 2, 4 (two 3-cycles): one cycle red, one blue: 2 each. Rotation by 3 (three 2-cycles): red count would be even: 0. $\frac{20+2+2}6$.
+
+\sol{15.6} \textbf{21.} Rotations: $81+3+9+3=96$. Reflections: 2 through opposite beads ($3^3=27$ each), 2 through edges ($3^2=9$ each): 72. $\frac{168}8$.
+
+\subsection*{Chapter 16: Bijections, Identities, Stirling Numbers}
+\sol{16.1} \textbf{5120.} $10\cdot2^9$.
+\sol{16.2} \textbf{12870.} $\C{16}8$.
+\sol{16.3} \textbf{495.} $\C{15-4+1}4=\C{12}4$.
+\sol{16.4} \textbf{301.} $S(7,3)$.
+\sol{16.5} \textbf{52.} Bell number $B_5=1+15+25+10+1$.
+\sol{16.6} \textbf{50.} $c(5,2)$: split as 4$+$1: $5\times3!=30$; 3$+$2: $\C53\times2!\times1!=20$.
+\sol{16.7} \textbf{42.} $p(10)$.
+\sol{16.8} \textbf{1287.} Hockey stick: $\C{13}5$.
+\sol{16.9} \textbf{50.} $\frac{10}{7}\C73$. (Same as Exercise 9.3 -- triangles with no side on the decagon. Same problem in disguise.)
+
+\subsection*{Chapter 17: Mixed Counting Practice}
+\sol{17.1} \textbf{360.} [AAAA] $+$ L, L, H, B, D: $6!/2!$.
+\sol{17.2} \textbf{84.} 0 can't appear (it would have to lead), so choose 6 of 1--9: $\C96$.
+\sol{17.3} \textbf{3003.} Multisets of 6 digits from 1--9: $\C{14}6$.
+\sol{17.4} \textbf{10.} 4 reds make 5 gaps; choose 3: $\C53$.
+\sol{17.5} \textbf{262495.} $26^4-21^4$.
+\sol{17.6} \textbf{35.} $\C84/2$.
+\sol{17.7} \textbf{1568.} $64\cdot49/2$.
+\sol{17.8} \textbf{2520.} $^7P_5$.
+\sol{17.9} \textbf{630.} Choose the two digits $\C{10}2=45$; fill 4 places using both: $2^4-2=14$.
+\sol{17.10} \textbf{377.} Fibonacci-type: $2,3,5,\dots$, the 12th term.
+
+\section*{Part III -- Arithmetic Aptitude}
+
+\subsection*{Chapter 18: Percentages}
+\sol{18.1} \textbf{20\%.} $\frac{25}{125}$.
+\sol{18.2} \textbf{+8\%.} $1.2\times0.9=1.08$.
+\sol{18.3} \textbf{28\%.} $1-0.8\times0.9$.
+\sol{18.4} \textbf{27.5\%.} $\frac{0.3\times1.1}{1.2}$.
+\sol{18.5} \textbf{1050.} Net multiplier $1.4\times0.6=0.84$, a 16\% fall $=168$.
+\sol{18.6} \textbf{500.} Pass mark $=178+22=200=40\%$.
+\sol{18.7} \textbf{0.5 percentage points; 7.69\%.} $\frac{0.5}{6.5}$.
+
+\subsection*{Chapter 19: Profit, Loss and Discount}
+\sol{19.1} \textbf{\Rs900.} The swing from $-12\%$ to $+8\%$ is 20\% of CP $=180$.
+\sol{19.2} \textbf{40\%.} $\frac{MP}{CP}=\frac{1.26}{0.9}=1.4$.
+\sol{19.3} \textbf{25\%.} He gives 800 g for the price of 1000 g: $\frac{200}{800}$.
+\sol{19.4} \textbf{50\%.} Per ``kg'' sold: revenue $=1.5\times0.8=1.2$ (units of cost per true kg); cost of the 800 g given $=0.8$. $\frac{1.2}{0.8}=1.5$.
+\sol{19.5} \textbf{21\%.} CP per banana $\frac{10}{11}$, SP $\frac{11}{10}$: ratio $\frac{121}{100}$.
+\sol{19.6} \textbf{38.8\%.} $1-0.8\times0.85\times0.9=1-0.612$.
+\sol{19.7} \textbf{\Rs945.} CP $=840/1.2=700$; $700\times1.35$.
+
+\subsection*{Chapter 20: Interest}
+\sol{20.1} \textbf{\Rs15,000.} $P(0.1)^2=150$.
+\sol{20.2} \textbf{\Rs248.} $8000\times0.01\times3.1$.
+\sol{20.3} \textbf{10\%; \Rs1,000.} $\frac{1331}{1210}=1.1$; $P=\frac{1210}{1.21}$.
+\sol{20.4} \textbf{16\%.} Tripling needs 200\% in 12.5 years.
+\sol{20.5} \textbf{12.68\%.} $1.01^{12}-1$.
+\sol{20.6} \textbf{\Rs3,310.} $\frac{1331}{1.1}+\frac{1331}{1.21}+\frac{1331}{1.331}=1210+1100+1000$.
+\sol{20.7} \textbf{About 8 years.} $72/9=8$; exact $\frac{\ln2}{\ln1.09}\approx8.04$ years.
+
+\subsection*{Chapter 21: Ratio, Proportion, Partnership, Ages}
+\sol{21.1} \textbf{3:5.} $A:B:C:D=3:4:\frac{14}3:5$ (scale $B:C=6:7$ to $4:\frac{14}3$, then $C:D=14:15=\frac{14}3:5$).
+\sol{21.2} \textbf{\Rs3,600, \Rs2,400, \Rs1,800.} Ratio $6:4:3$ (sum 13), $7800/13=600$.
+\sol{21.3} \textbf{15 and 25.} $\frac{3k+10}{5k+10}=\frac57\Rightarrow k=5$.
+\sol{21.4} \textbf{\Rs17,000 each.} $40000\times12=480000$; $60000\times8=480000$.
+\sol{21.5} \textbf{Son 15, father 45.} $3s+15=2(s+15)$.
+\sol{21.6} \textbf{\Rs40,000 and \Rs50,000.} $4x-7y=5000$, $5x-9y=5000\Rightarrow x=2y$, $y=5000$, $x=10000$.
+
+\subsection*{Chapter 22: Mixtures and Alligation}
+\sol{22.1} \textbf{7:3.} $(420-350):(350-320)=70:30$.
+\sol{22.2} \textbf{4 L.} Milk 48 L must be 75\%: new total 64 L.
+\sol{22.3} \textbf{81:19.} Wine left $80\times0.9^2=64.8$; water $15.2$.
+\sol{22.4} \textbf{7:5.} Gold fraction $\frac79$ and $\frac7{18}$; equal weights: gold $\frac12(\frac79+\frac7{18})=\frac7{12}$.
+\sol{22.5} \textbf{85 kg.} Total rises by $8\times2.5=20$.
+\sol{22.6} \textbf{12 L.} Total cost $48\times60=2880$ must equal $48\times$(new volume): 60 L.
+\sol{22.7} \textbf{\Rs4,000 at 6\%, \Rs6,000 at 9\%.} Mean rate 7.8\%: $(9-7.8):(7.8-6)=2:3$.
+
+\subsection*{Chapter 23: Time and Work}
+\sol{23.1} \textbf{21 days.} Rates 2 and 1 (units/day); total $3\times14=42$ units; A alone: $42/2$.
+\sol{23.2} \textbf{15 days.} $\frac{T-5}{20}+\frac T{30}=1$.
+\sol{23.3} \textbf{6 days.} 60 units; rates 5, 4, 3. Two days $\times12=24$; remaining 36 at rate 9: 4 days.
+\sol{23.4} \textbf{24 hours.} $\frac16-\frac18=\frac1{24}$.
+\sol{23.5} \textbf{8 days.} $15\cdot12\cdot8=20\cdot D\cdot9$.
+\sol{23.6} \textbf{10 days; A alone 30 days.} $2(A+B+C)=\frac1{12}+\frac1{15}+\frac1{20}=\frac15$; $A=\frac1{10}-\frac1{15}$.
+\sol{23.7} \textbf{13 min 15 s.} 60 units; rates 5, 4; each 2-minute cycle does 9. After 12 min: 54. A's minute: 59. B needs $\frac14$ min for the last unit.
+\sol{23.8} \textbf{15 days.} A did $\frac4{10}$; B did $\frac6{10}$ in 9 days.
+
+\section*{Part IV -- Logical Reasoning}
+
+\subsection*{Chapter 24: Ordering, Ranking and Linear Arrangements}
+\sol{24.1} \textbf{29.} $12+18-1$.
+\sol{24.2} \textbf{14.} B from the left $=40-15+1=26$; $26-11-1$.
+\sol{24.3} \textbf{42.} Passed $=7+28-1=34$; plus 5 and 3.
+\sol{24.4} \textbf{28.} After the swap A is at B's old position, which is 17th from the left and 12th from the right: $17+12-1$.
+\sol{24.5} \textbf{Arrangement M N L J O K. (a) K; (b) 3 (N, L, J); (c) L; (d) L.}
+Since K $=$ J$+2$, J is at 1--4. M is at an end, with N next to M. Try cases: if M $=6$, then N $=5$, and J, K must fit with K $=$ J$+2$ among seats 1--4: (J, K) $=$ (1, 3) or (2, 4). L can't be at an end and can't touch K: with (1, 3), L must be at 2 or 4 -- both touch K; with (2, 4), the free seats are 1 and 3, L $=3$ touches K. So M $=1$, N $=2$; the free seats 3--6 take J, K, L, O with K $=$ J$+2$: (J, K) $=$ (3, 5) puts L at 4 or 6 -- 4 touches K, 6 is an end; (J, K) $=$ (4, 6) leaves 3 and 5: L $=5$ touches K, so L $=3$, O $=5$.
+
+\subsection*{Chapter 25: Circular Seating}
+\sol{25.1} \textbf{Clockwise from A: A, E, F, C, D, B. (a) E; (b) F; (c) B.}
+Facing outward, left $=$ anticlockwise ($-1$) and right $=$ clockwise ($+1$). Put A at 0 (seats 0--5 clockwise). C $=3$. B is A's immediate left: seat 5. D $=$ F$+2$ with F, D, E filling seats 1, 2, 4: the only option is F $=2$, D $=4$, leaving E $=1$. E's neighbours are A and F, so E is not next to C, as required.
+(a) A's right $=$ seat 1 $=$ E. (b) Opposite seat 5 is seat 2 $=$ F. (c) Second to the left of E (seat 1) is seat $1-2=5$, which is B.
+
+\sol{25.2} \textbf{2.} Going left there are 2 people between them (the other way, 4).
+
+\sol{25.3} \textbf{V; W is second to the left of Q.} U is at seat 6, and right $=-1$: $6-3=3$, which is V. Q is at 5 and W at 7: W is two places clockwise from Q, i.e.\ second to Q's left.
+
+\subsection*{Chapter 26: Multi-Attribute Puzzles}
+\sol{26.1} \textbf{Mon: Uday (Macro); Tue: Tara (Risk); Wed: Ravi (Valuation); Thu: Sana (Equity); Fri: Veer (Credit).}
+Veer and the Macro presenter (someone other than Veer) occupy Monday and Friday. Tara is neither, and not Wednesday, so Tara is on Tuesday or Thursday.
+\emph{Tara on Thursday:} Ravi and Sana need consecutive days from the remaining slots. If they take Tue--Wed, Uday is the Macro presenter and must come before Tara, so Monday; Veer is Friday; Equity and Credit go to Ravi (Tue) and Veer (Fri) -- not consecutive, contradiction. If Ravi takes Monday (as Macro) and Sana Tuesday, Uday takes Wednesday and Equity/Credit fall on Tuesday and Friday -- contradiction again.
+\emph{Tara on Tuesday:} Uday is before her, so Monday -- he is the Macro presenter; Veer is Friday. Ravi and Sana take Wed and Thu, in that order. Wednesday is Valuation (Ravi). Equity then Credit on consecutive days: Sana (Thu) Equity, Veer (Fri) Credit.
+\textbf{Equity: Sana; Credit: Friday.}
+
+\subsection*{Chapter 27: Blood Relations}
+\sol{27.1} \textbf{Mother.} The only daughter of her mother is herself.
+\sol{27.2} \textbf{Granddaughter.} A is C's daughter, and C is D's child.
+\sol{27.3} \textbf{M is P's sister-in-law.} M is N's daughter; N is O's mother; so M is O's sister; O is P's husband.
+\sol{27.4} \textbf{Brother.} Her paternal grandmother's only son is her father; his son is her brother.
+\sol{27.5} \textbf{Wife.} R and Q are P's children; R is S's son; in a single family, S is the mother, i.e.\ P's wife.
+\sol{27.6} \textbf{Mother.} K is L's wife; L is M's father; M is N's sister, so N is also L's child and K's child.
+
+\subsection*{Chapter 28: Syllogisms}
+\sol{28.1} \textbf{Only I.} All$+$No $\Rightarrow$ No manager is lazy. II contradicts ``No leader is lazy''.
+\sol{28.2} \textbf{Only I.} Some$+$All $\Rightarrow$ Some apples are fruits. II is not forced.
+\sol{28.3} \textbf{Only I.} Some funds are bonds, and no bond is a stock $\Rightarrow$ some funds are not stocks. II is not forced.
+\sol{28.4} \textbf{Both.} Squares $\subset$ rings $\subset$ circles; II is the conversion of I.
+\sol{28.5} \textbf{Either I or II.} A complementary pair with no definite link.
+\sol{28.6} \textbf{Only I.} Cars $\subset$ bikes, and bikes and trucks are disjoint, so cars and trucks are disjoint -- II is impossible.
+\sol{28.7} \textbf{Both.} Some$+$No gives I. Z must avoid Y, but X can extend outside Y far enough to contain all of Z.
+
+\subsection*{Chapter 29: Data Sufficiency}
+\sol{29.1} \textbf{D.} Together: $1.2\,CP=1200$.
+\sol{29.2} \textbf{D.} Divisible by 3 and by 4 $\Rightarrow$ by 12 $\Rightarrow$ by 6. Neither alone settles it (e.g.\ 3 vs 6; 4 vs 12).
+\sol{29.3} \textbf{D.} $x=\pm3$; II picks 3.
+\sol{29.4} \textbf{C.} I: $30-12+1=19$. II: $5+14=19$.
+\sol{29.5} \textbf{D.} Even $+$ odd $=$ odd; either statement alone leaves the other variable's parity open.
+\sol{29.6} \textbf{D.} $l+w=14$ and $l^2+w^2=100\Rightarrow lw=\frac{196-100}2=48$ (no need to find $l$ and $w$).
+
+\section*{Part V -- Probability}
+
+\subsection*{Chapter 30: Foundations}
+\sol{30.1} \textbf{5/12.} Sums 2, 3, 5, 7, 11 occur $1+2+4+6+2=15$ times out of 36.
+\sol{30.2} \textbf{15/28.} $\frac{5\cdot3}{\C82}$.
+\sol{30.3} \textbf{0.72.} $\frac{648}{900}$.
+\sol{30.4} \textbf{0.3; yes.} $1-(0.5+0.4-0.2)$; $0.5\times0.4=0.2=P(A\cap B)$.
+\sol{30.5} \textbf{4/13.} $\frac{4+13-1}{52}$.
+\sol{30.6} \textbf{89/144 $\approx$ 0.618.} $1-\frac{12\cdot11\cdot10\cdot9\cdot8}{12^5}$.
+
+\subsection*{Chapter 31: Conditional Probability and Bayes}
+\sol{31.1} \textbf{1/2; 1/3.}
+\sol{31.2} \textbf{1/2.} $\frac{\frac13\cdot1}{\frac13\cdot1+\frac23\cdot\frac12}$.
+\sol{31.3} \textbf{6/17.} Defects per 1000 items: A 5, B 6, C 6. $\frac6{17}$.
+\sol{31.4} \textbf{3/8 (vs 1/4 for staying).} The car is behind one of the other 3 doors with probability $\frac34$; after the host removes a goat, you pick the right one of the 2 remaining with probability $\frac12$.
+\sol{31.5} \textbf{1/2.} Of the cases where a random door shows a goat, half have the car behind your door.
+\sol{31.6} \textbf{19/117 $\approx$ 16.2\%.} Per 1000: 20 sick, 19 positive; 980 healthy, 98 positive.
+\sol{31.7} \textbf{4/5.} $\frac{3+1}{3+2}$.
+
+\subsection*{Chapter 32: Counting-Based Probability}
+\sol{32.1} \textbf{2162/54145 $\approx$ 0.040.} $\frac{\C42\C{48}3}{\C{52}5}=\frac{6\cdot17296}{2598960}$.
+\sol{32.2} \textbf{5108/2598960 $\approx$ 0.197\%.} $4\C{13}5-40$.
+\sol{32.3} \textbf{6 dice.} Probabilities $\approx0.665$, $0.619$, $0.597$. (This was Pepys's question to Newton.)
+\sol{32.4} \textbf{23/42.} $\frac{\C42\C62+\C43\C61+\C44}{\C{10}4}=\frac{90+24+1}{210}$.
+\sol{32.5} \textbf{2/7.} A's two neighbours are 2 of the 7 seats B could take.
+\sol{32.6} \textbf{2/3.} $\frac{40}{60}$ (Exercise 3.1).
+
+\subsection*{Chapter 33: Distributions}
+\sol{33.1} \textbf{3/8.} $\C42/16$.
+\sol{33.2} \textbf{109/262144 $\approx$ 0.0004; 2.5.} $\sum_{k=8}^{10}\C{10}k(\frac14)^k(\frac34)^{10-k}=\frac{405+30+1}{4^{10}}=\frac{436}{1048576}$; mean $np=2.5$.
+\sol{33.3} \textbf{25/216.} $(\frac56)^2\frac16$.
+\sol{33.4} \textbf{$\approx$ 0.224.} $e^{-3}\frac{27}6=4.5e^{-3}$.
+\sol{33.5} \textbf{6; 30.} $\frac1p$ and $\frac{1-p}{p^2}=\frac{5/6}{1/36}$.
+
+\subsection*{Chapter 34: Expectation}
+\sol{34.1} \textbf{91/36 $\approx$ 2.53.} $\min+\max=$ sum of the dice, so $\E[\min]=7-\frac{161}{36}$.
+\sol{34.2} \textbf{$\approx$ 0.537.} Each box is empty with probability $(\frac45)^{10}$; times 5.
+\sol{34.3} \textbf{53/5 = 10.6.} Expected non-aces before the first ace $=\frac{48}5$, plus the ace.
+\sol{34.4} \textbf{5.5.} Runs $=1+$ (number of changes); each of 9 adjacent pairs differs with probability $\frac12$.
+\sol{34.5} \textbf{21.} 6 rolls expected; the 5 non-six rolls average 3 (uniform on 1--5), giving 15, plus 6. (By Wald's identity.)
+\sol{34.6} \textbf{$\approx$ 1.19.} $\C{30}2\cdot\frac1{365}=\frac{435}{365}$.
+
+\subsection*{Chapter 35: First-Step Analysis}
+\sol{35.1} \textbf{14.} $2+4+8$.
+\sol{35.2} \textbf{42.} $6+36$.
+\sol{35.3} \textbf{10; 8.} HTH: $2+8$. HHT: only the full overlap, $8$.
+\sol{35.4} \textbf{1/2; 25 rounds.} $\frac5{10}$; $i(N-i)=5\cdot5$.
+\sol{35.5} \textbf{$\approx$ 0.116.} $\frac{1-1.5^5}{1-1.5^{10}}=\frac{-6.594}{-56.665}$.
+\sol{35.6} \textbf{2/5.} Shift by 2: start at 2, absorbing barriers at 0 and 5: $\frac25$.
+\sol{35.7} \textbf{THH, winning with probability 3/4.} Once a T appears, HHT can only appear after an HH that follows a T -- but then THH appears first. HHT wins only if the first two tosses are HH ($\frac14$).
+
+\subsection*{Chapter 36: Continuous and Geometric}
+\sol{36.1} \textbf{5/9.} $1-(\frac{40}{60})^2$.
+\sol{36.2} \textbf{3/4.} The longer piece is uniform on $[\frac12,1]$.
+\sol{36.3} \textbf{3/4.} $\frac n{n+1}$.
+\sol{36.4} \textbf{1/2; $\pi/4$.} A triangle of area $\frac12$; a quarter disc of area $\frac\pi4$.
+\sol{36.5} \textbf{1/2.} $\frac4{2^3}$.
+\sol{36.6} \textbf{0.36.} Points more than 0.1 from every side form an inner square of side 0.8: $1-0.64$.
+\sol{36.7} \textbf{5 minutes; 10 minutes.} With regular buses your wait is uniform on $[0,10]$. With Poisson buses you are more likely to arrive during a long gap, and memorylessness gives an expected wait equal to the full mean gap.
+
+\subsection*{Chapter 37: Optimal Stopping and Games}
+\sol{37.1} \textbf{14/3.} Keep the first roll if it is 5 or 6 (beats 4.25); keep the second if it is 4, 5 or 6 (beats 3.5); otherwise take the third. $\frac{11}6+\frac46\cdot\frac{17}4=\frac{14}3$.
+
+\sol{37.2} \textbf{\Rs3; stop on 4 or more (stopping or continuing on a 3 are equally good).} Let $V$ be the game's value before paying for a roll: $V=-1+\E[\max(X,V)]$. Trying a threshold of 4: $V=-1+\frac{4+5+6}6+\frac36V\Rightarrow V=3$, which is consistent (you keep a roll exactly when it beats $V=3$).
+
+\sol{37.3} \textbf{(a) 10\%; (b) 10\%.} (a) $0.55-0.45=0.10$. (b) $0.4-\frac{0.6}2=0.10$.
+
+\sol{37.4} \textbf{Reject about 37; success probability $\approx$ 37\%.}
+
+\sol{37.5} \textbf{10 losses; 1/1024; zero.} $1+2+\cdots+512=1023$ covers 10 losses. Ruin needs 10 losses in a row: $\frac1{1024}$. Expected profit per cycle $=\frac{1023}{1024}\cdot1-\frac1{1024}\cdot1023=0$.
+
+\subsection*{Chapter 38: Famous Puzzles}
+\sol{38.1} \textbf{1/2.} The process ends when someone takes either seat 1 or seat 100, and at every step these two are equally likely to be chosen. So the last passenger finds seat 100 free exactly when seat 1 was taken first: probability $\frac12$. (The answer is the same for any number of passengers $\ge2$.)
+\sol{38.2} \textbf{1/4; 1/8.} No collision only if all ants go the same way: $\frac2{2^3}$ and $\frac2{2^4}$.
+\sol{38.3} \textbf{1/5.} $\frac{6-4}{10}$.
+\sol{38.4} \textbf{4 socks (3 red, 1 blue); 21 socks (15 red, 6 blue).} Need $\frac{r(r-1)}{(r+b)(r+b-1)}=\frac12$; check $\frac34\cdot\frac23=\frac12$ and $\frac{15}{21}\cdot\frac{14}{20}=\frac12$.
+\sol{38.5} \textbf{$\approx$ 31\%.} All succeed iff the random permutation has no cycle longer than 50: $1-\sum_{k=51}^{100}\frac1k\approx1-\ln2\approx0.31$. (Opening boxes at random would give $2^{-100}$.)
+\sol{38.6} Toss twice: HT $\to$ ``heads'', TH $\to$ ``tails'', HH or TT $\to$ repeat. HT and TH both have probability $p(1-p)$. (Von Neumann's trick.)
+\sol{38.7} \textbf{$6/\pi^2\approx0.61$.} A prime $p$ divides both with probability $\frac1{p^2}$, so $P=\prod_p(1-\frac1{p^2})=\frac1{\zeta(2)}=\frac6{\pi^2}$.
+\sol{38.8} Families with the older child a Tuesday-boy: 14 (younger child any type). With the younger child a Tuesday-boy: 14. Both: 1. Total 27. Both boys: $7+7-1=13$.
+
+\normalsize
+\end{document}
