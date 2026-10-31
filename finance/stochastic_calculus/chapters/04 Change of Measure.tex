@@ -1,0 +1,175 @@
+% !TEX root = ../main.tex
+
+\section{Change of Measure}
+
+\begin{enumerate}
+    \item \textbf{Setup:} A probability space is a triple $(\Omega, \mathcal{F}, \mathbb{P})$, where $\Omega$ is the sample space, $\mathcal{F}$ is a $\sigma$-algebra (a collection of subsets of the power set of $\Omega$) and $\mathbb{P}$ the probability measure. A change of measure keeps $(\Omega, \mathcal{F})$ fixed and changes only $\mathbb{P}$. For instance, in the coin toss model with probabilities $p, q > 0$, $p + q = 1$, and
+    \[\mathbb{S}_{n+1} = \begin{cases}
+        u\, \mathbb{S}_n, & \omega_{n+1} = H \\
+        d\, \mathbb{S}_n, & \omega_{n+1} = T
+    \end{cases} \qquad (u > 1 > d),\]
+    the \textit{empirical} (real world) probabilities $p, q$ are inferred from observation.
+
+    \item \textbf{Why change measure?} Consider a hedging strategy for a short position in an option, based on $\mathbb{S}_n$, with portfolio $\mathbb{X}_{n+1} = \Delta_n \mathbb{S}_{n+1} + (1+r)(\mathbb{X}_n - \Delta_n \mathbb{S}_n)$. We demand that $\mathbb{X}_n$ has mean return equal to the risk-free rate $r$, i.e.\ $\mathbb{E}[\mathbb{X}_{n+1} \mid \mathcal{F}_n] = (1+r)\mathbb{X}_n$. Taking conditional expectations of the wealth equation, the $\mathbb{X}_n - \Delta_n \mathbb{S}_n$ terms cancel and we are left with
+    \[\mathbb{E}[\mathbb{S}_{n+1} \mid \mathcal{F}_n] = (1+r)\mathbb{S}_n.\]
+    This imposes a constraint on $p, q, r$: $u p + d q = 1 + r$ and $p + q = 1$, giving
+    \[\tilde{p} = \frac{1 + r - d}{u - d}, \qquad \tilde{q} = \frac{u - (1+r)}{u - d},\]
+    called the \textit{risk-neutral measure}. The empirical $p, q$ generally do not satisfy this, so we need a precise way to move from $\mathbb{P}$ to $\tilde{\mathbb{P}}$.
+
+    \item \textbf{Radon-Nikodym Derivative (finite $\Omega$).} Expectations under the two measures are
+    \[\mathbb{E}[\mathbb{X}] = \sum_{\omega \in \Omega}\mathbb{X}(\omega)\mathbb{P}\{\omega\}, \qquad \tilde{\mathbb{E}}[\mathbb{X}] = \sum_{\omega \in \Omega}\mathbb{X}(\omega)\tilde{\mathbb{P}}\{\omega\} = \sum_{\omega \in \Omega}\mathbb{X}(\omega)\frac{\tilde{\mathbb{P}}\{\omega\}}{\mathbb{P}\{\omega\}}\mathbb{P}\{\omega\}.\]
+    Define
+    \[\mathbb{Z}(\omega) = \frac{\tilde{\mathbb{P}}\{\omega\}}{\mathbb{P}\{\omega\}} \quad \left(\frac{\text{new}}{\text{old}}\right),\]
+    the \textit{Radon-Nikodym derivative}. Then
+    \[\tilde{\mathbb{E}}[\mathbb{X}] = \mathbb{E}[\mathbb{X}\mathbb{Z}],\]
+    the expectation under the new measure is the expectation under the old measure, but weighted by the RN derivative.
+
+    \item \textbf{Properties of the RN derivative:}
+    \begin{enumerate}
+        \item $\mathbb{P}\{\mathbb{Z} > 0\} = 1$ (almost surely), since $\tilde{\mathbb{P}}\{\omega\}$ must be positive wherever $\mathbb{P}\{\omega\}$ is.
+        \item $\mathbb{E}[\mathbb{Z}] = \sum_\omega \frac{\tilde{\mathbb{P}}\{\omega\}}{\mathbb{P}\{\omega\}}\mathbb{P}\{\omega\} = \sum_\omega\tilde{\mathbb{P}}\{\omega\} = 1$.
+        \item $\tilde{\mathbb{E}}[\mathbb{X}] = \mathbb{E}[\mathbb{X}\mathbb{Z}]$.
+    \end{enumerate}
+    Any RN derivative must satisfy all three.
+
+    \item \textbf{Example:} $N = 2$ period binomial model with $\mathbb{S}_0 = 4$, $u = 2$, $d = 1/2$, $r = 1/4$. Then $\tilde{p} = \tilde{q} = 1/2$. Take the empirical $p = 2/3$, $q = 1/3$ and $\Omega = \{HH, HT, TH, TT\}$:
+    \[\mathbb{Z}(HH) = \frac{\tilde{p}^2}{p^2} = \frac{1/4}{4/9} = \frac{9}{16}, \qquad \mathbb{Z}(HT) = \mathbb{Z}(TH) = \frac{\tilde{p}\tilde{q}}{pq} = \frac{1/4}{2/9} = \frac{9}{8}, \qquad \mathbb{Z}(TT) = \frac{\tilde{q}^2}{q^2} = \frac{1/4}{1/9} = \frac{9}{4}.\]
+    As a check of (b): $\frac{4}{9}\cdot\frac{9}{16} + 2\cdot\frac{2}{9}\cdot\frac{9}{8} + \frac{1}{9}\cdot\frac{9}{4} = \frac{1}{4} + \frac{1}{2} + \frac{1}{4} = 1$.
+
+    \item \textbf{Option pricing with the RN derivative.} For a European call with $\mathbb{V}_N = (\mathbb{S}_N - K)^+$, the fair value at time $0$ is
+    \[\mathbb{V}_0 = \tilde{\mathbb{E}}\left[\frac{\mathbb{V}_N}{(1+r)^N}\right] = \mathbb{E}\left[\frac{\mathbb{V}_N\mathbb{Z}}{(1+r)^N}\right],\]
+    and at time $n$,
+    \[\mathbb{V}_n = \tilde{\mathbb{E}}\left[\frac{\mathbb{V}_N}{(1+r)^{N-n}}\,\Big|\, \mathcal{F}_n\right].\]
+    The factor $\frac{\mathbb{Z}}{(1+r)^N}$ appears in all formulae involving a hedging portfolio containing a money market component. We name it the \textit{state price density} (a random variable),
+    \[\zeta(\omega) = \frac{\mathbb{Z}(\omega)}{(1+r)^N}, \qquad \mathbb{V}_0 = \mathbb{E}[\mathbb{V}_N\zeta].\]
+    It is the \textit{balancing factor}: it rebalances the empirical probability of each path and accounts for the time value of money through the discounting factor.
+
+    \item \textbf{State prices:} Consider an instrument which pays $1$ only when $\omega = \omega_0$ and $0$ otherwise. Its price is
+    \[\mathbb{V}_0 = \mathbb{V}_N(\omega_0)\frac{\mathbb{Z}(\omega_0)}{(1+r)^N}\mathbb{P}\{\omega_0\} = \zeta(\omega_0)\mathbb{P}\{\omega_0\},\]
+    and $\zeta(\omega_0)\mathbb{P}\{\omega_0\}$ is called the \textit{state price} of $\omega_0$. Note $\mathbb{V}_0 = \mathbb{E}[\mathbb{V}_N\zeta]$ is under the empirical measure.
+
+    \item \textbf{Radon-Nikodym Derivative Process.} Define
+    \[\mathbb{Z}_n = \mathbb{E}[\mathbb{Z} \mid \mathcal{F}_n], \qquad n = 0, 1, \dots, N,\]
+    where $\mathcal{F}_n$ is the $\sigma$-algebra generated by the first $n$ coin tosses. $\mathbb{Z}_n$ is a random variable on $\Omega_N$ that depends only on $\omega_1, \dots, \omega_n$, so it is an adapted process. It is a martingale w.r.t.\ $\{\mathcal{F}_n\}$: $\mathbb{E}[\mathbb{Z}_n \mid \mathcal{F}_m] = \mathbb{Z}_m$ for $m \leq n$ (tower property). This is the \textit{Radon-Nikodym derivative process}.
+
+    \item If $\mathbb{X}$ is $\mathcal{F}_m$-measurable, $m \leq N$, then $\tilde{\mathbb{E}}[\mathbb{X}] = \mathbb{E}[\mathbb{X}\mathbb{Z}_m]$.
+    \begin{proof}
+        $$\tilde{\mathbb{E}}[\mathbb{X}] = \mathbb{E}[\mathbb{X}\mathbb{Z}] = \mathbb{E}\bigl[\mathbb{E}[\mathbb{X}\mathbb{Z} \mid \mathcal{F}_m]\bigr] = \mathbb{E}\bigl[\mathbb{X}\,\mathbb{E}[\mathbb{Z} \mid \mathcal{F}_m]\bigr] = \mathbb{E}[\mathbb{X}\mathbb{Z}_m]$$
+        where we pulled $\mathbb{X}$ out since it is $\mathcal{F}_m$-measurable.
+    \end{proof}
+
+    \item \textbf{Closed form for the binomial model.} Splitting the sum over the first $m$ tosses (which are fixed) and the remaining $m+1, \dots, N$,
+    \[\mathbb{Z}_m = \sum_{\omega_{m+1}\dots\omega_N}\mathbb{Z}(\omega_1 \dots \omega_N)\,p^{n_H(\omega_{m+1}\dots\omega_N)}q^{n_T(\omega_{m+1}\dots\omega_N)} = \left(\frac{\tilde{p}}{p}\right)^{n_H(\omega_1\dots\omega_m)}\left(\frac{\tilde{q}}{q}\right)^{n_T(\omega_1\dots\omega_m)}\sum_{\omega_{m+1}\dots\omega_N}\tilde{p}^{\,n_H}\tilde{q}^{\,n_T}.\]
+    The last sum is the total probability under $\tilde{\mathbb{P}}$, equal to $1$. Hence
+    \[\mathbb{Z}_m = \left(\frac{\tilde{p}}{p}\right)^{n_H(\omega_1\dots\omega_m)}\left(\frac{\tilde{q}}{q}\right)^{n_T(\omega_1\dots\omega_m)}.\]
+
+    \item \textbf{Conditional expectation under the new measure (Bayes' rule).} If $\mathbb{X}$ is $\mathcal{F}_m$-measurable and $n \leq m$, then
+    \[\tilde{\mathbb{E}}[\mathbb{X} \mid \mathcal{F}_n] = \frac{1}{\mathbb{Z}_n}\mathbb{E}[\mathbb{X}\mathbb{Z}_m \mid \mathcal{F}_n]. \tag{$\clubsuit$}\]
+    (Proof: for any $\mathcal{F}_n$-measurable $\mathbb{Y}$, $\tilde{\mathbb{E}}[\mathbb{Y}\,\tilde{\mathbb{E}}[\mathbb{X}\mid\mathcal{F}_n]] = \tilde{\mathbb{E}}[\mathbb{Y}\mathbb{X}] = \mathbb{E}[\mathbb{Y}\mathbb{X}\mathbb{Z}_m] = \mathbb{E}\bigl[\mathbb{Y}\,\mathbb{E}[\mathbb{X}\mathbb{Z}_m\mid\mathcal{F}_n]\bigr] = \tilde{\mathbb{E}}\bigl[\mathbb{Y}\,\tfrac{1}{\mathbb{Z}_n}\mathbb{E}[\mathbb{X}\mathbb{Z}_m\mid\mathcal{F}_n]\bigr]$.)
+
+    \item \textbf{Pricing at intermediate times.} Using $(\clubsuit)$,
+    \[\mathbb{V}_n = (1+r)^n\,\tilde{\mathbb{E}}\left[\frac{\mathbb{V}_N}{(1+r)^N}\,\Big|\,\mathcal{F}_n\right] = (1+r)^n\frac{1}{\mathbb{Z}_n}\mathbb{E}\left[\frac{\mathbb{V}_N\mathbb{Z}_N}{(1+r)^N}\,\Big|\,\mathcal{F}_n\right] = \frac{1}{\zeta_n}\mathbb{E}[\mathbb{V}_N\zeta_N \mid \mathcal{F}_n],\]
+    where $\zeta_n = \mathbb{Z}_n/(1+r)^n$. In summary,
+    \[\boxed{\mathbb{V}_0 = \mathbb{E}[\mathbb{V}_N\zeta_N], \qquad \mathbb{V}_n = \frac{1}{\zeta_n}\mathbb{E}[\mathbb{V}_N\zeta_N \mid \mathcal{F}_n]}\]
+
+    \item \textbf{Radon-Nikodym Derivative for Uncountable Sample Spaces.} For a finite $\Omega$ the expectation is a sum over $\omega$ (a \textit{Riemann} sum over the domain). We can instead sum over the range of $\mathbb{X}$ (a \textit{Lebesgue} sum over the range, which is a profound shift):
+    \[\mathbb{E}[\mathbb{X}] = \sum_{\omega \in \Omega}\mathbb{X}(\omega)\mathbb{P}\{\omega\} = \sum_{v \in \text{Ran}(\mathbb{X})} v\, \mathbb{P}\{\mathbb{X} = v\}.\]
+    For a general sample space this becomes
+    \[\mathbb{E}[\mathbb{X}] = \int_\Omega \mathbb{X}(\omega)\, d\mathbb{P}(\omega) = \int_{\mathbb{R}} v\, d\nu_{\mathbb{X}}(v) = \int_{\mathbb{R}} v\, \phi_{\mathbb{X}}(v)\, dv,\]
+    where $d\nu_{\mathbb{X}}(v) = \mathbb{P}\{v \leq \mathbb{X}(\omega) \leq v + dv\}$ is the distribution of $\mathbb{X}$ and $\phi_{\mathbb{X}}$ its probability density. More generally, $\mathbb{E}[f(\mathbb{X})] = \int_{\mathbb{R}} f(v)\,d\nu_{\mathbb{X}}(v) = \int_{\mathbb{R}} f(v)\phi_{\mathbb{X}}(v)\,dv$.
+
+    \item For a continuous sample space we choose a random variable $\mathbb{Z}$ such that
+    \begin{enumerate}
+        \item $\mathbb{E}[\mathbb{Z}] = 1$,
+        \item $\mathbb{P}\{\mathbb{Z} > 0\} = 1$,
+    \end{enumerate}
+    and define the new probability measure on $(\Omega, \mathcal{F})$ by
+    \[\boxed{\tilde{\mathbb{P}}(A) = \int_A \mathbb{Z}(\omega)\, d\mathbb{P}(\omega)}\]
+    (1) implies $\tilde{\mathbb{P}}(\Omega) = 1$. Then $\tilde{\mathbb{E}}[\mathbb{X}] = \int_\Omega\mathbb{X}\, d\tilde{\mathbb{P}} = \int_\Omega\mathbb{X}\mathbb{Z}\, d\mathbb{P} = \mathbb{E}[\mathbb{X}\mathbb{Z}]$, and formally
+    \[\mathbb{Z}(\omega) = \frac{d\tilde{\mathbb{P}}(\omega)}{d\mathbb{P}(\omega)}.\]
+    The two ways of computing $\tilde{\mathbb{E}}[\mathbb{X}]$ are: $\int_{\mathbb{R}}v\, d\tilde{\nu}_{\mathbb{X}}(v)$ (distribution of $\mathbb{X}$ under $\tilde{\mathbb{P}}$), or $\int_{\mathbb{R}}v\,\zeta\, d\nu_{\mathbb{X}\mathbb{Z}}(v, \zeta)$ (joint distribution under $\mathbb{P}$).
+
+    \item \textbf{Example:} $\Omega = [0, 1]$, $\mathcal{F}$ the Borel $\sigma$-algebra, $\mathbb{P}$ the Lebesgue measure ($\mathbb{P}[a, b] = b - a$), and $\mathbb{X}(\omega) = \omega$. Then $\mathbb{E}[\mathbb{X}] = \int_0^1 v\, dv = 1/2$. Take $\mathbb{Z}(\omega) = 2\omega$: $\mathbb{E}[\mathbb{Z}] = \int_0^1 2x\, dx = 1$ and $\mathbb{Z} > 0$ almost surely, so
+    \[\tilde{\mathbb{P}}([a, b]) = \int_a^b 2\omega\, d\omega = b^2 - a^2.\]
+    The strict inequality $\mathbb{Z} > 0$ is optional in general, but if you want to go back and forth between $\mathbb{P}$ and $\tilde{\mathbb{P}}$, the inequality must be strict.
+
+    \item \textbf{Equivalent measures:} $\mathbb{P}$ and $\tilde{\mathbb{P}} = \int\mathbb{Z}\, d\mathbb{P}$ are \textit{equivalent} probability measures on $(\Omega, \mathcal{F})$, i.e.\ they agree on which events have probability $0$.
+
+    \item \textbf{Radon-Nikodym Theorem:} If $\mathbb{P}$ and $\mathbb{P}'$ are two equivalent probability measures, then they are necessarily related by an RN derivative.
+
+    \item \textbf{Gaussian example (shifting the mean).} Let $\mathbb{X} \sim N(0, \sigma^2)$ under $\mathbb{P}$ with density $\phi_{\mathbb{X}}(x) = \frac{1}{\sqrt{2\pi\sigma^2}}e^{-x^2/(2\sigma^2)}$, and
+    \[\mathbb{Z}(\omega) = \exp\!\left(-\theta\mathbb{X}(\omega) - \tfrac{1}{2}\theta^2\sigma^2\right).\]
+    \begin{enumerate}
+        \item $\mathbb{E}[\mathbb{Z}] = \int_{-\infty}^\infty\frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\left(-\tfrac{1}{2\sigma^2}(x + \theta\sigma^2)^2\right)dx = 1$ by completing the square and substituting $y = x + \theta\sigma^2$.
+        \item The expectation under the new measure is
+        \[\tilde{\mathbb{E}}[\mathbb{X}] = \mathbb{E}[\mathbb{X}\mathbb{Z}] = \int_{-\infty}^\infty(y - \theta\sigma^2)\frac{e^{-y^2/(2\sigma^2)}}{\sqrt{2\pi\sigma^2}}\,dy = -\theta\sigma^2,\]
+        i.e.\ $\tilde{\mathbb{E}}[\mathbb{X} + \theta\sigma^2] = 0$.
+    \end{enumerate}
+    Under $\tilde{\mathbb{P}}$, $\mathbb{X}$ has density $\tilde{\phi}_{\mathbb{X}}(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\left(-\frac{(x + \theta\sigma^2)^2}{2\sigma^2}\right)$, so $\mathbb{X} \sim N(-\theta\sigma^2, \sigma^2)$: the new measure shifts the mean while keeping the variance. Indeed $\mathbb{Z}(x) = \frac{d\tilde{\phi}_{\mathbb{X}}(x)}{d\phi_{\mathbb{X}}(x)}$. (Exercise: what should the RN derivative be to change the variance?)
+
+    \item \textbf{Shifting the Wiener process.} $\mathbb{W}(t) \sim N(0, t)$. For each $t$, let
+    \[\mathbb{Z}(t) = \exp\!\left(-\theta\mathbb{W}(t) - \tfrac{1}{2}\theta^2 t\right).\]
+    Here $\sigma^2 = t$ in the Gaussian example, so the random variable
+    \[\tilde{\mathbb{W}}(t) = \mathbb{W}(t) + \theta t\]
+    is a standard Wiener process with respect to the new measure $\tilde{\mathbb{P}}$.
+
+    \item \textbf{Generalising to time-dependent $\theta$.} Writing $\mathbb{Z}(t) = \exp\!\left(-\theta\int_0^t d\mathbb{W}(u) - \frac{1}{2}\theta^2\int_0^t du\right)$ (think of $t$ as $[\mathbb{W}, \mathbb{W}](t)$), we generalise to
+    \[\mathbb{Z}(t) = \exp\!\left(-\int_0^t\Theta(u)\, d\mathbb{W}(u) - \frac{1}{2}\int_0^t\Theta(u)^2\, du\right), \qquad \tilde{\mathbb{W}}(t) = \mathbb{W}(t) + \int_0^t\Theta(u)\, du,\]
+    where $\Theta(u)$ is an adapted process w.r.t.\ the filtration of $\mathbb{W}(t)$. As before $\mathbb{Z}(t) = \mathbb{E}[\mathbb{Z}(T) \mid \mathcal{F}(t)]$ is the RN derivative process.
+
+    \item \textbf{Girsanov's Theorem.} Let $\mathbb{W}(t)$ be a Wiener process with filtration $\mathcal{F}(t)$, $0 \leq t \leq T$, and $\Theta(t)$ an $\mathcal{F}(t)$-adapted process. Let $\mathbb{Z}(t)$ be defined as above. Then
+    \begin{enumerate}
+        \item $\mathbb{Z}(T)$ is an RN derivative,
+        \item $\tilde{\mathbb{W}}(t) = \mathbb{W}(t) + \int_0^t\Theta(u)\, du$ is a Wiener process with respect to the measure $\tilde{\mathbb{P}}$ induced by $\mathbb{Z}(T)$,
+        \item $\mathbb{Z}(t) = \mathbb{E}[\mathbb{Z}(T) \mid \mathcal{F}(t)]$ is an RN derivative process.
+    \end{enumerate}
+    We now fix $\Theta(t)$ by demanding that the discounted stock price process is a martingale.
+
+    \item \textbf{Stock price process.} Under the old measure, $\mathbb{S}(t) = \mathbb{S}_0\exp(\sigma\mathbb{W}(t) - \frac{1}{2}\sigma^2 t)$ is a martingale ($d\mathbb{S} = \sigma\mathbb{S}\, d\mathbb{W}$). We modify it to the \textit{generalised GBM}
+    \[d\mathbb{S}(t) = \alpha(t)\mathbb{S}(t)\, dt + \sigma(t)\mathbb{S}(t)\, d\mathbb{W}(t), \tag{$\star$}\]
+    where $\alpha(t)$ (drift, the mean rate of return) and $\sigma(t)$ (diffusion) are adapted stochastic processes. Its solution (apply Ito-Doeblin to $\log\mathbb{S}$, $d\log\mathbb{S} = (\alpha - \frac{1}{2}\sigma^2)dt + \sigma\, d\mathbb{W}$) is
+    \[\mathbb{S}(t) = \mathbb{S}(0)\exp\!\left(\int_0^t\sigma(u)\, d\mathbb{W}(u) + \int_0^t\left(\alpha(u) - \tfrac{1}{2}\sigma(u)^2\right)du\right).\]
+
+    \item \textbf{Discount process.} Let the risk-free rate $\mathbb{R}(t)$ be an adapted process and
+    \[\mathbb{D}(t) = e^{-\int_0^t\mathbb{R}(u)\, du}, \qquad d\mathbb{D}(t) = -\mathbb{R}(t)\mathbb{D}(t)\, dt.\]
+
+    \item \textbf{Discounted stock price process.} By Ito's product formula, $d(\mathbb{D}\mathbb{S}) = (d\mathbb{D})\mathbb{S} + \mathbb{D}(d\mathbb{S}) + d\mathbb{D}\, d\mathbb{S}$. Substituting and retaining only terms of order $dt$ and $d\mathbb{W}$ (the cross term vanishes),
+    \[d(\mathbb{D}(t)\mathbb{S}(t)) = (\alpha(t) - \mathbb{R}(t))\mathbb{D}(t)\mathbb{S}(t)\, dt + \sigma(t)\mathbb{D}(t)\mathbb{S}(t)\, d\mathbb{W}(t),\]
+    which is not necessarily a martingale. Use $d\mathbb{W}(t) = d\tilde{\mathbb{W}}(t) - \Theta(t)\, dt$:
+    \[d(\mathbb{D}\mathbb{S}) = (\alpha - \mathbb{R} - \sigma\Theta)\mathbb{D}\mathbb{S}\, dt + \sigma\mathbb{D}\mathbb{S}\, d\tilde{\mathbb{W}}.\]
+
+    \item \textbf{Choice of $\Theta$:} To kill the drift, choose
+    \[\boxed{\Theta(t) = \frac{\alpha(t) - \mathbb{R}(t)}{\sigma(t)}}\]
+    called the \textit{market price of risk}. Then
+    \[d(\mathbb{D}(t)\mathbb{S}(t)) = \sigma(t)\mathbb{D}(t)\mathbb{S}(t)\, d\tilde{\mathbb{W}}(t),\]
+    an Ito integral w.r.t.\ $\tilde{\mathbb{W}}$ and hence a martingale under $\tilde{\mathbb{P}}$. Its solution is
+    \[\mathbb{D}(t)\mathbb{S}(t) = \mathbb{S}(0)\exp\!\left(\int_0^t\sigma(u)\, d\tilde{\mathbb{W}}(u) - \frac{1}{2}\int_0^t\sigma(u)^2\, du\right), \qquad \mathbb{S}(t) = \mathbb{S}(0)\exp\!\left(\int_0^t\sigma\, d\tilde{\mathbb{W}} + \int_0^t\left(\mathbb{R} - \tfrac{1}{2}\sigma^2\right)du\right).\]
+    Under $\tilde{\mathbb{P}}$, the stock grows at the risk-free rate; the drift $\alpha$ has disappeared.
+
+    \item \textbf{Wealth process.} For $d\mathbb{X}(t) = \Delta(t)\, d\mathbb{S}(t) + \mathbb{R}(t)(\mathbb{X}(t) - \Delta(t)\mathbb{S}(t))\, dt$, we get
+    \[d(\mathbb{D}(t)\mathbb{X}(t)) = \Delta(t)\sigma(t)\mathbb{D}(t)\mathbb{S}(t)\, d\tilde{\mathbb{W}}(t) = \Delta(t)\, d(\mathbb{D}(t)\mathbb{S}(t)),\]
+    so $\mathbb{D}(t)\mathbb{X}(t)$ is a martingale under $\tilde{\mathbb{P}}$:
+    \[\mathbb{D}(t)\mathbb{X}(t) = \tilde{\mathbb{E}}[\mathbb{D}(T)\mathbb{X}(T) \mid \mathcal{F}(t)].\]
+
+    \item \textbf{Risk-neutral pricing formula.} We fix the fair price of an option to be $\mathbb{V}(t) = \mathbb{X}(t)$ for all $t \in [0, T]$ (the value of the replicating portfolio), so that
+    \[\boxed{\mathbb{D}(t)\mathbb{V}(t) = \tilde{\mathbb{E}}\bigl[\mathbb{D}(T)\mathbb{V}(T) \mid \mathcal{F}(t)\bigr]}\]
+    For a European call with strike $K$ and expiration $T$, $\mathbb{V}(T) = (\mathbb{S}(T) - K)^+$.
+
+    \item \textbf{Black-Scholes-Merton formula via change of measure.} Specialise to constant $\alpha, \sigma, r$, so $\mathbb{D}(t) = e^{-rt}$ and
+    \[\mathbb{S}(T) = \mathbb{S}(0)\exp\!\left(\sigma\tilde{\mathbb{W}}(T) + \left(r - \tfrac{1}{2}\sigma^2\right)T\right) = \mathbb{S}(t)\exp\!\left(\sigma(\tilde{\mathbb{W}}(T) - \tilde{\mathbb{W}}(t)) + \left(r - \tfrac{1}{2}\sigma^2\right)(T - t)\right).\]
+    Write $\tau = T - t$ (time to expiration) and $x = \mathbb{S}(t)$. Then
+    \[\mathbb{V}(t) = \tilde{\mathbb{E}}\left[e^{-r\tau}\left(x\exp\!\left(\sigma(\tilde{\mathbb{W}}(T) - \tilde{\mathbb{W}}(t)) + \left(r - \tfrac{1}{2}\sigma^2\right)\tau\right) - K\right)^+\right].\]
+    Define $\mathbb{Y} = -\frac{\tilde{\mathbb{W}}(T) - \tilde{\mathbb{W}}(t)}{\sqrt{\tau}} \sim N(0, 1)$ under $\tilde{\mathbb{P}}$, with CDF $N(y) = \int_{-\infty}^y\frac{e^{-z^2/2}}{\sqrt{2\pi}}dz$. Then
+    \[\mathbb{V}(t) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^\infty e^{-r\tau}\left(x\, e^{-\sigma\sqrt{\tau}y + (r - \frac{1}{2}\sigma^2)\tau} - K\right)^+e^{-y^2/2}\, dy.\]
+
+    \item The integrand is non-zero only when $x\,e^{-\sigma\sqrt{\tau}y + (r - \frac{1}{2}\sigma^2)\tau} > K$, i.e.
+    \[y < \frac{1}{\sigma\sqrt{\tau}}\left[\ln\frac{x}{K} + \left(r - \tfrac{1}{2}\sigma^2\right)\tau\right] = d_-(\tau, x).\]
+    Splitting the integral into the two terms,
+    \[\mathbb{V}(t) = \frac{x}{\sqrt{2\pi}}\int_{-\infty}^{d_-}e^{-\frac{1}{2}(y + \sigma\sqrt{\tau})^2}\, dy - \frac{Ke^{-r\tau}}{\sqrt{2\pi}}\int_{-\infty}^{d_-}e^{-\frac{1}{2}y^2}\, dy.\]
+    Substituting $z = y + \sigma\sqrt{\tau}$ in the first integral shifts its upper limit to $d_-+\sigma\sqrt{\tau} = d_+$, so
+    \[\boxed{\mathbb{V}(t) = x\,N\bigl(d_+(\tau, x)\bigr) - Ke^{-r\tau}N\bigl(d_-(\tau, x)\bigr)}\]
+    with
+    \[d_\pm(\tau, x) = \frac{1}{\sigma\sqrt{\tau}}\left[\ln\frac{x}{K} + \left(r \pm \tfrac{1}{2}\sigma^2\right)\tau\right] = \frac{1}{\sigma\sqrt{\tau}}\ln\!\left(\frac{x}{Ke^{-r\tau}}\right) \pm \frac{\sigma\sqrt{\tau}}{2}.\]
+    This is the same Black-Scholes-Merton formula we found by solving the PDE, now obtained as an expectation under the risk-neutral measure. The drift $\alpha$ never appears: it was traded for the market price of risk $\Theta$ in the change of measure.
+
+\end{enumerate}

@@ -1,3 +1,5 @@
 \contentsline {section}{\numberline {1}Random Walks}{2}{}%
 \contentsline {section}{\numberline {2}Stock Price Process}{4}{}%
 \contentsline {section}{\numberline {3}Ito Calculus}{6}{}%
+\contentsline {section}{\numberline {4}Change of Measure}{12}{}%
+\contentsline {section}{\numberline {5}Multi-dimensional Models and the Fundamental Theorems}{17}{}%
