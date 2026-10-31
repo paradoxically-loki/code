@@ -1,0 +1,165 @@
+\chapter{Linear Algebra, Calculus and Optimisation}
+
+Almost every ML model is ``a matrix multiplication, a nonlinearity and an optimiser''. Interviewers use linear algebra and calculus questions to check whether you understand what the libraries are doing.
+
+\section{Vectors, matrices and the geometry behind them}
+
+\begin{intuition}
+A vector is a point (or an arrow) in space; a matrix is a \emph{function} that moves points around --- it stretches, rotates, projects or shears. Reading $\mathbf{A}\x$ as ``apply transformation $\mathbf{A}$ to $\x$'' makes PCA, SVD and neural network layers much easier to reason about.
+\end{intuition}
+
+\subsection{Dot product, norms, angles}
+For $\x,\y\in\R^d$: $\x^\top\y=\sum_i x_iy_i=\|\x\|\|\y\|\cos\theta$.
+\begin{itemize}
+  \item $L_2$ norm $\|\x\|_2=\sqrt{\sum x_i^2}$; $L_1$ norm $\|\x\|_1=\sum|x_i|$; $L_\infty=\max|x_i|$; $L_0$ ``norm'' = number of non-zeros (not a true norm).
+  \item \textbf{Cosine similarity} $=\x^\top\y/(\|\x\|\|\y\|)\in[-1,1]$. Used for text embeddings because it ignores magnitude (document length).
+  \item \textbf{Projection} of $\x$ onto unit vector $\vu$: $(\x^\top\vu)\vu$. PCA is ``find the $\vu$ that keeps the most variance after projection''.
+\end{itemize}
+
+\begin{realworld}
+In a recommendation system, each user and each movie is a vector of, say, 64 numbers. The predicted rating is the dot product. Two movies with high cosine similarity are ``similar'' even if one is a blockbuster (large norm) and one is niche (small norm).
+\end{realworld}
+
+\subsection{Matrix multiplication and shapes}
+$(\mathbf{A}\mathbf{B})_{ij}=\sum_k A_{ik}B_{kj}$, defined when $\mathbf{A}\in\R^{m\times k},\mathbf{B}\in\R^{k\times n}$, result $m\times n$. Cost: $O(mkn)$ multiplications. Not commutative; associative, so the order of evaluation matters for cost: for $\mathbf{A}\in\R^{1000\times 2},\mathbf{B}\in\R^{2\times1000},\x\in\R^{1000}$, computing $\mathbf{A}(\mathbf{B}\x)$ costs about $4000$ operations, $(\mathbf{AB})\x$ about $3$ million.
+
+Useful identities: $(\mathbf{AB})^\top=\mathbf{B}^\top\mathbf{A}^\top$, $(\mathbf{AB})^{-1}=\mathbf{B}^{-1}\mathbf{A}^{-1}$, $\tr(\mathbf{ABC})=\tr(\mathbf{CAB})$ (cyclic), $\x^\top\mathbf{A}\x=\tr(\mathbf{A}\x\x^\top)$.
+
+\subsection{Rank, span, independence}
+\begin{itemize}
+  \item Vectors are \textbf{linearly independent} if no one is a linear combination of the others.
+  \item \textbf{Rank} = number of independent columns = number of independent rows = number of non-zero singular values.
+  \item $\X^\top\X$ is invertible iff $\X$ has full column rank. \emph{This is why perfect multicollinearity breaks OLS}: two identical columns make $\X^\top\X$ singular.
+  \item Rank--nullity: $\operatorname{rank}(\mathbf{A})+\dim\operatorname{null}(\mathbf{A})=$ number of columns.
+\end{itemize}
+
+\subsection{Determinant and inverse}
+$\det(\mathbf{A})$ is the factor by which $\mathbf{A}$ scales volume. $\det=0$ means the transformation squashes space into a lower dimension, so it cannot be undone (no inverse). $\det(\mathbf{AB})=\det\mathbf{A}\det\mathbf{B}$; $\det(\mathbf{A}^{-1})=1/\det\mathbf{A}$; determinant equals the product of eigenvalues; trace equals the sum of eigenvalues.
+
+In practice we almost never compute an inverse explicitly: we solve $\mathbf{A}\x=\vb$ with a factorisation (LU, Cholesky, QR). Explicit inversion is slower and numerically less stable.
+
+\section{Eigen-decomposition and SVD}
+
+\subsection{Eigenvalues and eigenvectors}
+$\mathbf{A}\vv=\lambda\vv$: $\vv$ is a direction that $\mathbf{A}$ only stretches (by $\lambda$), never rotates. Found by solving $\det(\mathbf{A}-\lambda\mathbf{I})=0$.
+
+\begin{example}
+$\mathbf{A}=\begin{pmatrix}2&1\\1&2\end{pmatrix}$. $\det\begin{pmatrix}2-\lambda&1\\1&2-\lambda\end{pmatrix}=(2-\lambda)^2-1=0\Rightarrow\lambda\in\{1,3\}$. For $\lambda=3$: $\vv=(1,1)^\top/\sqrt2$; for $\lambda=1$: $\vv=(1,-1)^\top/\sqrt2$. Check: trace $=4=1+3$, det $=3=1\times3$.
+\end{example}
+
+\begin{theorem}[Spectral theorem]
+A real symmetric matrix $\mathbf{S}$ has real eigenvalues and orthonormal eigenvectors: $\mathbf{S}=\mathbf{Q}\bm{\Lambda}\mathbf{Q}^\top$ with $\mathbf{Q}^\top\mathbf{Q}=\mathbf{I}$.
+\end{theorem}
+Covariance matrices are symmetric and positive semi-definite (PSD), so they always have this decomposition with $\lambda_i\ge0$. That is the foundation of PCA.
+
+\textbf{Positive definiteness.} $\mathbf{S}$ is PSD if $\x^\top\mathbf{S}\x\ge0$ for all $\x$ (equivalently all eigenvalues $\ge0$); positive definite (PD) if $>0$ for $\x\neq0$. A twice-differentiable function is convex iff its Hessian is PSD everywhere.
+
+\textbf{Proof that a covariance matrix is PSD:} $\x^\top\Sig\x=\x^\top\E[(\z-\vmu)(\z-\vmu)^\top]\x=\E[(\x^\top(\z-\vmu))^2]\ge0$.
+
+\subsection{Singular Value Decomposition (SVD)}
+Any $\mathbf{A}\in\R^{m\times n}$ factorises as $\mathbf{A}=\mathbf{U}\bm{\Sigma}\mathbf{V}^\top$ where $\mathbf{U}\in\R^{m\times m}$ and $\mathbf{V}\in\R^{n\times n}$ are orthogonal and $\bm\Sigma$ is diagonal with singular values $\sigma_1\ge\sigma_2\ge\dots\ge0$.
+
+\begin{intuition}
+Every linear map is: rotate ($\mathbf{V}^\top$), stretch along axes ($\bm\Sigma$), rotate again ($\mathbf{U}$).
+\end{intuition}
+
+Connections you will be asked about:
+\begin{itemize}
+  \item $\mathbf{A}^\top\mathbf{A}=\mathbf{V}\bm\Sigma^2\mathbf{V}^\top$: the right singular vectors are eigenvectors of $\mathbf{A}^\top\mathbf{A}$, and $\sigma_i^2$ are its eigenvalues.
+  \item \textbf{Eckart--Young theorem}: the best rank-$k$ approximation (in Frobenius or spectral norm) is $\mathbf{A}_k=\sum_{i=1}^k\sigma_i\vu_i\vv_i^\top$. This underlies PCA, latent semantic analysis, image compression and low-rank adapters (LoRA).
+  \item Condition number $\kappa=\sigma_{\max}/\sigma_{\min}$. Large $\kappa$ means the problem is ill-conditioned: small input changes cause large output changes, and gradient descent zig-zags.
+  \item Pseudo-inverse $\mathbf{A}^+=\mathbf{V}\bm\Sigma^+\mathbf{U}^\top$ gives the minimum-norm least-squares solution even when $\X^\top\X$ is singular.
+\end{itemize}
+
+\begin{realworld}
+Netflix-prize style collaborative filtering approximates the user $\times$ movie rating matrix by a low-rank product: tastes are driven by a few latent factors (``action vs.\ drama'', ``mainstream vs.\ indie''), which is exactly what a truncated SVD captures.
+\end{realworld}
+
+\section{Calculus for machine learning}
+
+\subsection{Derivatives, partial derivatives, gradient}
+The gradient $\nabla f(\x)=(\partial f/\partial x_1,\dots,\partial f/\partial x_d)^\top$ points in the direction of steepest increase; its magnitude is the rate of increase. Gradient descent steps in $-\nabla f$.
+
+\textbf{Why $-\nabla f$ is steepest descent:} the directional derivative along unit $\vu$ is $\nabla f^\top\vu=\|\nabla f\|\cos\theta$, minimised at $\theta=\pi$.
+
+\subsection{Chain rule --- the heart of backpropagation}
+If $y=f(g(x))$ then $dy/dx=f'(g(x))\,g'(x)$. For vectors, $\partial\z/\partial\x=(\partial\z/\partial\y)(\partial\y/\partial\x)$ as a product of Jacobians.
+
+\subsection{Matrix calculus identities (memorise)}
+With $\x\in\R^d$, $\mathbf{A}$ constant:
+\begin{align*}
+\nabla_{\x}(\mathbf{a}^\top\x) &= \mathbf{a} &
+\nabla_{\x}(\x^\top\mathbf{A}\x) &= (\mathbf{A}+\mathbf{A}^\top)\x \;(=2\mathbf{A}\x \text{ if symmetric})\\
+\nabla_{\x}\|\x\|_2^2 &= 2\x &
+\nabla_{\x}\|\mathbf{A}\x-\vb\|_2^2 &= 2\mathbf{A}^\top(\mathbf{A}\x-\vb)\\
+\nabla_{\mathbf{A}}\tr(\mathbf{AB}) &= \mathbf{B}^\top &
+\nabla_{\mathbf{A}}\log\det\mathbf{A} &= \mathbf{A}^{-\top}
+\end{align*}
+
+\subsection{Derivatives of common functions}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Function & Formula & Derivative\\
+\midrule
+Sigmoid & $\sigma(z)=1/(1+e^{-z})$ & $\sigma(z)(1-\sigma(z))$, max $0.25$ at $z=0$\\
+Tanh & $\tanh z$ & $1-\tanh^2z$, max 1\\
+ReLU & $\max(0,z)$ & $\mathbb{1}[z>0]$\\
+Softplus & $\log(1+e^z)$ & $\sigma(z)$\\
+Softmax & $p_i=e^{z_i}/\sum_je^{z_j}$ & $\partial p_i/\partial z_j=p_i(\delta_{ij}-p_j)$\\
+Log-sum-exp & $\log\sum_je^{z_j}$ & softmax$(\z)$\\
+\bottomrule
+\end{tabular}
+
+\textbf{Derivation of the sigmoid derivative:} $\sigma=(1+e^{-z})^{-1}\Rightarrow\sigma'=e^{-z}(1+e^{-z})^{-2}=\sigma\cdot\frac{e^{-z}}{1+e^{-z}}=\sigma(1-\sigma)$.
+
+\subsection{Taylor expansion}
+$f(\x+\bm\delta)\approx f(\x)+\nabla f^\top\bm\delta+\tfrac12\bm\delta^\top\mathbf{H}\bm\delta$. The first-order term justifies gradient descent; the second-order term justifies Newton's method and XGBoost's split gain formula (Chapter~\ref{ch:ensembles}).
+
+\section{Optimisation}
+
+\subsection{Convexity}
+$f$ is convex if $f(\lambda\x+(1-\lambda)\y)\le\lambda f(\x)+(1-\lambda)f(\y)$. For convex $f$, every local minimum is global.
+\begin{itemize}
+  \item Convex: MSE for linear regression, log-loss for logistic regression, hinge loss for SVM, $L_1$ and $L_2$ penalties.
+  \item Non-convex: neural network losses, k-means objective, GMM likelihood, matrix factorisation.
+  \item Sums of convex functions are convex; a convex function composed with an affine map is convex.
+\end{itemize}
+
+\subsection{Gradient descent family}
+\textbf{Batch GD:} $\vtheta\leftarrow\vtheta-\eta\nabla L(\vtheta)$ using all $n$ samples. Deterministic, expensive per step.
+
+\textbf{Stochastic GD:} use one sample; noisy but cheap and the noise can help escape saddle points.
+
+\textbf{Mini-batch GD:} batch of size $B$ (32--4096). Standard in deep learning; vectorises on GPUs.
+
+\textbf{Convergence (convex, $L$-smooth):} with $\eta\le1/L$, GD reaches $f(\vtheta_t)-f^*=O(1/t)$; with strong convexity, linear (geometric) convergence. Too large a learning rate diverges; too small crawls.
+
+Momentum, RMSProp and Adam are covered in Chapter~\ref{ch:nn} where they matter most.
+
+\subsection{Newton's method}
+$\vtheta\leftarrow\vtheta-\mathbf{H}^{-1}\nabla L$. Uses curvature, so converges quadratically near the optimum, but each step needs an $O(d^3)$ Hessian solve, impractical for millions of parameters. Logistic regression's classic solver IRLS is Newton's method. Quasi-Newton (BFGS, L-BFGS) approximates $\mathbf{H}^{-1}$ from gradients; L-BFGS is scikit-learn's default for logistic regression.
+
+\subsection{Constrained optimisation: Lagrange multipliers and KKT}
+To minimise $f(\x)$ subject to $g_i(\x)\le0$, $h_j(\x)=0$, form the Lagrangian
+\[\mathcal{L}(\x,\bm\alpha,\bm\nu)=f(\x)+\sum_i\alpha_ig_i(\x)+\sum_j\nu_jh_j(\x),\quad\alpha_i\ge0.\]
+KKT conditions at the optimum: stationarity $\nabla_{\x}\mathcal{L}=0$; primal feasibility; dual feasibility $\alpha_i\ge0$; complementary slackness $\alpha_ig_i(\x)=0$. Complementary slackness is why only \emph{support vectors} have non-zero $\alpha_i$ in an SVM.
+
+\begin{example}[PCA as a Lagrangian problem]
+Maximise $\vu^\top\Sig\vu$ s.t.\ $\vu^\top\vu=1$. $\mathcal{L}=\vu^\top\Sig\vu-\lambda(\vu^\top\vu-1)$; $\nabla_{\vu}=2\Sig\vu-2\lambda\vu=0\Rightarrow\Sig\vu=\lambda\vu$. The variance captured is $\vu^\top\Sig\vu=\lambda$, so pick the eigenvector with the largest eigenvalue.
+\end{example}
+
+\section{Interview questions}
+\Q{Why is computing $(\X^\top\X)^{-1}$ a bad idea for large or collinear data?}
+\A It costs $O(d^3)$, and when columns are nearly collinear the matrix is ill-conditioned, so rounding errors explode. Use QR/SVD-based solvers, add ridge regularisation ($\X^\top\X+\lambda\mathbf{I}$ is always invertible for $\lambda>0$), or use gradient methods.
+
+\Q{What does it mean geometrically if a matrix has a zero eigenvalue?}
+\A Some direction is mapped to zero: the matrix collapses space, is singular and not invertible; determinant is zero.
+
+\Q{Relationship between eigen-decomposition and SVD?}
+\A For symmetric PSD matrices they coincide. In general, singular values of $\mathbf{A}$ are square roots of eigenvalues of $\mathbf{A}^\top\mathbf{A}$; SVD exists for any rectangular matrix, eigen-decomposition only for (diagonalisable) square ones.
+
+\Q{Is the Hessian of the logistic regression loss PSD? Why does it matter?}
+\A Yes: $\mathbf{H}=\X^\top\mathbf{D}\X$ with $\mathbf{D}=\diag(p_i(1-p_i))\succeq0$, so $\vu^\top\mathbf{H}\vu=\|\mathbf{D}^{1/2}\X\vu\|^2\ge0$. The loss is convex, so any local minimum is global.
+
+\Q{What is a saddle point and why are they a bigger issue than local minima in deep learning?}
+\A A point with zero gradient where the Hessian has both positive and negative eigenvalues. In high dimensions, random critical points are overwhelmingly likely to be saddles rather than minima (each of millions of eigenvalues would have to be positive). SGD noise and momentum help escape them.

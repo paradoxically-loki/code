@@ -1,0 +1,187 @@
+\chapter{Machine Learning Fundamentals}
+\label{ch:mlfund}
+
+\section{The learning problem}
+\begin{intuition}
+We have examples $(\x_i,y_i)$ drawn from some unknown process. We want a function $f$ that does well on \emph{new} examples from the same process, not just the ones we saw. Everything in ML --- regularisation, validation, early stopping, ensembling --- is a tool for closing the gap between ``good on what I saw'' and ``good on what I will see''.
+\end{intuition}
+
+\textbf{Types of learning.}
+\begin{itemize}
+  \item \textbf{Supervised}: labels given. Regression (continuous $y$) and classification (discrete $y$).
+  \item \textbf{Unsupervised}: no labels. Clustering, dimensionality reduction, density estimation, anomaly detection.
+  \item \textbf{Semi-supervised}: few labels, many unlabelled points (pseudo-labelling, consistency regularisation).
+  \item \textbf{Self-supervised}: labels manufactured from the data itself (predict the next word, the masked patch). Basis of LLM pre-training.
+  \item \textbf{Reinforcement learning}: an agent acts, receives rewards, learns a policy.
+\end{itemize}
+
+\textbf{Empirical risk minimisation (ERM).} True risk $R(f)=\E_{(\x,y)\sim P}[\ell(f(\x),y)]$ is unknowable. We minimise the empirical risk $\hat R(f)=\frac1n\sum_i\ell(f(\x_i),y_i)$ plus usually a complexity penalty $\lambda\Omega(f)$.
+
+\textbf{Parametric vs non-parametric.} Parametric models have a fixed number of parameters (linear/logistic regression, a fixed neural net). Non-parametric models grow with the data (kNN, kernel SVM, decision trees grown fully, Gaussian processes).
+
+\textbf{Discriminative vs generative.} Discriminative models learn $p(y\mid\x)$ or a decision boundary directly (logistic regression, SVM). Generative models learn $p(\x,y)=p(\x\mid y)p(y)$ and use Bayes (Naive Bayes, LDA, GMM). Generative models can generate data and handle missing features; discriminative models usually have better accuracy with enough data.
+
+\textbf{No free lunch theorem.} Averaged over all possible problems, no learner beats any other. Every algorithm wins because its assumptions (inductive bias) match the problem: CNNs assume locality and translation invariance; linear models assume additivity; trees assume axis-aligned thresholds matter.
+
+\section{Bias--variance trade-off}
+
+\begin{intuition}
+Bias: the model is systematically wrong because it is too simple (a straight line through a curve). Variance: the model changes a lot depending on which training sample it saw (a degree-15 polynomial). You want both low, but reducing one typically increases the other.
+\end{intuition}
+
+\subsection{Derivation (squared loss)}
+Assume $y=f(\x)+\varepsilon$ with $\E\varepsilon=0$, $\Var\varepsilon=\sigma^2$, and $\hat f$ is learned from a random training set $D$. At a fixed $\x$, write $\bar f=\E_D[\hat f(\x)]$.
+\begin{align*}
+\E_{D,\varepsilon}[(y-\hat f)^2]
+&=\E[(f+\varepsilon-\hat f)^2]
+=\E[(f-\hat f)^2]+\sigma^2 \quad(\text{cross term vanishes since }\varepsilon\perp D)\\
+&=\E[(f-\bar f+\bar f-\hat f)^2]+\sigma^2\\
+&=\underbrace{(f-\bar f)^2}_{\text{Bias}^2}+\underbrace{\E[(\hat f-\bar f)^2]}_{\text{Variance}}+\underbrace{\sigma^2}_{\text{irreducible}}.
+\end{align*}
+The middle cross term $2(f-\bar f)\E[\bar f-\hat f]=0$ because $\E[\hat f]=\bar f$.
+
+\begin{tabular}{@{}p{0.27\textwidth}p{0.2\textwidth}p{0.45\textwidth}@{}}
+\toprule
+Symptom & Diagnosis & Remedies\\
+\midrule
+High train error, high val error & High bias (underfit) & More features, more complex model, less regularisation, train longer\\
+Low train error, high val error & High variance (overfit) & More data, regularisation, simpler model, dropout, bagging, early stopping, augmentation\\
+\bottomrule
+\end{tabular}
+
+\textbf{Which models reduce what?} Bagging/random forests mainly reduce variance; boosting mainly reduces bias. Increasing $k$ in kNN increases bias and lowers variance. Deeper trees lower bias and raise variance.
+
+\textbf{Double descent (modern nuance).} In very over-parameterised models (large neural nets), test error can fall again after the interpolation threshold, so the classical U-curve is incomplete. Worth mentioning in DL interviews; do not overclaim it.
+
+\section{Data splitting and validation}
+\begin{itemize}
+  \item \textbf{Train / validation / test}: fit on train, tune hyperparameters on validation, report once on test. Touching the test set repeatedly turns it into a validation set and makes the reported number optimistic.
+  \item \textbf{$k$-fold CV}: average performance over $k$ folds; lower variance estimate. $k=5$ or $10$ typical. LOOCV ($k=n$) is nearly unbiased but high variance and expensive.
+  \item \textbf{Stratified $k$-fold}: preserves class proportions --- use for imbalanced classification.
+  \item \textbf{Group $k$-fold}: all rows of a customer/patient stay in one fold; otherwise the model memorises the person.
+  \item \textbf{Time-series split}: train on the past, validate on the future (expanding or rolling window). Never shuffle time series.
+  \item \textbf{Nested CV}: inner loop tunes hyperparameters, outer loop estimates generalisation of the whole tuning procedure.
+\end{itemize}
+
+\subsection{Data leakage}
+Information unavailable at prediction time sneaks into training. It produces great offline scores and failure in production. Typical forms:
+\begin{itemize}
+  \item \textbf{Target leakage}: feature derived from the label. E.g.\ ``number of collection calls made'' when predicting loan default --- calls happen \emph{after} default starts.
+  \item \textbf{Train--test contamination}: fitting a scaler, imputer, PCA or target encoder on the full data before splitting. Fit preprocessing inside the CV fold (scikit-learn \texttt{Pipeline}).
+  \item \textbf{Temporal leakage}: random split on time-ordered data; using future prices to predict today's.
+  \item \textbf{Duplicate leakage}: the same entity appears in train and test.
+\end{itemize}
+
+\begin{realworld}
+A hospital pneumonia-mortality model learned that asthma patients had \emph{lower} risk. True in the data --- because asthmatics were sent straight to intensive care. The model captured treatment policy, not biology. Lesson: a feature correlated with an intervention can mislead badly; always sanity-check feature effects with domain experts.
+\end{realworld}
+
+\section{Preprocessing and feature engineering}
+
+\subsection{Missing values}
+Types: MCAR (completely at random), MAR (depends on observed variables), MNAR (depends on the missing value itself, e.g.\ high earners not disclosing income). Options: drop rows/columns; mean/median/mode imputation; model-based (kNN, iterative/MICE); add a ``was missing'' indicator (often highly predictive under MNAR); tree libraries like XGBoost/LightGBM learn a default direction for missing values.
+
+\subsection{Categorical encoding}
+\begin{itemize}
+  \item \textbf{One-hot}: safe for low cardinality; drop one level for linear models with an intercept (dummy-variable trap).
+  \item \textbf{Ordinal / label encoding}: only when categories are ordered, or for tree models.
+  \item \textbf{Target (mean) encoding}: replace category by mean target; must be computed out-of-fold with smoothing to avoid leakage.
+  \item \textbf{Frequency encoding}, \textbf{hashing trick} (fixed-size, collisions acceptable), \textbf{learned embeddings} (neural nets, high cardinality like product IDs).
+\end{itemize}
+
+\subsection{Scaling}
+Standardisation $z=(x-\mu)/\sigma$; min--max to $[0,1]$; robust scaling with median and IQR (outlier-resistant); log transform for right-skewed data like income.
+
+\textbf{Needs scaling}: kNN, k-means, SVM (RBF), PCA, linear/logistic regression with regularisation, neural networks, anything gradient-based. \textbf{Does not need it}: tree-based models (splits are invariant to monotone transforms).
+
+\subsection{Feature engineering ideas interviewers like}
+Ratios (debt/income), differences, date parts (day-of-week, month-end, holiday flags), lags and rolling statistics for time series, aggregations per entity (customer's average spend in last 30 days), interaction terms, binning, text features (TF-IDF, embeddings), geospatial distances.
+
+\subsection{Feature selection}
+\begin{itemize}
+  \item \textbf{Filter}: correlation, mutual information, $\chi^2$, variance threshold. Fast, model-agnostic, ignores interactions.
+  \item \textbf{Wrapper}: forward/backward selection, recursive feature elimination. Expensive, risk of overfitting the selection.
+  \item \textbf{Embedded}: lasso, tree importances.
+  \item Multicollinearity check: variance inflation factor $\text{VIF}_j=1/(1-R_j^2)$, where $R_j^2$ comes from regressing feature $j$ on the others. VIF $>5$--$10$ is a common warning threshold.
+\end{itemize}
+
+\subsection{Curse of dimensionality}
+As $d$ grows, data becomes sparse: the volume of a unit hypercube concentrates near the boundary, and distances between random points become nearly equal (ratio of nearest to farthest distance $\to1$). Distance-based methods (kNN, k-means) degrade; more data is needed exponentially. Remedies: feature selection, PCA/embeddings, regularisation, models with strong inductive bias.
+
+\section{Class imbalance}
+\begin{itemize}
+  \item Use the right metric (PR-AUC, recall at fixed precision, F1) --- not accuracy. A 99.5\%-accurate fraud model can be one that predicts ``not fraud'' always.
+  \item \textbf{Class weights} in the loss (\texttt{class\_weight='balanced'}, \texttt{scale\_pos\_weight} in XGBoost).
+  \item \textbf{Resampling}: random undersampling of the majority; oversampling the minority; \textbf{SMOTE} creates synthetic minority points by interpolating between a point and its minority-class neighbours. Resample only the training fold, never validation/test.
+  \item \textbf{Threshold tuning}: the default 0.5 is rarely optimal; pick the threshold that maximises expected business value.
+  \item Note that resampling and class weights distort predicted probabilities; recalibrate if you need true probabilities.
+\end{itemize}
+
+\section{Evaluation metrics}
+
+\subsection{Confusion matrix and derived metrics}
+\begin{center}
+\begin{tabular}{@{}l|cc@{}}
+ & Predicted + & Predicted $-$\\ \hline
+Actual + & TP & FN\\
+Actual $-$ & FP & TN
+\end{tabular}
+\end{center}
+\begin{itemize}
+  \item Accuracy $=\frac{TP+TN}{\text{all}}$.
+  \item \textbf{Precision} $=\frac{TP}{TP+FP}$ --- of those I flagged, how many were right? (cost of false alarms)
+  \item \textbf{Recall / sensitivity / TPR} $=\frac{TP}{TP+FN}$ --- of all real positives, how many did I catch? (cost of misses)
+  \item Specificity / TNR $=\frac{TN}{TN+FP}$; FPR $=1-$specificity.
+  \item $F_1=\frac{2PR}{P+R}$ (harmonic mean, punishes imbalance between P and R); $F_\beta=(1+\beta^2)\frac{PR}{\beta^2P+R}$, $\beta>1$ weights recall more.
+  \item MCC $=\frac{TP\cdot TN-FP\cdot FN}{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}$ --- balanced even with imbalance.
+\end{itemize}
+
+\begin{example}
+1000 loan applicants, 100 actually default. The model flags 80, of which 60 truly default. TP$=60$, FP$=20$, FN$=40$, TN$=880$. Accuracy $=94\%$; precision $=75\%$; recall $=60\%$; $F_1=0.667$; specificity $=880/900=97.8\%$.
+\end{example}
+
+\textbf{Which to prioritise?} Cancer screening, fraud detection where reviews are cheap: recall. Spam filtering, recommending a loan rejection that triggers legal review: precision. Always tie it to the cost of an FP versus an FN.
+
+\subsection{ROC and PR curves}
+\begin{itemize}
+  \item \textbf{ROC curve}: TPR vs FPR across thresholds. \textbf{AUC} = probability that a random positive gets a higher score than a random negative. 0.5 = random, 1 = perfect. Threshold-independent and invariant to class prior.
+  \item With heavy imbalance ROC-AUC can look great while precision is poor (FPR stays tiny because TN is huge). \textbf{PR curve / average precision} focuses on the positive class; its random baseline equals the positive rate, not 0.5.
+  \item \textbf{Gini coefficient} (credit scoring) $=2\cdot\text{AUC}-1$. \textbf{KS statistic} = max separation between cumulative score distributions of goods and bads.
+\end{itemize}
+
+\subsection{Probabilistic metrics and calibration}
+Log-loss $=-\frac1n\sum[y\log p+(1-y)\log(1-p)]$ punishes confident wrong answers heavily. Brier score $=\frac1n\sum(p-y)^2$. A model is \textbf{calibrated} if among cases predicted 0.7, about 70\% are positive. Check with a reliability diagram; fix with Platt scaling (a logistic regression on scores) or isotonic regression. Random forests and boosted trees are often mis-calibrated; logistic regression is usually well-calibrated.
+
+\subsection{Regression metrics}
+\begin{itemize}
+  \item MSE, RMSE (same units as $y$, punishes large errors). MAE (robust to outliers; optimal constant prediction is the median, whereas for MSE it is the mean).
+  \item MAPE $=\frac1n\sum|y-\hat y|/|y|$: scale-free but undefined at $y=0$ and asymmetric. sMAPE, WAPE are alternatives used in demand forecasting.
+  \item $R^2=1-\frac{SS_{res}}{SS_{tot}}$: share of variance explained. Can be negative on test data (worse than predicting the mean). Never decreases as you add features on training data; adjusted $R^2=1-(1-R^2)\frac{n-1}{n-d-1}$ penalises useless features.
+  \item Huber loss: quadratic for small errors, linear for large --- a compromise between MSE and MAE.
+  \item Quantile (pinball) loss trains models for prediction intervals.
+\end{itemize}
+
+\subsection{Ranking metrics}
+Precision@$k$, Recall@$k$, MAP (mean of average precision across queries), MRR (mean reciprocal rank of the first relevant item), and NDCG@$k$: $\text{DCG}=\sum_{i=1}^k\frac{2^{rel_i}-1}{\log_2(i+1)}$ normalised by the ideal ordering's DCG.
+
+\section{Interview questions}
+\Q{Your model has 98\% training accuracy and 70\% validation accuracy. What do you do?}
+\A Overfitting. Check for leakage or distribution mismatch between splits first; then add regularisation, reduce complexity, get more data or augment, use early stopping, ensembling. Also check that the validation set is representative (same time period, same customer mix).
+
+\Q{Validation score is great but production performance is poor. Causes?}
+\A Leakage; train--serve skew (feature computed differently online); data drift or concept drift; label definition differences; the offline metric not matching the business metric; selection bias in historical data (e.g.\ only approved loans have default labels --- ``reject inference'' problem).
+
+\Q{When is accuracy a bad metric?}
+\A Under class imbalance, and whenever FP and FN costs differ.
+
+\Q{Why does $R^2$ increase when you add a random noise feature?}
+\A OLS can only reduce training SSE by adding a column (it can set the coefficient to zero at worst), so $R^2$ cannot fall in-sample. Use adjusted $R^2$, out-of-sample $R^2$, AIC/BIC.
+
+\Q{Explain AUC to a business stakeholder.}
+\A ``If I pick one customer who churned and one who didn't, AUC is the chance the model ranks the churner as riskier.''
+
+\Q{How would you handle a categorical feature with 50,000 levels?}
+\A Target encoding with out-of-fold computation and smoothing, frequency encoding, hashing, grouping rare levels into ``other'', or learned embeddings. Not one-hot for linear models unless sparse and regularised.
+
+\Q{Why stratify the split?}
+\A To keep class proportions the same across folds so that rare-class metrics are estimated stably.

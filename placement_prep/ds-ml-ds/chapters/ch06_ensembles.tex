@@ -1,0 +1,131 @@
+\chapter[Ensembles]{Ensembles: Bagging, Random Forests and Boosting}
+\label{ch:ensembles}
+
+\begin{intuition}
+A committee of diverse, reasonably good models beats any single member. \textbf{Bagging} builds many independent strong-but-noisy models and averages them (cuts variance). \textbf{Boosting} builds many weak models sequentially, each fixing the mistakes of those before (cuts bias). For tabular data --- credit risk, churn, fraud, pricing --- gradient-boosted trees remain the default winning approach in industry and on Kaggle.
+\end{intuition}
+
+\section{Why averaging helps}
+If $B$ models each have variance $\sigma^2$ and pairwise correlation $\rho$, the variance of their average is
+\[\Var\Big(\frac1B\sum_bf_b\Big)=\rho\sigma^2+\frac{1-\rho}{B}\sigma^2.\]
+\textbf{Derivation:} $\frac1{B^2}[B\sigma^2+B(B-1)\rho\sigma^2]=\frac{\sigma^2}{B}+\frac{B-1}{B}\rho\sigma^2$, which rearranges to the above. As $B\to\infty$ the second term vanishes but $\rho\sigma^2$ remains --- so the key to good ensembles is \emph{low correlation} between members. That motivates random forests' feature subsampling.
+
+\section{Bagging}
+Bootstrap aggregating: draw $B$ bootstrap samples (size $n$, with replacement), train a model on each, average (regression) or vote (classification). Each bootstrap sample contains about $1-(1-1/n)^n\to1-1/e\approx63.2\%$ of unique points; the remaining $\approx36.8\%$ are \textbf{out-of-bag (OOB)} and give a free validation estimate. Works best with high-variance, low-bias base learners (deep trees).
+
+\section{Random forests}
+Bagging of decision trees + at every split, consider only a random subset of \texttt{max\_features} features (typical: $\sqrt d$ for classification, $d/3$ for regression). This decorrelates trees: otherwise one strong feature would sit at the root of every tree.
+
+Key hyperparameters: \texttt{n\_estimators} (more is never worse for accuracy, just slower), \texttt{max\_features} (main decorrelation knob), \texttt{max\_depth}, \texttt{min\_samples\_leaf}, \texttt{bootstrap}.
+
+\textbf{Feature importance.}
+\begin{itemize}
+  \item \textbf{Impurity-based (MDI)}: total impurity decrease from splits on a feature. Fast, but biased toward high-cardinality and continuous features, computed on training data.
+  \item \textbf{Permutation importance}: shuffle one feature in validation data and measure the drop in score. Model-agnostic, more reliable; but correlated features share credit (shuffling one leaves its twin).
+  \item \textbf{SHAP values}: see below.
+\end{itemize}
+
+Pros: strong out-of-the-box, hard to overfit badly with more trees, parallel, OOB estimate. Cons: large models, slower inference, cannot extrapolate, less accurate than well-tuned boosting on most tabular tasks. Extra-Trees choose split thresholds randomly too --- even lower variance, faster.
+
+\section{Boosting}
+
+\subsection{AdaBoost}
+Labels $\pm1$, sample weights $w_i$ start at $1/n$. For $m=1..M$:
+\begin{enumerate}
+  \item Fit weak learner $h_m$ (often a stump) on weighted data; weighted error $\epsilon_m=\sum_iw_i\mathbb{1}[h_m(\x_i)\ne y_i]$.
+  \item Learner weight $\alpha_m=\frac12\log\frac{1-\epsilon_m}{\epsilon_m}$ (positive only if better than chance).
+  \item Update $w_i\leftarrow w_i\exp(-\alpha_my_ih_m(\x_i))$, then normalise. Misclassified points gain weight.
+\end{enumerate}
+Final $H(\x)=\sign\sum_m\alpha_mh_m(\x)$. AdaBoost equals forward stagewise additive modelling under the \textbf{exponential loss} $e^{-yf(\x)}$, which makes it sensitive to outliers and label noise.
+
+\subsection{Gradient boosting (derivation)}
+Build an additive model $F_M(\x)=F_0(\x)+\sum_{m=1}^M\eta\,h_m(\x)$ for any differentiable loss $\ell$. View it as gradient descent in function space:
+\begin{enumerate}
+  \item Initialise $F_0=\argmin_c\sum_i\ell(y_i,c)$ (mean for MSE; log-odds of the base rate for log-loss).
+  \item For $m=1..M$: compute \textbf{pseudo-residuals} $r_{im}=-\Big[\dfrac{\partial\ell(y_i,F(\x_i))}{\partial F(\x_i)}\Big]_{F=F_{m-1}}$.
+  \item Fit a regression tree $h_m$ to $\{(\x_i,r_{im})\}$.
+  \item For each leaf $j$, set the value $\gamma_{jm}=\argmin_{\gamma}\sum_{\x_i\in R_{jm}}\ell(y_i,F_{m-1}(\x_i)+\gamma)$.
+  \item Update $F_m=F_{m-1}+\eta\sum_j\gamma_{jm}\mathbb{1}[\x\in R_{jm}]$.
+\end{enumerate}
+\textbf{For MSE} $\ell=\frac12(y-F)^2$: $r=y-F$, the plain residual --- each tree literally fits what is left to explain. \textbf{For log-loss}: $r=y-p$. \textbf{For MAE}: $r=\sign(y-F)$.
+
+The learning rate (shrinkage) $\eta\in[0.01,0.3]$: smaller $\eta$ needs more trees but generalises better. Use early stopping on a validation set. Unlike random forests, \emph{more trees can overfit}.
+
+\begin{realworld}
+Predicting delivery time for a food order: tree 1 learns ``distance matters''. Residuals show it under-predicts on rainy Friday evenings; tree 2 captures ``rain $\times$ peak hour''. Tree 3 picks up a specific slow restaurant. Each tree is small, but together they model complex interactions.
+\end{realworld}
+
+\subsection{XGBoost: second-order boosting (derivation)}
+Objective at step $t$ with regularised trees:
+\[\mathcal{L}^{(t)}=\sum_i\ell\big(y_i,\hat y_i^{(t-1)}+f_t(\x_i)\big)+\Omega(f_t),\quad\Omega(f)=\gamma T+\tfrac12\lambda\sum_{j=1}^Tw_j^2,\]
+where $T$ = number of leaves, $w_j$ = leaf values. Second-order Taylor expansion with $g_i=\partial\ell/\partial\hat y$, $h_i=\partial^2\ell/\partial\hat y^2$:
+\[\mathcal{L}^{(t)}\approx\sum_i\big[g_if_t(\x_i)+\tfrac12h_if_t(\x_i)^2\big]+\gamma T+\tfrac12\lambda\sum_jw_j^2+\text{const}.\]
+Group by leaf ($I_j$ = samples in leaf $j$, $G_j=\sum_{i\in I_j}g_i$, $H_j=\sum_{i\in I_j}h_i$):
+\[\mathcal{L}^{(t)}=\sum_{j=1}^T\big[G_jw_j+\tfrac12(H_j+\lambda)w_j^2\big]+\gamma T.\]
+Minimising each quadratic: $w_j^*=-\dfrac{G_j}{H_j+\lambda}$, giving objective $-\frac12\sum_j\frac{G_j^2}{H_j+\lambda}+\gamma T$. Hence the \textbf{split gain}
+\[\text{Gain}=\frac12\Big[\frac{G_L^2}{H_L+\lambda}+\frac{G_R^2}{H_R+\lambda}-\frac{(G_L+G_R)^2}{H_L+H_R+\lambda}\Big]-\gamma.\]
+A split is made only if Gain $>0$: $\gamma$ is a built-in pruning threshold. For log-loss, $g=p-y$, $h=p(1-p)$.
+
+Other XGBoost engineering: sparsity-aware split finding (learns a default direction for missing values), weighted quantile sketch for approximate splits, column blocks for parallel split search, cache awareness, out-of-core training, \texttt{min\_child\_weight} (minimum $H$ in a leaf), row and column subsampling.
+
+\subsection{LightGBM}
+\begin{itemize}
+  \item \textbf{Histogram-based} splits: bin features into $\le255$ buckets --- fast and memory-light.
+  \item \textbf{Leaf-wise growth}: split the leaf with the largest gain anywhere in the tree (XGBoost default is level-wise). Lower loss for the same number of leaves but can overfit small data; control with \texttt{num\_leaves}, \texttt{min\_data\_in\_leaf}, \texttt{max\_depth}.
+  \item \textbf{GOSS} (gradient-based one-side sampling): keep all large-gradient samples, sample the small-gradient ones and up-weight them.
+  \item \textbf{EFB} (exclusive feature bundling): merge sparse features that are rarely non-zero together.
+  \item Native categorical handling.
+\end{itemize}
+
+\subsection{CatBoost}
+\begin{itemize}
+  \item \textbf{Ordered target statistics} for categorical features: encode each row using only rows ``before'' it in a random permutation, avoiding target leakage.
+  \item \textbf{Ordered boosting} to reduce prediction shift (residuals computed by a model that has seen the row).
+  \item \textbf{Oblivious (symmetric) trees}: same split at every node of a level --- fast inference, regularising effect.
+  \item Often strong with default parameters on data with many categoricals.
+\end{itemize}
+
+\subsection{Tuning gradient boosting --- a practical order}
+\begin{enumerate}
+  \item Fix a moderate learning rate (0.05--0.1) and use early stopping to choose the number of trees.
+  \item Tune tree complexity: \texttt{max\_depth} (3--10) or \texttt{num\_leaves}; and \texttt{min\_child\_weight} or \texttt{min\_data\_in\_leaf}.
+  \item Tune randomness: \texttt{subsample}, \texttt{colsample\_bytree} (0.5--1).
+  \item Tune regularisation: \texttt{lambda}, \texttt{alpha}, \texttt{gamma}.
+  \item Lower the learning rate and increase trees for the final model.
+\end{enumerate}
+Bayesian optimisation (Optuna) usually beats grid search for this.
+
+\section{Stacking and blending}
+Train diverse base models; use their \emph{out-of-fold} predictions as features for a meta-learner (often logistic/linear regression). Using in-fold predictions leaks. Blending uses a single holdout instead of OOF. Gains are usually small but real in competitions; in production the complexity cost often is not worth it.
+
+\section{Model interpretability}
+\begin{itemize}
+  \item \textbf{Partial dependence plot (PDP)}: average prediction as one feature varies; misleading when features are correlated. \textbf{ICE} plots show it per instance; \textbf{ALE} plots handle correlation better.
+  \item \textbf{LIME}: fit a simple local surrogate (linear model) around one prediction using perturbed samples. Can be unstable.
+  \item \textbf{SHAP}: Shapley values from cooperative game theory --- the average marginal contribution of a feature over all orderings of features. Properties: local accuracy (contributions sum to prediction minus baseline), consistency, missingness. TreeSHAP computes exact values for trees in polynomial time. Standard for explaining credit and fraud models to risk teams and regulators.
+\end{itemize}
+
+\section{Interview questions}
+\Q{Bagging vs boosting?}
+\A Bagging: parallel, independent models on bootstrap samples, averages to reduce variance, base learners are strong/deep. Boosting: sequential, each model fits the errors (gradients) of the ensemble so far, reduces bias, base learners are weak/shallow; more sensitive to noise and needs careful tuning.
+
+\Q{Why do random forests use feature subsampling?}
+\A To decorrelate trees: the ensemble variance floor is $\rho\sigma^2$, so lower correlation $\rho$ directly lowers ensemble variance.
+
+\Q{Can random forests overfit? Can gradient boosting?}
+\A Adding trees to a random forest does not increase overfitting (the average converges), though individual deep trees on noisy data still give some overfit. Gradient boosting definitely overfits with too many trees or too high a learning rate --- hence early stopping.
+
+\Q{Why does XGBoost use the second derivative?}
+\A A second-order Taylor approximation gives closed-form optimal leaf weights and an exact gain formula for any twice-differentiable loss; it behaves like a Newton step, converging faster than first-order fitting of residuals.
+
+\Q{In gradient boosting with MSE, what does each tree fit?}
+\A The current residuals $y-F_{m-1}(\x)$, the negative gradient of $\frac12(y-F)^2$.
+
+\Q{Your XGBoost model has great AUC but its predicted probabilities seem off. Why?}
+\A Boosting with early stopping, class weighting or \texttt{scale\_pos\_weight}, and subsampling distort calibration. Recalibrate with isotonic or Platt scaling on a held-out set.
+
+\Q{Why can't tree ensembles extrapolate?}
+\A Leaves predict averages of training targets, so predictions are bounded by the training target range. For a trending time series, model the trend separately (or difference the series) and let trees model the residual.
+
+\Q{Which is faster to train: random forest or gradient boosting?}
+\A Random forest trees are independent and parallel across trees; boosting is sequential across trees (parallel only within a tree's split search). With histogram methods LightGBM is still often very fast in practice.

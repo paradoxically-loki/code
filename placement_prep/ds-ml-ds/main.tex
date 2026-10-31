@@ -1,0 +1,118 @@
+\documentclass[11pt,a4paper,oneside]{book}
+
+\usepackage[margin=2.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,bm,mathtools}
+\usepackage{booktabs,array,tabularx,longtable}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{3em}
+
+% ---------- light-weight environments ----------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{example}[definition]{Example}
+\newtheorem*{intuition}{Intuition}
+\newtheorem*{interview}{Interview angle}
+\newtheorem*{pitfall}{Common pitfall}
+\newtheorem*{realworld}{Real-world example}
+
+% Q&A blocks
+\newcounter{qcount}[chapter]
+\newcommand{\Q}[1]{\par\medskip\stepcounter{qcount}\noindent\textbf{Q\arabic{chapter}.\arabic{qcount}.\ #1}\par}
+\newcommand{\A}{\noindent\textit{Answer.}\ }
+
+% ---------- code ----------
+\lstdefinestyle{plain}{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{black!35},
+  framesep=4pt,
+  xleftmargin=6pt, xrightmargin=6pt,
+  showstringspaces=false,
+  commentstyle=\color{black!60}\itshape,
+  keywordstyle=\bfseries,
+  upquote=true,
+  literate={-}{-}1 {≤}{{$\le$}}1 {≥}{{$\ge$}}1
+}
+\lstset{style=plain}
+
+% ---------- math shortcuts ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\sign}{\operatorname{sign}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\y}{\mathbf{y}}
+\newcommand{\w}{\mathbf{w}}
+\newcommand{\z}{\mathbf{z}}
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\W}{\mathbf{W}}
+\newcommand{\vb}{\mathbf{b}}
+\newcommand{\vu}{\mathbf{u}}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\vtheta}{\bm{\theta}}
+\newcommand{\vbeta}{\bm{\beta}}
+\newcommand{\vmu}{\bm{\mu}}
+\newcommand{\Sig}{\bm{\Sigma}}
+\newcommand{\KL}{D_{\mathrm{KL}}}
+
+\title{\textbf{Data Science, Machine Learning \& Deep Learning}\\[6pt]
+\large A placement booklet for online assessments and interviews\\[4pt]}
+\author{Claude Opus 5.5}
+\date{October 2026}
+
+\begin{document}
+\frontmatter
+\maketitle
+\tableofcontents
+
+\include{chapters/ch00_howto}
+
+\mainmatter
+\part{Foundations}
+\include{chapters/ch01_linalg}
+\include{chapters/ch02_probstat}
+
+\part{Classical Machine Learning}
+\include{chapters/ch03_mlfund}
+\include{chapters/ch04_linear}
+\include{chapters/ch05_classical}
+\include{chapters/ch06_ensembles}
+\include{chapters/ch07_unsup}
+\include{chapters/ch08_special}
+
+\part{Deep Learning}
+\include{chapters/ch09_nn}
+\include{chapters/ch10_cnn}
+\include{chapters/ch11_rnn}
+\include{chapters/ch12_transformers}
+\include{chapters/ch13_generative}
+
+\part{Engineering, Coding and Interview Practice}
+\include{chapters/ch14_mlops}
+\include{chapters/ch15_python}
+\include{chapters/ch16_sql}
+\include{chapters/ch17_qbank}
+
+\appendix
+\include{chapters/ch18_cheatsheet}
+
+\end{document}

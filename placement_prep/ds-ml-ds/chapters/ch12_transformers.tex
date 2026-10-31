@@ -1,0 +1,184 @@
+\chapter{Transformers and Large Language Models}
+\label{ch:transformers}
+
+\section{Self-attention}
+\begin{intuition}
+Each word asks a question (\emph{query}), advertises what it contains (\emph{key}), and carries information to share (\emph{value}). A word's new representation is a weighted average of everyone's values, weighted by how well its query matches their keys. In ``The bank raised interest rates'', the token ``bank'' attends strongly to ``interest rates'' and its representation shifts toward the financial meaning.
+\end{intuition}
+
+\subsection{Scaled dot-product attention}
+Input $\X\in\R^{n\times d}$ ($n$ tokens). Learned projections $\mathbf{Q}=\X\W_Q$, $\mathbf{K}=\X\W_K$, $\mathbf{V}=\X\W_V$ with $\W_Q,\W_K\in\R^{d\times d_k}$, $\W_V\in\R^{d\times d_v}$.
+\[\operatorname{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V})=\operatorname{softmax}\Big(\frac{\mathbf{Q}\mathbf{K}^\top}{\sqrt{d_k}}+\mathbf{M}\Big)\mathbf{V}.\]
+$\mathbf{Q}\mathbf{K}^\top\in\R^{n\times n}$ holds every pairwise score; softmax is row-wise; $\mathbf{M}$ is a mask ($-\infty$ where attention is forbidden).
+
+\textbf{Why divide by $\sqrt{d_k}$?} If components of $\mathbf{q}$ and $\mathbf{k}$ are independent with mean 0 and variance 1, then $\mathbf{q}^\top\mathbf{k}=\sum_{i=1}^{d_k}q_ik_i$ has variance $d_k$. Large-magnitude scores push softmax into saturation (one weight $\approx1$, the rest $\approx0$), where gradients are tiny. Dividing by $\sqrt{d_k}$ restores unit variance.
+
+\textbf{Masks.}
+\begin{itemize}
+  \item \textbf{Causal (look-ahead) mask}: token $i$ may attend only to positions $\le i$ --- required for autoregressive generation so the model cannot peek at the answer.
+  \item \textbf{Padding mask}: ignore pad tokens in batched variable-length inputs.
+\end{itemize}
+
+\textbf{Self- vs cross-attention.} In self-attention $\mathbf{Q},\mathbf{K},\mathbf{V}$ come from the same sequence. In cross-attention (encoder--decoder), queries come from the decoder and keys/values from the encoder output.
+
+\subsection{Multi-head attention}
+Run $h$ attention heads in parallel with $d_k=d_v=d/h$, concatenate, project:
+\[\operatorname{MHA}(\X)=\operatorname{Concat}(\text{head}_1,\dots,\text{head}_h)\W_O.\]
+Different heads can specialise (syntax, coreference, position). Cost is about the same as a single full-width head. Parameters: $4d^2$ (+ biases) for $\W_Q,\W_K,\W_V,\W_O$.
+
+\textbf{Multi-query (MQA) and grouped-query attention (GQA)}: share keys/values across all heads or across groups of heads, shrinking the KV cache and speeding up inference; GQA is common in recent open LLMs.
+
+\subsection{Complexity}
+Time $O(n^2d)$, memory $O(n^2)$ for the attention matrix, versus $O(nd^2)$ for an RNN pass but with $O(n)$ sequential steps. Self-attention has $O(1)$ path length between any two tokens (RNN: $O(n)$). The quadratic cost in sequence length drives work on efficient attention: sparse/local attention (Longformer, BigBird), linear-attention approximations, and \textbf{FlashAttention} --- exact attention computed in tiles that stay in fast on-chip memory, avoiding materialising the $n\times n$ matrix; it speeds things up by reducing memory traffic, not FLOPs.
+
+\section{Positional information}
+Attention is permutation-equivariant: shuffle the tokens and the outputs shuffle identically. Word order must be injected.
+\begin{itemize}
+  \item \textbf{Sinusoidal} (original Transformer): $PE_{(pos,2i)}=\sin(pos/10000^{2i/d})$, $PE_{(pos,2i+1)}=\cos(pos/10000^{2i/d})$, added to embeddings. Each dimension pair is a different frequency; relative offsets correspond to rotations, so relative position is linearly recoverable.
+  \item \textbf{Learned absolute} embeddings (BERT, GPT-2): simple, but don't extrapolate beyond the trained maximum length.
+  \item \textbf{Relative} positions (T5 biases) and \textbf{ALiBi} (a linear distance penalty on attention scores).
+  \item \textbf{RoPE} (rotary): rotate query and key vectors by position-dependent angles so that $\mathbf{q}_m^\top\mathbf{k}_n$ depends only on $m-n$. Widely used in modern LLMs; context extension methods rescale its frequencies.
+\end{itemize}
+
+\section{The Transformer block}
+Pre-LN decoder block (the common modern form):
+\begin{align*}
+\mathbf{H}&=\X+\operatorname{MHA}(\operatorname{LN}(\X))\\
+\mathbf{Y}&=\mathbf{H}+\operatorname{FFN}(\operatorname{LN}(\mathbf{H})),\qquad\operatorname{FFN}(\x)=\W_2\,g(\W_1\x+\vb_1)+\vb_2,
+\end{align*}
+with the FFN hidden size typically $4d$ ($g$ = GELU, or a gated SwiGLU variant). The FFN acts position-wise and holds most of the parameters; it is often described as where much factual ``memory'' is stored.
+
+\textbf{Parameter estimate per block} $\approx4d^2$ (attention) $+8d^2$ (FFN with $4d$) $=12d^2$. A model with $L$ blocks has about $12Ld^2$ non-embedding parameters, plus $Vd$ for token embeddings (vocabulary $V$).
+
+\begin{example}[GPT-2 small sanity check]
+$d=768$, $L=12$, $V=50{,}257$. Blocks: $12\times12\times768^2\approx84.9$M. Embeddings: $50{,}257\times768\approx38.6$M. Plus 1024 learned positions $\times768\approx0.8$M. Total $\approx124$M --- matching the published size.
+\end{example}
+
+\section{Three families of Transformers}
+\begin{longtable}{@{}p{0.2\textwidth}p{0.36\textwidth}p{0.36\textwidth}@{}}
+\toprule
+Family & Pre-training objective & Typical use\\
+\midrule
+Encoder-only (BERT, RoBERTa, DeBERTa) & \textbf{Masked LM}: mask 15\% of tokens (of these 80\% $\to$ [MASK], 10\% random token, 10\% unchanged) and predict them using both left and right context. BERT also had next-sentence prediction, later shown to be of little use (RoBERTa dropped it). & Classification, NER, embeddings for search, extractive QA. Bidirectional but not naturally generative.\\
+Decoder-only (GPT family, LLaMA, most chat LLMs) & \textbf{Causal LM}: predict the next token given all previous ones: $\max\sum_t\log p(x_t\mid x_{<t})$. & Text generation, chat, code, in-context learning. Dominant architecture for LLMs.\\
+Encoder--decoder (T5, BART, original Transformer) & Span corruption / denoising (T5 masks spans; BART corrupts text and reconstructs). & Translation, summarisation, any input$\to$output transformation.\\
+\bottomrule
+\end{longtable}
+For classification with BERT, a special [CLS] token's final representation (or mean pooling) is fed to a linear head and the whole network is fine-tuned.
+
+\section{Tokenisation}
+Word-level vocabularies are huge and cannot handle unseen words; character-level sequences are very long. \textbf{Sub-word tokenisation} balances the two:
+\begin{itemize}
+  \item \textbf{BPE} (byte-pair encoding): start from characters (or bytes); repeatedly merge the most frequent adjacent pair until the target vocabulary size. Byte-level BPE (GPT-2 onwards) can encode any string.
+  \item \textbf{WordPiece} (BERT): merges chosen by likelihood gain rather than raw frequency; continuation pieces marked ``\#\#''.
+  \item \textbf{Unigram LM / SentencePiece}: treats text as raw characters including spaces; language-independent.
+\end{itemize}
+Consequences worth mentioning: numbers and non-English scripts (including many Indian languages) can split into many tokens, raising cost and sometimes hurting arithmetic or spelling tasks.
+
+\section{Pre-training at scale}
+\begin{itemize}
+  \item Data: very large web-scale corpora, filtered and de-duplicated, plus code, books, papers.
+  \item \textbf{Scaling laws}: loss falls predictably (roughly as a power law) with parameters, data and compute. The Chinchilla result (2022) found many earlier models under-trained: compute-optimal training uses on the order of 20 tokens per parameter. Many current models are trained far beyond that ratio because smaller, longer-trained models are cheaper to serve.
+  \item Training compute $\approx6ND$ FLOPs ($N$ params, $D$ tokens): 2 for the forward pass, 4 for the backward pass, per parameter per token.
+  \item \textbf{Mixture of Experts (MoE)}: replace the FFN with many expert FFNs and a router that sends each token to the top-$k$ experts. Total parameters grow while compute per token stays modest; needs load-balancing losses.
+\end{itemize}
+
+\section{Adapting LLMs}
+
+\subsection{Prompting and in-context learning}
+Zero-shot (instruction only), few-shot (examples in the prompt), chain-of-thought (ask for intermediate reasoning, which helps on multi-step problems), structured output (JSON schemas), system prompts. In-context learning means the model adapts behaviour from examples in its context window without any weight update.
+
+\subsection{Fine-tuning}
+\begin{itemize}
+  \item \textbf{Full fine-tuning}: update all weights. Most expensive; risk of catastrophic forgetting.
+  \item \textbf{Supervised fine-tuning (SFT) / instruction tuning}: train on (instruction, good response) pairs; teaches the base model to follow instructions and adopt a format.
+  \item \textbf{LoRA} (low-rank adaptation): freeze $\W_0\in\R^{d\times k}$ and learn $\Delta\W=\mathbf{B}\mathbf{A}$ with $\mathbf{B}\in\R^{d\times r}$, $\mathbf{A}\in\R^{r\times k}$, $r\ll d$. Forward pass $\W_0\x+\frac{\alpha}{r}\mathbf{B}\mathbf{A}\x$. $\mathbf{B}$ is initialised to zero so training starts from the original model. For $d=k=4096$, $r=8$: $65{,}536$ trainable params instead of $16.8$M (about 0.4\%). Adapters can be merged into $\W_0$ after training, so no inference latency is added. Rationale: fine-tuning updates appear to have low intrinsic rank.
+  \item \textbf{QLoRA}: LoRA on top of a 4-bit quantised frozen base model --- fine-tunes large models on a single GPU.
+  \item Other PEFT methods: adapters (small bottleneck layers inserted), prefix/prompt tuning (learn virtual tokens).
+\end{itemize}
+
+\subsection{Alignment: RLHF and DPO}
+\textbf{RLHF} pipeline: (1) SFT; (2) collect human preferences between pairs of responses and train a \textbf{reward model} with the Bradley--Terry loss $-\log\sigma(r(x,y_w)-r(x,y_l))$ ($y_w$ preferred over $y_l$); (3) optimise the policy with RL (classically PPO) to maximise reward minus a KL penalty to the SFT model:
+\[\max_\pi\;\E\big[r(x,y)\big]-\beta\,\KL\big(\pi(\cdot\mid x)\,\|\,\pi_{\text{ref}}(\cdot\mid x)\big).\]
+The KL term stops the policy drifting into text that exploits flaws in the reward model (``reward hacking'').
+
+\textbf{DPO} (direct preference optimisation) skips the explicit reward model and RL loop, optimising directly on preference pairs:
+\[\mathcal{L}_{\text{DPO}}=-\log\sigma\Big(\beta\Big[\log\frac{\pi_\theta(y_w\mid x)}{\pi_{\text{ref}}(y_w\mid x)}-\log\frac{\pi_\theta(y_l\mid x)}{\pi_{\text{ref}}(y_l\mid x)}\Big]\Big).\]
+Simpler and more stable to run; widely used. RL with verifiable rewards (e.g.\ unit tests for code, checkable maths answers) is another increasingly common approach for reasoning skills.
+
+\section{Inference and decoding}
+\subsection{Decoding strategies}
+\begin{itemize}
+  \item \textbf{Greedy}: take the argmax token each step. Deterministic; can be repetitive.
+  \item \textbf{Beam search}: keep the top-$B$ partial sequences by cumulative log-probability. Good for translation/summarisation; produces bland text in open-ended generation. Length normalisation is needed because longer sequences accumulate more negative log-prob.
+  \item \textbf{Temperature}: sample from $\operatorname{softmax}(\z/T)$. $T<1$ sharpens (more deterministic), $T>1$ flattens (more random); $T\to0$ equals greedy.
+  \item \textbf{Top-$k$}: sample only among the $k$ most likely tokens. \textbf{Top-$p$ (nucleus)}: the smallest set whose cumulative probability $\ge p$ --- adapts to how confident the model is.
+  \item Repetition / frequency penalties.
+\end{itemize}
+
+\subsection{KV cache}
+In autoregressive generation, keys and values of previous tokens don't change, so cache them and compute $\mathbf{Q},\mathbf{K},\mathbf{V}$ only for the new token. Memory per token $=2\times L\times d\times$ bytes (for standard multi-head attention; GQA/MQA divide it by the head-sharing factor).
+\begin{example}
+A 7B model with $L=32$, $d=4096$, FP16: $2\times32\times4096\times2$ bytes $=0.5$ MB per token. A 4096-token context then needs about 2 GB of KV cache \emph{per sequence} --- often the binding constraint on batch size in serving.
+\end{example}
+\textbf{Prefill vs decode}: processing the prompt is parallel and compute-bound; generating tokens one at a time is memory-bandwidth-bound. Serving systems use continuous batching and paged KV-cache memory (as in vLLM).
+
+\subsection{Making models cheaper}
+\begin{itemize}
+  \item \textbf{Quantisation}: store weights (and sometimes activations) in INT8/INT4 instead of FP16; post-training methods like GPTQ/AWQ keep quality loss small. A 7B model drops from about 14 GB (FP16) to about 3.5--4 GB at 4-bit.
+  \item \textbf{Distillation}: train a small student to match a large teacher's output distribution (soft targets with temperature).
+  \item \textbf{Pruning}: remove weights/heads/layers.
+  \item \textbf{Speculative decoding}: a small draft model proposes several tokens; the large model verifies them in one parallel pass; output distribution is preserved exactly.
+\end{itemize}
+
+\section{Retrieval-augmented generation (RAG)}
+\begin{intuition}
+Instead of hoping the model memorised your company's policy documents, retrieve the relevant passages at question time and put them in the prompt. The model answers from evidence it can cite.
+\end{intuition}
+Pipeline: (1) chunk documents (by tokens/sections, with overlap); (2) embed chunks with an embedding model; (3) store in a vector index (FAISS, a vector database); (4) at query time embed the query, retrieve top-$k$ by cosine similarity --- often \textbf{hybrid} with keyword BM25 --- then \textbf{rerank} with a cross-encoder; (5) generate with the retrieved context and ask for citations.
+
+Failure points to discuss: poor chunking (an answer split across chunks), retrieval misses (vocabulary mismatch $\to$ hybrid search, query rewriting), stale index, too much irrelevant context, the model ignoring or contradicting context. Evaluate retrieval (recall@$k$, MRR) separately from generation (faithfulness/groundedness, answer relevance); LLM-as-judge plus human spot checks.
+
+\textbf{RAG vs fine-tuning}: RAG for knowledge that changes or must be cited and access-controlled; fine-tuning for behaviour, style, format, or domain language. They combine well.
+
+\textbf{Agents and tool use}: the model emits structured calls to tools (search, code execution, APIs), observes results and continues --- the ReAct pattern of interleaving reasoning and actions. Key engineering concerns: reliability over many steps, cost, evaluation, and security (prompt injection from retrieved content).
+
+\section{Evaluating language models}
+\begin{itemize}
+  \item \textbf{Perplexity} $=\exp\big(-\frac1N\sum_t\log p(x_t\mid x_{<t})\big)$ --- the effective branching factor; lower is better. Only comparable between models with the same tokeniser.
+  \item \textbf{BLEU} (n-gram precision with brevity penalty; translation), \textbf{ROUGE} (n-gram recall/LCS; summarisation), \textbf{BERTScore} (embedding similarity). All correlate imperfectly with human judgement.
+  \item Benchmarks (MMLU-style knowledge tests, coding benchmarks with unit tests, reasoning sets); beware \textbf{contamination} (test data in the pre-training corpus).
+  \item \textbf{LLM-as-judge}: scalable but biased (position bias, verbosity bias, self-preference) --- calibrate against human labels.
+  \item \textbf{Hallucination}: fluent but false output. Mitigate with RAG, citations, constrained decoding, abstention when uncertain, verification steps.
+\end{itemize}
+
+\section{Interview questions}
+\Q{Walk me through self-attention with shapes.}
+\A $\X$: $n\times d$. $\mathbf{Q},\mathbf{K}$: $n\times d_k$; $\mathbf{V}$: $n\times d_v$. Scores $\mathbf{Q}\mathbf{K}^\top/\sqrt{d_k}$: $n\times n$. Row-wise softmax: $n\times n$. Times $\mathbf{V}$: $n\times d_v$. Multi-head concatenates $h$ such outputs to $n\times d$ and applies $\W_O$.
+
+\Q{Why scale by $\sqrt{d_k}$?}
+\A Dot products of random $d_k$-dimensional vectors have variance $d_k$; large scores saturate softmax and shrink gradients. Scaling keeps variance near 1.
+
+\Q{Why do Transformers need positional encodings?}
+\A Self-attention is permutation-equivariant; without positions, ``dog bites man'' and ``man bites dog'' look identical.
+
+\Q{BERT vs GPT?}
+\A BERT: encoder, bidirectional context, masked-LM pre-training, best for understanding tasks and embeddings. GPT: decoder, causal masking, next-token prediction, naturally generative.
+
+\Q{What does the KV cache store and why does it help?}
+\A The keys and values of all previous tokens at every layer. Without it, each new token would recompute them for the whole prefix --- quadratic total work instead of linear per step.
+
+\Q{How does LoRA reduce trainable parameters, and does it slow inference?}
+\A Learns a rank-$r$ update $\mathbf{BA}$ while freezing $\W_0$; parameters scale with $r(d+k)$ instead of $dk$. After training, $\mathbf{BA}$ can be merged into $\W_0$, so no extra latency.
+
+\Q{Temperature 0 vs 1 vs 2?}
+\A 0: greedy, deterministic. 1: sample from the model's distribution as is. 2: flatter, more diverse and more error-prone.
+
+\Q{Your RAG chatbot gives wrong answers. How do you debug?}
+\A Check retrieval first: is the right chunk in the top-$k$? If not, fix chunking, embeddings, hybrid search, query rewriting, reranking. If retrieved but answered wrongly, fix the prompt (instruct to answer only from context, cite), reduce noisy context, or use a stronger generator. Build a labelled evaluation set of question/answer/source triples.
+
+\Q{What is the computational bottleneck of Transformers on long documents?}
+\A Attention's $O(n^2)$ time and memory in sequence length, and at inference the KV cache's linear growth in memory. Remedies: FlashAttention, sparse/sliding-window attention, GQA, retrieval instead of stuffing context.
+
+\Q{Why is RLHF's KL penalty needed?}
+\A It keeps the policy close to the reference model so it doesn't exploit weaknesses of the learned reward model and keeps fluent, diverse language.

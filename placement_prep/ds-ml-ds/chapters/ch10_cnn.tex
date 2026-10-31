@@ -1,0 +1,108 @@
+\chapter{Convolutional Neural Networks and Computer Vision}
+
+\section{Why convolutions?}
+\begin{intuition}
+A $224\times224$ RGB image has 150{,}528 inputs. A dense layer with 1000 units would need 150 million weights for one layer, and would have to learn ``cat ear'' separately at every location. A convolution slides one small filter (say $3\times3$) across the image: the same ``ear detector'' is reused everywhere.
+\end{intuition}
+Three built-in assumptions (inductive biases):
+\begin{itemize}
+  \item \textbf{Local connectivity}: a unit looks at a small neighbourhood.
+  \item \textbf{Weight sharing}: the same filter at every position --- far fewer parameters.
+  \item \textbf{Translation equivariance}: shifting the input shifts the feature map. Pooling adds a degree of local translation \emph{invariance}.
+\end{itemize}
+
+\section{The convolution layer}
+Deep-learning ``convolution'' is technically cross-correlation (no kernel flip): for a single channel, $Y[i,j]=\sum_{m,n}X[i+m,j+n]K[m,n]+b$. A layer with $C_{in}$ input channels and $C_{out}$ filters has filters of shape $K\times K\times C_{in}$; each filter produces one output channel.
+
+\subsection{Output size and parameter count (asked in almost every OA)}
+\[O=\Big\lfloor\frac{W-K+2P}{S}\Big\rfloor+1\]
+for input width $W$, kernel $K$, padding $P$, stride $S$. ``Same'' padding with stride 1 uses $P=(K-1)/2$.
+\[\text{Params}=K\times K\times C_{in}\times C_{out}+C_{out}\ (\text{biases}).\]
+Multiply--accumulate operations (FLOPs, roughly) $\approx O_h\times O_w\times K^2\times C_{in}\times C_{out}$.
+
+\begin{example}
+Input $224\times224\times3$, 64 filters of $7\times7$, stride 2, padding 3 (ResNet stem). $O=\lfloor(224-7+6)/2\rfloor+1=111+1=112$. Output $112\times112\times64$. Params $=7\cdot7\cdot3\cdot64+64=9{,}472$. Then $3\times3$ max-pool stride 2 padding 1: $\lfloor(112-3+2)/2\rfloor+1=56$.
+\end{example}
+
+\begin{example}
+Input $32\times32\times3$; conv $5\times5$, 6 filters, no padding, stride 1 $\to28\times28\times6$ (params $456$); max-pool $2\times2$ stride 2 $\to14\times14\times6$ (0 params); conv $5\times5$, 16 filters $\to10\times10\times16$ (params $5\cdot5\cdot6\cdot16+16=2{,}416$). This is LeNet-5's front end.
+\end{example}
+
+\subsection{Other ingredients}
+\begin{itemize}
+  \item \textbf{Stride} $>1$ downsamples. \textbf{Dilation} $d$ spaces kernel taps apart: effective size $K+(K-1)(d-1)$ --- larger receptive field without more parameters (used in segmentation, WaveNet).
+  \item \textbf{Pooling}: max-pool keeps the strongest activation; average-pool smooths; no parameters. \textbf{Global average pooling} collapses $H\times W\times C$ to $C$, replacing huge flatten+dense layers.
+  \item \textbf{$1\times1$ convolution}: a per-pixel dense layer across channels --- changes the number of channels cheaply (bottlenecks), adds non-linearity.
+  \item \textbf{Depthwise separable convolution} (MobileNet): a $K\times K$ depthwise conv per channel, then a $1\times1$ pointwise conv. Params $K^2C_{in}+C_{in}C_{out}$ instead of $K^2C_{in}C_{out}$. For $K=3$, $C_{in}=C_{out}=256$: $67{,}840$ vs $589{,}824$, about $8.7\times$ fewer.
+  \item \textbf{Transposed convolution} (``deconvolution''): learnable upsampling for segmentation and generators; can cause checkerboard artefacts (resize + conv avoids them).
+\end{itemize}
+
+\subsection{Receptive field}
+The region of the input that influences a unit. With layers of kernel $k_l$ and stride $s_l$: $r_l=r_{l-1}+(k_l-1)\prod_{i<l}s_i$, $r_0=1$. Two stacked $3\times3$ convs (stride 1) see $5\times5$; three see $7\times7$.
+
+\textbf{Why VGG stacks $3\times3$ convs:} three $3\times3$ layers have the receptive field of one $7\times7$ but $3\cdot9C^2=27C^2$ parameters versus $49C^2$, plus three non-linearities instead of one.
+
+\section{Landmark architectures}
+\begin{longtable}{@{}p{0.17\textwidth}p{0.77\textwidth}@{}}
+\toprule
+Model & Key idea\\
+\midrule
+LeNet-5 (1998) & Conv--pool--conv--pool--dense for digit recognition.\\
+AlexNet (2012) & Won ImageNet by a wide margin: ReLU, dropout, data augmentation, GPU training. Started the deep-learning era in vision.\\
+VGG (2014) & Uniform $3\times3$ convs, depth 16--19; simple but heavy (about 138M params, mostly in the dense layers).\\
+GoogLeNet / Inception (2014) & Parallel $1\times1$, $3\times3$, $5\times5$ branches concatenated; $1\times1$ bottlenecks to cut cost.\\
+ResNet (2015) & Residual blocks $\y=F(\x)+\x$; trained 152 layers. Bottleneck block $1\times1\to3\times3\to1\times1$. Solved the \emph{degradation} problem (deeper plain nets had higher \emph{training} error --- an optimisation problem, not overfitting).\\
+DenseNet (2017) & Each layer receives concatenated features of all previous layers; feature reuse.\\
+MobileNet, ShuffleNet & Depthwise separable convs for phones/edge devices.\\
+EfficientNet (2019) & Compound scaling of depth, width and resolution together.\\
+Vision Transformer (2020) & Split image into $16\times16$ patches, embed, feed to a Transformer. Weaker inductive bias, so needs more data or pre-training; matches/exceeds CNNs at scale.\\
+ConvNeXt (2022) & Modernised ResNet borrowing Transformer design choices; competitive with ViTs.\\
+\bottomrule
+\end{longtable}
+
+\section{Transfer learning}
+\begin{realworld}
+A manufacturing firm wants to detect scratches on metal parts but has only 800 labelled images. Training from scratch would overfit. Instead, take a ResNet-50 pre-trained on ImageNet, replace the final layer with a 2-class head, train the head first, then unfreeze the last block with a small learning rate. Early layers (edges, textures) transfer well across domains.
+\end{realworld}
+Strategy by data size and similarity:
+\begin{itemize}
+  \item Small data, similar domain: freeze backbone, train only the head (feature extraction).
+  \item Small data, different domain: fine-tune the later layers carefully; strong augmentation.
+  \item Large data: fine-tune the whole network with a lower learning rate for earlier layers (discriminative learning rates).
+\end{itemize}
+Remember to use the preprocessing (normalisation statistics, input size) the backbone was trained with.
+
+\section{Beyond classification}
+\subsection{Object detection}
+\begin{itemize}
+  \item \textbf{IoU} (intersection over union) $=|A\cap B|/|A\cup B|$ measures box overlap.
+  \item \textbf{Non-maximum suppression}: sort boxes by confidence; keep the top box; discard others with IoU above a threshold (e.g.\ 0.5) with it; repeat.
+  \item \textbf{Two-stage} (R-CNN $\to$ Fast R-CNN $\to$ Faster R-CNN with a Region Proposal Network): propose regions, then classify and refine. Accurate, slower.
+  \item \textbf{One-stage} (YOLO family, SSD, RetinaNet): predict boxes and classes densely in one pass. Fast. RetinaNet's \textbf{focal loss} $-(1-p_t)^\gamma\log p_t$ down-weights easy background examples to fix extreme foreground/background imbalance.
+  \item Anchor boxes vs anchor-free detectors; DETR uses a Transformer with set-based (Hungarian matching) loss and no NMS.
+  \item Metric: \textbf{mAP} --- area under the precision--recall curve per class at an IoU threshold, averaged over classes (COCO also averages IoU thresholds 0.5:0.95).
+\end{itemize}
+\subsection{Segmentation}
+Semantic (a class per pixel), instance (separate each object: Mask R-CNN), panoptic (both). \textbf{U-Net}: encoder--decoder with skip connections that pass high-resolution detail to the decoder; standard in medical imaging. Loss: pixel-wise cross-entropy, Dice loss $1-\frac{2|A\cap B|}{|A|+|B|}$ for imbalanced masks.
+
+\section{Interview questions}
+\Q{Input $128\times128\times3$, conv with 32 filters $3\times3$, stride 1, padding 1. Output shape and parameters?}
+\A $128\times128\times32$; params $3\cdot3\cdot3\cdot32+32=896$.
+
+\Q{Same input, conv $5\times5$, stride 2, no padding, 16 filters?}
+\A $\lfloor(128-5)/2\rfloor+1=61+1=62$, so $62\times62\times16$; params $5\cdot5\cdot3\cdot16+16=1{,}216$.
+
+\Q{How many parameters in a max-pooling layer?}
+\A Zero.
+
+\Q{Why do CNNs generalise better than MLPs on images?}
+\A Weight sharing and locality drastically reduce parameters and encode translation equivariance, matching the structure of images.
+
+\Q{What problem did ResNet solve?}
+\A Degradation: deeper plain networks got higher training error because they were hard to optimise. Identity shortcuts let blocks default to the identity and keep gradients flowing.
+
+\Q{Is a CNN translation invariant?}
+\A Convolution is equivariant; pooling and global average pooling add approximate invariance. Strided layers break exact equivariance (small shifts can change outputs), which is why augmentation still helps.
+
+\Q{When would you prefer a ViT over a CNN?}
+\A With large datasets or strong pre-trained checkpoints, and when long-range global context matters. With small data and no pre-training, CNNs' inductive biases usually win.

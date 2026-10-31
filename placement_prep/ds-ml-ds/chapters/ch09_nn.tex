@@ -1,0 +1,167 @@
+\chapter{Neural Networks and How to Train Them}
+\label{ch:nn}
+
+\section{From the perceptron to multilayer networks}
+
+\begin{intuition}
+A single neuron is logistic regression: weighted sum plus a squashing function. Stacking layers lets the network build features out of features --- edges into shapes into objects, or characters into words into meaning --- instead of a human hand-crafting them.
+\end{intuition}
+
+\textbf{Perceptron} (Rosenblatt): $\hat y=\sign(\w^\top\x+b)$, update $\w\leftarrow\w+\eta\,y_i\x_i$ on mistakes. Converges if data is linearly separable; cannot learn XOR. That limitation is why we need hidden layers and non-linear activations.
+
+\textbf{MLP forward pass} for layer $l=1..L$:
+\[\z^{(l)}=\W^{(l)}\mathbf{a}^{(l-1)}+\vb^{(l)},\qquad\mathbf{a}^{(l)}=g^{(l)}(\z^{(l)}),\qquad\mathbf{a}^{(0)}=\x.\]
+\textbf{Why non-linearity?} Without $g$, the composition of linear layers $\W_2\W_1\x$ is a single linear map --- depth adds nothing.
+
+\textbf{Universal approximation theorem.} A network with one hidden layer and enough units (with a non-polynomial activation) can approximate any continuous function on a compact set arbitrarily well. It says nothing about how many units are needed, or whether gradient descent will find the weights. In practice, depth gives exponentially more efficient representations of compositional functions than width.
+
+\textbf{Parameter count} of a dense layer: $n_{in}\times n_{out}+n_{out}$. E.g.\ $784\to256\to10$: $(784\cdot256+256)+(256\cdot10+10)=200{,}960+2{,}570=203{,}530$.
+
+\section{Backpropagation}
+
+\begin{intuition}
+Backprop is the chain rule applied efficiently. Going forward we compute and cache every intermediate value; going backward we pass ``how much does the loss change if this value changes?'' from the output to the input, reusing work so that one backward pass costs about the same as one or two forward passes.
+\end{intuition}
+
+\subsection{Derivation in matrix form}
+Define the error signal $\bm\delta^{(l)}=\partial L/\partial\z^{(l)}$. Then:
+\begin{align*}
+\bm\delta^{(L)}&=\nabla_{\mathbf{a}^{(L)}}L\odot g'(\z^{(L)})\quad(\text{for softmax + cross-entropy: }\bm\delta^{(L)}=\hat\y-\y)\\
+\bm\delta^{(l)}&=\big(\W^{(l+1)\top}\bm\delta^{(l+1)}\big)\odot g'(\z^{(l)})\\
+\frac{\partial L}{\partial\W^{(l)}}&=\bm\delta^{(l)}\mathbf{a}^{(l-1)\top},\qquad\frac{\partial L}{\partial\vb^{(l)}}=\bm\delta^{(l)}.
+\end{align*}
+For a mini-batch with rows as samples ($\mathbf{A}^{(l-1)}\in\R^{B\times n_{l-1}}$, $\bm\Delta^{(l)}\in\R^{B\times n_l}$): $\partial L/\partial\W^{(l)}=\bm\Delta^{(l)\top}\mathbf{A}^{(l-1)}$ (averaged over the batch).
+
+Shape check trick (works in interviews): the gradient of a weight matrix always has the same shape as the matrix, so arrange the factors until shapes match.
+
+\subsection{Why softmax with cross-entropy gives prediction minus target}
+$L=-\sum_ky_k\log p_k$, $p_k=e^{z_k}/\sum_je^{z_j}$. Using $\partial p_k/\partial z_i=p_k(\delta_{ki}-p_i)$:
+\[\frac{\partial L}{\partial z_i}=-\sum_ky_k\frac{1}{p_k}p_k(\delta_{ki}-p_i)=-y_i+p_i\sum_ky_k=p_i-y_i.\]
+
+\subsection{A tiny worked example}
+One sigmoid neuron, $\x=(1,2)$, $\w=(0.5,-0.3)$, $b=0.1$, label $y=1$, binary cross-entropy, learning rate $0.1$.
+Forward: $z=0.5-0.6+0.1=0$, $p=\sigma(0)=0.5$, $L=-\log0.5=0.693$.
+Backward: $\partial L/\partial z=p-y=-0.5$; $\partial L/\partial\w=-0.5\,\x=(-0.5,-1.0)$; $\partial L/\partial b=-0.5$.
+Update: $\w=(0.55,-0.2)$, $b=0.15$. New $z=0.55-0.4+0.15=0.30$, $p=0.574$: the loss fell.
+
+\subsection{Automatic differentiation}
+Frameworks (PyTorch, JAX, TensorFlow) build a computational graph and run \textbf{reverse-mode} autodiff: one backward pass gives the gradient of a scalar loss w.r.t.\ all parameters. Forward-mode is efficient when there are few inputs and many outputs. Memory cost: activations must be stored for the backward pass; \textbf{gradient checkpointing} recomputes some of them to trade compute for memory. Numerical gradient checking: compare with $\frac{L(\theta+\epsilon)-L(\theta-\epsilon)}{2\epsilon}$.
+
+\section{Activation functions}
+\begin{longtable}{@{}p{0.14\textwidth}p{0.27\textwidth}p{0.51\textwidth}@{}}
+\toprule
+Name & Formula & Notes\\
+\midrule
+Sigmoid & $1/(1+e^{-z})$ & Output $(0,1)$; saturates; max gradient $0.25$ $\Rightarrow$ vanishing gradients in deep nets; not zero-centred. Use for binary outputs and gates.\\
+Tanh & $\frac{e^z-e^{-z}}{e^z+e^{-z}}$ & Zero-centred, $(-1,1)$; still saturates. Used in RNN/LSTM cells.\\
+ReLU & $\max(0,z)$ & Cheap, no saturation for $z>0$, sparse activations. ``Dying ReLU'': units stuck at $z<0$ get zero gradient forever (often from high learning rates).\\
+Leaky ReLU & $\max(\alpha z,z)$, $\alpha\approx0.01$ & Fixes dying ReLU. PReLU learns $\alpha$.\\
+ELU / SELU & $z$ if $z>0$ else $\alpha(e^z-1)$ & Smooth, negative outputs push mean toward zero; SELU self-normalises.\\
+GELU & $z\,\Phi(z)$ & Smooth ReLU-like; default in BERT/GPT-style Transformers.\\
+SiLU / Swish & $z\,\sigma(z)$ & Smooth, non-monotone; SwiGLU (gated variant) used in many modern LLM feed-forward layers.\\
+Softmax & $e^{z_i}/\sum_je^{z_j}$ & Multi-class output distribution.\\
+\bottomrule
+\end{longtable}
+Output-layer rule: regression $\to$ linear (no activation); binary $\to$ sigmoid + BCE; multi-class single-label $\to$ softmax + CE; multi-label $\to$ one sigmoid per label + BCE.
+
+\section{Vanishing and exploding gradients}
+Backprop multiplies many Jacobians: $\bm\delta^{(1)}\propto\prod_l\W^{(l)\top}\diag(g'(\z^{(l)}))$. If these factors are mostly $<1$ in norm the gradient shrinks exponentially with depth (vanishing); if $>1$ it blows up (exploding).
+
+Remedies: ReLU-family activations; careful initialisation; normalisation layers; residual connections (identity path lets gradients flow: $\frac{\partial}{\partial\x}(\x+F(\x))=\mathbf{I}+F'$); gradient clipping (for exploding, esp.\ RNNs); LSTM/GRU gating; smaller learning rates/warm-up.
+
+\section{Weight initialisation}
+All-zero (or identical) weights make every neuron in a layer compute the same thing and receive the same gradient --- symmetry is never broken. Use small random values, scaled so signal variance is preserved across layers.
+
+\textbf{Xavier/Glorot derivation (sketch).} For $z=\sum_{i=1}^{n_{in}}w_ix_i$ with independent zero-mean $w,x$: $\Var(z)=n_{in}\Var(w)\Var(x)$. To keep $\Var(z)=\Var(x)$ forward we need $\Var(w)=1/n_{in}$; backward we need $1/n_{out}$; the compromise is
+\[\Var(w)=\frac{2}{n_{in}+n_{out}}\quad(\text{tanh/sigmoid}).\]
+\textbf{He/Kaiming}: ReLU zeros half its inputs, halving the variance, so double it: $\Var(w)=2/n_{in}$. Use for ReLU-family networks. Biases are usually initialised to zero.
+
+\section{Optimisers}
+Let $g_t=\nabla L(\vtheta_t)$ on a mini-batch.
+\begin{itemize}
+  \item \textbf{SGD}: $\vtheta\leftarrow\vtheta-\eta g_t$.
+  \item \textbf{Momentum}: $\vv_t=\beta\vv_{t-1}+g_t$, $\vtheta\leftarrow\vtheta-\eta\vv_t$ ($\beta\approx0.9$). Accumulates velocity in consistent directions, damps oscillation across ravines. \textbf{Nesterov}: evaluate the gradient at the look-ahead point.
+  \item \textbf{AdaGrad}: divide by $\sqrt{\sum_{\tau\le t}g_\tau^2}$ per parameter --- good for sparse features, but the learning rate decays to zero.
+  \item \textbf{RMSProp}: replace the sum by an exponential moving average $s_t=\rho s_{t-1}+(1-\rho)g_t^2$; step $\eta g_t/(\sqrt{s_t}+\epsilon)$.
+  \item \textbf{Adam}: momentum + RMSProp with bias correction:
+  \begin{align*}
+  m_t&=\beta_1m_{t-1}+(1-\beta_1)g_t, & v_t&=\beta_2v_{t-1}+(1-\beta_2)g_t^2,\\
+  \hat m_t&=\frac{m_t}{1-\beta_1^t}, & \hat v_t&=\frac{v_t}{1-\beta_2^t},\qquad\vtheta\leftarrow\vtheta-\eta\frac{\hat m_t}{\sqrt{\hat v_t}+\epsilon}.
+  \end{align*}
+  Defaults $\beta_1=0.9$, $\beta_2=0.999$, $\epsilon=10^{-8}$.
+  \textbf{Why bias correction:} $m_0=0$, and unrolling gives $m_t=(1-\beta_1)\sum_{i=1}^t\beta_1^{t-i}g_i$, so if $\E g_i=\E g$, then $\E m_t=\E g\,(1-\beta_1^t)$. Early on $m_t$ is biased toward zero; dividing by $1-\beta_1^t$ removes this.
+  \item \textbf{AdamW}: decoupled weight decay $\vtheta\leftarrow\vtheta-\eta(\hat m/(\sqrt{\hat v}+\epsilon)+\lambda\vtheta)$. In Adam, adding $L_2$ to the loss is \emph{not} equivalent to weight decay because the penalty gradient gets rescaled by $1/\sqrt{\hat v}$. AdamW is the default for Transformers.
+\end{itemize}
+Folklore that is partly true: SGD with momentum sometimes generalises better than Adam on vision tasks; Adam(W) converges faster and is far less sensitive to tuning, dominating in NLP.
+
+\subsection{Learning-rate schedules}
+Step decay, exponential decay, cosine annealing, one-cycle, reduce-on-plateau. \textbf{Warm-up}: start with a tiny learning rate and ramp up over the first few hundred or thousand steps --- stabilises Adam's early variance estimates and large-batch training; standard for Transformers (linear warm-up + cosine or inverse-sqrt decay). The learning rate is the single most important hyperparameter; an LR range test (increase LR exponentially, watch loss) finds a good range quickly.
+
+\subsection{Batch size}
+Larger batches: less gradient noise, better hardware utilisation, fewer steps; may generalise slightly worse and need larger learning rates (linear scaling rule: scale LR with batch size, with warm-up). Smaller batches: noisier updates that act as regularisation. Gradient accumulation simulates large batches with limited memory.
+
+\section{Normalisation}
+\textbf{Batch normalisation} (per feature, across the batch):
+\[\hat x=\frac{x-\mu_B}{\sqrt{\sigma_B^2+\epsilon}},\qquad y=\gamma\hat x+\beta.\]
+$\gamma,\beta$ are learned so the network can undo the normalisation if useful. During \textbf{training} it uses batch statistics; it keeps running averages of $\mu,\sigma^2$ and uses those at \textbf{inference} (forgetting \texttt{model.eval()} in PyTorch is a classic bug). Benefits: allows higher learning rates, smoother loss landscape, mild regularisation from batch noise. The original ``internal covariate shift'' explanation is disputed; smoothing of the optimisation landscape is the more accepted account. Weaknesses: depends on batch size (bad for tiny batches), awkward for variable-length sequences.
+
+\textbf{Layer normalisation}: normalise across features within each sample --- independent of batch size; standard in Transformers and RNNs. \textbf{RMSNorm}: divides by root-mean-square without subtracting the mean; cheaper, used in LLaMA-family models. \textbf{Group/Instance norm}: vision with small batches; style transfer.
+
+Pre-LN vs post-LN Transformers: putting LayerNorm \emph{before} each sub-layer (pre-LN) trains more stably for deep models.
+
+\section{Regularisation in deep learning}
+\begin{itemize}
+  \item \textbf{Weight decay} ($L_2$).
+  \item \textbf{Dropout}: during training zero each unit with probability $p$ and scale survivors by $1/(1-p)$ (``inverted dropout'') so that expected activations match inference, where dropout is off. Interpretations: trains an implicit ensemble of sub-networks; prevents co-adaptation. Typical $p=0.1$--$0.5$.
+  \item \textbf{Early stopping} on validation loss.
+  \item \textbf{Data augmentation}: flips, crops, colour jitter, mixup/CutMix (images); back-translation, synonym replacement (text); noise, time-warping (audio/time series).
+  \item \textbf{Label smoothing}: target $1-\epsilon$ for the true class and $\epsilon/(K-1)$ for the rest; prevents over-confidence, improves calibration.
+  \item \textbf{Gradient clipping} by global norm: if $\|g\|>c$, $g\leftarrow cg/\|g\|$.
+  \item Stochastic depth, transfer learning from pre-trained weights (often the strongest regulariser when data is small).
+\end{itemize}
+
+\section{Training at scale (ML engineer topics)}
+\begin{itemize}
+  \item \textbf{Mixed precision}: compute in FP16/BF16, keep a master copy of weights in FP32; FP16 needs \emph{loss scaling} to keep small gradients from underflowing; BF16 has FP32's exponent range so usually doesn't.
+  \item \textbf{Data parallelism}: replicate the model, split the batch, all-reduce gradients (PyTorch DDP). \textbf{ZeRO/FSDP} shard optimiser states, gradients and parameters across GPUs to save memory.
+  \item \textbf{Model parallelism}: tensor parallelism (split a layer's matrices), pipeline parallelism (split layers across devices, micro-batches to reduce idle ``bubbles'').
+  \item \textbf{Memory budget for Adam training}, roughly per parameter: weights + gradients + two Adam moments, plus activations. With mixed precision a common estimate is around 16 bytes per parameter before activations, so a 7B-parameter model needs on the order of 100+ GB for full fine-tuning --- the motivation for LoRA and quantisation.
+\end{itemize}
+
+\section{Debugging a network that won't learn}
+\begin{enumerate}
+  \item Overfit a single small batch first. If loss doesn't go near zero, there is a bug.
+  \item Check the initial loss: for $K$ balanced classes it should be about $\log K$ (e.g.\ $2.30$ for 10 classes).
+  \item Check data: labels aligned with inputs? normalisation applied? augmentation sane? Visualise a batch.
+  \item Learning rate too high (loss explodes, NaNs) or too low (flat).
+  \item Train/eval mode (dropout, BatchNorm), forgotten \texttt{optimizer.zero\_grad()} (gradients accumulate), wrong loss for the output (softmax applied twice: \texttt{CrossEntropyLoss} in PyTorch expects raw logits).
+  \item Monitor gradient norms per layer; look for vanishing/exploding or dead ReLUs.
+\end{enumerate}
+
+\section{Interview questions}
+\Q{Why don't we initialise all weights to zero?}
+\A Symmetry: all neurons in a layer get identical gradients and stay identical, so the layer behaves like a single neuron.
+
+\Q{What is the derivative of ReLU at 0?}
+\A Undefined mathematically; frameworks use a subgradient, typically 0.
+
+\Q{How does dropout behave at test time?}
+\A It's turned off. With inverted dropout, scaling happened during training, so no change is needed at inference.
+
+\Q{BatchNorm vs LayerNorm?}
+\A BN normalises each feature across the batch, needs running stats for inference, and depends on batch size. LN normalises across features within each sample, same computation at train and test, works with batch size 1 and variable-length sequences.
+
+\Q{Why is Adam's bias correction needed?}
+\A Moment estimates start at zero, so early estimates are biased toward zero; dividing by $1-\beta^t$ makes them unbiased.
+
+\Q{Loss becomes NaN after a few hundred steps. Causes?}
+\A Learning rate too high, exploding gradients, $\log(0)$ or division by zero (compute log-softmax stably, add $\epsilon$), FP16 overflow, bad data (NaN or inf in inputs).
+
+\Q{Training loss decreases but validation loss rises from epoch 5. What do you do?}
+\A Overfitting: early stopping around epoch 5, more regularisation (dropout, weight decay, augmentation), more data, smaller model, or a pre-trained backbone.
+
+\Q{How many parameters does a dense layer from 512 to 1024 units have?}
+\A $512\times1024+1024=525{,}312$.
+
+\Q{Why are residual connections helpful?}
+\A They add an identity path, so gradients flow back unattenuated and each block only has to learn a correction $F(\x)$ to the identity; very deep networks become trainable.

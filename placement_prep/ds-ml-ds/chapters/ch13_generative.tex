@@ -1,0 +1,97 @@
+\chapter{Generative Models and Representation Learning}
+
+\section{Autoencoders}
+An encoder compresses $\x$ to a code $\z=f(\x)$; a decoder reconstructs $\hat\x=g(\z)$; train on reconstruction loss $\|\x-\hat\x\|^2$. With a bottleneck smaller than the input the network must learn the important structure. A linear autoencoder with MSE learns the same subspace as PCA.
+
+Variants: \textbf{denoising} (corrupt the input, reconstruct the clean version --- learns robust features), \textbf{sparse} (penalise activations), \textbf{contractive}. Uses: dimensionality reduction, anomaly detection by reconstruction error, pre-training. A plain autoencoder is a poor generator: its latent space has gaps, so decoding a random $\z$ gives garbage.
+
+\section{Variational autoencoders (VAE)}
+\begin{intuition}
+Make the latent space smooth and fill it in: the encoder outputs a small Gaussian cloud for each input rather than a point, and a penalty keeps all clouds close to a standard normal. Then any $\z\sim N(0,\mathbf{I})$ decodes to something plausible.
+\end{intuition}
+
+\subsection{ELBO derivation}
+Model $p_\theta(\x)=\int p_\theta(\x\mid\z)p(\z)\,d\z$ is intractable. Introduce an encoder $q_\phi(\z\mid\x)$:
+\begin{align*}
+\log p_\theta(\x)&=\E_{q_\phi}\Big[\log\frac{p_\theta(\x,\z)}{q_\phi(\z\mid\x)}\Big]+\KL\big(q_\phi(\z\mid\x)\,\|\,p_\theta(\z\mid\x)\big)\\
+&\ge\underbrace{\E_{q_\phi(\z\mid\x)}[\log p_\theta(\x\mid\z)]}_{\text{reconstruction}}-\underbrace{\KL\big(q_\phi(\z\mid\x)\,\|\,p(\z)\big)}_{\text{regulariser}}=\text{ELBO}.
+\end{align*}
+The inequality holds because KL $\ge0$. Maximising the ELBO jointly trains encoder and decoder.
+
+\textbf{Closed-form KL} for $q=N(\vmu,\diag(\bm\sigma^2))$ and $p=N(0,\mathbf{I})$:
+\[\KL=\frac12\sum_j\big(\mu_j^2+\sigma_j^2-\log\sigma_j^2-1\big).\]
+
+\textbf{Reparameterisation trick.} Sampling $\z\sim q$ is not differentiable with respect to $\vmu,\bm\sigma$. Write $\z=\vmu+\bm\sigma\odot\bm\epsilon$, $\bm\epsilon\sim N(0,\mathbf{I})$: randomness moves into $\bm\epsilon$, and gradients flow through $\vmu$ and $\bm\sigma$.
+
+VAEs give a smooth, interpolable latent space and a likelihood bound but tend to produce blurry samples (Gaussian/MSE decoder averages over possibilities). $\beta$-VAE weights the KL term more to encourage disentangled factors.
+
+\section{Generative adversarial networks (GANs)}
+\begin{intuition}
+A counterfeiter (generator $G$) tries to produce fake banknotes; a detective (discriminator $D$) tries to tell real from fake. Each improves by competing with the other until the fakes are indistinguishable.
+\end{intuition}
+\[\min_G\max_D\;V(D,G)=\E_{\x\sim p_{\text{data}}}[\log D(\x)]+\E_{\z\sim p(\z)}[\log(1-D(G(\z)))].\]
+\textbf{Optimal discriminator.} For fixed $G$ with generated density $p_g$, maximise pointwise $p_{\text{data}}\log D+p_g\log(1-D)$. Setting the derivative to zero gives
+\[D^*(\x)=\frac{p_{\text{data}}(\x)}{p_{\text{data}}(\x)+p_g(\x)}.\]
+Substituting back: $V(D^*,G)=-\log4+2\,\operatorname{JSD}(p_{\text{data}}\|p_g)$, minimised (JSD $=0$) exactly when $p_g=p_{\text{data}}$, where $D^*=1/2$ everywhere.
+
+\textbf{Practical issues.}
+\begin{itemize}
+  \item \textbf{Non-saturating loss}: early on $D$ easily rejects fakes and $\log(1-D(G(\z)))$ has tiny gradients; train $G$ to maximise $\log D(G(\z))$ instead.
+  \item \textbf{Mode collapse}: $G$ produces a few outputs that fool $D$ and ignores the rest of the distribution.
+  \item \textbf{Unstable training}: a two-player game, not a single minimisation; oscillation and divergence are common.
+  \item Fixes: \textbf{WGAN} (Wasserstein distance; critic constrained to be 1-Lipschitz via weight clipping or a gradient penalty --- gives meaningful loss curves), spectral normalisation, DCGAN architectural rules, two-time-scale learning rates.
+  \item Variants: conditional GAN (feed a class label), Pix2Pix (paired image translation), CycleGAN (unpaired, cycle-consistency loss), StyleGAN (high-fidelity faces).
+\end{itemize}
+
+\section{Diffusion models}
+\begin{intuition}
+Teach a network to remove a little noise from an image. Start from pure noise and apply the denoiser step by step; structure gradually emerges. Today this is the dominant approach for image, video and audio generation.
+\end{intuition}
+\textbf{Forward (noising) process} with schedule $\beta_t$: $q(\x_t\mid\x_{t-1})=N(\sqrt{1-\beta_t}\,\x_{t-1},\beta_t\mathbf{I})$. With $\alpha_t=1-\beta_t$ and $\bar\alpha_t=\prod_{s\le t}\alpha_s$, any step is reachable in closed form:
+\[\x_t=\sqrt{\bar\alpha_t}\,\x_0+\sqrt{1-\bar\alpha_t}\,\bm\epsilon,\quad\bm\epsilon\sim N(0,\mathbf{I}).\]
+\textbf{Training (DDPM)}: sample $\x_0$, a time $t$ and noise $\bm\epsilon$; build $\x_t$; train a network (usually a U-Net or Transformer) to predict the noise:
+\[\mathcal{L}=\E_{t,\x_0,\bm\epsilon}\big\|\bm\epsilon-\bm\epsilon_\theta(\x_t,t)\big\|^2.\]
+This simple loss is a reweighted form of the variational bound. \textbf{Sampling} runs the learned reverse process from $\x_T\sim N(0,\mathbf{I})$ down to $\x_0$; DDIM and other samplers cut the number of steps from about 1000 to tens.
+
+\textbf{Conditioning}: text conditioning via cross-attention to a text encoder; \textbf{classifier-free guidance} trains with and without the condition and extrapolates $\hat{\bm\epsilon}=\bm\epsilon_\theta(\x_t,\varnothing)+w\,[\bm\epsilon_\theta(\x_t,c)-\bm\epsilon_\theta(\x_t,\varnothing)]$; larger $w$ follows the prompt more closely at the expense of diversity. \textbf{Latent diffusion} (Stable Diffusion) runs diffusion in a VAE's compressed latent space for efficiency.
+
+\section{Comparing generative models}
+\begin{tabular}{@{}p{0.16\textwidth}p{0.24\textwidth}p{0.24\textwidth}p{0.26\textwidth}@{}}
+\toprule
+Model & Sample quality & Training & Likelihood / latent\\
+\midrule
+VAE & Blurry-ish & Stable & Lower bound; structured latent\\
+GAN & Sharp & Unstable, mode collapse & No likelihood\\
+Flow & Good & Stable, invertible layers & Exact likelihood\\
+Diffusion & State of the art, diverse & Stable & Bound; slow iterative sampling\\
+Autoregressive (GPT-style) & Excellent for discrete data (text) & Stable & Exact likelihood; sequential sampling\\
+\bottomrule
+\end{tabular}
+
+\textbf{Image-generation metrics}: Fréchet Inception Distance (FID: distance between Gaussian fits of Inception features of real vs generated images; lower is better), Inception Score, precision/recall for generative models, CLIP score for text alignment, and human evaluation.
+
+\section{Self-supervised and contrastive learning}
+\begin{itemize}
+  \item \textbf{Contrastive learning} (SimCLR, MoCo): two augmentations of the same image should have similar embeddings (positive pair); other images in the batch are negatives. InfoNCE loss:
+  \[\mathcal{L}_i=-\log\frac{\exp(\operatorname{sim}(\z_i,\z_j)/\tau)}{\sum_{k\ne i}\exp(\operatorname{sim}(\z_i,\z_k)/\tau)}.\]
+  Large batches or memory banks supply negatives; temperature $\tau$ controls sharpness.
+  \item \textbf{CLIP}: contrastive training on (image, caption) pairs creates a shared image--text embedding space; enables zero-shot classification by comparing an image to embeddings of ``a photo of a \{class\}''.
+  \item \textbf{Non-contrastive} (BYOL, DINO) and \textbf{masked modelling} (MAE: mask 75\% of image patches and reconstruct) avoid explicit negatives.
+  \item \textbf{Siamese networks / triplet loss} $\max(0,d(a,p)-d(a,n)+m)$ for face verification and similarity search.
+\end{itemize}
+
+\section{Interview questions}
+\Q{Why can't you sample new data from a plain autoencoder?}
+\A Its latent space is not regularised; random latent points may fall in regions the decoder never learned. VAEs force the aggregate latent distribution toward $N(0,\mathbf{I})$.
+
+\Q{What is the reparameterisation trick?}
+\A Express $\z=\vmu+\bm\sigma\odot\bm\epsilon$ with external noise $\bm\epsilon$ so sampling becomes a deterministic, differentiable function of $\vmu,\bm\sigma$; enables backprop through sampling.
+
+\Q{What is mode collapse and how do you address it?}
+\A The generator covers only a few modes of the data. Mitigations: WGAN-GP, minibatch discrimination, unrolled GANs, spectral normalisation, or switching to diffusion.
+
+\Q{Why have diffusion models largely overtaken GANs for image generation?}
+\A Stable training with a simple regression loss, better coverage of the data distribution (diversity), straightforward conditioning and guidance, and high quality; the main cost is slower sampling.
+
+\Q{Derive the optimal discriminator for a GAN.}
+\A Pointwise, maximise $a\log D+b\log(1-D)$ with $a=p_{\text{data}}$, $b=p_g$; derivative $a/D-b/(1-D)=0\Rightarrow D=a/(a+b)$.

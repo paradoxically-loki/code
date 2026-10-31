@@ -1,0 +1,70 @@
+\chapter{MLOps and ML System Design}
+
+ML-engineer interviews almost always include a design round: ``Design a fraud detection system'' or ``Design the feed ranking for an app''. Data-scientist interviews include a lighter version (``how would you build and measure X?''). Interviewers grade the \emph{structure} of your thinking more than any single model choice.
+
+\section{A framework for any ML design question}
+\begin{enumerate}
+  \item \textbf{Clarify the business goal and constraints.} What decision does the model drive? Who consumes it? Latency (real-time ms vs nightly batch)? Scale (requests/sec, number of items/users)? Cost of errors (FP vs FN)? Regulatory or explainability needs?
+  \item \textbf{Frame it as an ML task.} Classification/regression/ranking? What exactly is the label, and how and when is it observed (delay)? Is ML even needed --- would rules or a heuristic baseline do?
+  \item \textbf{Metrics.} Offline (AUC, PR-AUC, NDCG, RMSE) and online/business (revenue, fraud losses, CTR, retention), plus guardrails (latency, complaint rate). State how offline maps to online.
+  \item \textbf{Data.} Sources, labelling, sampling, class imbalance, leakage risks, privacy.
+  \item \textbf{Features.} Entity features, behavioural aggregates over windows, contextual features, embeddings. Where they are computed (batch vs streaming) and how training/serving consistency is ensured.
+  \item \textbf{Model.} Start with a simple baseline (logistic regression / GBDT), then justify complexity. Discuss trade-offs (accuracy, latency, interpretability).
+  \item \textbf{Serving architecture.} Batch vs online inference, retrieval + ranking stages, caching, fallbacks.
+  \item \textbf{Evaluation and launch.} Offline backtest $\to$ shadow mode $\to$ A/B test or canary rollout.
+  \item \textbf{Monitoring and iteration.} Drift, performance decay, retraining cadence, feedback loops.
+\end{enumerate}
+
+\section{Core MLOps concepts}
+\begin{itemize}
+  \item \textbf{Training--serving skew}: features computed differently offline (SQL on a warehouse) and online (application code) silently degrade performance. Fix: a shared feature definition, a \textbf{feature store} (offline store for training with point-in-time-correct joins, online low-latency store for serving), logging served features and training on those.
+  \item \textbf{Point-in-time correctness}: when building training rows, use only feature values as they were at prediction time, not today's values.
+  \item \textbf{Data drift} (covariate shift): $p(\x)$ changes. \textbf{Concept drift}: $p(y\mid\x)$ changes (fraudsters adapt). \textbf{Label/prior shift}: $p(y)$ changes. Detect with PSI, KS tests, monitoring prediction distributions, and delayed performance metrics once labels arrive.
+  \item \textbf{Population Stability Index}: $\text{PSI}=\sum_i(a_i-e_i)\ln(a_i/e_i)$ across score bins; common rule of thumb in credit risk: $<0.1$ stable, $0.1$--$0.25$ monitor, $>0.25$ significant shift.
+  \item \textbf{Versioning}: code (git), data (DVC, table snapshots), models (registry, e.g.\ MLflow), and experiment tracking (parameters, metrics, artefacts).
+  \item \textbf{Pipelines and orchestration}: Airflow, Kubeflow, Prefect; CI/CD for ML adds data validation and model-quality gates (CT: continuous training).
+  \item \textbf{Deployment patterns}: batch scoring to a table; REST/gRPC microservice; streaming (Kafka + Flink); on-device (quantised models). Rollout: shadow (run silently alongside the old model), canary (small traffic share), blue--green, A/B.
+  \item \textbf{Serving optimisations}: model compression, ONNX/TensorRT, batching requests, caching, GPU vs CPU trade-offs, autoscaling.
+  \item \textbf{Containerisation}: Docker images for reproducible environments; Kubernetes for scaling.
+  \item \textbf{Responsible ML}: fairness checks across groups (demographic parity, equalised odds), explainability (SHAP, reason codes in lending), privacy (PII handling, differential privacy), model documentation (model cards).
+\end{itemize}
+
+\section{Worked design 1: real-time card fraud detection}
+\textbf{Clarify.} Score each card transaction before authorisation; latency budget around 50--100 ms; fraud rate well under 1\%; a missed fraud costs the transaction amount and customer trust; a false decline costs a sale and annoys a customer; analysts can review a limited number of cases per day.
+
+\textbf{Framing.} Binary classification producing a risk score, then a policy: approve / step-up authentication (OTP) / decline / send to review. The threshold is set from costs and review capacity, not 0.5.
+
+\textbf{Labels.} Chargebacks and confirmed fraud reports --- arriving with delays of weeks. Recent data has incomplete labels; handle with a label-maturity window.
+
+\textbf{Features.} Transaction: amount, merchant category, channel, country. Velocity: count and sum of transactions on this card in the last 1 min / 1 hour / 24 hours (streaming aggregates). Deviation: amount vs the card's typical amount, new merchant, new device, distance from the last transaction's location divided by elapsed time (``impossible travel''). Network features: shared devices/IPs across cards (graph features).
+
+\textbf{Model.} Gradient-boosted trees as the main model (strong on tabular data, fast to score, SHAP reason codes); rules for known patterns and regulatory blocks; optionally an anomaly detector for novel patterns. Class imbalance handled with weights and threshold tuning; evaluate with PR-AUC and recall at a fixed false-positive rate, plus money-weighted metrics (fraud value caught).
+
+\textbf{Serving.} Streaming feature computation (Kafka + Flink) writing to an online store (e.g.\ Redis); model served in a low-latency service; fallback to rules if the model times out.
+
+\textbf{Monitoring.} Score distribution, PSI on key features, decline rate, fraud caught once labels mature; adversarial drift is expected, so retrain frequently (weekly) and watch for feedback loops (declined transactions never get fraud labels).
+
+\section{Worked design 2: product recommendations on an e-commerce home page}
+\textbf{Goal.} Increase purchases (and longer-term retention) without hurting diversity or page latency.
+
+\textbf{Architecture.} \emph{Candidate generation} (hundreds from millions): co-purchase item--item similarity, two-tower embedding retrieval with approximate nearest neighbour search, trending items, items from recently viewed categories. \emph{Ranking}: GBDT or deep model predicting $P(\text{click})$ and $P(\text{purchase}\mid\text{click})$ with user, item, context and cross features; combine into an expected-value score. \emph{Re-ranking}: business rules, diversity, de-duplication, out-of-stock removal, sponsored slots.
+
+\textbf{Cold start.} Popularity by region/segment for new users; content embeddings for new items; exploration slots.
+
+\textbf{Evaluation.} Offline recall@$k$ (retrieval), NDCG/AUC (ranking) on time-split data; online A/B test on purchases per session, revenue, with guardrails on latency and returns. Watch position bias in training data (items at the top get clicked more regardless of relevance) --- use position as a feature during training and fix it at serving, or use randomised exploration data.
+
+\section{Worked design 3: customer churn for a telecom / subscription business}
+Define churn precisely (no recharge in 30 days after expiry). Predict churn probability 30 days ahead using usage trends (declining data usage, fewer calls), recharge history, complaints, network quality in the customer's area, tenure, plan. GBDT with SHAP for reasons. The real objective is \emph{uplift}: whom does a retention offer actually change? A customer who would stay anyway wastes the discount; a ``sure thing'' to churn may be unpersuadable. Uplift modelling (two-model or T-learner approach, uplift trees) estimated from a randomised campaign is the strong answer. Measure with a holdout control group.
+
+\section{Interview questions}
+\Q{Your model's AUC dropped from 0.85 to 0.78 over three months. What do you check?}
+\A Data pipeline breaks (nulls, schema changes, unit changes), feature drift (PSI per feature), label definition or delay changes, concept drift (behaviour changed), upstream product changes (new user segment), and seasonality. Then retrain on recent data and consider a monitoring + automatic retraining setup.
+
+\Q{Batch vs real-time inference --- how do you choose?}
+\A Real time when the decision depends on fresh context and must happen in-session (fraud, search ranking). Batch when predictions can be precomputed and stay valid for hours/days (churn scores, daily demand forecasts); cheaper and simpler.
+
+\Q{How would you safely replace a production model?}
+\A Offline backtest, shadow deployment comparing predictions on live traffic, canary to a small share of traffic with guardrail monitoring, then A/B test on the business metric, with a rollback plan.
+
+\Q{What is a feature store and why use one?}
+\A A system that stores feature definitions and values with an offline store (historical, point-in-time-correct for training) and an online store (low-latency for serving), giving reuse across teams and consistency between training and serving.

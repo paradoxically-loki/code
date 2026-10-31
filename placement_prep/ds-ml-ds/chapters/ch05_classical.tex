@@ -1,0 +1,118 @@
+\chapter[Classical Classifiers]{Classical Classifiers: kNN, Naive Bayes, LDA, SVM and Decision Trees}
+
+\section{k-Nearest Neighbours}
+\begin{intuition}
+``Tell me who your neighbours are and I'll tell you who you are.'' Predict by majority vote (classification) or average (regression) of the $k$ closest training points.
+\end{intuition}
+\begin{itemize}
+  \item No training (lazy learner); prediction costs $O(nd)$ per query by brute force. KD-trees and ball trees speed this up in low dimensions; approximate nearest neighbour indexes (HNSW, IVF, product quantisation as in FAISS) are used for millions of embeddings, e.g.\ in vector databases for retrieval.
+  \item Small $k$: low bias, high variance (jagged boundary). Large $k$: smooth, high bias. $k=1$ has zero training error.
+  \item Needs feature scaling; suffers badly from the curse of dimensionality.
+  \item Distance-weighted voting gives closer neighbours more say.
+  \item Distances: Euclidean, Manhattan, Minkowski, cosine, Hamming (binary), Mahalanobis (accounts for correlation).
+\end{itemize}
+
+\section{Naive Bayes}
+\begin{intuition}
+Use Bayes' rule, and make the ``naive'' assumption that features are independent given the class. It is almost always false, yet the classifier ranks classes well because only the \emph{argmax} matters, not calibrated probabilities.
+\end{intuition}
+\[\hat y=\argmax_c\;P(c)\prod_{j=1}^dP(x_j\mid c)=\argmax_c\Big[\log P(c)+\sum_j\log P(x_j\mid c)\Big].\]
+Log-space avoids underflow from multiplying many small probabilities.
+
+Variants: \textbf{Gaussian} NB (continuous features, per-class mean/variance), \textbf{Multinomial} NB (word counts --- text), \textbf{Bernoulli} NB (word present/absent).
+
+\textbf{Laplace (add-one) smoothing:} $P(w\mid c)=\dfrac{\text{count}(w,c)+\alpha}{\sum_{w'}\text{count}(w',c)+\alpha|V|}$. Without it, a word never seen in spam training data gives $P=0$ and wipes out the whole product.
+
+\begin{example}[Spam filter]
+Training: 40 spam and 60 ham emails. ``offer'' appears in 20 spam and 3 ham emails (Bernoulli view). For an email containing only ``offer'' (ignoring other words): $P(\text{spam}\mid\text{offer})\propto0.4\times\frac{20}{40}=0.2$, $P(\text{ham}\mid\text{offer})\propto0.6\times\frac{3}{60}=0.03$. Normalised: spam with probability $0.2/0.23\approx0.87$.
+\end{example}
+
+Strengths: very fast, works with little data, strong baseline for text. Weaknesses: correlated features are double-counted, so probabilities are over-confident.
+
+\section{Linear and Quadratic Discriminant Analysis}
+Generative: model $p(\x\mid c)=N(\vmu_c,\Sig_c)$. If all classes share $\Sig$ (LDA), the log-ratio of posteriors is linear in $\x$ $\Rightarrow$ linear boundary. Separate $\Sig_c$ (QDA) gives quadratic boundaries. LDA also gives a supervised dimensionality reduction: project onto at most $K-1$ directions maximising between-class over within-class variance (Fisher's criterion $\max\frac{\w^\top\mathbf{S}_B\w}{\w^\top\mathbf{S}_W\w}$). Do not confuse with Latent Dirichlet Allocation (topic modelling), also abbreviated LDA.
+
+\section{Support Vector Machines}
+
+\begin{intuition}
+Among all lines that separate two classes, pick the one with the widest ``street'' between them. Only the points on the edge of the street (support vectors) determine it; points far away don't matter. A wide margin means a small change in the data is unlikely to flip predictions --- good generalisation.
+\end{intuition}
+
+\subsection{Hard-margin SVM (derivation)}
+Labels $y_i\in\{-1,+1\}$, classifier $\sign(\w^\top\x+b)$. The distance from $\x_i$ to the hyperplane is $|\w^\top\x_i+b|/\|\w\|$. Scale $\w,b$ so that the closest points satisfy $y_i(\w^\top\x_i+b)=1$; the margin width is then $2/\|\w\|$. Maximising it is equivalent to
+\[\min_{\w,b}\tfrac12\|\w\|^2\quad\text{s.t.}\quad y_i(\w^\top\x_i+b)\ge1\;\forall i.\]
+
+\subsection{Soft margin and hinge loss}
+Allow violations with slacks $\xi_i\ge0$:
+\[\min\tfrac12\|\w\|^2+C\sum_i\xi_i\quad\text{s.t.}\quad y_i(\w^\top\x_i+b)\ge1-\xi_i.\]
+At the optimum $\xi_i=\max(0,1-y_if(\x_i))$, so this is the unconstrained problem
+\[\min\;\sum_i\max\big(0,1-y_if(\x_i)\big)+\tfrac{1}{2C}\|\w\|^2,\]
+i.e.\ \textbf{hinge loss} + $L_2$ regularisation. Large $C$: few violations, narrow margin, risk of overfitting. Small $C$: wider margin, more violations, more regularisation.
+
+Hinge vs log loss: hinge is exactly zero for confidently correct points (beyond the margin), giving sparsity in support vectors; logistic loss is never zero and gives probabilities. SVM outputs are not probabilities (Platt scaling needed).
+
+\subsection{The dual and the kernel trick}
+Lagrangian: $\mathcal{L}=\frac12\|\w\|^2-\sum_i\alpha_i[y_i(\w^\top\x_i+b)-1]$. Stationarity gives $\w=\sum_i\alpha_iy_i\x_i$ and $\sum_i\alpha_iy_i=0$. Substituting back yields the dual
+\[\max_{\bm\alpha}\sum_i\alpha_i-\tfrac12\sum_{i,j}\alpha_i\alpha_jy_iy_j\,\x_i^\top\x_j\quad\text{s.t. }0\le\alpha_i\le C,\;\sum_i\alpha_iy_i=0.\]
+Complementary slackness: $\alpha_i>0$ only for points on or inside the margin --- the support vectors. Prediction $f(\x)=\sum_i\alpha_iy_i\,\x_i^\top\x+b$.
+
+\textbf{Kernel trick.} Data appears only through dot products, so replace $\x_i^\top\x_j$ with $K(\x_i,\x_j)=\phi(\x_i)^\top\phi(\x_j)$ --- a dot product in a (possibly infinite-dimensional) feature space, computed without ever building $\phi$.
+\begin{itemize}
+  \item Polynomial $K=(\x^\top\z+c)^p$. For $p=2$, $d=2$: $\phi$ contains $x_1^2,x_2^2,\sqrt2x_1x_2,\dots$
+  \item RBF/Gaussian $K=\exp(-\gamma\|\x-\z\|^2)$: infinite-dimensional $\phi$. Large $\gamma$ $\Rightarrow$ each point's influence is very local $\Rightarrow$ wiggly boundary, overfitting. Small $\gamma$ $\Rightarrow$ smoother.
+  \item A valid kernel must give a PSD Gram matrix for any data (Mercer's condition).
+\end{itemize}
+
+\textbf{Complexity.} Training kernel SVMs scales roughly between $O(n^2)$ and $O(n^3)$ --- impractical above roughly $10^5$ rows. Linear SVMs (liblinear, SGD) scale to millions. SVR (regression) uses an $\epsilon$-insensitive tube instead of hinge.
+
+\section{Decision trees}
+
+\begin{intuition}
+Play ``20 questions'' with the data: at each step, ask the yes/no question (``income $>$ 50k?'') that best separates the classes, then recurse on each side.
+\end{intuition}
+
+\subsection{Splitting criteria}
+For a node with class proportions $p_k$:
+\begin{itemize}
+  \item \textbf{Gini impurity} $G=1-\sum_kp_k^2$ (probability of misclassifying a random point labelled by the node's distribution). Max $0.5$ for two balanced classes.
+  \item \textbf{Entropy} $H=-\sum_kp_k\log_2p_k$. Max 1 bit for two balanced classes. Split by maximising \textbf{information gain} $=H(\text{parent})-\sum_{\text{child}}\frac{n_c}{n}H(c)$.
+  \item Gain ratio (C4.5) normalises by split entropy to stop favouring many-valued attributes.
+  \item Regression trees: minimise weighted variance (MSE) of children; a leaf predicts its mean.
+\end{itemize}
+Gini and entropy almost always choose the same split; Gini is slightly cheaper (no log).
+
+\begin{example}[Computing a split]
+Parent: 10 customers, 5 churn / 5 stay. Gini $=1-0.25-0.25=0.5$. Split on ``contract = monthly'': left has 6 (5 churn, 1 stay), right 4 (0 churn, 4 stay).
+Left Gini $=1-(5/6)^2-(1/6)^2=10/36\approx0.278$; right Gini $=0$. Weighted $=0.6\times0.278+0=0.167$. Gini decrease $=0.333$.
+\end{example}
+
+\subsection{Algorithm and complexity}
+CART: greedy, binary splits, for each feature sort values and scan thresholds; cost per level about $O(nd\log n)$. Greedy splitting is not globally optimal (finding the optimal tree is NP-hard).
+
+\subsection{Controlling overfitting}
+A fully grown tree memorises training data. Pre-pruning: \texttt{max\_depth}, \texttt{min\_samples\_split}, \texttt{min\_samples\_leaf}, \texttt{max\_leaf\_nodes}, minimum impurity decrease. Post-pruning: cost-complexity pruning, minimise $R(T)+\alpha|T|$ over subtrees, choose $\alpha$ by CV.
+
+\subsection{Pros and cons}
+\textbf{Pros}: interpretable, no scaling needed, handles mixed types and non-linearity and interactions automatically, robust to outliers in features. \textbf{Cons}: high variance (small data change $\to$ different tree), axis-aligned boundaries (a diagonal boundary needs a staircase), poor extrapolation in regression (predicts constants beyond the training range), biased toward high-cardinality features. Ensembles fix most of these.
+
+\section{Interview questions}
+\Q{Why is Naive Bayes ``naive'', and why does it still work?}
+\A It assumes conditional independence of features given the class. Classification only needs the right ordering of posteriors, which is often preserved even when probability values are badly off.
+
+\Q{What are support vectors? What happens if you remove a non-support vector?}
+\A Points with $\alpha_i>0$ (on or within the margin). Removing any other point leaves the solution unchanged.
+
+\Q{SVM vs logistic regression?}
+\A Both linear (without kernels). LR gives probabilities and uses all points; SVM maximises margin, depends only on support vectors, more robust to points far from the boundary, kernelises naturally. With many features and few samples (text), linear SVMs are strong; when you need probabilities or interpretability, LR.
+
+\Q{Effect of $C$ and $\gamma$ in an RBF SVM?}
+\A Larger $C$ $\Rightarrow$ less regularisation; larger $\gamma$ $\Rightarrow$ more local, complex boundary. Both large $\Rightarrow$ overfitting. Grid-search on a log scale.
+
+\Q{Can a decision tree's training error be zero? Should it be?}
+\A Yes, if no two identical feature vectors have different labels. It should not --- that is overfitting.
+
+\Q{How does a decision tree handle a continuous feature?}
+\A Sorts its values and evaluates thresholds at midpoints between consecutive distinct values, choosing the best impurity decrease.
+
+\Q{What is the time complexity of kNN prediction, and how do you speed it up?}
+\A $O(nd)$ per query. Use KD/ball trees in low dimensions, or approximate NN (HNSW, IVF-PQ) in high dimensions; reduce $d$ with PCA.

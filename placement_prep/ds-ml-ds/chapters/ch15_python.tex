@@ -1,0 +1,462 @@
+\chapter{Python, NumPy and pandas for Assessments}
+
+Coding rounds for DS/ML roles test three things: general Python fluency, data manipulation (pandas/NumPy) under time pressure, and the ability to implement a classic algorithm from scratch. All code in this chapter was run before inclusion.
+
+\section{Python fundamentals that get asked}
+
+\subsection{Data structures and complexity}
+\begin{tabular}{@{}p{0.14\textwidth}p{0.36\textwidth}p{0.42\textwidth}@{}}
+\toprule
+Type & Properties & Average complexity\\
+\midrule
+\texttt{list} & ordered, mutable, dynamic array & index $O(1)$; append $O(1)$ amortised; insert/delete at front $O(n)$; \texttt{x in list} $O(n)$\\
+\texttt{tuple} & ordered, immutable, hashable if contents are & like list for reads\\
+\texttt{dict} & hash map, insertion-ordered (3.7+) & get/set/delete/\texttt{in} $O(1)$\\
+\texttt{set} & hash set, unique elements & add/\texttt{in} $O(1)$; union/intersection $O(n)$\\
+\texttt{deque} (collections) & double-ended queue & append/pop at both ends $O(1)$\\
+\texttt{heapq} & binary min-heap on a list & push/pop $O(\log n)$; top-$k$ via \texttt{nlargest}\\
+\bottomrule
+\end{tabular}
+
+\subsection{Gotchas}
+\begin{lstlisting}[language=Python]
+# 1. Mutable default arguments are created once
+def add(item, bucket=[]):          # bug
+    bucket.append(item); return bucket
+print(add(1), add(2))              # [1, 2] [1, 2]
+def add_ok(item, bucket=None):
+    bucket = [] if bucket is None else bucket
+    bucket.append(item); return bucket
+
+# 2. Aliasing, shallow vs deep copy
+import copy
+a = [[1, 2], [3, 4]]
+b = a                  # same object
+c = a.copy()           # new outer list, same inner lists
+d = copy.deepcopy(a)   # fully independent
+a[0][0] = 99
+print(b[0][0], c[0][0], d[0][0])   # 99 99 1
+
+# 3. is vs ==
+x = [1, 2]; y = [1, 2]
+print(x == y, x is y)              # True False
+
+# 4. Late binding in closures
+fs = [lambda: i for i in range(3)]
+print([f() for f in fs])           # [2, 2, 2]
+fs = [lambda i=i: i for i in range(3)]
+print([f() for f in fs])           # [0, 1, 2]
+
+# 5. Floating point
+print(0.1 + 0.2 == 0.3, abs(0.1 + 0.2 - 0.3) < 1e-9)  # False True
+\end{lstlisting}
+
+\subsection{Idioms worth having at your fingertips}
+\begin{lstlisting}[language=Python]
+from collections import Counter, defaultdict
+words = "the quick fox and the lazy dog and the cat".split()
+print(Counter(words).most_common(2))        # [('the', 3), ('and', 2)]
+
+groups = defaultdict(list)
+for w in words:
+    groups[len(w)].append(w)
+print(dict(groups))
+
+squares = {n: n * n for n in range(5)}       # dict comprehension
+evens = [n for n in range(10) if n % 2 == 0]
+pairs = list(zip("abc", [1, 2, 3]))
+for i, w in enumerate(words[:2]):
+    print(i, w)
+
+def gen_squares(n):                          # generator: lazy, O(1) memory
+    for i in range(n):
+        yield i * i
+print(sum(gen_squares(1_000_000)))
+
+def timer(fn):                               # decorator
+    import time, functools
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        t = time.perf_counter(); out = fn(*args, **kwargs)
+        print(f"{fn.__name__}: {time.perf_counter() - t:.4f}s"); return out
+    return wrapper
+
+@timer
+def slow_sum(n): return sum(range(n))
+slow_sum(10**6)
+
+print(sorted(words, key=lambda w: (-len(w), w))[:3])  # sort by length desc, then alpha
+\end{lstlisting}
+
+\textbf{The GIL.} CPython's global interpreter lock lets only one thread execute Python bytecode at a time, so threads don't speed up CPU-bound pure-Python code; use \texttt{multiprocessing}, or vectorised libraries (NumPy releases the GIL in C code). Threads still help for I/O-bound work.
+
+\section{NumPy}
+
+\subsection{Vectorisation and broadcasting}
+Python loops over arrays are slow (interpreter overhead per element); NumPy operations run in compiled C over contiguous memory. \textbf{Broadcasting rules}: compare shapes from the right; two dimensions are compatible if equal or one of them is 1; missing leading dimensions are treated as 1.
+
+\begin{lstlisting}[language=Python]
+import numpy as np
+X = np.arange(12, dtype=float).reshape(4, 3)  # 4 samples, 3 features
+mu, sd = X.mean(axis=0), X.std(axis=0)        # axis=0 -> down the rows, per column
+Z = (X - mu) / sd                             # (4,3) - (3,) broadcasts
+print(Z.shape, Z.mean(axis=0).round(6))
+
+# Pairwise squared distances between rows of A (n,d) and B (m,d) without loops
+A = np.random.rand(5, 2); B = np.random.rand(3, 2)
+D2 = (A**2).sum(1)[:, None] + (B**2).sum(1)[None, :] - 2 * A @ B.T   # (5,3)
+D2_check = ((A[:, None, :] - B[None, :, :])**2).sum(-1)
+print(np.allclose(D2, D2_check))
+
+# Views vs copies
+a = np.arange(6); v = a[1:4]; v[0] = 100
+print(a)              # slicing returns a VIEW: a changed
+f = a[[1, 2]]; f[0] = -1
+print(a)              # fancy indexing returns a COPY: a unchanged
+
+# Boolean masks, where, argmax, unique
+x = np.array([3, -1, 4, -1, 5])
+print(x[x > 0], np.where(x > 0, x, 0), x.argmax())
+vals, counts = np.unique(x, return_counts=True)
+print(dict(zip(vals.tolist(), counts.tolist())))
+\end{lstlisting}
+
+\subsection{Numerically stable softmax and log-sum-exp}
+\begin{lstlisting}[language=Python]
+import numpy as np
+def softmax(z, axis=-1):
+    z = z - z.max(axis=axis, keepdims=True)   # shift: same result, no overflow
+    e = np.exp(z)
+    return e / e.sum(axis=axis, keepdims=True)
+
+def log_softmax(z, axis=-1):
+    z = z - z.max(axis=axis, keepdims=True)
+    return z - np.log(np.exp(z).sum(axis=axis, keepdims=True))
+
+print(softmax(np.array([1000.0, 1001.0, 1002.0])))   # naive exp would overflow
+\end{lstlisting}
+
+\section{pandas}
+
+\subsection{Core operations}
+\begin{lstlisting}[language=Python]
+import pandas as pd, numpy as np
+orders = pd.DataFrame({
+    "order_id": [1, 2, 3, 4, 5, 6],
+    "cust_id":  [10, 10, 20, 30, 30, 30],
+    "city":     ["Chennai", "Chennai", "Delhi", "Pune", "Pune", "Pune"],
+    "amount":   [250.0, 400.0, np.nan, 120.0, 900.0, 300.0],
+    "date": pd.to_datetime(["2026-01-03", "2026-01-15", "2026-01-20",
+                            "2026-02-01", "2026-02-11", "2026-03-05"]),
+})
+customers = pd.DataFrame({"cust_id": [10, 20, 40],
+                          "segment": ["gold", "silver", "gold"]})
+
+# Selection: loc = labels, iloc = positions
+print(orders.loc[orders["amount"] > 200, ["order_id", "amount"]])
+print(orders.iloc[:2, :3])
+
+# Missing values
+print(orders["amount"].isna().sum())
+orders["amount_f"] = orders["amount"].fillna(orders["amount"].median())
+
+# groupby + named aggregation
+summary = (orders.groupby("city")
+           .agg(n_orders=("order_id", "count"),
+                revenue=("amount", "sum"),          # sum skips NaN
+                avg_order=("amount", "mean"))
+           .sort_values("revenue", ascending=False)
+           .reset_index())
+print(summary)
+
+# transform keeps the original shape: share of each order in its customer's spend
+orders["share"] = orders["amount_f"] / orders.groupby("cust_id")["amount_f"].transform("sum")
+
+# Merges: how = inner / left / right / outer
+m = orders.merge(customers, on="cust_id", how="left", indicator=True)
+print(m[["order_id", "cust_id", "segment", "_merge"]])
+
+# Pivot table and melt
+orders["month"] = orders["date"].dt.to_period("M").astype(str)
+pv = orders.pivot_table(index="city", columns="month", values="amount_f",
+                        aggfunc="sum", fill_value=0)
+print(pv)
+long = pv.reset_index().melt(id_vars="city", var_name="month", value_name="rev")
+print(long.head())
+\end{lstlisting}
+
+\subsection{Time-aware and window-style operations}
+\begin{lstlisting}[language=Python]
+import pandas as pd
+s = pd.DataFrame({"cust": [1, 1, 1, 2, 2],
+                  "day": pd.to_datetime(["2026-01-01", "2026-01-05", "2026-01-20",
+                                         "2026-01-02", "2026-01-03"]),
+                  "spend": [100, 50, 70, 20, 30]}).sort_values(["cust", "day"])
+s["prev_spend"] = s.groupby("cust")["spend"].shift(1)        # lag (like SQL LAG)
+s["days_since_prev"] = s.groupby("cust")["day"].diff().dt.days
+s["running_spend"] = s.groupby("cust")["spend"].cumsum()
+s["rank_in_cust"] = s.groupby("cust")["spend"].rank(method="dense", ascending=False)
+s["roll2_mean"] = (s.groupby("cust")["spend"]
+                    .transform(lambda x: x.rolling(2, min_periods=1).mean()))
+print(s)
+
+# Top-1 row per group (highest spend per customer)
+print(s.sort_values("spend", ascending=False).drop_duplicates("cust"))
+# or: s.loc[s.groupby("cust")["spend"].idxmax()]
+\end{lstlisting}
+
+\subsection{pandas pitfalls}
+\begin{itemize}
+  \item \textbf{Chained assignment} \texttt{df[df.a>0]["b"] = 1} may modify a temporary copy (pandas raises a \emph{SettingWithCopy} warning). Use \texttt{df.loc[df.a>0, "b"] = 1}.
+  \item \texttt{apply} with a Python function row by row is slow; prefer vectorised column operations, \texttt{np.where}, \texttt{np.select}, \texttt{map}.
+  \item Merges on keys with duplicates on both sides multiply rows (many-to-many). Check with \texttt{validate="one\_to\_one"} or \texttt{"many\_to\_one"}.
+  \item \texttt{count} excludes NaN, \texttt{size} includes it; \texttt{mean}/\texttt{sum} skip NaN by default.
+  \item Integer columns with NaN become float (or use the nullable \texttt{Int64} dtype).
+  \item \texttt{groupby} drops NaN keys by default (\texttt{dropna=False} keeps them).
+\end{itemize}
+
+\section{scikit-learn: leakage-safe pipelines}
+\begin{lstlisting}[language=Python]
+import numpy as np, pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+
+rng = np.random.default_rng(0)
+n = 500
+df = pd.DataFrame({"age": rng.integers(18, 70, n).astype(float),
+                   "income": rng.normal(50, 15, n),
+                   "plan": rng.choice(["basic", "pro", "max"], n)})
+df.loc[rng.choice(n, 30, replace=False), "income"] = np.nan
+y = (df["income"].fillna(50) + rng.normal(0, 10, n) > 55).astype(int)
+
+num, cat = ["age", "income"], ["plan"]
+pre = ColumnTransformer([
+    ("num", Pipeline([("imp", SimpleImputer(strategy="median")),
+                      ("sc", StandardScaler())]), num),
+    ("cat", OneHotEncoder(handle_unknown="ignore"), cat)])
+model = Pipeline([("pre", pre), ("clf", LogisticRegression(max_iter=1000))])
+
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
+scores = cross_val_score(model, df, y, cv=cv, scoring="roc_auc")
+print(scores.mean().round(3))   # imputer and scaler are re-fit inside every fold
+\end{lstlisting}
+Hyperparameters inside a pipeline are addressed as \texttt{"clf\_\_C"} in \texttt{GridSearchCV}.
+
+\section{Implement-from-scratch questions}
+
+\subsection{Linear regression with gradient descent (and closed form)}
+\begin{lstlisting}[language=Python]
+import numpy as np
+rng = np.random.default_rng(42)
+X = rng.normal(size=(200, 3)); true_w = np.array([2.0, -1.0, 0.5])
+y = X @ true_w + 4.0 + rng.normal(0, 0.1, 200)
+
+def fit_linreg_gd(X, y, lr=0.1, epochs=500):
+    n, d = X.shape
+    w, b = np.zeros(d), 0.0
+    for _ in range(epochs):
+        err = X @ w + b - y               # (n,)
+        w -= lr * (2 / n) * X.T @ err     # gradient of MSE
+        b -= lr * (2 / n) * err.sum()
+    return w, b
+
+w, b = fit_linreg_gd(X, y)
+Xb = np.c_[np.ones(len(X)), X]
+beta = np.linalg.lstsq(Xb, y, rcond=None)[0]   # closed form, stable solver
+print(w.round(3), round(b, 3), beta.round(3))
+\end{lstlisting}
+
+\subsection{Logistic regression}
+\begin{lstlisting}[language=Python]
+import numpy as np
+def sigmoid(z):
+    return 1 / (1 + np.exp(-np.clip(z, -500, 500)))
+
+def fit_logreg(X, y, lr=0.1, epochs=2000, l2=0.0):
+    n, d = X.shape
+    w, b = np.zeros(d), 0.0
+    for _ in range(epochs):
+        p = sigmoid(X @ w + b)
+        grad_w = X.T @ (p - y) / n + l2 * w
+        grad_b = (p - y).mean()
+        w -= lr * grad_w; b -= lr * grad_b
+    return w, b
+
+def log_loss(y, p, eps=1e-12):
+    p = np.clip(p, eps, 1 - eps)
+    return -np.mean(y * np.log(p) + (1 - y) * np.log(1 - p))
+
+rng = np.random.default_rng(1)
+X = rng.normal(size=(500, 2))
+y = (X[:, 0] - 2 * X[:, 1] + rng.normal(0, 0.5, 500) > 0).astype(float)
+w, b = fit_logreg(X, y)
+p = sigmoid(X @ w + b)
+print(w.round(2), round(log_loss(y, p), 3), ((p > 0.5) == y).mean())
+\end{lstlisting}
+
+\subsection{k-means}
+\begin{lstlisting}[language=Python]
+import numpy as np
+def kmeans(X, k, iters=100, seed=0):
+    rng = np.random.default_rng(seed)
+    C = X[rng.choice(len(X), k, replace=False)]            # random init
+    for _ in range(iters):
+        d2 = ((X[:, None, :] - C[None, :, :])**2).sum(-1)  # (n,k)
+        labels = d2.argmin(1)
+        newC = np.array([X[labels == j].mean(0) if np.any(labels == j) else C[j]
+                         for j in range(k)])
+        if np.allclose(newC, C): break
+        C = newC
+    inertia = ((X - C[labels])**2).sum()
+    return labels, C, inertia
+
+rng = np.random.default_rng(3)
+X = np.vstack([rng.normal(c, 0.3, size=(50, 2)) for c in [(0, 0), (3, 3), (0, 4)]])
+labels, C, inertia = kmeans(X, 3)
+print(np.round(C[np.argsort(C[:, 0] + C[:, 1])], 1), round(inertia, 1))
+\end{lstlisting}
+
+\subsection{k-nearest neighbours}
+\begin{lstlisting}[language=Python]
+import numpy as np
+from collections import Counter
+def knn_predict(Xtr, ytr, Xte, k=3):
+    d2 = ((Xte[:, None, :] - Xtr[None, :, :])**2).sum(-1)
+    idx = np.argsort(d2, axis=1)[:, :k]
+    return np.array([Counter(ytr[row]).most_common(1)[0][0] for row in idx])
+
+Xtr = np.array([[0, 0], [0, 1], [5, 5], [6, 5]]); ytr = np.array([0, 0, 1, 1])
+print(knn_predict(Xtr, ytr, np.array([[0.2, 0.4], [5.5, 4.8]]), k=3))   # [0 1]
+\end{lstlisting}
+
+\subsection{Metrics by hand: confusion matrix and ROC-AUC}
+\begin{lstlisting}[language=Python]
+import numpy as np
+def confusion(y, yhat):
+    tp = int(((y == 1) & (yhat == 1)).sum()); fp = int(((y == 0) & (yhat == 1)).sum())
+    fn = int(((y == 1) & (yhat == 0)).sum()); tn = int(((y == 0) & (yhat == 0)).sum())
+    prec = tp / (tp + fp) if tp + fp else 0.0
+    rec = tp / (tp + fn) if tp + fn else 0.0
+    f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
+    return dict(tp=tp, fp=fp, fn=fn, tn=tn, precision=prec, recall=rec, f1=f1)
+
+def roc_auc(y, score):
+    # AUC = P(score_pos > score_neg); ties count 1/2. Rank-based O(n log n).
+    from scipy.stats import rankdata
+    r = rankdata(score)
+    n_pos = y.sum(); n_neg = len(y) - n_pos
+    return (r[y == 1].sum() - n_pos * (n_pos + 1) / 2) / (n_pos * n_neg)
+
+y = np.array([1, 0, 1, 1, 0, 0, 1, 0])
+s = np.array([0.9, 0.4, 0.65, 0.3, 0.2, 0.55, 0.8, 0.1])
+print(confusion(y, (s >= 0.5).astype(int)))
+print(roc_auc(y, s))   # 0.875 (14 of 16 pos-neg pairs ordered correctly)
+\end{lstlisting}
+
+\subsection{A two-layer neural network with manual backprop}
+\begin{lstlisting}[language=Python]
+import numpy as np
+rng = np.random.default_rng(0)
+X = rng.normal(size=(400, 2))
+y = ((X[:, 0]**2 + X[:, 1]**2) > 1.5).astype(int)        # circle: not linearly separable
+Y = np.eye(2)[y]                                         # one-hot (n,2)
+
+h = 16
+W1 = rng.normal(0, np.sqrt(2 / 2), (2, h)); b1 = np.zeros(h)   # He init
+W2 = rng.normal(0, np.sqrt(2 / h), (h, 2)); b2 = np.zeros(2)
+lr = 0.5
+for epoch in range(2000):
+    Z1 = X @ W1 + b1; A1 = np.maximum(0, Z1)              # ReLU
+    Z2 = A1 @ W2 + b2
+    Z2 -= Z2.max(1, keepdims=True); P = np.exp(Z2); P /= P.sum(1, keepdims=True)
+    loss = -np.log(P[np.arange(len(y)), y]).mean()
+    dZ2 = (P - Y) / len(X)                                # softmax + CE gradient
+    dW2 = A1.T @ dZ2; db2 = dZ2.sum(0)
+    dA1 = dZ2 @ W2.T; dZ1 = dA1 * (Z1 > 0)
+    dW1 = X.T @ dZ1; db1 = dZ1.sum(0)
+    W1 -= lr * dW1; b1 -= lr * db1; W2 -= lr * dW2; b2 -= lr * db2
+print(round(loss, 3), (P.argmax(1) == y).mean())
+\end{lstlisting}
+
+\subsection{PCA via SVD}
+\begin{lstlisting}[language=Python]
+import numpy as np
+def pca(X, k):
+    Xc = X - X.mean(0)
+    U, S, Vt = np.linalg.svd(Xc, full_matrices=False)
+    explained = S**2 / (S**2).sum()
+    return Xc @ Vt[:k].T, Vt[:k], explained[:k]
+
+rng = np.random.default_rng(0)
+t = rng.normal(size=300)
+X = np.c_[t, 2 * t + rng.normal(0, 0.1, 300), rng.normal(0, 0.1, 300)]
+Z, comps, ev = pca(X, 2)
+print(ev.round(3))      # first component carries almost all the variance
+\end{lstlisting}
+
+\section{Typical DSA patterns in DS coding rounds}
+\begin{lstlisting}[language=Python]
+# Two-sum with a hash map: O(n)
+def two_sum(nums, target):
+    seen = {}
+    for i, x in enumerate(nums):
+        if target - x in seen: return [seen[target - x], i]
+        seen[x] = i
+
+# Sliding window: longest substring without repeating characters, O(n)
+def longest_unique(s):
+    last, start, best = {}, 0, 0
+    for i, ch in enumerate(s):
+        if ch in last and last[ch] >= start: start = last[ch] + 1
+        last[ch] = i; best = max(best, i - start + 1)
+    return best
+
+# Top-k frequent elements with a heap: O(n log k)
+import heapq
+from collections import Counter
+def top_k(nums, k):
+    return [x for x, _ in heapq.nlargest(k, Counter(nums).items(), key=lambda t: t[1])]
+
+# Moving average of a stream
+from collections import deque
+class MovingAverage:
+    def __init__(self, size): self.q, self.size, self.s = deque(), size, 0.0
+    def next(self, val):
+        self.q.append(val); self.s += val
+        if len(self.q) > self.size: self.s -= self.q.popleft()
+        return self.s / len(self.q)
+
+# Binary search
+def lower_bound(a, x):
+    lo, hi = 0, len(a)
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if a[mid] < x: lo = mid + 1
+        else: hi = mid
+    return lo
+
+print(two_sum([2, 7, 11, 15], 9), longest_unique("abcabcbb"),
+      top_k([1, 1, 1, 2, 2, 3], 2), lower_bound([1, 3, 5, 7], 4))
+m = MovingAverage(3); print([round(m.next(v), 2) for v in [1, 10, 3, 5]])
+\end{lstlisting}
+Other common ones: merging intervals (sort by start), prefix sums for range queries, BFS/DFS on grids, dynamic programming basics (climbing stairs, coin change, longest common subsequence), stack for valid parentheses.
+
+\section{Interview questions}
+\Q{List vs tuple vs set vs dict --- when do you use which?}
+\A List for ordered mutable sequences; tuple for fixed records and dictionary keys; set for fast membership and de-duplication; dict for key--value lookup. Membership test is $O(1)$ for set/dict and $O(n)$ for list.
+
+\Q{What does \texttt{axis=0} mean in NumPy/pandas aggregations?}
+\A Aggregate down the rows, producing one value per column. \texttt{axis=1} aggregates across columns, one value per row.
+
+\Q{\texttt{groupby().transform} vs \texttt{groupby().agg} vs \texttt{apply}?}
+\A \texttt{agg} returns one row per group; \texttt{transform} returns a result aligned to the original rows (useful for group-normalised features); \texttt{apply} is the most flexible and the slowest.
+
+\Q{Why is a NumPy vectorised operation faster than a Python loop?}
+\A It runs in compiled code over contiguous typed memory, avoiding per-element interpreter overhead and type checks, and can use SIMD instructions.
+
+\Q{How do you avoid leakage when scaling features?}
+\A Fit the scaler on training data only (inside each CV fold), then transform validation/test with it. A scikit-learn \texttt{Pipeline} enforces this.

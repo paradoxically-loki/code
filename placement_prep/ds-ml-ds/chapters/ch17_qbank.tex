@@ -1,0 +1,220 @@
+\chapter{Rapid-Fire Question Bank}
+
+Use this chapter for timed self-testing: cover the answer, answer aloud in under a minute, then compare. Answers are deliberately compact; the earlier chapters have the derivations.
+
+\section{Statistics and probability}
+\Q{Explain a p-value to a non-technical manager.}
+\A If the change truly had no effect, how surprising would results this extreme be? A p-value of 0.01 means results like ours would happen about 1\% of the time by chance alone. It is not the probability that the change does nothing.
+
+\Q{Type I vs Type II error in a fraud model's alert threshold?}
+\A Type I: flagging a genuine transaction (false alarm). Type II: missing fraud. Lowering the threshold trades Type II for Type I.
+
+\Q{What is statistical power and what increases it?}
+\A Probability of detecting a real effect. Increases with sample size, effect size, significance level $\alpha$, and lower variance (CUPED, better metrics).
+
+\Q{Standard deviation vs standard error?}
+\A SD measures spread of individual observations; SE $=\sigma/\sqrt n$ measures uncertainty of the sample mean.
+
+\Q{When would you use the median over the mean?}
+\A Skewed data or outliers (income, house prices, session lengths).
+
+\Q{Covariance vs correlation?}
+\A Correlation is covariance scaled by both standard deviations --- unit-free, in $[-1,1]$; measures linear association only.
+
+\Q{What does a Q--Q plot show?}
+\A Sample quantiles against theoretical quantiles; points on a straight line indicate the assumed distribution fits; curved tails show skew or heavy tails.
+
+\Q{A coin gives 60 heads in 100 tosses. Is it fair at 5\%?}
+\A Under $H_0$: mean 50, SD $=\sqrt{100\times0.25}=5$; $z=(60-50)/5=2>1.96$. Reject at 5\% (two-sided p $\approx0.046$; slightly larger with continuity correction --- borderline).
+
+\Q{Expected value of a fair die roll and its variance?}
+\A $3.5$; $\E X^2=91/6$, $\Var=91/6-12.25=35/12\approx2.92$.
+
+\Q{Sum of two dice: probability of 7?}
+\A $6/36=1/6$.
+
+\Q{You run 100 A/B tests with no true effects at $\alpha=0.05$. How many ``significant''?}
+\A About 5 expected false positives.
+
+\section{Classical machine learning}
+\Q{Explain overfitting with an everyday analogy.}
+\A A student who memorises past exam papers word for word scores perfectly on those papers but fails new questions; they learned the noise, not the subject.
+
+\Q{L1 vs L2 regularisation in one line each.}
+\A L1: absolute weights, produces exact zeros (feature selection), Laplace prior. L2: squared weights, shrinks smoothly, handles collinearity, Gaussian prior.
+
+\Q{Why standardise before regularised regression?}
+\A The penalty treats all coefficients equally, but a coefficient's size depends on the feature's units; unscaled features get unequal penalisation.
+
+\Q{What is the kernel trick?}
+\A Computing dot products in a high-dimensional feature space via a kernel function on the original inputs, so linear algorithms that only need dot products learn non-linear boundaries cheaply.
+
+\Q{Gini vs entropy?}
+\A Both measure node impurity; nearly always choose the same split; Gini is cheaper to compute.
+
+\Q{Why do random forests rarely need feature scaling?}
+\A Tree splits are thresholds on single features, invariant to monotone transformations.
+
+\Q{What is out-of-bag error?}
+\A Each tree is evaluated on the roughly 37\% of samples not in its bootstrap sample; aggregating these gives a validation estimate without a separate holdout.
+
+\Q{How do you pick $k$ in kNN?}
+\A Cross-validation; odd $k$ for binary classification avoids ties; small $k$ overfits, large $k$ underfits; rule-of-thumb starting point $\sqrt n$.
+
+\Q{What does a learning curve tell you?}
+\A Training and validation scores vs training-set size. Large persistent gap: high variance (more data helps). Both low and converged: high bias (more data won't help; need a richer model).
+
+\Q{Why is logistic regression called linear?}
+\A Its log-odds (and hence its decision boundary) are linear in the features.
+
+\Q{What is multicollinearity and how do you detect it?}
+\A Strong correlation among predictors, inflating coefficient variance. Detect with correlation matrices, VIF, condition number; handle with ridge, dropping/combining variables, PCA.
+
+\Q{Hard vs soft voting in ensembles?}
+\A Hard: majority of predicted labels. Soft: average predicted probabilities --- usually better when models are calibrated.
+
+\Q{Generative vs discriminative example pair?}
+\A Naive Bayes vs logistic regression (they form a classic pair: NB converges faster with little data; LR wins asymptotically).
+
+\Q{How would you explain gradient boosting to a business stakeholder?}
+\A A sequence of small decision trees where each new tree focuses on the cases the previous ones got wrong; together they become very accurate.
+
+\Q{How do you deal with outliers?}
+\A First ask whether they are errors or genuine rare events (fraud is an ``outlier'' you want). Options: cap/winsorise, log transform, robust losses (Huber, MAE), robust scalers, tree models, or separate modelling.
+
+\Q{Which algorithms are sensitive to class imbalance and how do you adjust each?}
+\A Most are; use class weights (LR, SVM, trees, boosting via \texttt{scale\_pos\_weight}), resampling in the training fold, threshold tuning and appropriate metrics.
+
+\Q{What is the difference between a parameter and a hyperparameter?}
+\A Parameters are learned from data (weights); hyperparameters are set before training and tuned on validation data (learning rate, depth, $\lambda$).
+
+\Q{Grid search vs random search vs Bayesian optimisation?}
+\A Grid: exhaustive, wasteful in high dimensions. Random: more efficient because only a few hyperparameters usually matter. Bayesian (e.g.\ Optuna's TPE): models the score surface to choose promising settings; most sample-efficient.
+
+\section{Deep learning}
+\Q{Why do we need activation functions?}
+\A Without non-linearity, any stack of linear layers collapses into one linear map.
+
+\Q{Sigmoid vs softmax output?}
+\A Sigmoid: independent probabilities per output (binary or multi-label). Softmax: a distribution across mutually exclusive classes summing to 1.
+
+\Q{What is an epoch, a batch, an iteration?}
+\A Epoch: one pass through the training set. Batch: the samples used for one gradient step. Iterations per epoch $=\lceil n/B\rceil$.
+
+\Q{1000 samples, batch size 32: how many iterations per epoch?}
+\A $\lceil1000/32\rceil=32$ (the last batch has 8 samples unless dropped).
+
+\Q{What happens if the learning rate is too high? Too low?}
+\A Too high: loss oscillates or diverges (NaN). Too low: slow progress, may stall in poor regions.
+
+\Q{What is the vanishing gradient problem and three fixes?}
+\A Gradients shrink exponentially through layers so early layers stop learning. Fixes: ReLU activations, residual connections, normalisation, proper initialisation, LSTM gates.
+
+\Q{Why is BatchNorm problematic with batch size 2?}
+\A Batch statistics become very noisy, harming training; use LayerNorm or GroupNorm.
+
+\Q{Transfer learning: freeze or fine-tune?}
+\A Freeze with little, similar data; fine-tune more layers with more data or a different domain; use smaller learning rates for pre-trained layers.
+
+\Q{What is data augmentation, and when is it harmful?}
+\A Label-preserving transformations to enlarge training data. Harmful when the transformation changes the label (flipping a ``6'' into a ``9'', horizontally flipping text or road signs).
+
+\Q{Parameters in a $3\times3$ conv, 64 input channels, 128 filters?}
+\A $3\cdot3\cdot64\cdot128+128=73{,}856$.
+
+\Q{What is a $1\times1$ convolution used for?}
+\A Mixing channels and changing channel depth cheaply (bottlenecks), adding non-linearity.
+
+\Q{Why does self-attention scale quadratically?}
+\A It computes a score for every pair of positions: $n^2$ entries.
+
+\Q{What is the [CLS] token?}
+\A A special token prepended in BERT whose final hidden state is used as a summary representation for classification.
+
+\Q{Encoder--decoder attention: where do Q, K and V come from?}
+\A Queries from the decoder; keys and values from the encoder output.
+
+\Q{What is the context window of an LLM?}
+\A The maximum number of tokens (prompt plus generated output) the model can attend to at once.
+
+\Q{Why do LLMs hallucinate?}
+\A They are trained to produce probable continuations, not verified facts; gaps in knowledge or ambiguous prompts still yield fluent text. Mitigate with retrieval, citations, verification, and allowing ``I don't know''.
+
+\Q{Fine-tuning vs RAG for a company FAQ bot?}
+\A RAG: answers change, must be up-to-date and cite sources. Fine-tuning: teach tone/format or domain-specific behaviour. Often both.
+
+\Q{What is knowledge distillation?}
+\A Training a small student to match a large teacher's softened output probabilities (temperature $>1$), transferring ``dark knowledge'' about class similarities.
+
+\section{Tricky MCQ-style items}
+\Q{Increasing the regularisation parameter $\lambda$ in ridge regression will: (a) increase variance (b) increase bias (c) increase training fit.}
+\A (b) increase bias (and reduce variance; training fit worsens).
+
+\Q{Which is NOT affected by feature scaling: (a) kNN (b) SVM with RBF kernel (c) random forest (d) PCA?}
+\A (c).
+
+\Q{A model with AUC 0.3 is:}
+\A Worse than random --- but informative: inverting its scores gives AUC 0.7. Often a sign of a label flip bug.
+
+\Q{Adding more training data helps most when the model has: high bias or high variance?}
+\A High variance.
+
+\Q{k-means with $k=n$ gives inertia:}
+\A Zero (each point is its own centre).
+
+\Q{Which loss is most robust to outliers in regression: MSE, MAE, or Huber?}
+\A MAE (Huber is a compromise; MSE is least robust).
+
+\Q{Dropout with $p=0.5$ in a layer of 100 units: expected active units during training?}
+\A 50; survivors are scaled by 2 (inverted dropout).
+
+\Q{Output size of $7\times7$ input, $3\times3$ kernel, stride 2, padding 0?}
+\A $\lfloor(7-3)/2\rfloor+1=3$.
+
+\Q{Max pooling $2\times2$ stride 2 on $32\times32\times16$?}
+\A $16\times16\times16$.
+
+\Q{Softmax of $[2,2,2]$?}
+\A $[1/3,1/3,1/3]$; softmax is invariant to adding a constant.
+
+\Q{If precision $=0.8$ and recall $=0.5$, F1?}
+\A $2(0.4)/1.3\approx0.615$.
+
+\Q{Which of these is a lazy learner: decision tree, kNN, Naive Bayes?}
+\A kNN.
+
+\Q{Correlation between $X$ and $Y=-3X+5$?}
+\A $-1$.
+
+\Q{For an unbiased die, $P(\text{at least one 6 in 4 rolls})$?}
+\A $1-(5/6)^4\approx0.518$.
+
+\section{Case and open-ended questions}
+\Q{How would you build a model to predict which loan applicants will default?}
+\A Clarify the definition of default (e.g.\ 90+ days past due within 12 months) and the decision (approve/reject/price). Data: application data, bureau data, bank transactions; beware that labels exist only for approved loans (reject inference). Features: income stability, debt-to-income, utilisation, past delinquencies, tenure. Model: logistic regression scorecard (explainable, regulator-friendly) benchmarked against GBDT; evaluate AUC/Gini, KS, calibration, stability (PSI) across time; set cut-offs from expected loss $=$ PD $\times$ LGD $\times$ EAD against margin; fairness checks; monitor drift.
+
+\Q{Sales dropped 15\% last week. How do you investigate?}
+\A Check data first (tracking/pipeline issues). Then decompose: which regions, channels, products, customer segments? Traffic vs conversion vs average order value? Internal changes (price, release, outage, campaign end) vs external (holidays, competitor promotion, weather, seasonality --- compare to the same week last year). Form hypotheses, test with data, quantify each driver.
+
+\Q{How would you measure the impact of a feature you cannot A/B test?}
+\A Quasi-experimental methods: difference-in-differences with a comparable control group, synthetic control, regression discontinuity (if a threshold determines exposure), interrupted time series, propensity-score matching --- and state their assumptions (e.g.\ parallel trends).
+
+\Q{What metric would you use for a churn model used by a retention team that can call 500 customers a week?}
+\A Precision@500 (or lift in the top decile) and, ideally, expected saved revenue; AUC is secondary because only the top of the ranking is acted on.
+
+\section{Talking about your own projects}
+Interviewers ask about projects on your CV more than any textbook topic. A structure that works:
+\begin{enumerate}
+  \item \textbf{Problem and why it mattered} (one or two sentences, business terms).
+  \item \textbf{Data}: source, size, granularity, issues you had to fix.
+  \item \textbf{Approach}: baseline first, then the model, and \emph{why} you chose it over alternatives.
+  \item \textbf{Validation}: how you split (time-based for forecasting), which metric and why.
+  \item \textbf{Result}: a number against the baseline, stated honestly.
+  \item \textbf{What you would do differently / next.}
+\end{enumerate}
+\begin{realworld}
+For a working-capital forecasting project like your Sheela Foam internship, expect follow-ups such as: Why a time-series model rather than regression on drivers? How did you check stationarity? What was your naive baseline and did you beat it (MASE)? How did you validate --- walk-forward? Since you used a public proxy dataset for the college deliverable, be ready to explain how well the proxy represents the real business and what would change with the actual data. Owning such limitations openly tends to read as maturity, not weakness.
+\end{realworld}
+
+\Q{What if you don't know the answer in an interview?}
+\A Say so plainly, then reason aloud from first principles you do know; interviewers often value the reasoning more than recall. Do not bluff --- follow-up questions expose it quickly.

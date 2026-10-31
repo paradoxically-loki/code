@@ -1,0 +1,262 @@
+\contentsline {chapter}{How to use this booklet}{ix}{chapter*.2}%
+\contentsline {part}{I\hspace {1em}Foundations}{1}{part.1}%
+\contentsline {chapter}{\numberline {1}Linear Algebra, Calculus and Optimisation}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Vectors, matrices and the geometry behind them}{2}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Dot product, norms, angles}{2}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Matrix multiplication and shapes}{2}{subsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.3}Rank, span, independence}{3}{subsection.1.1.3}%
+\contentsline {subsection}{\numberline {1.1.4}Determinant and inverse}{3}{subsection.1.1.4}%
+\contentsline {section}{\numberline {1.2}Eigen-decomposition and SVD}{3}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Eigenvalues and eigenvectors}{3}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Singular Value Decomposition (SVD)}{3}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}Calculus for machine learning}{4}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Derivatives, partial derivatives, gradient}{4}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Chain rule --- the heart of backpropagation}{4}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Matrix calculus identities (memorise)}{4}{subsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.3.4}Derivatives of common functions}{4}{subsection.1.3.4}%
+\contentsline {subsection}{\numberline {1.3.5}Taylor expansion}{5}{subsection.1.3.5}%
+\contentsline {section}{\numberline {1.4}Optimisation}{5}{section.1.4}%
+\contentsline {subsection}{\numberline {1.4.1}Convexity}{5}{subsection.1.4.1}%
+\contentsline {subsection}{\numberline {1.4.2}Gradient descent family}{5}{subsection.1.4.2}%
+\contentsline {subsection}{\numberline {1.4.3}Newton's method}{5}{subsection.1.4.3}%
+\contentsline {subsection}{\numberline {1.4.4}Constrained optimisation: Lagrange multipliers and KKT}{5}{subsection.1.4.4}%
+\contentsline {section}{\numberline {1.5}Interview questions}{6}{section.1.5}%
+\contentsline {chapter}{\numberline {2}Probability, Statistics and Information Theory}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Probability essentials}{7}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Rules}{7}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Random variables, expectation, variance}{7}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Distributions you must know}{8}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Limit theorems}{8}{subsection.2.1.4}%
+\contentsline {section}{\numberline {2.2}Estimation}{8}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Maximum likelihood (MLE)}{8}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}MAP and priors}{9}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Properties of estimators}{9}{subsection.2.2.3}%
+\contentsline {section}{\numberline {2.3}Hypothesis testing}{9}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Framework}{9}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Which test?}{9}{subsection.2.3.2}%
+\contentsline {section}{\numberline {2.4}A/B testing (core for DS roles)}{9}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Information theory}{10}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Classic probability puzzles}{10}{section.2.6}%
+\contentsline {part}{II\hspace {1em}Classical Machine Learning}{12}{part.2}%
+\contentsline {chapter}{\numberline {3}Machine Learning Fundamentals}{13}{chapter.3}%
+\contentsline {section}{\numberline {3.1}The learning problem}{13}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Bias--variance trade-off}{13}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Derivation (squared loss)}{14}{subsection.3.2.1}%
+\contentsline {section}{\numberline {3.3}Data splitting and validation}{14}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Data leakage}{14}{subsection.3.3.1}%
+\contentsline {section}{\numberline {3.4}Preprocessing and feature engineering}{15}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Missing values}{15}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Categorical encoding}{15}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Scaling}{15}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Feature engineering ideas interviewers like}{15}{subsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.4.5}Feature selection}{16}{subsection.3.4.5}%
+\contentsline {subsection}{\numberline {3.4.6}Curse of dimensionality}{16}{subsection.3.4.6}%
+\contentsline {section}{\numberline {3.5}Class imbalance}{16}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Evaluation metrics}{16}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Confusion matrix and derived metrics}{16}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}ROC and PR curves}{17}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Probabilistic metrics and calibration}{17}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.4}Regression metrics}{17}{subsection.3.6.4}%
+\contentsline {subsection}{\numberline {3.6.5}Ranking metrics}{17}{subsection.3.6.5}%
+\contentsline {section}{\numberline {3.7}Interview questions}{18}{section.3.7}%
+\contentsline {chapter}{\numberline {4}Linear Models}{19}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Linear regression}{19}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Model and OLS solution}{19}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Assumptions (classical linear model)}{19}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Inference}{20}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Interpreting coefficients under transforms}{20}{subsection.4.1.4}%
+\contentsline {section}{\numberline {4.2}Regularised regression}{20}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Ridge ($L_2$)}{20}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Lasso ($L_1$)}{20}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Elastic net}{21}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Bayesian interpretation (derivation)}{21}{subsection.4.2.4}%
+\contentsline {section}{\numberline {4.3}Logistic regression}{21}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Model}{21}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Loss and gradient (derive this on a whiteboard)}{21}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Multiclass: softmax regression}{22}{subsection.4.3.3}%
+\contentsline {section}{\numberline {4.4}Generalised linear models (GLMs)}{22}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Model selection criteria}{22}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Interview questions}{22}{section.4.6}%
+\contentsline {chapter}{\numberline {5}Classical Classifiers}{24}{chapter.5}%
+\contentsline {section}{\numberline {5.1}k-Nearest Neighbours}{24}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Naive Bayes}{24}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Linear and Quadratic Discriminant Analysis}{25}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Support Vector Machines}{25}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Hard-margin SVM (derivation)}{25}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Soft margin and hinge loss}{25}{subsection.5.4.2}%
+\contentsline {subsection}{\numberline {5.4.3}The dual and the kernel trick}{26}{subsection.5.4.3}%
+\contentsline {section}{\numberline {5.5}Decision trees}{26}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Splitting criteria}{26}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Algorithm and complexity}{26}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}Controlling overfitting}{27}{subsection.5.5.3}%
+\contentsline {subsection}{\numberline {5.5.4}Pros and cons}{27}{subsection.5.5.4}%
+\contentsline {section}{\numberline {5.6}Interview questions}{27}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Ensembles}{28}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Why averaging helps}{28}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Bagging}{28}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Random forests}{28}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Boosting}{29}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}AdaBoost}{29}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Gradient boosting (derivation)}{29}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}XGBoost: second-order boosting (derivation)}{30}{subsection.6.4.3}%
+\contentsline {subsection}{\numberline {6.4.4}LightGBM}{30}{subsection.6.4.4}%
+\contentsline {subsection}{\numberline {6.4.5}CatBoost}{30}{subsection.6.4.5}%
+\contentsline {subsection}{\numberline {6.4.6}Tuning gradient boosting --- a practical order}{31}{subsection.6.4.6}%
+\contentsline {section}{\numberline {6.5}Stacking and blending}{31}{section.6.5}%
+\contentsline {section}{\numberline {6.6}Model interpretability}{31}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Interview questions}{31}{section.6.7}%
+\contentsline {chapter}{\numberline {7}Unsupervised Learning}{33}{chapter.7}%
+\contentsline {section}{\numberline {7.1}k-means clustering}{33}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Hierarchical clustering}{34}{section.7.2}%
+\contentsline {section}{\numberline {7.3}DBSCAN}{34}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Gaussian mixture models and EM}{34}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Principal Component Analysis}{35}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}Derivation}{35}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {7.5.2}Practical points}{35}{subsection.7.5.2}%
+\contentsline {section}{\numberline {7.6}Non-linear embeddings for visualisation}{35}{section.7.6}%
+\contentsline {section}{\numberline {7.7}Anomaly detection}{36}{section.7.7}%
+\contentsline {section}{\numberline {7.8}Association rules (market basket analysis)}{36}{section.7.8}%
+\contentsline {section}{\numberline {7.9}Interview questions}{36}{section.7.9}%
+\contentsline {chapter}{\numberline {8}Time Series, Recommenders, NLP}{38}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Time series}{38}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}Components and stationarity}{38}{subsection.8.1.1}%
+\contentsline {subsection}{\numberline {8.1.2}ACF and PACF}{38}{subsection.8.1.2}%
+\contentsline {subsection}{\numberline {8.1.3}Classical models}{38}{subsection.8.1.3}%
+\contentsline {subsection}{\numberline {8.1.4}Machine learning for forecasting}{39}{subsection.8.1.4}%
+\contentsline {subsection}{\numberline {8.1.5}Validation and metrics}{39}{subsection.8.1.5}%
+\contentsline {section}{\numberline {8.2}Recommender systems}{39}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Approaches}{39}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.2.2}Problems and metrics}{40}{subsection.8.2.2}%
+\contentsline {section}{\numberline {8.3}Classical NLP}{40}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Interview questions}{40}{section.8.4}%
+\contentsline {part}{III\hspace {1em}Deep Learning}{42}{part.3}%
+\contentsline {chapter}{\numberline {9}Neural Networks and How to Train Them}{43}{chapter.9}%
+\contentsline {section}{\numberline {9.1}From the perceptron to multilayer networks}{43}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Backpropagation}{43}{section.9.2}%
+\contentsline {subsection}{\numberline {9.2.1}Derivation in matrix form}{44}{subsection.9.2.1}%
+\contentsline {subsection}{\numberline {9.2.2}Why softmax with cross-entropy gives prediction minus target}{44}{subsection.9.2.2}%
+\contentsline {subsection}{\numberline {9.2.3}A tiny worked example}{44}{subsection.9.2.3}%
+\contentsline {subsection}{\numberline {9.2.4}Automatic differentiation}{44}{subsection.9.2.4}%
+\contentsline {section}{\numberline {9.3}Activation functions}{44}{section.9.3}%
+\contentsline {section}{\numberline {9.4}Vanishing and exploding gradients}{45}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Weight initialisation}{45}{section.9.5}%
+\contentsline {section}{\numberline {9.6}Optimisers}{45}{section.9.6}%
+\contentsline {subsection}{\numberline {9.6.1}Learning-rate schedules}{46}{subsection.9.6.1}%
+\contentsline {subsection}{\numberline {9.6.2}Batch size}{46}{subsection.9.6.2}%
+\contentsline {section}{\numberline {9.7}Normalisation}{46}{section.9.7}%
+\contentsline {section}{\numberline {9.8}Regularisation in deep learning}{47}{section.9.8}%
+\contentsline {section}{\numberline {9.9}Training at scale (ML engineer topics)}{47}{section.9.9}%
+\contentsline {section}{\numberline {9.10}Debugging a network that won't learn}{47}{section.9.10}%
+\contentsline {section}{\numberline {9.11}Interview questions}{48}{section.9.11}%
+\contentsline {chapter}{\numberline {10}Convolutional Neural Networks and Computer Vision}{49}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Why convolutions?}{49}{section.10.1}%
+\contentsline {section}{\numberline {10.2}The convolution layer}{49}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}Output size and parameter count (asked in almost every OA)}{49}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}Other ingredients}{50}{subsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.2.3}Receptive field}{50}{subsection.10.2.3}%
+\contentsline {section}{\numberline {10.3}Landmark architectures}{50}{section.10.3}%
+\contentsline {section}{\numberline {10.4}Transfer learning}{51}{section.10.4}%
+\contentsline {section}{\numberline {10.5}Beyond classification}{51}{section.10.5}%
+\contentsline {subsection}{\numberline {10.5.1}Object detection}{51}{subsection.10.5.1}%
+\contentsline {subsection}{\numberline {10.5.2}Segmentation}{51}{subsection.10.5.2}%
+\contentsline {section}{\numberline {10.6}Interview questions}{51}{section.10.6}%
+\contentsline {chapter}{\numberline {11}Recurrent Networks and Sequence Models}{53}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Recurrent neural networks}{53}{section.11.1}%
+\contentsline {subsection}{\numberline {11.1.1}Backpropagation through time and vanishing gradients}{53}{subsection.11.1.1}%
+\contentsline {section}{\numberline {11.2}LSTM}{53}{section.11.2}%
+\contentsline {section}{\numberline {11.3}GRU}{54}{section.11.3}%
+\contentsline {section}{\numberline {11.4}Variants and practicalities}{54}{section.11.4}%
+\contentsline {section}{\numberline {11.5}Sequence-to-sequence and attention}{54}{section.11.5}%
+\contentsline {section}{\numberline {11.6}Interview questions}{55}{section.11.6}%
+\contentsline {chapter}{\numberline {12}Transformers and Large Language Models}{56}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Self-attention}{56}{section.12.1}%
+\contentsline {subsection}{\numberline {12.1.1}Scaled dot-product attention}{56}{subsection.12.1.1}%
+\contentsline {subsection}{\numberline {12.1.2}Multi-head attention}{56}{subsection.12.1.2}%
+\contentsline {subsection}{\numberline {12.1.3}Complexity}{57}{subsection.12.1.3}%
+\contentsline {section}{\numberline {12.2}Positional information}{57}{section.12.2}%
+\contentsline {section}{\numberline {12.3}The Transformer block}{57}{section.12.3}%
+\contentsline {section}{\numberline {12.4}Three families of Transformers}{58}{section.12.4}%
+\contentsline {section}{\numberline {12.5}Tokenisation}{58}{section.12.5}%
+\contentsline {section}{\numberline {12.6}Pre-training at scale}{58}{section.12.6}%
+\contentsline {section}{\numberline {12.7}Adapting LLMs}{59}{section.12.7}%
+\contentsline {subsection}{\numberline {12.7.1}Prompting and in-context learning}{59}{subsection.12.7.1}%
+\contentsline {subsection}{\numberline {12.7.2}Fine-tuning}{59}{subsection.12.7.2}%
+\contentsline {subsection}{\numberline {12.7.3}Alignment: RLHF and DPO}{59}{subsection.12.7.3}%
+\contentsline {section}{\numberline {12.8}Inference and decoding}{60}{section.12.8}%
+\contentsline {subsection}{\numberline {12.8.1}Decoding strategies}{60}{subsection.12.8.1}%
+\contentsline {subsection}{\numberline {12.8.2}KV cache}{60}{subsection.12.8.2}%
+\contentsline {subsection}{\numberline {12.8.3}Making models cheaper}{60}{subsection.12.8.3}%
+\contentsline {section}{\numberline {12.9}Retrieval-augmented generation (RAG)}{60}{section.12.9}%
+\contentsline {section}{\numberline {12.10}Evaluating language models}{61}{section.12.10}%
+\contentsline {section}{\numberline {12.11}Interview questions}{61}{section.12.11}%
+\contentsline {chapter}{\numberline {13}Generative Models and Representation Learning}{63}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Autoencoders}{63}{section.13.1}%
+\contentsline {section}{\numberline {13.2}Variational autoencoders (VAE)}{63}{section.13.2}%
+\contentsline {subsection}{\numberline {13.2.1}ELBO derivation}{63}{subsection.13.2.1}%
+\contentsline {section}{\numberline {13.3}Generative adversarial networks (GANs)}{64}{section.13.3}%
+\contentsline {section}{\numberline {13.4}Diffusion models}{64}{section.13.4}%
+\contentsline {section}{\numberline {13.5}Comparing generative models}{65}{section.13.5}%
+\contentsline {section}{\numberline {13.6}Self-supervised and contrastive learning}{65}{section.13.6}%
+\contentsline {section}{\numberline {13.7}Interview questions}{65}{section.13.7}%
+\contentsline {part}{IV\hspace {1em}Engineering, Coding and Interview Practice}{67}{part.4}%
+\contentsline {chapter}{\numberline {14}MLOps and ML System Design}{68}{chapter.14}%
+\contentsline {section}{\numberline {14.1}A framework for any ML design question}{68}{section.14.1}%
+\contentsline {section}{\numberline {14.2}Core MLOps concepts}{68}{section.14.2}%
+\contentsline {section}{\numberline {14.3}Worked design 1: real-time card fraud detection}{69}{section.14.3}%
+\contentsline {section}{\numberline {14.4}Worked design 2: product recommendations on an e-commerce home page}{70}{section.14.4}%
+\contentsline {section}{\numberline {14.5}Worked design 3: customer churn for a telecom / subscription business}{70}{section.14.5}%
+\contentsline {section}{\numberline {14.6}Interview questions}{70}{section.14.6}%
+\contentsline {chapter}{\numberline {15}Python, NumPy and pandas for Assessments}{72}{chapter.15}%
+\contentsline {section}{\numberline {15.1}Python fundamentals that get asked}{72}{section.15.1}%
+\contentsline {subsection}{\numberline {15.1.1}Data structures and complexity}{72}{subsection.15.1.1}%
+\contentsline {subsection}{\numberline {15.1.2}Gotchas}{72}{subsection.15.1.2}%
+\contentsline {subsection}{\numberline {15.1.3}Idioms worth having at your fingertips}{73}{subsection.15.1.3}%
+\contentsline {section}{\numberline {15.2}NumPy}{74}{section.15.2}%
+\contentsline {subsection}{\numberline {15.2.1}Vectorisation and broadcasting}{74}{subsection.15.2.1}%
+\contentsline {subsection}{\numberline {15.2.2}Numerically stable softmax and log-sum-exp}{74}{subsection.15.2.2}%
+\contentsline {section}{\numberline {15.3}pandas}{74}{section.15.3}%
+\contentsline {subsection}{\numberline {15.3.1}Core operations}{74}{subsection.15.3.1}%
+\contentsline {subsection}{\numberline {15.3.2}Time-aware and window-style operations}{75}{subsection.15.3.2}%
+\contentsline {subsection}{\numberline {15.3.3}pandas pitfalls}{76}{subsection.15.3.3}%
+\contentsline {section}{\numberline {15.4}scikit-learn: leakage-safe pipelines}{76}{section.15.4}%
+\contentsline {section}{\numberline {15.5}Implement-from-scratch questions}{76}{section.15.5}%
+\contentsline {subsection}{\numberline {15.5.1}Linear regression with gradient descent (and closed form)}{76}{subsection.15.5.1}%
+\contentsline {subsection}{\numberline {15.5.2}Logistic regression}{77}{subsection.15.5.2}%
+\contentsline {subsection}{\numberline {15.5.3}k-means}{77}{subsection.15.5.3}%
+\contentsline {subsection}{\numberline {15.5.4}k-nearest neighbours}{78}{subsection.15.5.4}%
+\contentsline {subsection}{\numberline {15.5.5}Metrics by hand: confusion matrix and ROC-AUC}{78}{subsection.15.5.5}%
+\contentsline {subsection}{\numberline {15.5.6}A two-layer neural network with manual backprop}{78}{subsection.15.5.6}%
+\contentsline {subsection}{\numberline {15.5.7}PCA via SVD}{79}{subsection.15.5.7}%
+\contentsline {section}{\numberline {15.6}Typical DSA patterns in DS coding rounds}{79}{section.15.6}%
+\contentsline {section}{\numberline {15.7}Interview questions}{80}{section.15.7}%
+\contentsline {chapter}{\numberline {16}SQL for Data Science Interviews}{81}{chapter.16}%
+\contentsline {section}{\numberline {16.1}Sample schema used in this chapter}{81}{section.16.1}%
+\contentsline {section}{\numberline {16.2}Logical order of execution}{81}{section.16.2}%
+\contentsline {section}{\numberline {16.3}Joins}{81}{section.16.3}%
+\contentsline {section}{\numberline {16.4}NULL semantics}{82}{section.16.4}%
+\contentsline {section}{\numberline {16.5}Window functions}{82}{section.16.5}%
+\contentsline {section}{\numberline {16.6}Classic interview queries}{82}{section.16.6}%
+\contentsline {subsection}{\numberline {16.6.1}Second-highest (and $N$-th highest) salary}{82}{subsection.16.6.1}%
+\contentsline {subsection}{\numberline {16.6.2}Top-$N$ per group}{83}{subsection.16.6.2}%
+\contentsline {subsection}{\numberline {16.6.3}Employees earning more than their manager (self join)}{83}{subsection.16.6.3}%
+\contentsline {subsection}{\numberline {16.6.4}Customers who never ordered (anti join)}{83}{subsection.16.6.4}%
+\contentsline {subsection}{\numberline {16.6.5}Duplicates: find and keep one}{83}{subsection.16.6.5}%
+\contentsline {subsection}{\numberline {16.6.6}Department aggregates with HAVING and share of total}{83}{subsection.16.6.6}%
+\contentsline {subsection}{\numberline {16.6.7}Running total, moving average, previous value}{84}{subsection.16.6.7}%
+\contentsline {subsection}{\numberline {16.6.8}Month-over-month revenue growth}{84}{subsection.16.6.8}%
+\contentsline {subsection}{\numberline {16.6.9}Pivot with conditional aggregation}{84}{subsection.16.6.9}%
+\contentsline {subsection}{\numberline {16.6.10}Consecutive days (gaps and islands)}{85}{subsection.16.6.10}%
+\contentsline {subsection}{\numberline {16.6.11}Retention: share of users who returned the next day}{85}{subsection.16.6.11}%
+\contentsline {subsection}{\numberline {16.6.12}Monthly cohort analysis}{85}{subsection.16.6.12}%
+\contentsline {subsection}{\numberline {16.6.13}Median}{85}{subsection.16.6.13}%
+\contentsline {subsection}{\numberline {16.6.14}Customers whose every order exceeded 200 (relational division style)}{86}{subsection.16.6.14}%
+\contentsline {section}{\numberline {16.7}Other things you may be asked}{86}{section.16.7}%
+\contentsline {section}{\numberline {16.8}Interview questions}{86}{section.16.8}%
+\contentsline {chapter}{\numberline {17}Rapid-Fire Question Bank}{88}{chapter.17}%
+\contentsline {section}{\numberline {17.1}Statistics and probability}{88}{section.17.1}%
+\contentsline {section}{\numberline {17.2}Classical machine learning}{89}{section.17.2}%
+\contentsline {section}{\numberline {17.3}Deep learning}{90}{section.17.3}%
+\contentsline {section}{\numberline {17.4}Tricky MCQ-style items}{92}{section.17.4}%
+\contentsline {section}{\numberline {17.5}Case and open-ended questions}{92}{section.17.5}%
+\contentsline {section}{\numberline {17.6}Talking about your own projects}{93}{section.17.6}%
+\contentsline {chapter}{\numberline {A}Formula Cheat Sheet}{94}{appendix.A}%

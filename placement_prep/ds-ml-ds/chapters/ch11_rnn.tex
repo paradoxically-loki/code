@@ -1,0 +1,75 @@
+\chapter{Recurrent Networks and Sequence Models}
+
+\section{Recurrent neural networks}
+\begin{intuition}
+Read a sentence one word at a time while keeping a running summary (the hidden state) in your head. The RNN reuses the same weights at every step and updates the summary with each new input.
+\end{intuition}
+\[\mathbf{h}_t=\tanh(\W_{hh}\mathbf{h}_{t-1}+\W_{xh}\x_t+\vb_h),\qquad\hat\y_t=\operatorname{softmax}(\W_{hy}\mathbf{h}_t+\vb_y).\]
+Configurations: many-to-one (sentiment of a review), one-to-many (image captioning), many-to-many aligned (part-of-speech tagging), many-to-many unaligned via encoder--decoder (translation).
+
+\subsection{Backpropagation through time and vanishing gradients}
+Unroll the network over $T$ steps and backprop through the unrolled graph. The gradient from step $t$ to step $k<t$ contains
+\[\frac{\partial\mathbf{h}_t}{\partial\mathbf{h}_k}=\prod_{i=k+1}^{t}\diag\big(1-\mathbf{h}_i^2\big)\W_{hh}.\]
+The same matrix $\W_{hh}$ is multiplied $t-k$ times. If its largest singular value (times the tanh derivative, $\le1$) is below 1, the product shrinks exponentially --- the network cannot learn long-range dependencies; above 1, gradients explode. Exploding gradients are handled by gradient clipping; vanishing gradients motivated gated cells. \textbf{Truncated BPTT} backpropagates only through the last $k$ steps to save compute.
+
+\section{LSTM}
+\begin{intuition}
+Add a separate ``conveyor belt'' --- the cell state $\mathbf{c}_t$ --- that information can ride along with only small, gated edits. Gates are sigmoids (between 0 and 1) that decide what to forget, what to write and what to reveal.
+\end{intuition}
+\begin{align*}
+\mathbf{f}_t&=\sigma(\W_f[\mathbf{h}_{t-1},\x_t]+\vb_f) &&\text{forget gate}\\
+\mathbf{i}_t&=\sigma(\W_i[\mathbf{h}_{t-1},\x_t]+\vb_i) &&\text{input gate}\\
+\tilde{\mathbf{c}}_t&=\tanh(\W_c[\mathbf{h}_{t-1},\x_t]+\vb_c) &&\text{candidate}\\
+\mathbf{c}_t&=\mathbf{f}_t\odot\mathbf{c}_{t-1}+\mathbf{i}_t\odot\tilde{\mathbf{c}}_t &&\text{cell update (additive)}\\
+\mathbf{o}_t&=\sigma(\W_o[\mathbf{h}_{t-1},\x_t]+\vb_o) &&\text{output gate}\\
+\mathbf{h}_t&=\mathbf{o}_t\odot\tanh(\mathbf{c}_t)
+\end{align*}
+\textbf{Why it helps:} $\partial\mathbf{c}_t/\partial\mathbf{c}_{t-1}=\diag(\mathbf{f}_t)$ (ignoring indirect paths). When the forget gate is near 1, gradients pass through almost unchanged --- similar in spirit to a residual connection. Initialising the forget-gate bias to around 1 is a common trick.
+
+\textbf{Parameter count}: four gate blocks, each $\W\in\R^{h\times(h+x)}$ plus bias: $4\,(h(h+x)+h)$. For $x=100$, $h=128$: $4(128\cdot228+128)=117{,}248$.
+
+\begin{realworld}
+In a sentence like ``The \emph{customers} who complained about the delayed shipment last week \emph{were} refunded'', the verb must agree with ``customers'' many tokens earlier. A plain RNN struggles to carry that number information across the gap; an LSTM can keep it in the cell state.
+\end{realworld}
+
+\section{GRU}
+Merges forget and input gates into an update gate $\mathbf{z}_t$ and drops the separate cell state:
+\begin{align*}
+\mathbf{z}_t&=\sigma(\W_z[\mathbf{h}_{t-1},\x_t]),\quad\mathbf{r}_t=\sigma(\W_r[\mathbf{h}_{t-1},\x_t]),\\
+\tilde{\mathbf{h}}_t&=\tanh(\W[\mathbf{r}_t\odot\mathbf{h}_{t-1},\x_t]),\quad\mathbf{h}_t=(1-\mathbf{z}_t)\odot\mathbf{h}_{t-1}+\mathbf{z}_t\odot\tilde{\mathbf{h}}_t.
+\end{align*}
+Three gate blocks instead of four: about 25\% fewer parameters, faster, usually comparable accuracy.
+
+\section{Variants and practicalities}
+\begin{itemize}
+  \item \textbf{Bidirectional RNN}: one pass left-to-right, one right-to-left, concatenate. Needs the full sequence, so not for real-time next-step prediction.
+  \item \textbf{Stacked (deep) RNNs}: hidden states of one layer feed the next.
+  \item \textbf{Padding and masking}: batch variable-length sequences by padding; mask pads out of the loss and attention (PyTorch \texttt{pack\_padded\_sequence}).
+  \item Dropout on non-recurrent connections, or variational dropout (same mask every time step) on recurrent ones.
+  \item 1D convolutions and Temporal Convolutional Networks (causal, dilated) are parallel alternatives for sequences.
+\end{itemize}
+
+\section{Sequence-to-sequence and attention}
+\textbf{Encoder--decoder}: the encoder reads the source into a context vector; the decoder generates the target token by token. Problem: squeezing a whole long sentence into one fixed vector is a \textbf{bottleneck}; quality drops for long inputs.
+
+\textbf{Attention (Bahdanau, 2014)}: at each decoding step, compute a weighted average of \emph{all} encoder states, with weights based on relevance to the current decoder state:
+\[e_{t,i}=\operatorname{score}(\mathbf{s}_{t-1},\mathbf{h}_i),\quad\alpha_{t,i}=\operatorname{softmax}_i(e_{t,i}),\quad\mathbf{c}_t=\sum_i\alpha_{t,i}\mathbf{h}_i.\]
+Additive score $\vv^\top\tanh(\W_1\mathbf{s}+\W_2\mathbf{h})$ (Bahdanau) or multiplicative $\mathbf{s}^\top\W\mathbf{h}$ (Luong). Attention weights also give rough alignments (which source words the model looks at when producing each target word). The Transformer (next chapter) keeps attention and drops recurrence entirely.
+
+\textbf{Teacher forcing}: during training, feed the ground-truth previous token to the decoder rather than its own prediction. Fast, stable training, but causes \textbf{exposure bias}: at inference the model sees its own (possibly wrong) outputs, a distribution it never trained on. Scheduled sampling mixes the two.
+
+\section{Interview questions}
+\Q{Why do vanilla RNNs struggle with long sequences?}
+\A Repeated multiplication by the same recurrent Jacobian makes gradients vanish (or explode) exponentially with distance, so long-range dependencies don't get learned.
+
+\Q{How does LSTM solve vanishing gradients?}
+\A The cell state is updated additively and scaled by the forget gate, giving a near-identity gradient path when the gate is open. It mitigates rather than eliminates the problem.
+
+\Q{LSTM vs GRU?}
+\A GRU has two gates and no separate cell state --- fewer parameters, faster; LSTM has three gates and a cell state --- sometimes better on longer or more complex dependencies. Empirically close; try both.
+
+\Q{Why did Transformers replace RNNs?}
+\A RNNs process tokens sequentially (no parallelism across time) and still struggle with very long dependencies. Self-attention connects any two positions in one step and parallelises across the sequence on GPUs, enabling much larger models and datasets.
+
+\Q{What is gradient clipping and why is it used in RNNs?}
+\A Rescaling the gradient when its norm exceeds a threshold; prevents exploding gradients from causing huge, destabilising updates.

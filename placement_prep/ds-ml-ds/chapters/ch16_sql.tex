@@ -1,0 +1,268 @@
+\chapter{SQL for Data Science Interviews}
+
+SQL is the most reliably tested skill in DS online assessments. Most questions reduce to a handful of patterns: join, aggregate, filter groups, and window functions. Every query below was executed on SQLite against the sample tables; syntax is standard and works on PostgreSQL/MySQL 8 unless noted (date functions differ most between dialects).
+
+\section{Sample schema used in this chapter}
+\begin{lstlisting}[language=SQL]
+employees(emp_id, name, dept, salary, manager_id)
+customers(cust_id, name, city, signup_date)
+orders(order_id, cust_id, order_date, amount)
+logins(user_id, login_date)
+\end{lstlisting}
+
+\section{Logical order of execution}
+\texttt{FROM/JOIN} $\to$ \texttt{WHERE} $\to$ \texttt{GROUP BY} $\to$ \texttt{HAVING} $\to$ \texttt{SELECT} (window functions evaluated here) $\to$ \texttt{DISTINCT} $\to$ \texttt{ORDER BY} $\to$ \texttt{LIMIT}.
+
+Consequences that interviewers test:
+\begin{itemize}
+  \item \texttt{WHERE} filters rows before grouping and cannot use aggregates; \texttt{HAVING} filters groups after aggregation.
+  \item A column alias defined in \texttt{SELECT} cannot be used in \texttt{WHERE} (standard SQL), but can in \texttt{ORDER BY}.
+  \item You cannot filter on a window function in the same query's \texttt{WHERE}; wrap it in a subquery/CTE.
+\end{itemize}
+
+\section{Joins}
+\begin{itemize}
+  \item \texttt{INNER JOIN}: only matching rows.
+  \item \texttt{LEFT JOIN}: all rows of the left table, NULLs where no match.
+  \item \texttt{RIGHT JOIN}, \texttt{FULL OUTER JOIN}: symmetric versions (SQLite added these only in recent versions; MySQL has no FULL OUTER --- emulate with \texttt{LEFT} \texttt{UNION} \texttt{RIGHT}).
+  \item \texttt{CROSS JOIN}: Cartesian product ($m\times n$ rows).
+  \item \textbf{Self join}: a table joined to itself (employee and manager).
+  \item \textbf{Anti join}: rows in A with no match in B --- \texttt{LEFT JOIN ... WHERE b.key IS NULL} or \texttt{NOT EXISTS}.
+\end{itemize}
+\textbf{Row-count puzzle}: Table A has key values (1,1,2), B has (1,1,1,3). INNER JOIN on key gives $2\times3=6$ rows; LEFT JOIN gives 6 + 1 (the 2 with NULL) $=7$. Duplicate keys multiply.
+
+\textbf{Join-condition trap}: putting a filter on the right table in \texttt{WHERE} after a \texttt{LEFT JOIN} silently turns it into an inner join (NULL rows fail the filter). Put it in the \texttt{ON} clause instead.
+
+\section{NULL semantics}
+\begin{itemize}
+  \item \texttt{NULL = NULL} is unknown, not true; use \texttt{IS NULL}.
+  \item \texttt{COUNT(*)} counts rows; \texttt{COUNT(col)} counts non-NULL values; \texttt{AVG}/\texttt{SUM} ignore NULLs.
+  \item \texttt{NOT IN (subquery)} returns no rows if the subquery contains a NULL. Prefer \texttt{NOT EXISTS}.
+  \item \texttt{COALESCE(x, 0)} replaces NULL; \texttt{NULLIF(a, b)} returns NULL if equal (avoid divide-by-zero: \texttt{x / NULLIF(y,0)}).
+\end{itemize}
+
+\section{Window functions}
+\texttt{func() OVER (PARTITION BY ... ORDER BY ... ROWS BETWEEN ...)} computes across related rows \emph{without collapsing them}.
+\begin{itemize}
+  \item Ranking: \texttt{ROW\_NUMBER()} (1,2,3,4 --- unique), \texttt{RANK()} (1,2,2,4 --- gaps after ties), \texttt{DENSE\_RANK()} (1,2,2,3 --- no gaps), \texttt{NTILE(n)} (buckets), \texttt{PERCENT\_RANK()}.
+  \item Offset: \texttt{LAG(col, k)}, \texttt{LEAD(col, k)}, \texttt{FIRST\_VALUE}, \texttt{LAST\_VALUE}.
+  \item Aggregates as windows: \texttt{SUM/AVG/COUNT/MIN/MAX(...) OVER (...)}.
+  \item Frames: \texttt{ROWS BETWEEN 2 PRECEDING AND CURRENT ROW} (moving window of 3 rows). With \texttt{ORDER BY} and no explicit frame, the default is \texttt{RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW} --- a running total in which \emph{ties in the ORDER BY value are included together}. Use \texttt{ROWS} when you need a strict row-by-row running total. \texttt{LAST\_VALUE} with the default frame returns the current row, a common surprise.
+\end{itemize}
+
+\section{Classic interview queries}
+
+\subsection{Second-highest (and \texorpdfstring{$N$}{N}-th highest) salary}
+\begin{lstlisting}[language=SQL]
+-- Using a subquery
+SELECT MAX(salary) AS second_highest
+FROM employees
+WHERE salary < (SELECT MAX(salary) FROM employees);
+
+-- N-th highest distinct salary (N = 3) with DENSE_RANK
+SELECT DISTINCT salary
+FROM (SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk
+      FROM employees) t
+WHERE rnk = 3;
+\end{lstlisting}
+
+\subsection{Top-\texorpdfstring{$N$}{N} per group}
+\begin{lstlisting}[language=SQL]
+-- Top 2 earners in each department (ties broken arbitrarily by ROW_NUMBER)
+WITH ranked AS (
+  SELECT dept, name, salary,
+         ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salary DESC) AS rn
+  FROM employees
+)
+SELECT dept, name, salary
+FROM ranked
+WHERE rn <= 2
+ORDER BY dept, salary DESC;
+\end{lstlisting}
+
+\subsection{Employees earning more than their manager (self join)}
+\begin{lstlisting}[language=SQL]
+SELECT e.name AS employee, e.salary, m.name AS manager, m.salary AS mgr_salary
+FROM employees e
+JOIN employees m ON e.manager_id = m.emp_id
+WHERE e.salary > m.salary;
+\end{lstlisting}
+
+\subsection{Customers who never ordered (anti join)}
+\begin{lstlisting}[language=SQL]
+SELECT c.cust_id, c.name
+FROM customers c
+LEFT JOIN orders o ON o.cust_id = c.cust_id
+WHERE o.order_id IS NULL;
+
+-- equivalent
+SELECT cust_id, name FROM customers c
+WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.cust_id = c.cust_id);
+\end{lstlisting}
+
+\subsection{Duplicates: find and keep one}
+\begin{lstlisting}[language=SQL]
+-- Which (cust_id, order_date) pairs appear more than once?
+SELECT cust_id, order_date, COUNT(*) AS n
+FROM orders
+GROUP BY cust_id, order_date
+HAVING COUNT(*) > 1;
+
+-- Keep only the first order_id per duplicated pair
+SELECT * FROM (
+  SELECT o.*, ROW_NUMBER() OVER (PARTITION BY cust_id, order_date
+                                 ORDER BY order_id) AS rn
+  FROM orders o) t
+WHERE rn = 1;
+\end{lstlisting}
+
+\subsection{Department aggregates with HAVING and share of total}
+\begin{lstlisting}[language=SQL]
+SELECT dept,
+       COUNT(*) AS headcount,
+       ROUND(AVG(salary), 1) AS avg_salary,
+       ROUND(100.0 * SUM(salary) / SUM(SUM(salary)) OVER (), 1) AS pct_of_payroll
+FROM employees
+GROUP BY dept
+HAVING COUNT(*) >= 2
+ORDER BY avg_salary DESC;
+\end{lstlisting}
+Note \texttt{SUM(SUM(salary)) OVER ()}: the inner \texttt{SUM} is the group aggregate, the outer is a window over all groups. Subtle point: windows are evaluated \emph{after} \texttt{HAVING}, so the percentage is a share of the departments that survive the filter, not of the whole company. If you want company-wide shares, compute the total in a separate CTE. Also note \texttt{100.0} --- integer division (\texttt{100 * a / b} with integers) truncates in many dialects.
+
+\subsection{Running total, moving average, previous value}
+\begin{lstlisting}[language=SQL]
+SELECT cust_id, order_date, amount,
+       SUM(amount) OVER (PARTITION BY cust_id ORDER BY order_date, order_id
+                         ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total,
+       ROUND(AVG(amount) OVER (PARTITION BY cust_id ORDER BY order_date, order_id
+                         ROWS BETWEEN 1 PRECEDING AND CURRENT ROW), 1) AS moving_avg_2,
+       LAG(amount) OVER (PARTITION BY cust_id ORDER BY order_date, order_id) AS prev_amount
+FROM orders
+ORDER BY cust_id, order_date, order_id;
+\end{lstlisting}
+
+\subsection{Month-over-month revenue growth}
+\begin{lstlisting}[language=SQL]
+WITH monthly AS (
+  SELECT strftime('%Y-%m', order_date) AS month,   -- PostgreSQL: DATE_TRUNC('month', order_date)
+         SUM(amount) AS revenue
+  FROM orders
+  GROUP BY 1
+)
+SELECT month, revenue,
+       LAG(revenue) OVER (ORDER BY month) AS prev_revenue,
+       ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY month))
+             / LAG(revenue) OVER (ORDER BY month), 1) AS mom_growth_pct
+FROM monthly
+ORDER BY month;
+\end{lstlisting}
+
+\subsection{Pivot with conditional aggregation}
+\begin{lstlisting}[language=SQL]
+SELECT c.city,
+       SUM(CASE WHEN strftime('%m', o.order_date) = '01' THEN o.amount ELSE 0 END) AS jan,
+       SUM(CASE WHEN strftime('%m', o.order_date) = '02' THEN o.amount ELSE 0 END) AS feb,
+       SUM(CASE WHEN strftime('%m', o.order_date) = '03' THEN o.amount ELSE 0 END) AS mar
+FROM orders o
+JOIN customers c ON c.cust_id = o.cust_id
+GROUP BY c.city
+ORDER BY c.city;
+\end{lstlisting}
+
+\subsection{Consecutive days (gaps and islands)}
+\begin{realworld}
+``Find users who logged in on at least 3 consecutive days'' is a favourite at consumer-tech firms. The trick: within a run of consecutive dates, \texttt{date $-$ row\_number} is constant.
+\end{realworld}
+\begin{lstlisting}[language=SQL]
+WITH d AS (SELECT DISTINCT user_id, login_date FROM logins),
+g AS (
+  SELECT user_id, login_date,
+         julianday(login_date)
+           - ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY login_date) AS grp
+         -- PostgreSQL: login_date - ROW_NUMBER() OVER (...) * INTERVAL '1 day'
+  FROM d
+)
+SELECT user_id, MIN(login_date) AS streak_start, MAX(login_date) AS streak_end,
+       COUNT(*) AS streak_len
+FROM g
+GROUP BY user_id, grp
+HAVING COUNT(*) >= 3;
+\end{lstlisting}
+
+\subsection{Retention: share of users who returned the next day}
+\begin{lstlisting}[language=SQL]
+WITH firsts AS (
+  SELECT user_id, MIN(login_date) AS first_day FROM logins GROUP BY user_id
+)
+SELECT ROUND(100.0 * COUNT(DISTINCT l.user_id) / (SELECT COUNT(*) FROM firsts), 1)
+         AS day1_retention_pct
+FROM firsts f
+JOIN logins l
+  ON l.user_id = f.user_id
+ AND l.login_date = date(f.first_day, '+1 day');   -- PostgreSQL: f.first_day + 1
+\end{lstlisting}
+
+\subsection{Monthly cohort analysis}
+\begin{lstlisting}[language=SQL]
+WITH first_order AS (
+  SELECT cust_id, strftime('%Y-%m', MIN(order_date)) AS cohort
+  FROM orders GROUP BY cust_id
+),
+activity AS (
+  SELECT DISTINCT o.cust_id, f.cohort, strftime('%Y-%m', o.order_date) AS month
+  FROM orders o JOIN first_order f ON f.cust_id = o.cust_id
+)
+SELECT cohort, month, COUNT(*) AS active_customers
+FROM activity
+GROUP BY cohort, month
+ORDER BY cohort, month;
+\end{lstlisting}
+
+\subsection{Median}
+\begin{lstlisting}[language=SQL]
+-- Portable median via row numbers (PostgreSQL also has PERCENTILE_CONT(0.5))
+WITH r AS (
+  SELECT salary,
+         ROW_NUMBER() OVER (ORDER BY salary) AS rn,
+         COUNT(*) OVER () AS n
+  FROM employees
+)
+SELECT AVG(salary) AS median_salary
+FROM r
+WHERE rn IN ((n + 1) / 2, (n + 2) / 2);   -- integer division picks 1 or 2 middle rows
+\end{lstlisting}
+
+\subsection{Customers whose every order exceeded 200 (relational division style)}
+\begin{lstlisting}[language=SQL]
+SELECT cust_id
+FROM orders
+GROUP BY cust_id
+HAVING MIN(amount) > 200;
+\end{lstlisting}
+
+\section{Other things you may be asked}
+\begin{itemize}
+  \item \texttt{UNION} removes duplicates (sort/hash cost); \texttt{UNION ALL} keeps them and is faster.
+  \item \texttt{DELETE} (row by row, can be rolled back, fires triggers) vs \texttt{TRUNCATE} (removes all rows quickly) vs \texttt{DROP} (removes the table).
+  \item CTEs (\texttt{WITH}) improve readability; recursive CTEs walk hierarchies (org charts).
+  \item \textbf{Indexes} (B-trees) speed lookups and joins on the indexed columns at the cost of slower writes and storage. A function applied to an indexed column in \texttt{WHERE} (\texttt{WHERE YEAR(order\_date)=2026}) often prevents index use; write a range condition instead.
+  \item Normalisation (1NF--3NF) reduces redundancy; analytical warehouses often denormalise into star schemas (fact tables + dimension tables).
+  \item \textbf{Primary key} (unique, not null) vs \textbf{foreign key} (references another table's key) vs \textbf{unique} constraint.
+  \item \texttt{EXPLAIN} shows the query plan.
+\end{itemize}
+
+\section{Interview questions}
+\Q{WHERE vs HAVING?}
+\A WHERE filters rows before aggregation; HAVING filters groups after aggregation and can use aggregate functions.
+
+\Q{RANK vs DENSE\_RANK vs ROW\_NUMBER for salaries 100, 90, 90, 80?}
+\A ROW\_NUMBER: 1,2,3,4. RANK: 1,2,2,4. DENSE\_RANK: 1,2,2,3.
+
+\Q{Why might \texttt{SELECT * FROM a WHERE id NOT IN (SELECT id FROM b)} return nothing?}
+\A If \texttt{b.id} contains a NULL, \texttt{x NOT IN (..., NULL)} is never true. Use \texttt{NOT EXISTS} or filter NULLs.
+
+\Q{How do you compute DAU/MAU (stickiness)?}
+\A Average daily distinct active users in a month divided by distinct active users in that month: count distinct users per day, average them, divide by the monthly distinct count.
+
+\Q{Your LEFT JOIN returned fewer rows than the left table. Why?}
+\A Impossible from the join alone (a LEFT JOIN never drops left rows); a WHERE condition on a right-table column filtered out the NULL-extended rows. Move it into the ON clause.

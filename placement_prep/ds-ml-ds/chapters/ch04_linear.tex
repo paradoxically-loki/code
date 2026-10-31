@@ -1,0 +1,155 @@
+\chapter{Linear Models}
+\label{ch:linear}
+
+\section{Linear regression}
+
+\begin{intuition}
+Fit the flat surface that sits as close as possible (in squared vertical distance) to the data cloud. Each coefficient answers: ``holding the other features fixed, how much does $y$ change for a one-unit increase in this feature?''
+\end{intuition}
+
+\begin{realworld}
+A used-car platform predicts price from age, kilometres driven, engine size and brand. A coefficient of $-0.4$ lakh on age means each extra year lowers the expected price by about 40{,}000 rupees, holding kilometres and the rest fixed. Note the ``holding fixed'': age and kilometres are correlated, so the raw relationship of price with age is steeper than the coefficient.
+\end{realworld}
+
+\subsection{Model and OLS solution}
+$\y=\X\vbeta+\bm\varepsilon$, with $\X\in\R^{n\times(d+1)}$ including a column of ones. Minimise $L(\vbeta)=\|\y-\X\vbeta\|^2=(\y-\X\vbeta)^\top(\y-\X\vbeta)$.
+
+\textbf{Derivation.} Expand: $L=\y^\top\y-2\vbeta^\top\X^\top\y+\vbeta^\top\X^\top\X\vbeta$. Gradient: $\nabla L=-2\X^\top\y+2\X^\top\X\vbeta=0$, giving the \textbf{normal equations}
+\[\X^\top\X\hat\vbeta=\X^\top\y\quad\Rightarrow\quad\hat\vbeta=(\X^\top\X)^{-1}\X^\top\y.\]
+The Hessian $2\X^\top\X$ is PSD, so this is a minimum.
+
+\textbf{Simple regression special case:} $\hat\beta_1=\dfrac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2}=\dfrac{\Cov(x,y)}{\Var(x)}=r\dfrac{s_y}{s_x}$, $\hat\beta_0=\bar y-\hat\beta_1\bar x$. The fitted line passes through $(\bar x,\bar y)$. Note the CAPM beta is exactly this slope of stock returns on market returns.
+
+\textbf{Geometric view.} $\hat\y=\X\hat\vbeta=\mathbf{H}\y$ with hat matrix $\mathbf{H}=\X(\X^\top\X)^{-1}\X^\top$, the orthogonal projection onto the column space of $\X$. Residuals $\mathbf{e}=\y-\hat\y$ are orthogonal to every column: $\X^\top\mathbf{e}=0$. Consequences: with an intercept, residuals sum to zero; $SS_{tot}=SS_{reg}+SS_{res}$. Diagonal $h_{ii}$ of $\mathbf{H}$ is the \textbf{leverage} of point $i$; Cook's distance combines leverage and residual size to find influential points.
+
+\textbf{Probabilistic view.} If $\varepsilon_i\sim N(0,\sigma^2)$ i.i.d., the log-likelihood is $-\frac{1}{2\sigma^2}\|\y-\X\vbeta\|^2+\text{const}$, so OLS = MLE.
+
+\subsection{Assumptions (classical linear model)}
+\begin{enumerate}
+  \item \textbf{Linearity} in parameters (features can be non-linear transforms: $x^2$, $\log x$).
+  \item \textbf{Exogeneity}: $\E[\varepsilon\mid\X]=0$ (no omitted confounders). Violated $\Rightarrow$ biased coefficients.
+  \item \textbf{No perfect multicollinearity}: $\X$ full column rank.
+  \item \textbf{Homoskedasticity}: constant $\Var(\varepsilon_i)$. Violated $\Rightarrow$ coefficients still unbiased, but standard errors wrong; use robust (White/HC) errors or weighted least squares. Detect with residual-vs-fitted plots, Breusch--Pagan.
+  \item \textbf{No autocorrelation} of errors (time series). Detect with Durbin--Watson; use Newey--West errors.
+  \item \textbf{Normality} of errors --- only needed for exact small-sample $t$/$F$ inference, not for unbiasedness. Check with a Q--Q plot.
+\end{enumerate}
+
+\begin{theorem}[Gauss--Markov]
+Under assumptions 1--5, OLS is BLUE: the Best (minimum variance) Linear Unbiased Estimator. Normality is not required.
+\end{theorem}
+
+\subsection{Inference}
+$\Var(\hat\vbeta\mid\X)=\sigma^2(\X^\top\X)^{-1}$; estimate $\hat\sigma^2=SS_{res}/(n-d-1)$. $t_j=\hat\beta_j/\text{SE}(\hat\beta_j)$ tests $\beta_j=0$. The $F$-test checks whether all slopes are jointly zero. A non-significant coefficient with a significant overall $F$ often signals multicollinearity: the features matter together but their individual effects cannot be separated, and standard errors inflate.
+
+\subsection{Interpreting coefficients under transforms}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Model & Interpretation of $\beta$\\
+\midrule
+$y=\beta x$ & $+1$ in $x\Rightarrow+\beta$ in $y$\\
+$\log y=\beta x$ & $+1$ in $x\Rightarrow$ approx.\ $100\beta\%$ change in $y$\\
+$y=\beta\log x$ & $+1\%$ in $x\Rightarrow+\beta/100$ in $y$\\
+$\log y=\beta\log x$ & elasticity: $+1\%$ in $x\Rightarrow+\beta\%$ in $y$\\
+\bottomrule
+\end{tabular}
+
+\section{Regularised regression}
+
+\begin{intuition}
+When you have many features or correlated features, OLS coefficients become large and unstable (they offset each other). Regularisation adds a ``price'' for big coefficients, trading a little bias for a large drop in variance.
+\end{intuition}
+
+\subsection{Ridge (\texorpdfstring{$L_2$}{L2})}
+$\min\|\y-\X\vbeta\|^2+\lambda\|\vbeta\|_2^2$. Gradient: $-2\X^\top(\y-\X\vbeta)+2\lambda\vbeta=0\Rightarrow\hat\vbeta_{ridge}=(\X^\top\X+\lambda\mathbf{I})^{-1}\X^\top\y$.
+\begin{itemize}
+  \item $\X^\top\X+\lambda\mathbf{I}$ has eigenvalues $\lambda_i+\lambda>0$, so it is always invertible --- fixes multicollinearity.
+  \item SVD view: ridge shrinks the component along singular direction $i$ by $\sigma_i^2/(\sigma_i^2+\lambda)$; low-variance directions are shrunk most.
+  \item Shrinks coefficients toward zero but never exactly zero.
+  \item Do not penalise the intercept; standardise features first (the penalty depends on scale).
+\end{itemize}
+
+\subsection{Lasso (\texorpdfstring{$L_1$}{L1})}
+$\min\frac1{2n}\|\y-\X\vbeta\|^2+\lambda\|\vbeta\|_1$. No closed form; solved by coordinate descent. For one standardised coordinate the update is the \textbf{soft-thresholding} operator:
+\[\beta_j\leftarrow S(\rho_j,\lambda)=\sign(\rho_j)\max(|\rho_j|-\lambda,0),\]
+where $\rho_j$ is the correlation of feature $j$ with the partial residual. Any feature with $|\rho_j|\le\lambda$ is set \emph{exactly} to zero: built-in feature selection.
+
+\textbf{Why $L_1$ gives sparsity, geometrically.} Write the problem as minimising squared error subject to $\|\vbeta\|_1\le t$. The $L_1$ ball is a diamond with corners on the axes; the elliptical error contours usually first touch it at a corner, where some coordinates are zero. The $L_2$ ball is round, so the touching point generically has all coordinates non-zero.
+
+\textbf{Lasso weaknesses.} With correlated features it picks one somewhat arbitrarily; with $d>n$ it selects at most $n$ features.
+
+\subsection{Elastic net}
+$\lambda_1\|\vbeta\|_1+\lambda_2\|\vbeta\|_2^2$: sparsity plus grouping of correlated features.
+
+\subsection{Bayesian interpretation (derivation)}
+With $y\mid\x,\vbeta\sim N(\x^\top\vbeta,\sigma^2)$ and prior $\beta_j\sim N(0,\tau^2)$:
+\[-\log p(\vbeta\mid D)=\frac1{2\sigma^2}\|\y-\X\vbeta\|^2+\frac1{2\tau^2}\|\vbeta\|^2+\text{const}\]
+--- ridge with $\lambda=\sigma^2/\tau^2$. A Laplace prior $p(\beta_j)\propto e^{-|\beta_j|/b}$ gives the lasso. A tighter prior (small $\tau$) means stronger regularisation.
+
+\section{Logistic regression}
+
+\begin{intuition}
+We want a probability, so squeeze a linear score into $(0,1)$ with the sigmoid. Equivalently, the model says the \emph{log-odds} of the event are linear in the features.
+\end{intuition}
+
+\subsection{Model}
+$p(y=1\mid\x)=\sigma(\w^\top\x+b)$, so $\log\frac{p}{1-p}=\w^\top\x+b$. The decision boundary $\w^\top\x+b=0$ is linear. $e^{w_j}$ is the \textbf{odds ratio}: a one-unit increase in $x_j$ multiplies the odds by $e^{w_j}$.
+
+\begin{realworld}
+In a credit-scoring scorecard, if the coefficient on ``number of missed payments in the last year'' is $0.35$, each extra missed payment multiplies the odds of default by $e^{0.35}\approx1.42$, i.e.\ 42\% higher odds. Scorecards in banks are often still logistic regressions because regulators want this kind of explainability.
+\end{realworld}
+
+\subsection{Loss and gradient (derive this on a whiteboard)}
+Likelihood $\prod p_i^{y_i}(1-p_i)^{1-y_i}$. Negative log-likelihood (binary cross-entropy):
+\[L(\w)=-\sum_i\big[y_i\log p_i+(1-y_i)\log(1-p_i)\big],\quad p_i=\sigma(z_i),\;z_i=\w^\top\x_i.\]
+For one sample, using $\sigma'=\sigma(1-\sigma)$:
+\[\frac{\partial L}{\partial z}=-\Big[\frac{y}{p}-\frac{1-y}{1-p}\Big]p(1-p)=-[y(1-p)-(1-y)p]=p-y.\]
+Hence $\nabla_{\w}L=\sum_i(p_i-y_i)\x_i=\X^\top(\mathbf{p}-\y)$ --- the same form as linear regression's gradient with predictions replaced by probabilities.
+
+Hessian $\mathbf{H}=\X^\top\mathbf{D}\X$, $\mathbf{D}=\diag(p_i(1-p_i))$: PSD, so the loss is convex. Newton's update $\w\leftarrow\w-\mathbf{H}^{-1}\X^\top(\mathbf{p}-\y)$ is \textbf{IRLS} (iteratively reweighted least squares).
+
+\textbf{Why not use MSE for logistic regression?} MSE composed with a sigmoid is non-convex in $\w$, and its gradient $(p-y)p(1-p)$ vanishes when the model is confidently wrong ($p\approx0$, $y=1$), so learning stalls. Cross-entropy gives gradient $p-y$, large exactly when wrong.
+
+\textbf{Perfect separation.} If classes are linearly separable, the MLE does not exist: $\|\w\|\to\infty$ keeps increasing the likelihood. Regularisation fixes it.
+
+\subsection{Multiclass: softmax regression}
+$p(y=k\mid\x)=\dfrac{e^{\w_k^\top\x}}{\sum_je^{\w_j^\top\x}}$, loss $-\sum_i\log p(y_i\mid\x_i)$, gradient w.r.t.\ logits $=\mathbf{p}-\mathbf{y}_{\text{one-hot}}$. Alternative: one-vs-rest with $K$ binary classifiers. Softmax is invariant to adding a constant to all logits, so implementations subtract $\max_j z_j$ for numerical stability.
+
+\section{Generalised linear models (GLMs)}
+A GLM has: a distribution from the exponential family, a linear predictor $\eta=\x^\top\vbeta$, and a link $g(\E[y])=\eta$.
+\begin{itemize}
+  \item Gaussian + identity link = linear regression.
+  \item Bernoulli + logit = logistic regression.
+  \item Poisson + log link = Poisson regression for counts (insurance claim frequency). Use negative binomial if overdispersed (variance $>$ mean).
+  \item Gamma + log link for positive skewed amounts (claim severity). Insurance pricing often models frequency $\times$ severity, or uses a Tweedie distribution for the combined pure premium.
+\end{itemize}
+
+\section{Model selection criteria}
+AIC $=2k-2\log\hat L$; BIC $=k\log n-2\log\hat L$ (stronger penalty for large $n$, favours smaller models). Lower is better. Useful for statistical models; for predictive ML, cross-validation is the norm.
+
+\section{Interview questions}
+\Q{Derive the closed-form solution of linear regression.}
+\A See above: set $\nabla_{\vbeta}\|\y-\X\vbeta\|^2=-2\X^\top(\y-\X\vbeta)=0$.
+
+\Q{What happens to OLS with perfectly correlated features? Highly correlated?}
+\A Perfect: $\X^\top\X$ singular, infinitely many solutions. High: solution exists but coefficients have huge variance and may flip signs; predictions can still be fine. Fix with ridge, dropping/combining features, PCA.
+
+\Q{Lasso vs ridge --- when to use which?}
+\A Lasso when you believe few features matter and want selection/interpretability; ridge when many small effects or correlated features; elastic net when both. Tune $\lambda$ by CV.
+
+\Q{Is logistic regression a classification or regression algorithm?}
+\A It regresses the log-odds (a continuous quantity) and becomes a classifier once you apply a threshold. Its output is a probability.
+
+\Q{Why is logistic regression's decision boundary linear even though the sigmoid is non-linear?}
+\A $p=0.5\iff\w^\top\x+b=0$, a hyperplane. The sigmoid is monotone, so thresholds on $p$ are thresholds on the linear score.
+
+\Q{If you duplicate every row in the dataset, what happens to OLS coefficients and their standard errors?}
+\A Coefficients unchanged. Standard errors shrink by about $\sqrt2$ because the software believes $n$ doubled --- false confidence. Same intuition explains why non-independent observations (repeated customers) understate uncertainty.
+
+\Q{If you add a feature identical to an existing one with ridge regularisation?}
+\A The weight splits equally between the two copies (ridge is ``grouping''). Lasso would arbitrarily keep one.
+
+\Q{How do you handle a non-linear relationship in linear regression?}
+\A Transform features (polynomials, logs, splines), add interactions, or move to a non-linear model.
+
+\Q{Gradient of the MSE loss for linear regression and update rule?}
+\A $\nabla=\frac2n\X^\top(\X\w-\y)$; $\w\leftarrow\w-\eta\nabla$.

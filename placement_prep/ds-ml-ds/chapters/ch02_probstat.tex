@@ -1,0 +1,166 @@
+\chapter{Probability, Statistics and Information Theory}
+
+You did not ask for this chapter specifically, but data-science interviews test it constantly and many ML derivations later in the booklet (MLE, cross-entropy, Naive Bayes, VAEs) depend on it. It is kept compact and interview-focused.
+
+\section{Probability essentials}
+
+\subsection{Rules}
+\begin{itemize}
+  \item $P(A\cup B)=P(A)+P(B)-P(A\cap B)$.
+  \item Conditional: $P(A\mid B)=P(A\cap B)/P(B)$. Independence: $P(A\cap B)=P(A)P(B)$.
+  \item Total probability: $P(A)=\sum_iP(A\mid B_i)P(B_i)$ for a partition $\{B_i\}$.
+  \item \textbf{Bayes:} $P(H\mid D)=\dfrac{P(D\mid H)P(H)}{P(D)}$ --- posterior $\propto$ likelihood $\times$ prior.
+\end{itemize}
+
+\begin{example}[The base-rate trap --- asked constantly]
+A fraud model flags 99\% of fraudulent transactions and wrongly flags 2\% of genuine ones. Fraud rate is 0.5\%. Given a flag, what is $P(\text{fraud})$?
+\[P(F\mid +)=\frac{0.99\times0.005}{0.99\times0.005+0.02\times0.995}=\frac{0.00495}{0.00495+0.0199}\approx0.199.\]
+Only about 20\% of flags are real fraud. This is why precision collapses on rare classes even with a ``99\% accurate'' model, and why a bank's fraud team cares about precision at a fixed review capacity.
+\end{example}
+
+\subsection{Random variables, expectation, variance}
+\begin{itemize}
+  \item $\E[aX+bY]=a\E X+b\E Y$ always (no independence needed).
+  \item $\Var(X)=\E[X^2]-(\E X)^2$; $\Var(aX+b)=a^2\Var X$.
+  \item $\Var(X+Y)=\Var X+\Var Y+2\Cov(X,Y)$.
+  \item $\Cov(X,Y)=\E[XY]-\E X\E Y$; correlation $\rho=\Cov/(\sigma_X\sigma_Y)\in[-1,1]$.
+  \item Independence $\Rightarrow$ zero covariance, but \textbf{not} the reverse: $X\sim U(-1,1)$, $Y=X^2$ has $\Cov=0$ yet $Y$ is a function of $X$.
+  \item Law of total expectation $\E[X]=\E[\E[X\mid Y]]$; law of total variance $\Var X=\E[\Var(X\mid Y)]+\Var(\E[X\mid Y])$.
+\end{itemize}
+
+Portfolio connection: for weights $\w$ and covariance $\Sig$, the portfolio variance is $\w^\top\Sig\w$ --- the same quadratic form as in PCA.
+
+\subsection{Distributions you must know}
+\begin{longtable}{@{}p{0.17\textwidth}p{0.27\textwidth}p{0.16\textwidth}p{0.32\textwidth}@{}}
+\toprule
+Distribution & PMF / PDF & Mean, Var & Where it shows up\\
+\midrule
+Bernoulli$(p)$ & $p^x(1-p)^{1-x}$ & $p,\;p(1-p)$ & click / no click; logistic regression target\\
+Binomial$(n,p)$ & $\binom nx p^x(1-p)^{n-x}$ & $np,\;np(1-p)$ & conversions out of $n$ visitors\\
+Geometric$(p)$ & $(1-p)^{x-1}p$ & $1/p,\;(1-p)/p^2$ & trials until first success\\
+Poisson$(\lambda)$ & $e^{-\lambda}\lambda^x/x!$ & $\lambda,\;\lambda$ & calls per hour, claims per policy\\
+Uniform$(a,b)$ & $1/(b-a)$ & $\frac{a+b}2,\;\frac{(b-a)^2}{12}$ & random init, simulations\\
+Exponential$(\lambda)$ & $\lambda e^{-\lambda x}$ & $1/\lambda,\;1/\lambda^2$ & time between events; memoryless\\
+Normal$(\mu,\sigma^2)$ & $\frac1{\sqrt{2\pi}\sigma}e^{-(x-\mu)^2/2\sigma^2}$ & $\mu,\;\sigma^2$ & noise, CLT, linear regression errors\\
+Beta$(\alpha,\beta)$ & $\propto x^{\alpha-1}(1-x)^{\beta-1}$ & $\frac{\alpha}{\alpha+\beta}$ & prior on a probability (Bayesian A/B)\\
+\bottomrule
+\end{longtable}
+
+Normal facts: 68--95--99.7 rule; sum of independent normals is normal; standardise $Z=(X-\mu)/\sigma$. Poisson approximates Binomial when $n$ large and $p$ small with $\lambda=np$.
+
+\subsection{Limit theorems}
+\textbf{Law of large numbers:} $\bar X_n\to\mu$ as $n\to\infty$. \textbf{Central limit theorem:} for i.i.d.\ $X_i$ with finite variance, $\sqrt n(\bar X_n-\mu)/\sigma\to N(0,1)$. The CLT is why confidence intervals and $z$-tests on averages work even when individual data (revenue per user) is very skewed --- given enough samples. With heavy tails, ``enough'' can be very large.
+
+\section{Estimation}
+
+\subsection{Maximum likelihood (MLE)}
+Choose $\vtheta$ that makes the observed data most probable: $\hat\vtheta=\argmax_{\vtheta}\sum_i\log p(x_i\mid\vtheta)$.
+
+\begin{example}[MLE for a coin]
+$n$ flips, $k$ heads. $\ell(p)=k\log p+(n-k)\log(1-p)$; $\ell'(p)=k/p-(n-k)/(1-p)=0\Rightarrow\hat p=k/n$.
+\end{example}
+
+\begin{example}[MLE for a Gaussian]
+$\ell=-\frac n2\log(2\pi\sigma^2)-\frac1{2\sigma^2}\sum(x_i-\mu)^2$. Setting derivatives to zero gives $\hat\mu=\bar x$ and $\hat\sigma^2=\frac1n\sum(x_i-\bar x)^2$. This variance estimator is \textbf{biased} ($\E\hat\sigma^2=\frac{n-1}n\sigma^2$); dividing by $n-1$ (Bessel's correction) removes the bias because one degree of freedom was used to estimate $\bar x$.
+\end{example}
+
+\textbf{Key link:} minimising MSE $\Leftrightarrow$ MLE under Gaussian noise; minimising cross-entropy $\Leftrightarrow$ MLE under a Bernoulli/categorical model; minimising MAE $\Leftrightarrow$ MLE under Laplace noise.
+
+\subsection{MAP and priors}
+$\hat\vtheta_{\text{MAP}}=\argmax[\log p(D\mid\vtheta)+\log p(\vtheta)]$. A Gaussian prior on weights gives the $L_2$ (ridge) penalty; a Laplace prior gives the $L_1$ (lasso) penalty. Derivation in Chapter~\ref{ch:linear}.
+
+\subsection{Properties of estimators}
+Bias $=\E\hat\theta-\theta$; MSE $=\text{Bias}^2+\Var$. Consistency: $\hat\theta\to\theta$ as $n\to\infty$. MLE is consistent and asymptotically efficient under regularity conditions.
+
+\section{Hypothesis testing}
+
+\subsection{Framework}
+\begin{itemize}
+  \item $H_0$: no effect. $H_1$: effect.
+  \item \textbf{p-value}: probability, \emph{assuming $H_0$ is true}, of a test statistic at least as extreme as observed. It is \emph{not} the probability that $H_0$ is true.
+  \item Type I error ($\alpha$): reject a true $H_0$ (false positive). Type II ($\beta$): fail to reject a false $H_0$. \textbf{Power} $=1-\beta$.
+  \item A 95\% confidence interval: if we repeated the experiment many times, 95\% of the intervals constructed this way would contain the true parameter. It does \emph{not} mean ``95\% probability the parameter is in this particular interval'' (that is a Bayesian credible interval).
+\end{itemize}
+
+\subsection{Which test?}
+\begin{tabular}{@{}p{0.42\textwidth}p{0.52\textwidth}@{}}
+\toprule
+Situation & Test\\
+\midrule
+Mean vs known value, $\sigma$ known or $n$ large & $z$-test\\
+Mean vs value, $\sigma$ unknown, small $n$ & one-sample $t$-test\\
+Two independent group means & two-sample $t$ (Welch if variances differ)\\
+Before/after on same units & paired $t$-test\\
+Two proportions (conversion rates) & two-proportion $z$-test or $\chi^2$\\
+Association of two categorical variables & $\chi^2$ test of independence\\
+Means of 3+ groups & one-way ANOVA ($F$-test), then post-hoc (Tukey)\\
+Non-normal, small samples & Mann--Whitney U, Wilcoxon signed-rank\\
+Distribution equality & Kolmogorov--Smirnov (also used for drift detection)\\
+\bottomrule
+\end{tabular}
+
+Two-sample $t$ statistic: $t=\dfrac{\bar x_1-\bar x_2}{\sqrt{s_1^2/n_1+s_2^2/n_2}}$.
+
+\section{A/B testing (core for DS roles)}
+
+\begin{realworld}
+A food-delivery app tests a new checkout button. Control converts at 10\%. Product wants to detect a lift to 10.5\% (5\% relative). How many users per arm?
+\end{realworld}
+
+\textbf{Sample size} for two proportions (two-sided $\alpha=0.05$, power 80\%):
+\begin{align*}n&\approx\frac{(z_{1-\alpha/2}+z_{1-\beta})^2\,[p_1(1-p_1)+p_2(1-p_2)]}{(p_2-p_1)^2}\\&=\frac{(1.96+0.84)^2(0.0900+0.0940)}{0.005^2}\approx 57{,}700\text{ per arm.}\end{align*}
+A rule of thumb is $n\approx16\sigma^2/\delta^2$ per arm. Halving the detectable effect quadruples the sample size.
+
+\textbf{Process:} define a primary metric and guardrail metrics (latency, cancellations) $\to$ choose randomisation unit (user, not session, to avoid one user seeing both) $\to$ compute sample size and duration (cover full weekly cycles) $\to$ run an A/A test or sample-ratio-mismatch check $\to$ analyse once at the planned end $\to$ decide with practical as well as statistical significance.
+
+\textbf{Pitfalls interviewers probe:}
+\begin{itemize}
+  \item \textbf{Peeking}: checking daily and stopping when $p<0.05$ inflates false positives far above 5\%. Fix: fixed horizon, or sequential tests (alpha spending, mSPRT).
+  \item \textbf{Multiple comparisons}: testing 20 metrics at $\alpha=0.05$ gives roughly a 64\% chance of at least one false positive ($1-0.95^{20}$). Fix: Bonferroni ($\alpha/m$) or Benjamini--Hochberg (controls false discovery rate).
+  \item \textbf{Sample ratio mismatch}: a 50/50 split arriving as 52/48 signals a bug; check with $\chi^2$.
+  \item \textbf{Novelty / primacy effects}: users react to change itself; run long enough.
+  \item \textbf{Network effects / interference}: in marketplaces (riders and drivers) treatment leaks into control; use cluster or switchback (time-sliced) randomisation.
+  \item \textbf{Simpson's paradox}: an effect can reverse when data is aggregated across segments with different sizes.
+  \item \textbf{Variance reduction}: CUPED uses pre-experiment metric $X$ as a covariate: $Y'=Y-\theta(X-\bar X)$ with $\theta=\Cov(X,Y)/\Var X$, cutting variance by a factor $(1-\rho^2)$.
+\end{itemize}
+
+\section{Information theory}
+\begin{itemize}
+  \item \textbf{Entropy} $H(p)=-\sum p_i\log p_i$: average surprise; maximal for uniform distributions. A fair coin has 1 bit (base 2).
+  \item \textbf{Cross-entropy} $H(p,q)=-\sum p_i\log q_i$: cost of encoding data from $p$ using code optimised for $q$. Classification loss with one-hot $p$ is $-\log q_{\text{true}}$.
+  \item \textbf{KL divergence} $\KL(p\|q)=\sum p_i\log(p_i/q_i)=H(p,q)-H(p)\ge0$ (Gibbs' inequality, via Jensen). Not symmetric. Minimising cross-entropy w.r.t.\ $q$ equals minimising KL because $H(p)$ is constant.
+  \item \textbf{Mutual information} $I(X;Y)=H(X)-H(X\mid Y)=\KL(p(x,y)\|p(x)p(y))$: zero iff independent; used for feature selection.
+  \item \textbf{Information gain} in decision trees $=$ parent entropy $-$ weighted child entropy $=$ mutual information between the split and the label.
+\end{itemize}
+Forward KL $\KL(p\|q)$ is ``mean-seeking'' (q covers all modes of $p$); reverse KL $\KL(q\|p)$, used in variational inference, is ``mode-seeking''.
+
+\section{Classic probability puzzles}
+\Q{Two children, at least one is a boy. Probability both are boys?}
+\A Sample space $\{BB,BG,GB\}$ equally likely: $1/3$. (If you know \emph{the older} is a boy: $1/2$.)
+
+\Q{Expected number of die rolls to see a 6?}
+\A Geometric with $p=1/6$: 6. Expected rolls to see all six faces (coupon collector): $6(1+\tfrac12+\dots+\tfrac16)=14.7$.
+
+\Q{Monty Hall: should you switch?}
+\A Yes. Switching wins with probability $2/3$: you initially pick the car with $1/3$; the host's reveal transfers the remaining $2/3$ to the other closed door.
+
+\Q{Birthday problem: how many people for $>50\%$ chance of a shared birthday?}
+\A 23. $P(\text{no match})=\prod_{k=0}^{22}(365-k)/365\approx0.493$.
+
+\Q{You have a stick broken at two uniform random points. Probability the three pieces form a triangle?}
+\A $1/4$. Each piece must be shorter than half the stick.
+
+\Q{Generate a fair coin from a biased one.}
+\A Von Neumann: flip twice; HT $\to$ heads, TH $\to$ tails, otherwise repeat. $P(HT)=P(TH)=p(1-p)$.
+
+\Q{Expected value of the maximum of two independent $U(0,1)$?}
+\A $P(\max\le x)=x^2$, density $2x$, mean $\int_0^12x^2dx=2/3$.
+
+\Q{A random variable has mean 0, variance 1. Can $P(|X|\ge 3)$ be 0.2?}
+\A No. Chebyshev: $P(|X-\mu|\ge k\sigma)\le1/k^2=1/9\approx0.111$.
+
+\Q{Sampling from a stream of unknown length uniformly at random?}
+\A Reservoir sampling: keep the $i$-th item with probability $1/i$ (or $k/i$ for a sample of $k$). Each item ends up with probability $1/n$.
+
+\Q{Correlation is 0.9 between ice-cream sales and drownings. Interpretation?}
+\A Confounder (temperature/season). Correlation is not causation; establish causality with experiments or causal methods (difference-in-differences, instrumental variables, regression discontinuity, propensity matching).

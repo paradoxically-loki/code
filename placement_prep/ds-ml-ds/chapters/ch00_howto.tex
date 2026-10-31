@@ -1,0 +1,36 @@
+\chapter{How to use this booklet}
+
+\section*{What this booklet is, and what it is not}
+This booklet targets two overlapping role families: \textbf{Data Scientist} (statistics, classical ML, experimentation, business framing) and \textbf{ML Engineer / DL-heavy} roles (neural networks, Transformers, training at scale, deployment). Every major topic is written in the same order:
+\begin{enumerate}
+  \item \textbf{Intuition} --- what the method is trying to do, in plain words, usually with a real-world example.
+  \item \textbf{Formal treatment} --- definitions, the objective function, and derivations of the results interviewers actually ask you to reproduce on a whiteboard.
+  \item \textbf{Interview angle} --- the follow-up questions, trade-offs and pitfalls that separate a prepared candidate from one who memorised definitions.
+\end{enumerate}
+
+An honest limitation: no single document covers every question every company asks. Firms with a strong research bent (quant funds, AI labs) go deeper into specific areas than this booklet does; product and analytics firms lean more on SQL, experimentation and business cases. Treat this as the core you must own, then add depth in whatever the job description emphasises.
+
+\section*{How online assessments are usually structured}
+Campus OAs for DS/ML roles in India commonly mix some of the following (the mix varies a lot by company):
+\begin{itemize}
+  \item \textbf{MCQs on ML/DL/statistics} --- definitions, which metric to use, what happens if a hyperparameter changes, output-size of a convolution, number of parameters in a layer, probability puzzles.
+  \item \textbf{Aptitude / quant} --- probability and combinatorics are where DS candidates are expected to be stronger than average.
+  \item \textbf{Coding} --- usually one or two DSA-style problems (arrays, strings, hashing) and sometimes a pandas / NumPy / SQL task.
+  \item \textbf{SQL} --- joins, GROUP BY, window functions; frequently auto-graded on HackerRank-style platforms.
+  \item \textbf{Case / subjective} --- design a model for a business problem, choose a metric, explain trade-offs.
+\end{itemize}
+
+\section*{Suggested study plan}
+\begin{tabular}{@{}p{0.18\textwidth}p{0.76\textwidth}@{}}
+\toprule
+\textbf{Phase} & \textbf{What to do} \\
+\midrule
+Week 1 & Chapters 1--4. Be able to derive OLS, logistic regression gradient, bias--variance decomposition, and compute every classification metric from a confusion matrix by hand. \\
+Week 2 & Chapters 5--8. Trees, boosting (derive the gradient-boosting update), SVM dual, PCA via SVD, k-means, EM. \\
+Week 3 & Chapters 9--13. Backprop by hand for a 2-layer net, Adam, BatchNorm, conv output sizes and parameter counts, LSTM gates, self-attention end to end. \\
+Week 4 & Chapters 14--17. SQL daily (20--30 queries), pandas drills, one ML system-design case per day, then the question bank under time pressure. \\
+\bottomrule
+\end{tabular}
+
+\section*{Conventions}
+Vectors are bold lower-case ($\x$), matrices bold upper-case ($\X$). The design matrix $\X\in\R^{n\times d}$ has $n$ rows (samples) and $d$ columns (features). $\log$ is the natural log unless stated. ``Interview angle'' boxes contain the questions you should be able to answer aloud in under a minute.

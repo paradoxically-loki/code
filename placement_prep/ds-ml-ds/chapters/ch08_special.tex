@@ -1,0 +1,89 @@
+\chapter[Time Series, Recommenders, NLP]{Time Series, Recommenders and Classical NLP}
+
+\section{Time series}
+
+\begin{intuition}
+In time series, the order of observations carries information and the past predicts the future. That breaks the i.i.d.\ assumption behind ordinary cross-validation, so both modelling and validation have to respect time.
+\end{intuition}
+
+\subsection{Components and stationarity}
+A series = trend + seasonality + cycle + noise; decomposed additively ($y=T+S+R$) or multiplicatively ($y=T\times S\times R$, take logs to make it additive). STL is a robust decomposition.
+
+\textbf{(Weak) stationarity}: constant mean, constant variance, autocovariance depends only on the lag. Most classical models (ARMA) assume it. Make a series stationary by differencing ($y_t-y_{t-1}$), seasonal differencing ($y_t-y_{t-12}$), log or Box--Cox transforms.
+
+Tests: \textbf{ADF} (null: unit root, i.e.\ non-stationary --- small p-value suggests stationarity); \textbf{KPSS} (null: stationary). Using both guards against a test's low power.
+
+\begin{realworld}
+A stock price is (approximately) a random walk $P_t=P_{t-1}+\varepsilon_t$: non-stationary. Its returns are close to stationary. Regressing one random-walk price series on another often gives a high $R^2$ with no real relationship (\textbf{spurious regression}) --- which is why analysts work with returns, or test for cointegration (the basis of pairs trading).
+\end{realworld}
+
+\subsection{ACF and PACF}
+ACF at lag $k$: correlation of $y_t$ with $y_{t-k}$. PACF at lag $k$: correlation after removing the effect of lags $1..k-1$.
+\begin{itemize}
+  \item AR($p$): PACF cuts off after lag $p$, ACF decays gradually.
+  \item MA($q$): ACF cuts off after lag $q$, PACF decays.
+  \item Seasonal spikes at lags 12, 24 (monthly) or 7, 14 (daily data with weekly pattern).
+\end{itemize}
+
+\subsection{Classical models}
+\begin{itemize}
+  \item \textbf{AR($p$)}: $y_t=c+\sum_{i=1}^p\phi_iy_{t-i}+\varepsilon_t$. AR(1) is stationary iff $|\phi_1|<1$.
+  \item \textbf{MA($q$)}: $y_t=\mu+\varepsilon_t+\sum_{j=1}^q\theta_j\varepsilon_{t-j}$.
+  \item \textbf{ARIMA($p,d,q$)}: ARMA on the $d$-times differenced series. \textbf{SARIMA}$(p,d,q)(P,D,Q)_s$ adds seasonal terms. \textbf{ARIMAX/SARIMAX} adds exogenous regressors (promotions, holidays). Select orders by ACF/PACF and AIC (auto-ARIMA).
+  \item \textbf{Exponential smoothing}: simple ($\hat y_{t+1}=\alpha y_t+(1-\alpha)\hat y_t$, weights decay geometrically), Holt (adds trend), Holt--Winters (adds seasonality). ETS is the state-space formulation.
+  \item \textbf{GARCH}: models time-varying volatility $\sigma_t^2=\omega+\alpha\varepsilon_{t-1}^2+\beta\sigma_{t-1}^2$ --- volatility clustering in returns, used in VaR.
+  \item \textbf{Prophet}: additive trend (piecewise linear/logistic) + Fourier seasonality + holidays; easy for business series with strong seasonality, not consistently more accurate than tuned alternatives.
+\end{itemize}
+
+\subsection{Machine learning for forecasting}
+Turn the series into a supervised table: lag features ($y_{t-1},y_{t-7}$), rolling means/stds, date features, known-future covariates (planned promotions, holidays), then fit gradient boosting. For many related series (thousands of SKUs) a single global model across series usually beats one model per series. Deep options: LSTMs, Temporal Convolutional Networks, N-BEATS, Temporal Fusion Transformer.
+
+Pitfalls: computing rolling features with a window that includes the target day (leakage); for multi-step forecasts, either recursive (feed predictions back --- errors compound) or direct (one model per horizon).
+
+\subsection{Validation and metrics}
+Use \textbf{walk-forward / rolling-origin} validation: train up to time $t$, forecast $t+1..t+h$, roll forward. Compare to naive baselines: last value, or seasonal naive (same day last week). \textbf{MASE} scales error by the in-sample naive forecast's error --- below 1 means you beat naive. Use WAPE/sMAPE when MAPE breaks on zeros.
+
+\section{Recommender systems}
+
+\begin{realworld}
+On a streaming app, ``because you watched X'' rows come from item similarity, while the home page ranking blends predicted watch probability, freshness and diversity. Most large systems use a two-stage pipeline: \emph{candidate generation} (retrieve a few hundred items from millions, fast) then \emph{ranking} (a heavier model scores those few hundred with rich features).
+\end{realworld}
+
+\subsection{Approaches}
+\begin{itemize}
+  \item \textbf{Popularity baseline}: strong and often embarrassingly hard to beat.
+  \item \textbf{Content-based}: recommend items similar to those the user liked, using item features (genre, text embeddings). Handles new items; tends to over-specialise.
+  \item \textbf{Collaborative filtering (CF)}: ``users like you liked\dots''. User--user or item--item similarity (cosine, Pearson on the rating matrix). Item--item is more stable (items change slower than users) and was popularised by Amazon.
+  \item \textbf{Matrix factorisation}: $R\approx\mathbf{P}\mathbf{Q}^\top$, predict $\hat r_{ui}=\mu+b_u+b_i+\mathbf{p}_u^\top\mathbf{q}_i$; minimise squared error on \emph{observed} entries with $L_2$ regularisation via SGD or alternating least squares (ALS: fix $\mathbf{Q}$ and solve ridge regressions for $\mathbf{P}$, then swap; parallelises well).
+  \item \textbf{Implicit feedback} (clicks, views, no explicit ratings): treat missing as weak negatives with confidence weights (implicit ALS), or optimise ranking directly (BPR loss: score a consumed item above a sampled unconsumed one).
+  \item \textbf{Neural}: two-tower models (user tower and item tower produce embeddings; dot product for retrieval with ANN search), wide-and-deep, DLRM, sequence models (SASRec, BERT4Rec) for ``next item''.
+\end{itemize}
+
+\subsection{Problems and metrics}
+\textbf{Cold start}: new users (use popularity, onboarding questions, demographics, context) and new items (content features). \textbf{Sparsity}, \textbf{popularity bias}, \textbf{feedback loops} (the system only learns about what it shows --- add exploration, e.g.\ bandits). Metrics: offline precision/recall@$k$, NDCG, MAP, hit rate, coverage, diversity, novelty; online CTR, watch time, retention via A/B tests. Offline gains often fail to translate online.
+
+\section{Classical NLP}
+\begin{itemize}
+  \item \textbf{Preprocessing}: tokenisation, lowercasing, stop-word removal, stemming (crude suffix chopping: ``studies''$\to$``studi'') vs lemmatisation (dictionary form: ``studies''$\to$``study'').
+  \item \textbf{Bag of words}: count vector over the vocabulary; ignores order. $n$-grams capture short phrases (``not good'').
+  \item \textbf{TF-IDF}: $\text{tf}(t,d)\times\log\frac{N}{\text{df}(t)}$. Down-weights words that appear in every document. With logistic regression or linear SVM, a strong baseline for text classification.
+  \item \textbf{Word2Vec}: dense embeddings learned by predicting context words (skip-gram) or the centre word from context (CBOW); trained with negative sampling. Captures analogies (king $-$ man $+$ woman $\approx$ queen). \textbf{GloVe}: factorises global co-occurrence statistics. \textbf{FastText}: sub-word $n$-grams, handles misspellings and unseen words.
+  \item Static embeddings give one vector per word regardless of context (``bank'' of a river vs a bank account); contextual models (ELMo, BERT) fix this --- Chapter~\ref{ch:transformers}.
+  \item Tasks: classification, named-entity recognition (sequence labelling; historically CRFs), topic modelling (LDA: documents are mixtures of topics, topics are distributions over words), sentiment analysis, similarity/search (BM25 for keyword search).
+\end{itemize}
+
+\section{Interview questions}
+\Q{Why can't you use random $k$-fold CV for time series?}
+\A Shuffling lets the model train on the future and test on the past, leaking information and inflating scores. Use walk-forward validation with a gap if features use lookback windows.
+
+\Q{How do you make a series stationary?}
+\A Remove trend by differencing or detrending; remove seasonality by seasonal differencing; stabilise variance with log/Box--Cox. Confirm with ADF/KPSS and ACF plots.
+
+\Q{Explain the cold-start problem and solutions.}
+\A New users/items have no interaction history, so CF cannot place them. Use content features, popularity, contextual signals, onboarding preferences, hybrid models, and exploration.
+
+\Q{TF-IDF vs word embeddings?}
+\A TF-IDF is sparse, interpretable, ignores semantics and order, strong for keyword-driven tasks. Embeddings are dense, capture semantic similarity, generalise to synonyms; contextual embeddings capture meaning in context.
+
+\Q{A demand-forecasting model predicts well on average but badly on festival weeks. What do you do?}
+\A Add holiday/event features with lead and lag windows, model the event uplift separately, use known future covariates, weight recent festival periods, and evaluate specifically on those periods.

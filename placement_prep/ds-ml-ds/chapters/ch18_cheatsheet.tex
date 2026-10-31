@@ -1,0 +1,88 @@
+\chapter{Formula Cheat Sheet}
+
+\section*{Probability and statistics}
+\begin{tabular}{@{}p{0.34\textwidth}p{0.6\textwidth}@{}}
+\toprule
+Bayes & $P(A\mid B)=P(B\mid A)P(A)/P(B)$\\
+Variance & $\Var X=\E X^2-(\E X)^2$;\; $\Var(aX+bY)=a^2\Var X+b^2\Var Y+2ab\Cov(X,Y)$\\
+Standard error & $\sigma/\sqrt n$\\
+95\% CI for a mean & $\bar x\pm1.96\,s/\sqrt n$ (use $t_{n-1}$ for small $n$)\\
+Two-sample $t$ & $(\bar x_1-\bar x_2)/\sqrt{s_1^2/n_1+s_2^2/n_2}$\\
+A/B sample size per arm & $n\approx(z_{1-\alpha/2}+z_{1-\beta})^2[p_1(1-p_1)+p_2(1-p_2)]/\delta^2$;\; rule of thumb $16\sigma^2/\delta^2$\\
+Entropy, cross-entropy & $H(p)=-\sum p\log p$;\; $H(p,q)=-\sum p\log q$\\
+KL divergence & $\KL(p\|q)=\sum p\log(p/q)=H(p,q)-H(p)\ge0$\\
+Chebyshev & $P(|X-\mu|\ge k\sigma)\le1/k^2$\\
+\bottomrule
+\end{tabular}
+
+\section*{Linear models}
+\begin{tabular}{@{}p{0.34\textwidth}p{0.6\textwidth}@{}}
+\toprule
+OLS & $\hat\vbeta=(\X^\top\X)^{-1}\X^\top\y$;\; simple slope $=\Cov(x,y)/\Var(x)$\\
+Ridge & $(\X^\top\X+\lambda\mathbf{I})^{-1}\X^\top\y$\\
+Lasso coordinate update & $S(\rho,\lambda)=\sign(\rho)\max(|\rho|-\lambda,0)$\\
+$R^2$, adjusted & $1-SS_{res}/SS_{tot}$;\; $1-(1-R^2)\frac{n-1}{n-d-1}$\\
+VIF & $1/(1-R_j^2)$\\
+Logistic & $p=\sigma(\w^\top\x)$;\; gradient $\X^\top(\mathbf{p}-\y)$;\; Hessian $\X^\top\diag(p(1-p))\X$\\
+Odds ratio & $e^{w_j}$ per unit increase in $x_j$\\
+\bottomrule
+\end{tabular}
+
+\section*{Metrics}
+\begin{tabular}{@{}p{0.34\textwidth}p{0.6\textwidth}@{}}
+\toprule
+Precision, recall & $TP/(TP+FP)$,\; $TP/(TP+FN)$\\
+$F_1$, $F_\beta$ & $2PR/(P+R)$;\; $(1+\beta^2)PR/(\beta^2P+R)$\\
+Specificity, FPR & $TN/(TN+FP)$;\; $1-$specificity\\
+AUC & $P(\text{score}_+>\text{score}_-)$;\; Gini $=2\,\text{AUC}-1$\\
+Log-loss & $-\frac1n\sum[y\log p+(1-y)\log(1-p)]$\\
+RMSE, MAE, MAPE & $\sqrt{\frac1n\sum e^2}$,\; $\frac1n\sum|e|$,\; $\frac1n\sum|e/y|$\\
+NDCG & $\text{DCG}/\text{IDCG}$, $\text{DCG}=\sum_i(2^{rel_i}-1)/\log_2(i+1)$\\
+PSI & $\sum(a_i-e_i)\ln(a_i/e_i)$\\
+Silhouette & $(b-a)/\max(a,b)$\\
+Lift (association rules) & $P(B\mid A)/P(B)$\\
+\bottomrule
+\end{tabular}
+
+\section*{Trees and ensembles}
+\begin{tabular}{@{}p{0.34\textwidth}p{0.6\textwidth}@{}}
+\toprule
+Gini, entropy & $1-\sum p_k^2$;\; $-\sum p_k\log_2p_k$\\
+Bagging unique fraction & $1-(1-1/n)^n\to63.2\%$\\
+Ensemble variance & $\rho\sigma^2+(1-\rho)\sigma^2/B$\\
+AdaBoost weight & $\alpha=\frac12\log\frac{1-\epsilon}{\epsilon}$\\
+XGBoost leaf, gain & $w^*=-G/(H+\lambda)$;\; $\frac12[\frac{G_L^2}{H_L+\lambda}+\frac{G_R^2}{H_R+\lambda}-\frac{(G_L+G_R)^2}{H_L+H_R+\lambda}]-\gamma$\\
+\bottomrule
+\end{tabular}
+
+\section*{Deep learning}
+\begin{tabular}{@{}p{0.34\textwidth}p{0.6\textwidth}@{}}
+\toprule
+Sigmoid derivative & $\sigma(1-\sigma)$, max $0.25$\\
+Softmax + CE gradient & $\hat\y-\y$\\
+Dense layer params & $n_{in}n_{out}+n_{out}$\\
+Conv output size & $\lfloor(W-K+2P)/S\rfloor+1$\\
+Conv params & $K^2C_{in}C_{out}+C_{out}$\\
+Depthwise separable params & $K^2C_{in}+C_{in}C_{out}$\\
+LSTM / GRU params & $4(h(h+x)+h)$ / $3(h(h+x)+h)$ (one bias set)\\
+Xavier, He variance & $2/(n_{in}+n_{out})$;\; $2/n_{in}$\\
+Adam & $\hat m=m/(1-\beta_1^t)$, $\hat v=v/(1-\beta_2^t)$, step $\eta\hat m/(\sqrt{\hat v}+\epsilon)$\\
+Attention & $\operatorname{softmax}(\mathbf{QK}^\top/\sqrt{d_k})\mathbf{V}$\\
+Transformer block params & $\approx12d^2$\\
+Training FLOPs & $\approx6ND$\\
+KV cache per token & $2\times L\times d\times$ bytes (MHA)\\
+LoRA trainable params & $r(d+k)$ per adapted matrix\\
+Perplexity & $\exp(\text{average negative log-likelihood per token})$\\
+VAE KL (Gaussian) & $\frac12\sum(\mu^2+\sigma^2-\log\sigma^2-1)$\\
+Diffusion forward & $\x_t=\sqrt{\bar\alpha_t}\x_0+\sqrt{1-\bar\alpha_t}\bm\epsilon$\\
+Optimal GAN discriminator & $p_{\text{data}}/(p_{\text{data}}+p_g)$\\
+\bottomrule
+\end{tabular}
+
+\section*{Final advice}
+\begin{itemize}
+  \item In OAs, MCQs on shapes, parameter counts and metric calculations are free marks: practise until they are mechanical.
+  \item In interviews, say the trade-off, not just the definition: ``X is better when\dots, worse when\dots''.
+  \item Always start design questions with the business objective and a baseline.
+  \item When unsure, reason from first principles aloud, and say what you would check.
+\end{itemize}

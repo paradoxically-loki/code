@@ -1,0 +1,134 @@
+\chapter{Unsupervised Learning}
+
+\section{k-means clustering}
+\begin{intuition}
+Place $k$ ``centres'' so that every point is close to its nearest centre. Alternate between assigning points to the nearest centre and moving each centre to the mean of its points.
+\end{intuition}
+
+\begin{realworld}
+A retailer clusters customers on recency, frequency and monetary value (RFM). Clusters come out as ``loyal high spenders'', ``bargain hunters'', ``lapsed customers''. Marketing then gives each segment a different campaign. Scaling matters: unscaled, the rupee-spend column dominates every distance.
+\end{realworld}
+
+\textbf{Objective (within-cluster sum of squares, inertia):}
+\[J=\sum_{j=1}^k\sum_{\x_i\in C_j}\|\x_i-\vmu_j\|^2.\]
+\textbf{Lloyd's algorithm:} (1) initialise centres; (2) assignment step: each point to its nearest centre; (3) update step: $\vmu_j=$ mean of its points; repeat until assignments stop changing.
+
+\textbf{Why it converges:} each step cannot increase $J$ --- the assignment step picks the nearest centre for each point; the update step uses the mean, which minimises $\sum\|\x_i-\vmu\|^2$ (set gradient $-2\sum(\x_i-\vmu)=0$). There are finitely many assignments, so it terminates --- but at a \emph{local} minimum. Cost per iteration $O(nkd)$.
+
+\textbf{k-means++ initialisation:} pick the first centre at random; pick each next centre with probability proportional to $D(\x)^2$ (squared distance to the nearest chosen centre). Spreads centres out; $O(\log k)$-competitive in expectation. Also run multiple restarts (\texttt{n\_init}) and keep the best $J$.
+
+\textbf{Choosing $k$:}
+\begin{itemize}
+  \item \textbf{Elbow method}: plot $J$ vs $k$, look for the bend. Often ambiguous.
+  \item \textbf{Silhouette} for point $i$: $s=\frac{b-a}{\max(a,b)}$, $a$ = mean distance to own cluster, $b$ = mean distance to nearest other cluster. Range $[-1,1]$; average over points; higher is better.
+  \item Gap statistic, Davies--Bouldin, Calinski--Harabasz; and, most important, business interpretability.
+\end{itemize}
+
+\textbf{Limitations:} assumes roughly spherical, similar-sized clusters (it is a special case of a GMM with equal spherical covariances and hard assignments); sensitive to outliers and scale; must choose $k$; Euclidean only. Variants: k-medoids/PAM (centres are actual points, any distance, robust to outliers), mini-batch k-means (large data), k-modes (categorical).
+
+\section{Hierarchical clustering}
+Agglomerative: start with each point as its own cluster; repeatedly merge the closest pair. Linkage defines ``closest'':
+\begin{itemize}
+  \item Single (min distance): finds elongated clusters, prone to chaining.
+  \item Complete (max distance): compact clusters.
+  \item Average: compromise.
+  \item \textbf{Ward}: merge that least increases total within-cluster variance; usually the best default.
+\end{itemize}
+Produces a dendrogram; cut at a height to get clusters --- no need to choose $k$ upfront. Cost $O(n^2)$ memory and $O(n^2\log n)$ to $O(n^3)$ time: unsuitable for very large $n$.
+
+\section{DBSCAN}
+Density-based. Parameters: radius $\varepsilon$, \texttt{minPts}. A \textbf{core point} has $\ge$ \texttt{minPts} neighbours within $\varepsilon$; points reachable from core points form a cluster; the rest are \textbf{noise}. Finds arbitrarily shaped clusters, no $k$ needed, labels outliers. Struggles when clusters have very different densities (HDBSCAN fixes this) and in high dimensions. Pick $\varepsilon$ from the ``knee'' of the sorted $k$-distance plot.
+
+\section{Gaussian mixture models and EM}
+\begin{intuition}
+Each cluster is a Gaussian ``blob'' with its own shape. Points get \emph{soft} memberships (probabilities). EM alternates: given blobs, compute how much each point belongs to each blob; given memberships, re-fit the blobs.
+\end{intuition}
+
+Model: $p(\x)=\sum_{k=1}^K\pi_k\,N(\x\mid\vmu_k,\Sig_k)$, with $\sum\pi_k=1$.
+
+\textbf{E-step} (responsibilities):
+\[\gamma_{ik}=\frac{\pi_kN(\x_i\mid\vmu_k,\Sig_k)}{\sum_j\pi_jN(\x_i\mid\vmu_j,\Sig_j)}.\]
+\textbf{M-step} (with $N_k=\sum_i\gamma_{ik}$):
+\[\pi_k=\frac{N_k}{n},\quad\vmu_k=\frac1{N_k}\sum_i\gamma_{ik}\x_i,\quad\Sig_k=\frac1{N_k}\sum_i\gamma_{ik}(\x_i-\vmu_k)(\x_i-\vmu_k)^\top.\]
+
+\textbf{Why EM works (sketch).} With latent $z$, for any distribution $q(z)$, Jensen's inequality gives the lower bound
+\[\log p(\x\mid\vtheta)\ge\E_q[\log p(\x,z\mid\vtheta)]-\E_q[\log q(z)]=\text{ELBO},\]
+with equality when $q(z)=p(z\mid\x,\vtheta)$. E-step sets $q$ to that posterior (tightening the bound); M-step maximises the bound over $\vtheta$. Each iteration therefore never decreases the likelihood. It converges to a local optimum; covariances can collapse onto a single point (likelihood $\to\infty$), so add a small diagonal regulariser. Choose $K$ by BIC.
+
+k-means vs GMM: k-means = hard assignments, spherical equal clusters; GMM = soft assignments, elliptical clusters with different sizes, gives a density (usable for anomaly detection: low $p(\x)$ = anomaly).
+
+\section{Principal Component Analysis}
+\begin{intuition}
+Rotate the coordinate system so that the first axis points along the direction where the data is most spread out, the second along the next most spread-out direction orthogonal to the first, and so on. Keep the first few axes; drop the rest as noise.
+\end{intuition}
+
+\subsection{Derivation}
+Centre the data ($\X$ with column means zero). Sample covariance $\Sig=\frac1{n-1}\X^\top\X$. Projected variance along unit $\vu$ is $\vu^\top\Sig\vu$. Maximising subject to $\|\vu\|=1$ (Lagrangian in Chapter 1) gives $\Sig\vu=\lambda\vu$: the principal components are eigenvectors of the covariance, and the variance captured by each equals its eigenvalue. Equivalently, PCA minimises the squared reconstruction error of projecting onto a $k$-dimensional subspace.
+
+\textbf{Via SVD} (how it is computed in practice): $\X=\mathbf{U}\bm\Sigma\mathbf{V}^\top$. Then $\X^\top\X=\mathbf{V}\bm\Sigma^2\mathbf{V}^\top$, so the columns of $\mathbf{V}$ are principal directions, $\lambda_i=\sigma_i^2/(n-1)$, and the scores (projected data) are $\X\mathbf{V}_k=\mathbf{U}_k\bm\Sigma_k$. SVD avoids forming $\X^\top\X$, which squares the condition number.
+
+\textbf{Explained variance ratio} $=\lambda_i/\sum_j\lambda_j$. Choose $k$ to retain, say, 90--95\%, or use the scree-plot elbow.
+
+\subsection{Practical points}
+\begin{itemize}
+  \item \textbf{Standardise first} when features have different units; otherwise the feature with the largest variance (e.g.\ salary in rupees) dominates PC1.
+  \item PCA is linear and unsupervised: the direction of maximum variance may be useless for predicting $y$ (use PLS or LDA for supervised reduction).
+  \item Components are less interpretable than original features; loadings tell you which features drive each component.
+  \item Sensitive to outliers (robust PCA exists).
+  \item \textbf{Kernel PCA} applies the kernel trick for non-linear structure.
+  \item Uses: compressing correlated features, removing multicollinearity (principal-component regression), visualisation, denoising, speeding up downstream models.
+\end{itemize}
+
+\begin{realworld}
+Yield curves: daily changes across 10 maturities of government bonds are highly correlated. PCA on them famously gives three components explaining the vast majority of variance --- interpreted as level (all rates move together), slope (short vs long end) and curvature. Fixed-income risk teams hedge these factors rather than ten separate rates.
+\end{realworld}
+
+\section{Non-linear embeddings for visualisation}
+\textbf{t-SNE}: converts high-dimensional distances into neighbour probabilities (Gaussian), low-dimensional ones into a heavy-tailed Student-$t$ distribution, and minimises $\KL(P\|Q)$. The heavy tails let dissimilar points spread apart (reduces crowding). Preserves local neighbourhoods. Caveats: cluster sizes and inter-cluster distances in the plot are not meaningful; results depend on perplexity (roughly the effective number of neighbours, 5--50) and the random seed; it has no transform for new points; slow ($O(n\log n)$ with Barnes--Hut).
+
+\textbf{UMAP}: builds a fuzzy $k$-NN graph and optimises a low-dimensional layout with a cross-entropy objective. Faster than t-SNE, preserves more global structure, supports transforming new points. Parameters: \texttt{n\_neighbors}, \texttt{min\_dist}.
+
+Neither should be used as input features for downstream models without care; they are mainly for visualisation.
+
+\section{Anomaly detection}
+\begin{itemize}
+  \item \textbf{Statistical}: $z$-score $>3$, IQR rule (below $Q_1-1.5\,$IQR or above $Q_3+1.5\,$IQR), Mahalanobis distance for multivariate data.
+  \item \textbf{Isolation Forest}: randomly split features at random thresholds; anomalies are isolated in fewer splits (shorter average path length). Fast, works in high dimensions.
+  \item \textbf{Local Outlier Factor}: compares a point's local density with its neighbours'; good for anomalies in varying-density data.
+  \item \textbf{One-class SVM}: learns a boundary around normal data.
+  \item \textbf{Autoencoders}: train on normal data; high reconstruction error flags anomalies.
+  \item Density models (GMM, KDE): low likelihood = anomaly.
+\end{itemize}
+Evaluation is hard without labels; if a few labels exist, use precision@$k$ (the review team can investigate only $k$ alerts a day).
+
+\section{Association rules (market basket analysis)}
+For rule $A\Rightarrow B$:
+\begin{itemize}
+  \item Support $=P(A\cap B)$ (fraction of baskets containing both).
+  \item Confidence $=P(B\mid A)=\text{supp}(A\cup B)/\text{supp}(A)$.
+  \item \textbf{Lift} $=\dfrac{P(B\mid A)}{P(B)}$. Lift $>1$: positive association; $=1$: independent. Confidence alone misleads when $B$ is very common (milk is in most baskets).
+\end{itemize}
+\textbf{Apriori}: any subset of a frequent itemset must be frequent, so candidates are pruned level by level. FP-Growth avoids candidate generation with a prefix tree.
+
+\begin{example}
+1000 baskets: 200 contain bread, 150 contain butter, 100 contain both. Support $=0.10$; confidence(bread$\Rightarrow$butter) $=100/200=0.5$; lift $=0.5/0.15\approx3.33$.
+\end{example}
+
+\section{Interview questions}
+\Q{Does k-means always converge to the same answer?}
+\A It always converges (finitely many partitions, monotone objective) but to a local minimum that depends on initialisation. Use k-means++ and multiple restarts.
+
+\Q{Why must you scale data before k-means or PCA?}
+\A Both use Euclidean geometry / variance, so large-scale features dominate distances and variance purely because of their units.
+
+\Q{How do you evaluate clustering without labels?}
+\A Internal metrics (silhouette, Davies--Bouldin), stability across resamples, and above all whether clusters are actionable and interpretable for the business. With labels: adjusted Rand index, normalised mutual information.
+
+\Q{PCA reduced 100 features to 10 with 95\% variance retained, but model accuracy dropped. Why?}
+\A Variance is not predictive power: a low-variance direction can carry the signal. Try supervised selection, PLS, or keep the original features with regularisation.
+
+\Q{Are principal components correlated?}
+\A No: scores of different components are uncorrelated by construction (orthogonal eigenvectors of the covariance).
+
+\Q{k-means vs DBSCAN vs GMM --- when to use which?}
+\A k-means: large data, roughly spherical clusters, known $k$. DBSCAN: arbitrary shapes, outliers present, unknown $k$, similar densities. GMM: elliptical overlapping clusters, need soft membership probabilities or a density.
