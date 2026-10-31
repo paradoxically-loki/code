@@ -1,3 +1,217 @@
 % !TEX root = ../main.tex
 
 \section{Ito Calculus}
+
+\begin{enumerate}
+    \item \textbf{Filtration of $\sigma$-algebras:} Given a random variable $\mathbb{X}$, $\sigma(\mathbb{X})$ is the collection of all sets of the form $\{\mathbb{X} \in B\}$, with $B$ a Borel subset of $\mathbb{R}$. For instance, $\sigma(\mathbb{M}_2) = \{\{HH\}, \{HT, TH\}, \{TT\}, \dots\}$ (together with their unions and complements), and $\sigma(\mathbb{M}_2) \subseteq \mathcal{F}_2$. We say $\mathbb{X}$ is \textit{independent} of a $\sigma$-algebra $\mathcal{F}$ if $\mathbb{P}\{A \cap B\} = \mathbb{P}\{A\}\mathbb{P}\{B\}$ for all $A \in \sigma(\mathbb{X})$, $B \in \mathcal{F}$.
+
+    \item A sequence (or continuous family) of $\sigma$-algebras $\mathcal{F}(t)$ such that $\mathcal{F}(s) \subseteq \mathcal{F}(t)$ for $s \leq t$ is called a \textit{filtration}. It encodes the information revealed up to time $t$, which only ever grows.
+
+    \item \textbf{Caution:} $\sigma(\mathbb{M}_n)$ for $n = 1, 2, \dots$ is \textit{not} a filtration; the correct one is $\mathcal{A}_n = \sigma(\mathbb{M}_1, \mathbb{M}_2, \dots, \mathbb{M}_n)$. Similarly, $\sigma(\mathbb{W}(t))$ is not a filtration, but
+    \[\mathcal{F}(t) = \sigma(\mathbb{W}(s) : 0 \leq s \leq t)\]
+    is. We say a process is \textit{adapted} to $\mathcal{F}(t)$ if $\mathbb{X}(t)$ is $\mathcal{F}(t)$-measurable for all $t$.
+
+    \item \textbf{The Wiener Process is a Martingale.} Let $\mathcal{F}(s)$ be a filtration to which $\mathbb{W}$ is adapted, and take $s \leq t$. Then
+    \begin{enumerate}
+        \item[(A)] $\mathbb{W}(t) - \mathbb{W}(s)$ is independent of $\mathcal{F}(s)$,
+        \item[(B)] $\mathbb{W}(s)$ is $\mathcal{F}(s)$-measurable.
+    \end{enumerate}
+    \begin{proof}
+        $$\mathbb{E}[\mathbb{W}(t) \mid \mathcal{F}(s)] = \mathbb{E}[\mathbb{W}(t) - \mathbb{W}(s) \mid \mathcal{F}(s)] + \mathbb{E}[\mathbb{W}(s) \mid \mathcal{F}(s)] = \mathbb{E}[\mathbb{W}(t) - \mathbb{W}(s)] + \mathbb{W}(s) = \mathbb{W}(s)$$
+        where the first term loses its conditioning by (A) and the second is unchanged by (B).
+    \end{proof}
+
+    \item \textbf{Quadratic Variation:} For a function $f$ continuous on $[0, T]$ and a partition $\Pi: 0 = x_0 < x_1 < \dots < x_n = T$ with mesh $\|\Pi\| = \max_i (x_i - x_{i-1})$, define
+    \[[f, f](T) = \lim_{\|\Pi\| \to 0} \sum_{i=1}^{n} \bigl(f(x_i) - f(x_{i-1})\bigr)^2.\]
+
+    \item \textbf{Quadratic variation of a smooth function is zero.} If $f$ is continuously differentiable, then $f(x_i) - f(x_{i-1}) \approx f'(x_{i-1})(x_i - x_{i-1})$ and
+    \begin{proof}
+        $$[f, f](T) = \lim_{\|\Pi\| \to 0} \sum_{i=1}^{n} |f'(x_{i-1})|^2 (x_i - x_{i-1})^2 \leq \lim_{\|\Pi\| \to 0} \|\Pi\| \sum_{i=1}^{n} |f'(x_{i-1})|^2 (x_i - x_{i-1}) = \lim_{\|\Pi\| \to 0} \|\Pi\| \int_0^T |f'(x)|^2\, dx = 0$$
+        since the integral is bounded.
+    \end{proof}
+
+    \item \textbf{Quadratic variation of the Wiener process.} Consider the scaled random walk $\mathbb{W}^{(p)}(t) = \frac{1}{\sqrt{p}} \mathbb{M}_{pt}$ and a partition $0 = t_0 < t_1 < \dots < t_n = T$ with $t_i$ chosen such that $p t_i = i$. Then $\mathbb{W}^{(p)}(t_i) - \mathbb{W}^{(p)}(t_{i-1}) = \frac{1}{\sqrt{p}} \mathbb{X}_i$, and so
+    \[[\mathbb{W}^{(p)}, \mathbb{W}^{(p)}](T) = \sum_{i=1}^{n} \frac{1}{p} \mathbb{X}_i^2 = \frac{n}{p} = T.\]
+    Passing to the limit $p \to \infty$,
+    \[\boxed{[\mathbb{W}, \mathbb{W}](T) = T}\]
+    Unlike smooth functions, the Wiener process has non-zero quadratic variation. Informally, $d\mathbb{W}\, d\mathbb{W} = dt$. (This is the reason for choosing the scaling $1/\sqrt{p}$.)
+
+    \item \textbf{Why do we need non-zero quadratic variation?} To ensure that stock prices are not predictable; a stock with zero quadratic variation would be an ordinary differentiable function of time, and its future would be known, leading to arbitrage opportunities.
+
+    \item \textbf{Geometric Brownian Motion:} Recall the scaling limit of the binomial model,
+    \[\mathbb{S}(t) = \mathbb{S}_0 \exp\!\left(\sigma \mathbb{W}(t) - \tfrac{1}{2}\sigma^2 t\right).\]
+    Since $d\mathbb{W}/dt$ does not exist for any $t$ almost surely, we cannot differentiate this the usual way.
+
+    \item \textbf{Ito-Doeblin Formula (for $f(\mathbb{W}(t))$).} We want to compute $f(\mathbb{W}(T)) - f(\mathbb{W}(0))$. Write it as a telescoping sum over a partition and Taylor expand each term:
+    \[f(\mathbb{W}(t_i)) - f(\mathbb{W}(t_{i-1})) = f'(\mathbb{W}(t_{i-1}))\bigl[\mathbb{W}(t_i) - \mathbb{W}(t_{i-1})\bigr] + \frac{1}{2!} f''(\mathbb{W}(t_{i-1}))\bigl[\mathbb{W}(t_i) - \mathbb{W}(t_{i-1})\bigr]^2 + \dots\]
+    As $\|\Pi\| \to 0$, the higher order terms vanish, but the second order term does \textit{not}, since $\sum_i [\mathbb{W}(t_i) - \mathbb{W}(t_{i-1})]^2 \simeq \sum_i (t_i - t_{i-1}) = T$. Replacing the squared increments by $(t_i - t_{i-1})$,
+    \[f(\mathbb{W}(T)) - f(\mathbb{W}(0)) = \int_0^T f'(\mathbb{W}(u))\, d\mathbb{W}(u) + \frac{1}{2}\int_0^T f''(\mathbb{W}(u))\, du.\]
+    In differential form,
+    \[\boxed{df(\mathbb{W}(t)) = f'(\mathbb{W}(t))\, d\mathbb{W}(t) + \frac{1}{2} f''(\mathbb{W}(t))\, dt}\]
+    The extra $\frac{1}{2} f''\, dt$ term is the new ingredient compared to the ordinary chain rule. Mnemonic: $d\mathbb{W}\, d\mathbb{W} = dt$.
+
+    \item \textbf{Ito-Doeblin Formula for $f(t, \mathbb{W}(t))$:}
+    \[df(t, \mathbb{W}(t)) = \partial_t f(t, \mathbb{W}(t))\, dt + \partial_x f(t, \mathbb{W}(t))\, d\mathbb{W}(t) + \frac{1}{2}\partial_x^2 f(t, \mathbb{W}(t))\, dt.\]
+
+    \item \textbf{Example (GBM):} Let $\mathbb{S}(t, x) = \mathbb{S}_0 \exp\bigl(\sigma x - \frac{1}{2}\sigma^2 t\bigr)$. Then $\partial_t \mathbb{S} = -\frac{1}{2}\sigma^2 \mathbb{S}$, $\partial_x \mathbb{S} = \sigma \mathbb{S}$ and $\partial_x^2 \mathbb{S} = \sigma^2 \mathbb{S}$. Applying the formula, the $dt$ terms cancel:
+    \[d\mathbb{S}(t, \mathbb{W}(t)) = -\tfrac{1}{2}\sigma^2 \mathbb{S}\, dt + \sigma \mathbb{S}\, d\mathbb{W}(t) + \tfrac{1}{2}\sigma^2 \mathbb{S}\, dt = \sigma \mathbb{S}(t, \mathbb{W}(t))\, d\mathbb{W}(t).\]
+
+    \item \textbf{GBM with drift:} Let
+    \[\mathbb{S}(t, \mathbb{W}(t)) = \mathbb{S}_0 \exp\!\left(\sigma \mathbb{W}(t) + \left(\alpha - \tfrac{1}{2}\sigma^2\right)t\right),\]
+    where $\sigma$ is the \textit{volatility factor} and $\alpha$ is the \textit{drift} (systematic, non-random). Here $\partial_t \mathbb{S} = (\alpha - \frac{1}{2}\sigma^2)\mathbb{S}$, $\partial_x \mathbb{S} = \sigma \mathbb{S}$, $\partial_x^2 \mathbb{S} = \sigma^2\mathbb{S}$, so
+    \[\boxed{d\mathbb{S}(t) = \alpha\, \mathbb{S}(t)\, dt + \sigma\, \mathbb{S}(t)\, d\mathbb{W}(t)}\]
+    which is the \textit{stochastic differential equation} for the stock price.
+
+    \item \textbf{Discounted stock price:} Similarly, for the discounted process,
+    \[d\bigl(e^{-rt}\mathbb{S}(t)\bigr) = (\alpha - r)\, e^{-rt}\mathbb{S}(t)\, dt + \sigma\, e^{-rt}\mathbb{S}(t)\, d\mathbb{W}(t).\]
+    Here $r$ is the continuously compounded interest rate, $r_\infty = \ln(1 + r_1)$ where $r_1$ is the one-period rate; we simply call it $r$.
+
+    \item \textbf{Wealth Equation:} For a portfolio holding $\Delta_n$ shares and the rest in the money market, we had
+    \[\mathbb{X}_{n+1} - \mathbb{X}_n = \Delta_n(\mathbb{S}_{n+1} - \mathbb{S}_n) + r_1\bigl(\mathbb{X}_n - \Delta_n \mathbb{S}_n\bigr).\]
+    In the continuous limit,
+    \[d\mathbb{X}(t) = \Delta(t)\, d\mathbb{S}(t) + r\bigl(\mathbb{X}(t) - \Delta(t)\mathbb{S}(t)\bigr)dt,\]
+    and substituting $d\mathbb{S}$,
+    \[d\mathbb{X}(t) = \sigma \Delta(t)\mathbb{S}(t)\, d\mathbb{W}(t) + (\alpha - r)\Delta(t)\mathbb{S}(t)\, dt + r\mathbb{X}(t)\, dt.\]
+    Using the product rule, the discounted wealth satisfies $d\bigl(e^{-rt}\mathbb{X}(t)\bigr) = \Delta(t)\, d\bigl(e^{-rt}\mathbb{S}(t)\bigr)$.
+
+    \item \textbf{Black-Scholes-Merton Equation.} Let $c(t, x)$ be the no-arbitrage price of a European call at time $t$ when the stock price is $x$. The assumption is that $c$ depends only on the current time and the current stock price. It is a non-random function; the randomness enters only through plugging in $x = \mathbb{S}(t)$.
+    \begin{enumerate}
+        \item By the no-arbitrage theorem, a hedging portfolio that replicates the option must satisfy $e^{-rt}c(t, \mathbb{S}(t)) = e^{-rt}\mathbb{X}(t)$ for all $t \geq 0$, and hence $d\bigl(e^{-rt}c(t, \mathbb{S}(t))\bigr) = d\bigl(e^{-rt}\mathbb{X}(t)\bigr)$.
+        \item Applying Ito-Doeblin, with $d\mathbb{S}(t)\, d\mathbb{S}(t) = \sigma^2\mathbb{S}^2\, dt$ (we keep only terms of order $d\mathbb{W}$ or $dt$; note we write $d\mathbb{S}\, d\mathbb{S}$ and not $dt$, since $d\mathbb{S}\, d\mathbb{S} \neq dt$),
+        \[dc = \partial_t c\, dt + \partial_x c\, d\mathbb{S} + \frac{1}{2}\partial_x^2 c\, \sigma^2 \mathbb{S}^2\, dt.\]
+        \item Differentiating the discounted option price,
+        \[d\bigl(e^{-rt}c\bigr) = e^{-rt}\left(-rc + \partial_t c + \alpha\mathbb{S}\partial_x c + \frac{1}{2}\sigma^2\mathbb{S}^2\partial_x^2 c\right)dt + e^{-rt}\sigma\mathbb{S}\partial_x c\, d\mathbb{W}.\]
+        \item The right hand side is
+        \[d\bigl(e^{-rt}\mathbb{X}\bigr) = e^{-rt}\Delta(t)(\alpha - r)\mathbb{S}\, dt + e^{-rt}\Delta(t)\sigma\mathbb{S}\, d\mathbb{W}.\]
+        \item \textbf{Comparing the $d\mathbb{W}$ terms:} $\sigma\mathbb{S}\partial_x c = \sigma\mathbb{S}\Delta(t)$, so
+        \[\Delta(t) = \partial_x c(t, \mathbb{S}(t)),\]
+        the continuous version of the delta hedging formula.
+        \item \textbf{Comparing the $dt$ terms:} using $\Delta = \partial_x c$, the $\alpha$ terms cancel and
+        \[-rc + \partial_t c + \frac{1}{2}\sigma^2\mathbb{S}^2\partial_x^2 c = -r\mathbb{S}\,\partial_x c.\]
+        This must hold for every possible value of $\mathbb{S}(t)$, so we get the PDE
+        \[\boxed{\partial_t c + r x\, \partial_x c + \frac{1}{2}\sigma^2 x^2 \partial_x^2 c = r c}\]
+    \end{enumerate}
+    This is a PDE for the non-random function $c(t, x)$ with parameters $r, \sigma$. The drift $\alpha$ does not appear, because we used the delta hedging formula.
+
+    \item \textbf{Terminal and Boundary Conditions.}
+    \begin{enumerate}
+        \item \textit{Terminal condition} from the payoff at $t = T$: $c(T, x) = \max(x - K, 0) = (x - K)^+$.
+        \item \textit{At $x = 0$:} Setting $x = 0$ in the PDE gives $\partial_t c(t, 0) = r c(t, 0)$, so $c(t, 0) = c(0, 0)e^{rt}$. But $c(T, 0) = 0$, so $c(0,0) = 0$ and
+        \[c(t, 0) = 0.\]
+        \item \textit{As $x \to \infty$:} $c(t, x)$ may grow at most as a positive power of $x$, and in fact
+        \[c(t, x) \sim x - e^{-r(T-t)}K, \quad x \to \infty,\]
+        which comes from comparing with the value of a forward contract at delivery price $K$.
+    \end{enumerate}
+
+    \item \textbf{Black-Scholes-Merton Formula:} The PDE has the analytical solution
+    \[c(t, x) = x\, N\bigl(d_+(T-t, x)\bigr) - K e^{-r(T-t)} N\bigl(d_-(T-t, x)\bigr),\]
+    where
+    \[N(y) = \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{y} e^{-z^2/2}\, dz, \qquad d_\pm(\tau, x) = \frac{1}{\sigma\sqrt{\tau}}\left[\ln\frac{x}{K} + \left(r \pm \frac{\sigma^2}{2}\right)\tau\right].\]
+
+    \item \textbf{Checking the terminal condition:} As $t \to T$ (i.e.\ $\tau \to 0$), $d_\pm$ blows up.
+    \begin{itemize}
+        \item If $x > K$: $\ln(x/K) > 0$, so $d_\pm \to +\infty$, $N \to 1$, and $c \to x - K$.
+        \item If $x < K$: $\ln(x/K) < 0$, so $d_\pm \to -\infty$, $N \to 0$, and $c \to 0$.
+    \end{itemize}
+    This recovers $(x - K)^+$.
+
+    \item \textbf{The Greeks:} The derivatives $\partial_x c$, $\partial_t c$, $\partial_x^2 c$ have names.
+    \begin{align*}
+        \Delta &= \partial_x c = N\bigl(d_+(T-t, x)\bigr) \\
+        \Theta &= \partial_t c = -rKe^{-r(T-t)}N\bigl(d_-(T-t, x)\bigr) - \frac{\sigma x}{2\sqrt{T-t}}N'\bigl(d_+(T-t, x)\bigr) \\
+        \Gamma &= \partial_x^2 c = \frac{1}{\sigma x\sqrt{T-t}}N'\bigl(d_+(T-t, x)\bigr)
+    \end{align*}
+    Clearly $\Delta > 0$ (long position in the stock to hedge a short call), $\Theta < 0$ (at a fixed stock price, the option value decays with time), and $\Gamma > 0$ (at a fixed $t$, the option value is a convex function of $x$).
+
+    \item Also, $c(t, x) - x\,\partial_x c = -Ke^{-r(T-t)}N(d_-) < 0$, which means the delta hedger always needs to borrow money.
+
+    \item \textbf{Long Gamma Strategy:} Fix $t$ and take the tangent to $c(t, \cdot)$ at the current price $x_1$,
+    \[Y(x) = \partial_x c(t, x_1)(x - x_1) + c(t, x_1).\]
+    By convexity ($\Gamma > 0$), for $x$ in the neighbourhood of $x_1$,
+    \[c(t, x) - Y(x) > 0.\]
+    Thus a long position in the option, delta-hedged by the stock, benefits from a move of the stock in either direction. However, $\Theta < 0$ means the option value also decays with time, and the curve drops very rapidly, so this arbitrage may not be realised; it is only infinitesimal.
+
+    \item \textbf{Put-Call Parity} (motivated by the no-arbitrage theorem). A \textit{forward contract} on a stock delivers the stock at a future time $T$ at a fixed delivery price $K$. The payoff for a long position is $\mathbb{S}(T) - K$.
+    \begin{enumerate}
+        \item The no-arbitrage delivery price is $K = e^{rT}\mathbb{S}(0)$, called the forward price $\text{For}(T)$. The argument is a \textit{static hedge}: a short position in the forward can be hedged by buying the stock at time $0$ by borrowing $\mathbb{S}(0)$ from the money market, and at time $T$ delivering the stock at $K = e^{rT}\mathbb{S}(0)$, which exactly repays the loan.
+        \item Let $f(x, t)$ denote the value of the forward contract. To sell the contract at time $t_0 < T$, the hedger gains $f(\mathbb{S}(t_0), t_0)$, purchases the stock at $\mathbb{S}(t_0)$ by borrowing $\mathbb{S}(t_0) - f(\mathbb{S}(t_0), t_0)$. At $t = T$ the position must be worth zero after delivering at $K$,
+        \[e^{r(T - t_0)}\bigl(\mathbb{S}(t_0) - f(\mathbb{S}(t_0), t_0)\bigr) - K = 0.\]
+        \item Hence
+        \[f(\mathbb{S}(t), t) = \mathbb{S}(t) - e^{-r(T-t)}K = \mathbb{S}(t) - e^{rt}\mathbb{S}(0).\]
+    \end{enumerate}
+
+    \item \textbf{Payoff identity:} A long forward has payoff $x - K$, a long European call has $(x-K)^+$ and a short put has $-(K-x)^+$. Clearly
+    \[(x - K) = (x - K)^+ - (K - x)^+.\]
+    Equivalently, $x = K + (x-K)^+ - (K-x)^+$: one share of stock equals a zero-coupon bond, a long call and a short put. Rearranging,
+    \[x + (K - x)^+ = K + (x - K)^+,\]
+    i.e.\ one share plus a long put equals a zero-coupon bond plus a long call.
+
+    \item By no-arbitrage pricing, the same relation holds for $t < T$:
+    \[f(x, t) = c(x, t) - p(x, t) = x - e^{-r(T-t)}K.\]
+    Substituting the Black-Scholes-Merton formula for $c$ and using $1 - N(d_\pm) = N(-d_\pm)$, we obtain the European put price
+    \[p(x, t) = Ke^{-r(T-t)}N\bigl(-d_-(T-t, x)\bigr) - x\, N\bigl(-d_+(T-t, x)\bigr).\]
+
+    \item \textbf{Ito Integrals.} In ordinary calculus, the chain rule gives $\int_{g(x_1)}^{g(x_2)} F(x)\, dg(x) = \int_{x_1}^{x_2} F(x)\frac{dg(x)}{dx}\, dx$. For $F(\mathbb{W}(T)) - F(\mathbb{W}(0))$ we saw that the chain rule fails (an extra $\frac{1}{2}F''\, dt$ term appears), so we need a genuinely new definition of $\int_0^T G(t)\, d\mathbb{W}(t)$.
+
+    \item We approximate it by the Riemann-type sum
+    \[\int_0^T G(t)\, d\mathbb{W}(t) \simeq \sum_{j=1}^{n} G(c_j)\bigl(\mathbb{W}(t_j) - \mathbb{W}(t_{j-1})\bigr), \qquad t_{j-1} \leq c_j \leq t_j.\]
+    For an ordinary integral $\int_0^T G(t)\, dt = \lim \sum G(c_j)(t_j - t_{j-1})$, the choice of $c_j$ does not matter. For a stochastic $d\mathbb{W}$ it \textit{does}, since $\mathbb{W}$ has non-zero quadratic variation. Common choices:
+    \begin{enumerate}
+        \item \textbf{Ito's choice:} $c_j = t_{j-1}$ (left end point).
+        \item \textbf{Stratonovich choice:} $c_j = \frac{t_{j-1} + t_j}{2}$ (mid point).
+        \item \textbf{Anti-Ito choice:} $c_j = t_j$ (right end point).
+    \end{enumerate}
+    We use Ito's choice. It ensures the quadratic variation of $\mathbb{W}(t)$ is transferred to that of the integral, and also that the strategy $G$ is not anticipating (it uses only information up to $t_{j-1}$, so no arbitrage from peeking into the future).
+
+    \item \textbf{Ito Integral of a function w.r.t.\ the Wiener process:}
+    \[\mathbb{I}(t) = \int_0^t \Delta(u)\, d\mathbb{W}(u),\]
+    where $\Delta(u)$ may be an ordinary function of time, or a random process, which is usually adapted to the filtration $\mathcal{F}(t)$ of the Wiener process. $\mathbb{I}(t)$ is itself a random process since it depends on $t$ and is a sum of random variables.
+
+    \item \textbf{Construction:} We cannot use the chain rule, so we use the Riemann form with simple (step-function) processes. Define the simple process $\Delta_n(t) = \Delta(t_{j-1})$ for $t \in [t_{j-1}, t_j)$. Then $\Delta_n(t) \to \Delta(t)$ with
+    \[\lim_{n \to \infty}\mathbb{E}\left[\int_0^T |\Delta_n(t) - \Delta(t)|^2\, dt\right] = 0,\]
+    and
+    \[\mathbb{I} = \lim_{\substack{n \to \infty \\ \|\Pi\| \to 0}} \sum_{j=1}^{n}\Delta_n(t_{j-1})\bigl(\mathbb{W}(t_j) - \mathbb{W}(t_{j-1})\bigr).\]
+
+    \item \textbf{Properties of Ito Integrals.} For $\mathbb{I}(t) = \int_0^t \Delta(u)\, d\mathbb{W}(u)$:
+    \begin{enumerate}
+        \item Paths of $\mathbb{I}(t)$ are continuous.
+        \item $\mathbb{I}(t)$ is adapted to the filtration of $\mathbb{W}(t)$, since $\mathbb{W}(t_j) - \mathbb{W}(t_{j-1})$ is independent of the path up to $t_{j-1}$.
+        \item \textbf{Linearity:} if $\mathbb{J}(t) = \int_0^t \Gamma(u)\, d\mathbb{W}(u)$, then $\int_0^t (c_1\Delta(u) + c_2\Gamma(u))\, d\mathbb{W}(u) = c_1\mathbb{I}(t) + c_2\mathbb{J}(t)$.
+        \item \textbf{Martingale:} for $s < t$, $\mathbb{E}[\mathbb{I}(t) \mid \mathcal{F}(s)] = \mathbb{I}(s)$ (and hence $\mathbb{E}[\mathbb{I}(t)] = 0$). This is the most important property.
+        \item \textbf{Ito isometry:} $\mathbb{E}[\mathbb{I}(t)^2] = \text{Var}(\mathbb{I}(t)) = \mathbb{E}\left[\int_0^t \Delta(u)^2\, du\right]$.
+        \item \textbf{Quadratic variation:} $[\mathbb{I}, \mathbb{I}](t) = \int_0^t \Delta(u)^2\, du$.
+    \end{enumerate}
+    Properties (b), (d), (e), (f) depend crucially on Ito's choice of $c_j$.
+
+    \item \textbf{Differential form:} $d\mathbb{I}(t) = \Delta(t)\, d\mathbb{W}(t)$, with $d\mathbb{I}\, d\mathbb{I} = \Delta(t)^2\, dt$.
+
+    \item \textbf{Ito Process:} Let $\Delta(t)$ and $\Theta(t)$ be stochastic processes adapted to the filtration $\mathcal{F}(t)$ of the Brownian motion. An Ito process is
+    \[\mathbb{X}(t) = \mathbb{X}(0) + \int_0^t \Delta(s)\, d\mathbb{W}(s) + \int_0^t \Theta(s)\, ds,\]
+    or in differential form
+    \[d\mathbb{X}(t) = \Delta(t)\, d\mathbb{W}(t) + \Theta(t)\, dt.\]
+    The first term is the diffusion, the second the drift. The delta hedging wealth equation $d\mathbb{X}(t) = \Delta(t)\, d\mathbb{S}(t) + r(\mathbb{X}(t) - \Delta(t)\mathbb{S}(t))\, dt$ is an example.
+
+    \item \textbf{Properties of Ito processes:}
+    \begin{enumerate}
+        \item An Ito process is \textit{not necessarily} a martingale, due to the $\Theta$ term.
+        \item $[\mathbb{X}, \mathbb{X}](t) = \int_0^t \Delta(u)^2\, du$, i.e.\ $d\mathbb{X}\, d\mathbb{X} = \Delta(t)^2\, dt$ (the drift term does not contribute).
+        \item \textbf{Integral w.r.t.\ an Ito process:}
+        \[\int_0^t \Gamma(u)\, d\mathbb{X}(u) = \int_0^t \Gamma(u)\Delta(u)\, d\mathbb{W}(u) + \int_0^t \Gamma(u)\Theta(u)\, du.\]
+    \end{enumerate}
+
+    \item \textbf{Ito-Doeblin Formula for a general Ito process.} Recall that for $f(\mathbb{W}(t))$,
+    \[f(\mathbb{W}(t)) - f(\mathbb{W}(0)) = \underbrace{\int_0^t f'(\mathbb{W}(u))\, d\mathbb{W}(u)}_{\text{diffusion}} + \underbrace{\frac{1}{2}\int_0^t f''(\mathbb{W}(u))\, du}_{\text{drift}},\]
+    which is an Ito process with $\Delta(t) = f'(\mathbb{W}(t))$ and $\Theta(t) = \frac{1}{2}f''(\mathbb{W}(t))$. For a general Ito process $\mathbb{X}(t)$,
+    \[\boxed{df(\mathbb{X}(t)) = f'(\mathbb{X}(t))\, d\mathbb{X}(t) + \frac{1}{2}f''(\mathbb{X}(t))\, d\mathbb{X}(t)\, d\mathbb{X}(t)}\]
+    Expanding using $d\mathbb{X} = \Delta\, d\mathbb{W} + \Theta\, dt$ and $d\mathbb{X}\, d\mathbb{X} = \Delta^2\, dt$,
+    \[df(\mathbb{X}(t)) = f'(\mathbb{X}(t))\Delta(t)\, d\mathbb{W}(t) + \left[f'(\mathbb{X}(t))\Theta(t) + \frac{1}{2}f''(\mathbb{X}(t))\Delta(t)^2\right]dt.\]
+
+    \item \textbf{Summary (things to remember):}
+    \begin{itemize}
+        \item Wiener process: $\mathbb{W}(t)$ is a martingale with $[\mathbb{W}, \mathbb{W}](t) = t$, $d\mathbb{W}\, d\mathbb{W} = dt$.
+        \item Ito integral: $\mathbb{I}(t) = \int_0^t \Delta(s)\, d\mathbb{W}(s)$ with $\Delta$ adapted; it is a martingale, $d\mathbb{I} = \Delta\, d\mathbb{W}$, $[\mathbb{I}, \mathbb{I}](t) = \int_0^t \Delta(s)^2\, ds$.
+        \item Ito process: $d\mathbb{X} = \Delta\, d\mathbb{W} + \Theta\, dt$; not a martingale, $d\mathbb{X}\, d\mathbb{X} = \Delta^2\, dt$.
+        \item Ito-Doeblin: $df(\mathbb{X}) = f'(\mathbb{X})\, d\mathbb{X} + \frac{1}{2}f''(\mathbb{X})\, d\mathbb{X}\, d\mathbb{X}$.
+    \end{itemize}
+
+\end{enumerate}
