@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1793621379.04881 "portfolio-theory.tex" "portfolio-theory.pdf" "portfolio-theory" 1793621381.05922 0
+["pdflatex"] 1793621678.3553 "portfolio-theory.tex" "portfolio-theory.pdf" "portfolio-theory" 1793621680.1744 0
   "/etc/texmf/web2c/texmf.cnf" 1793269959.71542 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -158,7 +158,6 @@
   "/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg" 1465944070 1224 978390e9c2234eab29404bc21b268d1e ""
   "/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def" 1759176675 19626 23e2822b9b2b5005f4c549ca98b9334d ""
   "/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty" 1748806692 7245 a7e8457a46cda4920df85d975267efb4 ""
-  "/usr/share/texlive/texmf-dist/tex/latex/graphics/dvipsnam.def" 1748806692 5009 f48e1006c67ca6c50094e2f41e884d72 ""
   "/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty" 1748806692 18363 69bb4f5538964bfea50d1e6d89cbe69f ""
   "/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty" 1748806692 8118 43b99e52946c33a23f5f43b52d5cc5ec ""
   "/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty" 1748806692 2671 d9941f4bf4750e9b0603c9a2ec54693b ""
@@ -252,10 +251,10 @@
   "figures_pdf/fig7_characteristic_line.pdf" 1793620457.96245 54329 cf41e9146c1cefb61232f57a50862447 ""
   "figures_pdf/fig8_cml_vs_sml.pdf" 1793620458.44404 100192 e820353b079560e2a8462ce2a3f199cb ""
   "figures_pdf/fig9_diversification.pdf" 1793620458.82061 49729 4d826a7f38dabcfc612a2143bdd19456 ""
-  "portfolio-theory.aux" 1793621380.93132 6477 29e5c8c8204628290e250e03c9813864 "pdflatex"
-  "portfolio-theory.out" 1793621380.93232 5839 94df7bb8177fc52ddf8f50fb05283fc7 "pdflatex"
-  "portfolio-theory.tex" 1793621377.06906 34007 c119cf16ac1896cfa10497cd48eb597d ""
-  "portfolio-theory.toc" 1793621380.93376 2591 f607f4f6960143b39bc03dfabf3e4b22 "pdflatex"
+  "portfolio-theory.aux" 1793621680.04767 6477 29e5c8c8204628290e250e03c9813864 "pdflatex"
+  "portfolio-theory.out" 1793621680.04767 5895 cc62db92837da457686e4ed68b1573ac "pdflatex"
+  "portfolio-theory.tex" 1793621676.42149 34040 70d4e11c4bd051d946f48a56ce0d3851 ""
+  "portfolio-theory.toc" 1793621680.04867 2591 f607f4f6960143b39bc03dfabf3e4b22 "pdflatex"
   (generated)
   "portfolio-theory.aux"
   "portfolio-theory.log"
