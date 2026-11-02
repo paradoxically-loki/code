@@ -45,6 +45,10 @@
 \usepackage{needspace}
 \usepackage{array}
 \usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\definecolor{figblue}{HTML}{2A78D6}
+\definecolor{figorange}{HTML}{EB6834}
 
 \setcounter{tocdepth}{2}
 \setlist{itemsep=0.2em, topsep=0.3em}
@@ -96,6 +100,12 @@
 % common mistake: grey bar
 \newtcolorbox{caution}{notebox,
   before upper={\setstretch{1.15}\setlength{\parskip}{0.4em}{\bfseries Common mistake.\ }}}
+% intuition behind a result
+\newtcolorbox{intuition}{notebox,
+  before upper={\setstretch{1.15}\setlength{\parskip}{0.4em}{\bfseries Intuition.\ }}}
+% material that goes further than the book
+\newtcolorbox{deeper}[1]{notebox,
+  before upper={\setstretch{1.15}\setlength{\parskip}{0.4em}{\bfseries Beyond the book: #1.\ }}}
 
 % ---------- figures ----------
 \renewcommand{\thefigure}{\Alph{figure}}
@@ -116,6 +126,7 @@
 \newcommand{\vC}{\boldsymbol{C}}
 \newcommand{\T}{^{T}}
 \newcommand{\Ci}{\vC^{-1}}
+\newcommand{\SR}{\mathrm{SR}}
 
 \begin{document}
 \title{Portfolio Theory Notes}
@@ -133,7 +144,8 @@
 5.1 & Risk            & measure risk with $\Var(K)$ or $\sigma_K$\\
 5.2 & Two securities  & weights, $\mu_V$, $\sigma_V^2$, the role of $\rho_{12}$, min-variance portfolio\\
 5.3 & $n$ securities  & matrix form $(\vm,\vC,\vw,\vu)$, MVP, min-variance line, efficient frontier\\
-5.4 & CAPM            & Capital Market Line, market portfolio, beta, Security Market Line
+5.4 & CAPM            & Capital Market Line, market portfolio, beta, Security Market Line\\
++ & Beyond the book & estimation error, empirical record of CAPM, extensions, further reading
 \end{tabular}
 \end{center}
 
@@ -160,9 +172,11 @@ $s$ & parameter for two-security portfolios: $s=w_2$, $w_1=1-s$\\
 $\vw=[w_1\ \cdots\ w_n]$ & row vector of weights\\
 $\vm=[\mu_1\ \cdots\ \mu_n]$ & row vector of expected returns\\
 $\vu=[1\ \cdots\ 1]$ & row vector of ones\\
-$\vC=[c_{ij}]$ & $n\times n$ covariance matrix (symmetric, positive definite, assumed invertible)\\
+$\vC=[c_{ij}]$ & $n\times n$ covariance matrix (symmetric and positive semi-definite; assumed invertible, which makes it positive definite)\\
+$A,B,D,\Delta$ & scalars built from $\vu,\vm,\Ci$, defined in \S5.3; not in the book\\
 $r_F$ & risk-free return\\
 $M$, $\mu_M$, $\sigma_M$, $K_M$ & market portfolio and its expected return / risk / return\\
+$\SR_M=(\mu_M-r_F)/\sigma_M$ & Sharpe ratio of the market\\
 $\beta_V$, $\alpha_V$ & beta (slope) and alpha (intercept) of the characteristic line\\
 $\varepsilon_V$ & residual random variable\\
 \bottomrule
@@ -170,6 +184,8 @@ $\varepsilon_V$ & residual random variable\\
 \end{center}
 
 In this book \textbf{vectors are row vectors}. So $\vm\vw\T$ is a scalar (dot product), and $\vw\vC\vw\T$ is a scalar (quadratic form).
+
+\textbf{How to read these notes.} Numbering follows Chapter 5 of Capi\'nski \& Zastawniak, \emph{Mathematics for Finance}. Boxes marked \textbf{Intuition} and \textbf{Beyond the book} are additions, as is the last main section. All numbers were recomputed independently from the book's data.
 
 % =====================================================================
 \section{Section 5.1: Risk}
@@ -182,8 +198,8 @@ Two things:
 \end{enumerate}
 The \textbf{spread} alone (max $-$ min) is a poor measure because it ignores probabilities:
 \begin{itemize}
-  \item 22\% w.p.\ 0.99 and 2\% w.p.\ 0.01 $\to$ spread is 20\%, but risk is tiny.
-  \item 22\% and 2\% with probability 0.5 each $\to$ same spread, much riskier.
+  \item 22\% w.p.\ 0.99 and 2\% w.p.\ 0.01 $\to$ spread is 20\%, but risk is tiny ($\sigma\approx2\%$).
+  \item 22\% and 2\% with probability 0.5 each $\to$ same spread, much riskier ($\sigma=10\%$).
 \end{itemize}
 So we use the expectation $\E(K)$ as the reference value and measure dispersion around it.
 
@@ -198,14 +214,25 @@ $\sigma_K$ is in the \textbf{same units} as returns (\%), which makes it easier 
 \end{result}
 
 \begin{practice}
-This is why leverage hurts so much. A $2\times$ leveraged equity fund has $2\times$ the volatility and \textbf{$4\times$} the variance of the underlying index.
+This is the arithmetic of leverage. A fund holding $L$ times an index, financed at $r_F$, has return $K=r_F+L(K_I-r_F)$. Volatility scales by $L$ and variance by $L^2$, but the expected excess return also scales by $L$, so the \textbf{Sharpe ratio does not change}. Over one period leverage is a fair trade.
+
+Over many periods it is not. For a continuously rebalanced position, long-run growth is approximately $g\approx r_F+L(\mu-r_F)-\tfrac12L^2\sigma^2$: the reward is linear in $L$ and the drag is quadratic. With $\mu=10\%$, $\sigma=18\%$, $r_F=5\%$ this gives $g\approx8.4\%$ at $L=1$, $8.5\%$ at $L=2$ and $5.4\%$ at $L=3$, peaking near $L^*=(\mu-r_F)/\sigma^2\approx1.5$.
 \end{practice}
+
+\begin{deeper}{is variance the right measure?}
+Choosing portfolios by $(\mu,\sigma)$ alone is exactly right if investors have quadratic utility, or if returns are jointly elliptical (for example normal), because then $\mu$ and $\sigma$ pin down each portfolio's whole distribution. Otherwise it is an approximation with two known blind spots:
+\begin{itemize}
+  \item \textbf{It is symmetric.} A surprise gain counts as much as a surprise loss. Semi-variance penalises only the downside.
+  \item \textbf{It ignores tail shape.} These two returns both have mean 0 and $\sigma=10\%$: (a) $\pm10\%$ with probability $\tfrac12$ each; (b) $-49\%$ with probability 0.04 and about $+2.04\%$ with probability 0.96. Few investors would call them equally risky. Risk managers therefore also use Value at Risk and Expected Shortfall.
+\end{itemize}
+\end{deeper}
 
 \subsection{Remark 5.1: why ordinary returns, not log returns?}
 \begin{itemize}
-  \item Over \textbf{many time steps}, log returns add up: $k(0,n)=k(1)+\cdots+k(n)$. If the steps are independent:
+  \item Over \textbf{many time steps}, log returns add up: $k(0,n)=k(1)+\cdots+k(n)$. If the steps are independent (being uncorrelated is enough):
   \[\Var(k(0,n))=\Var(k(1))+\cdots+\Var(k(n))\]
   \item In this chapter we hold \textbf{several securities over one step}. Ordinary returns combine \textbf{linearly} across securities (see 5.2), which is what we need. So the chapter uses $K$, not $k$.
+  \item The two returns are mirror images. \textbf{Log returns add across time} but not across securities; \textbf{ordinary returns add across securities} but compound across time.
 \end{itemize}
 
 % =====================================================================
@@ -278,7 +305,7 @@ The same two formulas in compact notation:
 
 \begin{itemize}
   \item $\mu_V$ is \textbf{linear} in the weights. $\sigma_V^2$ is \textbf{quadratic} in them.
-  \item The cross term $2w_1w_2\rho_{12}\sigma_1\sigma_2$ is where diversification comes from. When $\rho_{12}<1$, the portfolio's $\sigma_V$ is \textbf{less} than the weighted average $w_1\sigma_1+w_2\sigma_2$ (for long-only weights).
+  \item The cross term $2w_1w_2\rho_{12}\sigma_1\sigma_2$ is where diversification comes from. When $\rho_{12}<1$ and both weights are strictly positive, the portfolio's $\sigma_V$ is \textbf{less} than the weighted average $w_1\sigma_1+w_2\sigma_2$.
 \end{itemize}
 
 \subsubsection{Illustration (Example 5.6 data)}
@@ -304,10 +331,12 @@ $\sigma_1^2\approx0.0184$, $\sigma_2^2\approx0.0024$, $\rho_{12}\approx-0.96309$
 \midrule
 $(40\%,\,60\%)$ & 0.000736 & \textbf{smaller than both}: diversification\\
 $(80\%,\,20\%)$ & 0.009824 & between the two\\
-$(-50\%,\,150\%)$ & 0.0196 & \textbf{larger than both}: shorting adds risk\\
+$(-50\%,\,150\%)$ & 0.0196 & \textbf{larger than both}: this short adds risk\\
 \bottomrule
 \end{tabular}
 \end{center}
+
+Shorting does not always add risk. Here it does, because $\rho_{12}<0$ means going long one and short the other stacks two bets in the same direction. With high positive correlation, a short \textbf{reduces} risk (Corollary 5.6, case 3).
 
 \begin{result}[Proposition 5.3: with no short selling, the portfolio is never riskier than its riskiest component]
 \[\sigma_V^2\le\max\{\sigma_1^2,\sigma_2^2\}\quad(\text{if }w_1,w_2\ge0)\]
@@ -329,7 +358,7 @@ This \textbf{requires short selling} (one weight is negative).
 \emph{Why:} with $\rho=\pm1$, (5.8) becomes a perfect square, $\sigma_V^2=(w_1\sigma_1\pm w_2\sigma_2)^2$, so $\sigma_V=|w_1\sigma_1\pm w_2\sigma_2|$, which you can set to zero.
 
 \begin{practice}
-$\rho=+1$ with shorting is the logic behind a \textbf{hedge}. Example: long a stock and short the right amount of its futures. Both move together, so the shorted position cancels the risk.
+$\rho=+1$ with shorting is the logic behind a \textbf{hedge}. Example: long a stock and short the right amount of its futures. Both move together, so the shorted position cancels the risk. Real hedges have $\rho<1$, so risk is reduced rather than removed, and the best hedge size comes from the minimum-variance calculation in (5.13).
 \end{practice}
 
 \textbf{Parametric form ($s=w_2$, $w_1=1-s$):}
@@ -338,7 +367,7 @@ $\rho=+1$ with shorting is the logic behind a \textbf{hedge}. Example: long a st
 \rho_{12}=+1:&\quad \sigma_V=|(1-s)\sigma_1+s\sigma_2|,\qquad \mu_V=(1-s)\mu_1+s\mu_2
 \end{align*}
 
-On the $(\sigma,\mu)$ plane: for $\rho=-1$ the line \textbf{bends to touch the $\mu$-axis}. For $\rho=+1$ it is a \textbf{straight segment} between the two securities. $0\le s\le1$ means no short selling.
+On the $(\sigma,\mu)$ plane both are broken lines, made of straight pieces that reflect off the $\mu$-axis at the zero-risk portfolio. For $\rho=-1$ the no-short-selling part ($0\le s\le1$) itself \textbf{bends at the $\mu$-axis}. For $\rho=+1$ the no-short-selling part is a \textbf{straight segment} between the two securities, and only its extension by short selling reaches the axis.
 
 \subsection{General \texorpdfstring{$\rho_{12}$}{rho12}: the portfolio line and the minimum-variance portfolio}
 
@@ -349,7 +378,7 @@ On the $(\sigma,\mu)$ plane: for $\rho=-1$ the line \textbf{bends to touch the $
 \end{align}
 \end{result}
 
-$\sigma_V^2$ is a parabola in $s$, opening upward (its $s^2$-coefficient is $\sigma_1^2+\sigma_2^2-2\rho_{12}\sigma_1\sigma_2>(\sigma_1-\sigma_2)^2\ge0$).
+For $\rho_{12}<1$, $\sigma_V^2$ is a parabola in $s$, opening upward (its $s^2$-coefficient is $\sigma_1^2+\sigma_2^2-2\rho_{12}\sigma_1\sigma_2>(\sigma_1-\sigma_2)^2\ge0$).
 
 \begin{result}[Theorem 5.5: minimum-variance weight (for $-1<\rho_{12}<1$)]
 \[s_0=\frac{\sigma_1^2-\rho_{12}\sigma_1\sigma_2}{\sigma_1^2+\sigma_2^2-2\rho_{12}\sigma_1\sigma_2} \tag{5.13}\]
@@ -358,6 +387,19 @@ $\sigma_V^2$ is a parabola in $s$, opening upward (its $s^2$-coefficient is $\si
 \end{result}
 
 \emph{Proof:} set $d\sigma_V^2/ds=0$. The second derivative is $>0$, so this is a global minimum.
+
+\begin{intuition}
+Write $K_V=K_1+s\,(K_2-K_1)$. You start fully in security 1 and add a position $s$ in the \textbf{spread} $D=K_2-K_1$. Then
+\[\sigma_V^2=\sigma_1^2+2s\,\Cov(K_1,D)+s^2\Var(D),\qquad \Cov(K_1,D)=\rho_{12}\sigma_1\sigma_2-\sigma_1^2.\]
+Minimising gives $s_0=-\Cov(K_1,D)/\Var(D)$, which is (5.13). So \textbf{$s_0$ is a hedge ratio}: minus the regression slope of $K_1$ on the spread. The risk that remains is
+\[\sigma_{\min}^2=\sigma_1^2-\frac{\Cov(K_1,D)^2}{\Var(D)}=\frac{\sigma_1^2\sigma_2^2(1-\rho_{12}^2)}{\sigma_1^2+\sigma_2^2-2\rho_{12}\sigma_1\sigma_2}.\]
+This also explains the threshold in Corollary 5.6 below, which is just the sign of $\Cov(K_1,D)$:
+\begin{itemize}
+  \item $\rho_{12}<\sigma_1/\sigma_2$: the spread tends to rise when $K_1$ falls, so \textbf{buying a little of security 2} hedges.
+  \item $\rho_{12}=\sigma_1/\sigma_2$: the spread is uncorrelated with $K_1$. It is pure added noise, so any $s\ne0$ raises risk.
+  \item $\rho_{12}>\sigma_1/\sigma_2$: the spread tends to rise with $K_1$, so the hedge is to \textbf{sell security 2} and hold more of security 1.
+\end{itemize}
+\end{intuition}
 
 \fig{fig2_variance_vs_s}{0.85}{Variance as a function of $s$, three cases (cf.\ book Fig.\ 5.2). Bold segment $=0\le s\le1$. Orange dot $=$ unconstrained minimum $s_0$; green diamond $=$ minimum without short selling.}
 
@@ -371,7 +413,7 @@ $\sigma_V^2$ is a parabola in $s$, opening upward (its $s^2$-coefficient is $\si
 \midrule
 $-1\le\rho_{12}<\dfrac{\sigma_1}{\sigma_2}$ & there is a portfolio \textbf{without} short selling with $\sigma_V<\sigma_1$\\
 $\rho_{12}=\dfrac{\sigma_1}{\sigma_2}$ & $\sigma_V\ge\sigma_1$ for \textbf{every} portfolio ($s_0=0$)\\
-$\dfrac{\sigma_1}{\sigma_2}<\rho_{12}\le1$ & $\sigma_V<\sigma_1$ is possible \textbf{only with} short selling (short security 1)\\
+$\dfrac{\sigma_1}{\sigma_2}<\rho_{12}\le1$ & $\sigma_V<\sigma_1$ is possible \textbf{only with} short selling (short security 2, since $s_0<0$)\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -380,6 +422,8 @@ $\dfrac{\sigma_1}{\sigma_2}<\rho_{12}\le1$ & $\sigma_V<\sigma_1$ is possible \te
 \begin{caution}
 Students often assume ``diversification always lowers risk below the safer asset.'' It does so only when $\rho_{12}<\sigma_1/\sigma_2$. In Figure B, the $\rho=0.8$ (violet) solid segment never goes left of $\sigma_1$.
 \end{caution}
+
+\textbf{Slip in the book.} The book's proof of case 3 says the minimum-variance portfolio involves ``short selling of security 1''. It should say security 2: $s_0<0$ means $w_2<0$. The book's own Example 5.9 confirms this ($\sigma_1<\sigma_2$, $w_1\approx2.1663$, $w_2\approx-1.1663$).
 
 \subsection{One risky + one risk-free security}
 
@@ -416,6 +460,12 @@ Portfolios that satisfy (5.14) form the \textbf{attainable set}.
 
 With $n=2$ these reduce exactly to (5.7) and (5.8). Build $\vC$ from $c_{ij}=\rho_{ij}\sigma_i\sigma_j$.
 
+\begin{intuition}
+The sum in (5.16) has $n$ variance terms but $n^2-n$ covariance terms, so covariances dominate as $n$ grows. With equal weights $w_i=1/n$,
+\[\sigma_V^2=\frac1n\,\overline{\Var}+\Big(1-\frac1n\Big)\overline{\Cov},\]
+where the bars are averages over securities and over pairs. The first term dies out. The \textbf{average covariance} stays, and that is the floor shown in Figure I.
+\end{intuition}
+
 \subsection{The two optimisation problems}
 \begin{enumerate}
   \item \textbf{Minimum variance portfolio (MVP):} the smallest $\sigma_V^2$ over the whole attainable set.
@@ -427,7 +477,11 @@ Both are solved with \textbf{Lagrange multipliers}.
 \[\vw_{MVP}=\frac{\vu\Ci}{\vu\Ci\vu\T}\]
 \end{result}
 
-\emph{Proof sketch:} $F=\vw\vC\vw\T-\lambda\vu\vw\T$. Setting $\partial F/\partial w_i=0$ gives $2\vw\vC=\lambda\vu$, so $\vw=\tfrac{\lambda}{2}\vu\Ci$. Choose $\lambda$ so that $\vu\vw\T=1$.
+\emph{Proof sketch:} $F=\vw\vC\vw\T-\lambda\vu\vw\T$. Setting $\partial F/\partial w_i=0$ gives $2\vw\vC=\lambda\vu$, so $\vw=\tfrac{\lambda}{2}\vu\Ci$. Choose $\lambda$ so that $\vu\vw\T=1$. The denominator $A=\vu\Ci\vu\T$ is always positive, because $\Ci$ is positive definite.
+
+\emph{Why this is really the minimum:} Lagrange multipliers give only a necessary condition. For a sufficiency proof, take any attainable $\vw=\vw_{MVP}+\boldsymbol d$, so that $\vu\boldsymbol d\T=0$. Since $\vw_{MVP}\vC=\vu/A$, the cross term vanishes:
+\[\vw\vC\vw\T=\frac1A+\frac{2\,\vu\boldsymbol d\T}{A}+\boldsymbol d\vC\boldsymbol d\T=\frac1A+\boldsymbol d\vC\boldsymbol d\T\ge\frac1A,\]
+with equality only for $\boldsymbol d=\boldsymbol 0$. So the MVP is the \textbf{unique global} minimum. A by-product: $\Cov(K_{MVP},K_V)=\vw_{MVP}\vC\vw\T=1/A$ for \textbf{every} attainable portfolio $V$.
 
 \begin{result}[Proposition 5.10: Minimum Variance Line]
 {\small
@@ -444,7 +498,22 @@ Then
 The second formula shows the minimum variance line is a \textbf{hyperbola} on the $(\sigma,\mu)$ plane. Its vertex is the MVP, at $\mu_{MVP}=B/A$ and $\sigma^2_{MVP}=1/A$.
 \emph{(This is the same result as Prop.\ 5.10, written with letters for the scalars. It is not printed this way in the book.)}
 
-\emph{Proof sketch:} $G=\vw\vC\vw\T-\lambda\vu\vw\T-\mu\vm\vw\T$ gives $\vw=\tfrac\lambda2\vu\Ci+\tfrac\mu2\vm\Ci$. Substituting into both constraints gives a $2\times2$ linear system in $\lambda,\mu$; solve it with Cramer's rule.
+\emph{Proof sketch:} $G=\vw\vC\vw\T-\lambda\vu\vw\T-\mu\vm\vw\T$ gives $\vw=\tfrac\lambda2\vu\Ci+\tfrac\mu2\vm\Ci$. (Here $\mu$ is a multiplier, not a return.) Substituting into both constraints gives a $2\times2$ linear system in $\lambda,\mu$; solve it with Cramer's rule. The solution is $\lambda/2=(D-B\mu_V)/\Delta$ and $\mu/2=(A\mu_V-B)/\Delta$.
+
+Three points the sketch leaves open:
+\begin{itemize}
+  \item \textbf{$\Delta>0$ unless all $\mu_i$ are equal.} $\langle\boldsymbol x,\boldsymbol y\rangle=\boldsymbol x\Ci\boldsymbol y\T$ is an inner product, so Cauchy--Schwarz gives $B^2\le AD$, with equality only if $\vm$ is a multiple of $\vu$. In that case every portfolio has the same $\mu_V$ and there is no line to find.
+  \item \textbf{Variance formula.} Since $\vw\vC=\tfrac\lambda2\vu+\tfrac\mu2\vm$, multiplying by $\vw\T$ gives $\sigma_V^2=\tfrac\lambda2+\tfrac\mu2\mu_V$. Substituting the solution above gives the boxed formula.
+  \item \textbf{Global minimum.} The argument used for the MVP works again: any other portfolio with the same $\mu_V$ differs by $\boldsymbol d$ with $\vu\boldsymbol d\T=\vm\boldsymbol d\T=0$, so the cross term vanishes and the variance rises by $\boldsymbol d\vC\boldsymbol d\T$.
+\end{itemize}
+
+\begin{intuition}
+The whole line is the MVP plus a scaled \textbf{tilt}:
+\[\vw=\vw_{MVP}+(\mu_V-\mu_{MVP})\,\boldsymbol z,\qquad \boldsymbol z=\frac{A\,\vm\Ci-B\,\vu\Ci}{\Delta}.\]
+The tilt $\boldsymbol z$ has weights summing to 0 (it costs nothing), expected return 1, variance $A/\Delta$, and zero covariance with the MVP. Uncorrelated risks add like Pythagoras:
+\[\sigma_V^2=\frac1A+\frac A\Delta\,(\mu_V-\mu_{MVP})^2.\]
+So $1/A$ is the risk you cannot avoid, and the second term is the price of asking for a return different from $\mu_{MVP}$. This is why the curve is a hyperbola. Far from the vertex the first term is negligible, so the curve approaches the \textbf{asymptotes} $\mu=\mu_{MVP}\pm\sqrt{\Delta/A}\,\sigma$.
+\end{intuition}
 
 \subsubsection{Example 5.10 (three securities): the main worked example}
 
@@ -464,14 +533,15 @@ $\boldsymbol i$ & $\boldsymbol{\mu_i}$ & $\boldsymbol{\sigma_i}$ & \textbf{\colo
 \[\vC\approx\begin{bmatrix}0.0784&-0.0067&0.0175\\-0.0067&0.0576&0.0120\\0.0175&0.0120&0.0625\end{bmatrix},\quad \Ci\approx\begin{bmatrix}13.954&2.544&-4.396\\2.544&18.548&-4.274\\-4.396&-4.274&18.051\end{bmatrix}\]}
 
 \begin{itemize}
-  \item $\vu\Ci\approx[12.102\ \ 16.818\ \ 9.382]$, $A\approx38.302$
-  \item $\vm\Ci\approx[0.898\ \ 2.182\ \ 2.530]$, $D\approx0.923$, $B\approx5.609$
+  \item $\vu\Ci\approx[12.102\ \ 16.818\ \ 9.382]$, $A\approx38.303$
+  \item $\vm\Ci\approx[0.898\ \ 2.182\ \ 2.530]$, $D\approx0.923$, $B\approx5.609$, $\Delta\approx3.888$
   \item \textbf{MVP:} $\vw\approx[0.316\ \ 0.439\ \ 0.245]$, $\mu_V\approx0.146$, $\sigma_V\approx0.162$
   \item \textbf{Min-variance line:} $\vw\approx[1.578-8.614\mu_V,\ \ 0.845-2.769\mu_V,\ \ -1.422+11.384\mu_V]$
   \item $\sigma_V\approx\sqrt{0.237-2.885\mu_V+9.850\mu_V^2}$
+  \item \textbf{Tilt:} $\boldsymbol z\approx[-8.615\ \ {-2.770}\ \ 11.385]$: short securities 1 and 2, long security 3. Asymptote slope $\sqrt{\Delta/A}\approx0.319$.
 \end{itemize}
 
-(All of these numbers were re-run in Python and match the book.)
+(These are the book's figures, and they were all re-run in Python. The book's $A$, line coefficients and $9.850$ carry small rounding errors from rounded intermediate values. At full precision $A=38.303$, the line coefficients are $-8.615$, $-2.770$ and $11.385$, and the quadratic coefficient is $9.851$. The differences do not matter in practice.)
 
 \subsection{Visualising the attainable set (Examples 5.11, 5.12)}
 
@@ -487,11 +557,15 @@ $\boldsymbol i$ & $\boldsymbol{\mu_i}$ & $\boldsymbol{\sigma_i}$ & \textbf{\colo
 \textbf{Picture 2: the risk--expected return plane, i.e.\ the Markowitz bullet.}
 \begin{itemize}
   \item The whole attainable set (with shorting) is the region to the \textbf{right} of the min-variance hyperbola: the \textbf{Markowitz bullet}.
-  \item The weight plane gets \emph{folded} along the min-variance line onto this region. So each interior point of the bullet corresponds to \textbf{two} portfolios, and each boundary point to exactly one.
-  \item \textbf{Without short selling} (Example 5.12) the region shrinks to the blue area. Its boundary is made of pieces of the two-security curves.
+  \item With three securities, the weight plane gets \emph{folded} along the min-variance line onto this region. So each interior point of the bullet corresponds to \textbf{two} portfolios, and each boundary point to exactly one. In general, fixing $\mu_V$ and $\sigma_V$ leaves an $(n-3)$-dimensional sphere of portfolios: two points when $n=3$, a continuum when $n\ge4$. With $n=2$ there is no interior at all, only the line.
+  \item \textbf{Without short selling} (Example 5.12) the region shrinks to the blue area. Its left boundary follows the min-variance line for as long as that line stays inside the triangle (here $0.125\lesssim\mu_V\lesssim0.183$), then continues along the two-security curves 1--2 and 2--3. Its right boundary is made of two-security curves.
 \end{itemize}
 
 \fig{fig4_markowitz_bullet}{0.85}{Markowitz bullet (cf.\ Figs.\ 5.7, 5.8, 5.10). Grey $=$ attainable with short selling; blue $=$ without. The no-short-selling regions are computed exactly, not sketched.}
+
+\begin{deeper}{long-only frontiers}
+With $w_i\ge0$ and $n\ge3$ there is no single closed formula. The frontier is \textbf{piecewise}: between ``corner portfolios'' the set of securities held is fixed, and on each piece the solution is Prop.\ 5.10 applied to just those securities. Markowitz's \textbf{critical line algorithm} traces these pieces exactly.
+\end{deeper}
 
 \subsection{Efficient frontier (\S5.3.2)}
 
@@ -504,10 +578,12 @@ Security/portfolio 1 \textbf{dominates} 2 if
 A portfolio is \textbf{efficient} if no other portfolio dominates it. The set of efficient portfolios is the \textbf{efficient frontier}.
 \end{result}
 
+With these weak inequalities, two portfolios at the same $(\sigma,\mu)$ point dominate each other, and many texts require at least one inequality to be strict. This changes nothing here: such pairs occur only inside the bullet, where neither is efficient, and each frontier point is a unique portfolio.
+
 Key facts:
 \begin{itemize}
-  \item The efficient frontier is a \textbf{subset of the min-variance line}: the \textbf{upper half}, starting at the MVP ($\mu_V\ge\mu_{MVP}$). This is the blue curve in Figure E.
-  \item Remark 5.4: a \textbf{dominated} security is not useless. Combined with the dominating one, it can \textbf{reduce risk} below either of them (Fig.\ 5.9).
+  \item The efficient frontier is a \textbf{subset of the min-variance line}: the \textbf{upper half}, starting at the MVP ($\mu_V\ge\mu_{MVP}$). This is the blue curve in Figure E. The lower half is excluded because each of its points has a mirror image on the upper half with the same $\sigma$ and a higher $\mu$.
+  \item Remark 5.4: a \textbf{dominated} security is not useless. Combined with the dominating one, it can \textbf{reduce risk} below either of them (Fig.\ 5.9), provided the correlation is below the threshold in Corollary 5.6.
   \item Which efficient portfolio to pick depends on the investor's \textbf{risk appetite}. Theory says only: \emph{pick something on the frontier.}
 \end{itemize}
 
@@ -517,7 +593,7 @@ If $\vw'$ and $\vw''$ are any two different portfolios on the min-variance line,
 \end{result}
 
 \begin{practice}
-However many securities there are, the min-variance line has the \textbf{same shape as a two-security line}. Any two frontier ``funds'' can replicate every other frontier portfolio.
+However many securities there are, the min-variance line has the \textbf{same shape as a two-security line}. Any two min-variance ``funds'' can replicate every other portfolio on the line, although $c$ may fall outside $[0,1]$, which means shorting one of the funds.
 \end{practice}
 
 \begin{result}[Proposition 5.12: tangency condition]
@@ -532,19 +608,36 @@ for some $\gamma>0$ and real $\mu$.
 
 This slope is a \textbf{Sharpe ratio} (with $\mu$ playing the role of $r_F$). So Prop.\ 5.12 is the maths behind ``the tangency portfolio maximises the Sharpe ratio.''
 
+\begin{intuition}
+Read (5.17) one security at a time: $\mu_i-\mu=\gamma\,\Cov(K_i,K_V)$. Also, the marginal effect of security $i$ on portfolio risk is $\partial\sigma_V/\partial w_i=(\vw\vC)_i/\sigma_V=\Cov(K_i,K_V)/\sigma_V$. So at an efficient portfolio, \textbf{every security offers the same extra return per unit of marginal risk}. If one offered more, you could shift weight into it and improve the portfolio. This is pure optimisation, with no equilibrium argument yet, and it is the seed of CAPM.
+\end{intuition}
+
+\begin{deeper}{the intercept $\mu$ is itself a portfolio's return}
+For any frontier portfolio $P\ne$ MVP, there is a unique portfolio $Z$ on the min-variance line with $\Cov(K_P,K_Z)=0$. Its expected return is $\mu_Z=(B\mu_P-D)/(A\mu_P-B)$, and this equals the tangent's intercept $\mu$. Dividing $\mu_i-\mu_Z=\gamma\Cov(K_i,K_P)$ by the same equation for $P$ itself gives
+\[\mu_i=\mu_Z+\beta_{i,P}\,(\mu_P-\mu_Z),\qquad \beta_{i,P}=\frac{\Cov(K_i,K_P)}{\sigma_P^2},\]
+which is an SML with no risk-free asset. In Example 5.10, $\mu_P=0.25$ gives $\mu_Z\approx0.121$. This is the basis of Black's zero-beta CAPM.
+\end{deeper}
+
 % =====================================================================
 \section{Section 5.4: Capital Asset Pricing Model (CAPM)}
 
-\textbf{Motivation:} with $n=1000$ securities, $\vC$ has $10^6$ entries. Estimating and inverting it is hard. CAPM gives a simpler structure.
+\textbf{Motivation:} with $n=1000$ securities, $\vC$ has $10^6$ entries ($500{,}500$ distinct ones, by symmetry). Inverting it is now routine; \textbf{estimating} it is the hard part. With $n$ or fewer return observations, the sample covariance matrix is not even invertible. CAPM gives a simpler structure in which each security's expected return depends only on its beta.
 
-\textbf{Assumption:} all investors use the \textbf{same} $\mu_i$, $\sigma_i$, $\rho_{ij}$, so everyone computes the \textbf{same efficient frontier}. They differ only in risk appetite.
+\textbf{Assumptions.} The book states the key one: all investors use the \textbf{same} $\mu_i$, $\sigma_i$, $\rho_{ij}$ and decide using only these, so everyone computes the \textbf{same efficient frontier}. They differ only in risk appetite. The argument also relies on the following:
+\begin{itemize}
+  \item a single period, shared by all investors;
+  \item unlimited borrowing and lending at one rate $r_F$;
+  \item no taxes, transaction costs or limits on short selling;
+  \item investors who take prices as given, and a fixed supply of securities.
+\end{itemize}
 
 \subsection{Capital Market Line (CML)}
 \begin{itemize}
   \item Add a risk-free asset with return $r_F$. Combining $r_F$ with any risky portfolio gives straight half-lines from $(0,r_F)$ (Prop.\ 5.7).
   \item The new efficient frontier is the half-line from $(0,r_F)$ that is \textbf{tangent to the Markowitz bullet}. This is the \textbf{Capital Market Line}.
   \item The tangency point $(\sigma_M,\mu_M)$ is the \textbf{market portfolio} $M$. Every investor holds risky assets in the \textbf{same proportions} as $M$, so $M$ must contain every risky security in proportion to its share of total market value.
-  \item The argument needs $r_F$ to be not too high (below $\mu_{MVP}$), so that a tangent exists.
+  \item The argument needs $r_F$ to be not too high: precisely $r_F<\mu_{MVP}$, as shown below.
+  \item A tangency portfolio computed from arbitrary inputs can contain short positions, but the market portfolio cannot, since market values are positive. In equilibrium, prices adjust until all weights are positive. (They already are in Example 5.13.)
 \end{itemize}
 
 \begin{result}[Capital Market Line]
@@ -558,14 +651,82 @@ From (5.17) with $\mu=r_F$:
 \[\gamma\vw_M=(\vm-r_F\vu)\Ci,\qquad \text{then normalise so that }\vu\vw_M\T=1\]
 \end{result}
 
+\begin{deeper}{closed form, and why $r_F<\mu_{MVP}$}
+Multiplying $\gamma\vw_M=(\vm-r_F\vu)\Ci$ by $\vu\T$ gives $\gamma=B-Ar_F$. Hence
+\[\vw_M=\frac{(\vm-r_F\vu)\Ci}{B-Ar_F},\qquad \SR_M^2=(\vm-r_F\vu)\Ci(\vm-r_F\vu)\T=D-2Br_F+Ar_F^2.\]
+The sign of $\gamma$ decides everything, and $\gamma>0$ exactly when $r_F<B/A=\mu_{MVP}$:
+\begin{itemize}
+  \item \textbf{$r_F<\mu_{MVP}$:} the tangent touches the upper branch, and investors hold $M$ long. This is the CAPM case.
+  \item \textbf{$r_F=\mu_{MVP}$:} $(\vm-r_F\vu)\Ci$ sums to zero, so it cannot be normalised. The line from $(0,r_F)$ is the asymptote and never touches the bullet.
+  \item \textbf{$r_F>\mu_{MVP}$:} the tangent touches the \textbf{lower} branch at a portfolio $T$. The best strategy is to short $T$ and lend the proceeds, which gives the upward line in the right panel of Figure G. Every investor would be net short risky assets, which is impossible in aggregate, so the market cannot clear.
+\end{itemize}
+\end{deeper}
+
 \textbf{Example 5.13} (Example 5.10 data, $r_F=5\%$): $\gamma\vw\approx[0.293\ \ 1.341\ \ 2.061]$, so $\gamma\approx3.694$ and
 \[\vw_M\approx[0.079\ \ 0.363\ \ 0.558]\]
-(The book doesn't print these, but the code gives $\mu_M\approx0.174$ and $\sigma_M\approx0.183$.)
+The book stops at $\vw_M$. Continuing gives $\mu_M\approx0.174$, $\sigma_M\approx0.183$ and $\SR_M\approx0.677$, and the closed forms agree: $B-Ar_F\approx3.694$ and $\sqrt{D-2Br_F+Ar_F^2}\approx0.677$.
 
 \fig{fig6_cml}{0.85}{Capital Market Line (cf.\ Fig.\ 5.11).}
 
+\begin{figure}[htbp]\centering\small
+\pgfplotsset{
+  bullet axis/.style={
+    width=0.47\textwidth, height=0.44\textwidth,
+    xmin=0, xmax=0.4, ymin=0, ymax=0.34,
+    axis lines=left, grid=major, grid style={gray!25},
+    xlabel={$\sigma$}, ylabel={$\mu$},
+    tick label style={font=\scriptsize,
+      /pgf/number format/fixed, /pgf/number format/precision=2},
+    title style={font=\footnotesize},
+  },
+}
+\begin{tikzpicture}
+\begin{axis}[bullet axis, title={$r_F=5\%<\mu_{MVP}$: upper tangent}]
+\addplot[black!65, thick, domain=-0.1:0.4, samples=200, variable=\t]
+  ({sqrt(0.237392-2.885439*\t+9.851344*\t*\t)},{\t});
+\addplot[figblue, very thick, domain=0:0.4, samples=2] {0.05+0.676624*x};
+\addplot[only marks, mark=*, mark size=2pt, black] coordinates {(0,0.05)};
+\addplot[only marks, mark=*, mark size=2.5pt, figorange] coordinates {(0.18315,0.17393)};
+\node[anchor=north west, font=\scriptsize] at (axis cs:0.185,0.17) {$M$};
+\node[anchor=west, font=\scriptsize] at (axis cs:0.005,0.03) {$r_F$};
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[bullet axis, title={$r_F=20\%>\mu_{MVP}$: lower tangent}]
+\addplot[black!65, thick, domain=-0.1:0.4, samples=200, variable=\t]
+  ({sqrt(0.237392-2.885439*\t+9.851344*\t*\t)},{\t});
+\addplot[figorange, thick, dashed, domain=0:0.4, samples=2] {0.20-0.459729*x};
+\addplot[figblue, very thick, domain=0:0.4, samples=2] {0.20+0.459729*x};
+\addplot[only marks, mark=*, mark size=2pt, black] coordinates {(0,0.20)};
+\addplot[only marks, mark=*, mark size=2.5pt, figorange] coordinates {(0.22413,0.09696)};
+\node[anchor=north, font=\scriptsize] at (axis cs:0.224,0.09) {$T$};
+\node[anchor=north west, font=\scriptsize] at (axis cs:0.003,0.195) {$r_F$};
+\node[anchor=east, font=\scriptsize] at (axis cs:0.17,0.315) {short $T$, lend};
+\end{axis}
+\end{tikzpicture}
+\caption{Why the risk-free rate must lie below $\mu_{MVP}\approx0.146$ (Example 5.10 data; \emph{beyond the book}). Left: the CML touches the bullet at $M$. Right: the only tangent slopes downward to $T$, and the best attainable line (blue) lies entirely above the bullet and requires a net short position in risky assets.}
+\end{figure}
+
+\begin{deeper}{separation made precise}
+Let an investor maximise $\mu-\tfrac a2\sigma^2$, where $a>0$ measures risk aversion, by choosing risky positions $\boldsymbol x$ and putting the rest at $r_F$. The objective $r_F+\boldsymbol x(\vm-r_F\vu)\T-\tfrac a2\boldsymbol x\vC\boldsymbol x\T$ is concave, and the first-order condition gives
+\[\boldsymbol x=\frac1a(\vm-r_F\vu)\Ci=y\,\vw_M,\qquad y=\frac{\mu_M-r_F}{a\,\sigma_M^2}.\]
+The \textbf{mix} of risky assets does not depend on $a$; only the \textbf{amount} $y$ does (Tobin's separation theorem). For Example 5.13:
+
+\begin{center}\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{cccc}
+\toprule
+\textbf{Risk aversion $a$} & \textbf{Fraction in $M$, $y$} & $\boldsymbol\mu$ & $\boldsymbol\sigma$\\
+\midrule
+2 & 1.85 (borrows) & 0.279 & 0.338\\
+4 & 0.92 & 0.164 & 0.169\\
+8 & 0.46 & 0.107 & 0.085\\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{deeper}
+
 \begin{practice}
-This is the theory behind \textbf{index investing}. The market portfolio is approximated by a broad index (e.g.\ Nifty 50 / Nifty 500 in India, S\&P 500 in the US). A conservative investor holds some index fund plus liquid/G-sec funds (lending part of the CML). An aggressive one leverages the index (borrowing part).
+This is the theory behind \textbf{index investing}. The market portfolio is approximated by a broad index (e.g.\ Nifty 500 or, more narrowly, Nifty 50 in India, S\&P 500 in the US). This is only a proxy: the theoretical $M$ contains \textbf{every} risky asset, including bonds and property. A conservative investor holds some index fund plus liquid/G-sec funds (lending part of the CML). An aggressive one leverages the index (borrowing part).
 \end{practice}
 
 \subsection{Beta factor}
@@ -582,8 +743,10 @@ Residual: $\varepsilon_V=K_V-(\alpha_V+\beta_VK_M)$. Minimise $\E(\varepsilon^2)
 \[\sigma_V^2=\underbrace{\Var(\varepsilon_V)}_{\text{residual / diversifiable}}+\underbrace{\beta_V^2\sigma_M^2}_{\text{systematic / undiversifiable}}\]
 \end{result}
 
+\emph{Why the variances add:} the normal equations say exactly that $\E(\varepsilon_V)=0$ and $\Cov(\varepsilon_V,K_M)=0$, so $\beta_VK_M$ and $\varepsilon_V$ are uncorrelated. The systematic share of variance is $\beta_V^2\sigma_M^2/\sigma_V^2=\rho_{VM}^2$, the regression's $R^2$.
+
 \begin{itemize}
-  \item \textbf{Diversifiable (residual) risk} can be removed by diversifying. For the market itself, $\Var(\varepsilon_M)=0$.
+  \item \textbf{Diversifiable (residual) risk} can be removed by holding the market. For the market itself, $\Var(\varepsilon_M)=0$.
   \item \textbf{Systematic risk} ($\propto\beta_V^2$) \textbf{cannot} be diversified away. In CAPM, \textbf{only systematic risk earns a premium.}
   \item $\beta>0\to$ tends to move with the market. $\beta<0\to$ tends to move against it.
   \item \textbf{Beta is linear in weights}: $\beta_V=w_1\beta_1+\cdots+w_n\beta_n$. Also $\beta_M=1$ and $\beta_F=0$.
@@ -594,18 +757,30 @@ Residual: $\varepsilon_V=K_V-(\alpha_V+\beta_VK_M)$. Minimise $\E(\varepsilon^2)
 \fig{fig9_diversification}{0.8}{Diversification and the systematic floor (illustrative, \emph{beyond the book}): an equal-weighted portfolio of $n$ securities, each with $\sigma=30\%$ and pairwise $\rho=0.25$. Then $\sigma_V^2=\sigma^2/n+(1-1/n)\rho\sigma^2$. The diversifiable part goes to zero as $n$ grows; the systematic floor $\sqrt\rho\,\sigma$ stays.}
 
 \begin{practice}
-This is why 20--30 well-spread stocks capture most of the diversification benefit, and why a stock's \textbf{beta} (not its total volatility) drives its cost of equity in a DCF / WACC.
+In this illustration 25 stocks already remove 96\% of the removable variance. That is the origin of the ``20--30 stocks'' rule of thumb, but the number is sensitive to inputs: empirical studies have suggested more like 40--50 when stock-specific volatility is high. Separately, a stock's \textbf{beta} (not its total volatility) is what drives its cost of equity in a DCF / WACC.
 \end{practice}
+
+\begin{caution}
+``Residual'' does not mean ``independent''. Regression makes each $\varepsilon_i$ uncorrelated with $K_M$, not with the other residuals. Residuals disappear in a large portfolio only if they are not strongly related to one another, and that is an extra assumption (the \textbf{single-index model}), not a result of CAPM. Sector shocks are the usual counterexample. In fact $\sum_iw_{M,i}\varepsilon_i=0$ always, so residuals must offset each other across the market. In the three-security market of Example 5.13, the residuals of securities 2 and 3 have correlation about $-0.95$.
+\end{caution}
 
 \subsection{Security Market Line (SML)}
 Start from $\gamma\vw_M\vC=\vm-\mu\vu$. For any portfolio $\vw_V$:
 \[\beta_V=\frac{\vw_M\vC\vw_V\T}{\vw_M\vC\vw_M\T}=\frac{\mu_V-\mu}{\mu_M-\mu}.\]
-Plugging in the risk-free asset ($\beta_F=0$, return $r_F$) shows $\mu=r_F$.
+Here $\mu=r_F$ because the CML is the tangent at $M$ and it meets the $\mu$-axis at $r_F$, the reason the book gives in Example 5.13. (The book's \S5.4.3 instead substitutes $\beta_F=0$ and $r_F$ into the formula. That gives the right answer, but the risk-free security is not one of the $n$ securities behind $\vC$, so the tangency argument is the cleaner one.) A portfolio that includes the risk-free asset then follows by linearity.
 
 \begin{result}[Theorem 5.13: Security Market Line (the CAPM equation)]
 \[\mu_V=r_F+(\mu_M-r_F)\,\beta_V \tag{5.19}\]
 \textbf{Risk premium} $=(\mu_M-r_F)\beta_V$: compensation for \textbf{systematic} risk only.
 \end{result}
+
+\begin{intuition}
+Why would only beta be paid? Because investors care about what a security does to \textbf{their portfolio}, which is $M$. The marginal effect of security $i$ on market risk is
+\[\frac{\partial\sigma_M}{\partial w_i}=\frac{\Cov(K_i,K_M)}{\sigma_M}=\beta_i\sigma_M.\]
+A small extra holding funded at $r_F$ earns $\mu_i-r_F$ and costs $\beta_i\sigma_M$ of risk. At the optimum this trade-off must be the same for every security, and it must equal $\SR_M$:
+\[\frac{\mu_i-r_F}{\beta_i\sigma_M}=\frac{\mu_M-r_F}{\sigma_M}\quad\Longleftrightarrow\quad\text{the SML.}\]
+Residual risk is uncorrelated with $K_M$, so it has \textbf{no first-order effect} on $\sigma_M$. That is why it earns nothing. Also $\sum_iw_{M,i}\beta_i=1$, so $w_{M,i}\beta_i$ is security $i$'s share of market variance.
+\end{intuition}
 
 \begin{center}\renewcommand{\arraystretch}{1.35}
 \begin{tabular}{@{}l >{\centering\arraybackslash}p{0.3\textwidth} >{\centering\arraybackslash}p{0.3\textwidth}@{}}
@@ -621,7 +796,32 @@ Plugging in the risk-free asset ($\beta_F=0$, return $r_F$) shows $\mu=r_F$.
 \end{tabular}
 \end{center}
 
+\textbf{One formula behind both lines.} Since $\beta_V=\rho_{VM}\sigma_V/\sigma_M$, the SML can be written as
+\[\mu_V-r_F=\rho_{VM}\,\SR_M\,\sigma_V.\]
+Efficient portfolios have $\rho_{VM}=1$, which is the CML. Anything else has $\rho_{VM}<1$ and sits below the CML, and its Sharpe ratio is only $\rho_{VM}\SR_M$.
+
 \fig{fig8_cml_vs_sml}{0.95}{CML vs SML (cf.\ Fig.\ 5.13). The same securities and portfolios: scattered \textbf{inside} the bullet on the left, all \textbf{on} the SML on the right.}
+
+\subsubsection{Example 5.13 continued: the three securities under CAPM (beyond the book)}
+
+\begin{center}\small\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}cccccccccc@{}}
+\toprule
+$\boldsymbol i$ & $\boldsymbol{\mu_i}$ & $\boldsymbol{\sigma_i}$ & $\boldsymbol{\beta_i}$ & $\boldsymbol{\rho_{iM}}$ & \textbf{systematic} & \textbf{residual} & \textbf{Sharpe} & \textbf{capital} & \textbf{risk}\\
+ & & & & & \textbf{share of $\boldsymbol{\sigma_i^2}$} & $\boldsymbol\sigma$ & \textbf{ratio} & $\boldsymbol{w_{M,i}}$ & $\boldsymbol{w_{M,i}\beta_i}$\\
+\midrule
+1 & 0.10 & 0.28 & 0.403 & 0.264 & 7.0\%  & 0.270 & 0.179 & 7.9\%  & 3.2\%\\
+2 & 0.15 & 0.24 & 0.807 & 0.616 & 37.9\% & 0.189 & 0.417 & 36.3\% & 29.3\%\\
+3 & 0.20 & 0.25 & 1.210 & 0.887 & 78.6\% & 0.116 & 0.600 & 55.8\% & 67.5\%\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+  \item \textbf{Total risk is not what is priced.} Security 1 has the \textbf{highest} $\sigma$ and the \textbf{lowest} expected return, because 93\% of its variance is residual.
+  \item Each row satisfies the SML, for example $0.05+0.403\times0.1239\approx0.10$. Each Sharpe ratio equals $\rho_{iM}\times0.677$.
+  \item Security 3 is 55.8\% of the capital but 67.5\% of the market's variance.
+\end{itemize}
 
 \subsection{Equilibrium and mispricing}
 \begin{itemize}
@@ -633,11 +833,76 @@ Plugging in the risk-free asset ($\beta_F=0$, return $r_F$) shows $\mu=r_F$.
   \end{itemize}
 \end{itemize}
 
+\begin{deeper}{CAPM as a pricing formula}
+Why does a price change move $\mu_V$? Because $\mu_V=\E(S(1))/S(0)-1$, and $\beta_V=\Cov(S(1),K_M)/(S(0)\sigma_M^2)$ also depends on $S(0)$. Substituting both into the SML and solving for $S(0)$ gives
+\[S(0)=\frac{\E(S(1))-\lambda\,\Cov(S(1),K_M)}{1+r_F},\qquad\lambda=\frac{\mu_M-r_F}{\sigma_M^2}.\]
+The numerator is a \textbf{certainty equivalent}: the expected payoff, less a charge for its covariance with the market. Example: $\E(S(1))=110$, $\Cov(S(1),K_M)=1.8$, $r_F=5\%$, $\mu_M=8\%$, $\sigma_M^2=0.0162$ gives $\lambda\approx1.85$ and $S(0)\approx101.59$. The implied return is then $8.28\%$, with $\beta\approx1.09$, which lies on the SML as it should.
+\end{deeper}
+
 \begin{practice}
-The gap $\mu_V-[r_F+(\mu_M-r_F)\beta_V]$ is \textbf{Jensen's alpha}, used to judge whether a fund manager added value. (That is related to, but not the same as, the regression intercept $\alpha_V$ above.)
+The gap $\mu_V-[r_F+(\mu_M-r_F)\beta_V]$ is \textbf{Jensen's alpha}, used to judge whether a fund manager added value. It is not the same as the regression intercept $\alpha_V$ above: $\alpha_V=\alpha_J+r_F(1-\beta_V)$, and the two coincide only when $\beta_V=1$ or $r_F=0$. Jensen's alpha is the intercept when \textbf{excess} returns are regressed, $K_V-r_F$ on $K_M-r_F$. That is the regression used in practice.
 \end{practice}
 
 \textbf{Common point of characteristic lines:} under CAPM, $\alpha_V=\mu_V-\beta_V\mu_M=r_F(1-\beta_V)$. So every characteristic line $y=r_F+\beta_V(x-r_F)$ passes through the \textbf{common point $(r_F,r_F)$}.
+
+% =====================================================================
+\section{Beyond the book: where the theory meets reality}
+
+\subsection{Estimation error}
+The chapter treats $\vm$ and $\vC$ as known. In practice they are estimated, and the optimiser is very sensitive to the errors. It tends to overweight whatever has been overestimated, which is why Michaud called mean-variance optimisers ``error maximisers''.
+
+\textbf{A small example.} Take two securities with $\sigma=20\%$, $\rho=0.9$, $r_F=5\%$ and $\mu_1=\mu_2=10\%$. The tangency weights are $(50\%,50\%)$. Now change the estimates slightly:
+
+\begin{center}\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{ccc}
+\toprule
+\textbf{$\boldsymbol{\mu_1}$ estimate} & $\boldsymbol{w_1}$ & $\boldsymbol{w_2}$\\
+\midrule
+10\% & 50\% & 50\%\\
+11\% & 136\% & $-36\%$\\
+12\% & 208\% & $-108\%$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Highly correlated securities are near-substitutes, so a tiny difference in their means looks like a nearly riskless opportunity. Example 5.13 is much better behaved, because its correlations are low, but even there moving $\mu_1$ by $\pm2\%$ moves its weight from 7.9\% to 0.4\% or 14.5\%.
+
+\textbf{Means are the main problem.} The standard error of an estimated mean is $\sigma/\sqrt{T}$ with $T$ in years, regardless of how often you sample: with $\sigma=20\%$ and 10 years of data it is about 6\%, as large as the premium being estimated. Variances and covariances improve with higher-frequency data, as Merton pointed out. Chopra and Ziemba found errors in means to be roughly an order of magnitude more costly than errors in variances.
+
+\textbf{Common remedies:}
+\begin{itemize}
+  \item \textbf{Avoid estimating means:} use the MVP or long-only low-risk portfolios, which need only $\vC$.
+  \item \textbf{Shrink the estimates:} Ledoit--Wolf shrinkage of $\vC$ towards a structured target; Black--Litterman, which starts from the means implied by CAPM and adds views.
+  \item \textbf{Constrain the weights:} long-only limits and position caps. Jagannathan and Ma show that these act like shrinkage.
+  \item \textbf{Use a benchmark:} DeMiguel, Garlappi and Uppal found that many optimised portfolios fail to reliably beat equal weights ($1/n$) out of sample.
+\end{itemize}
+
+\subsection{Does CAPM hold?}
+\begin{itemize}
+  \item \textbf{The SML is a mathematical identity.} The proof used only one fact: $M$ is mean-variance efficient. Any efficient benchmark gives an exact linear relation, and an exact relation implies the benchmark is efficient. CAPM's economic content is the claim that \textbf{the market portfolio is efficient}. Roll's critique is that testing this requires the true market portfolio, which we do not observe; an index is only a proxy.
+  \item \textbf{The empirical SML is too flat.} Low-beta stocks have tended to earn more than CAPM predicts, and high-beta stocks less (Black, Jensen and Scholes; Frazzini and Pedersen).
+  \item \textbf{Beta is not the whole story.} Size and value characteristics help explain average returns beyond beta (Fama and French).
+  \item \textbf{Betas are estimates.} They vary with the sample window, return frequency and proxy index, and they drift over time. Figure H shows the sampling noise alone.
+\end{itemize}
+CAPM remains useful as a baseline and for its central insight, that \textbf{risk you can diversify away should not earn a reward}.
+
+\subsection{Main extensions}
+\begin{itemize}
+  \item \textbf{Different borrowing and lending rates} ($r_L<r_B$): the frontier has three parts: a line from $r_L$ to its tangency point, an arc of the bullet, and a line from the $r_B$ tangency point. There is no longer one risky portfolio that suits everyone.
+  \item \textbf{No risk-free asset:} Black's zero-beta CAPM replaces $r_F$ by $\mu_Z$ (see \S5.3.2 above).
+  \item \textbf{Several risk factors:} the Arbitrage Pricing Theory gives $\mu_i=r_F+\sum_k\beta_{ik}\lambda_k$, from no-arbitrage rather than from mean-variance preferences.
+  \item \textbf{Several periods:} Merton's intertemporal CAPM adds hedging demands against changes in future investment opportunities.
+\end{itemize}
+
+\subsection{Further reading}
+{\small
+\begin{itemize}
+  \item Markowitz (1952), Portfolio selection, \emph{J.\ Finance}. Tobin (1958), Liquidity preference as behavior towards risk, \emph{Rev.\ Econ.\ Studies}.
+  \item Sharpe (1964), \emph{J.\ Finance}; Lintner (1965), \emph{Rev.\ Econ.\ Statistics}: the original CAPM papers. Black (1972), \emph{J.\ Business}: zero-beta CAPM.
+  \item Merton (1972), An analytic derivation of the efficient portfolio frontier, \emph{J.\ Financial and Quantitative Analysis}: the classic derivation of this algebra.
+  \item Roll (1977), \emph{J.\ Financial Economics}. Fama \& French (1992), \emph{J.\ Finance}. Frazzini \& Pedersen (2014), \emph{J.\ Financial Economics}.
+  \item Michaud (1989), \emph{Financial Analysts J.}. Chopra \& Ziemba (1993), \emph{J.\ Portfolio Management}. DeMiguel, Garlappi \& Uppal (2009), \emph{Rev.\ Financial Studies}.
+\end{itemize}}
 
 % =====================================================================
 \section{One-page formula sheet}
@@ -659,19 +924,21 @@ The gap $\mu_V-[r_F+(\mu_M-r_F)\beta_V]$ is \textbf{Jensen's alpha}, used to jud
 10 & $\mu_V=\vm\vw\T$, $\sigma_V^2=\vw\vC\vw\T$ & (5.15), (5.16)\\
 11 & MVP: $\vw=\dfrac{\vu\Ci}{\vu\Ci\vu\T}$ & Prop.\ 5.9\\
 12 & Min-var line: $\vw=\dfrac{(D-B\mu_V)\vu\Ci+(A\mu_V-B)\vm\Ci}{AD-B^2}$ & Prop.\ 5.10\\
-13 & $\sigma_V^2=\dfrac{A\mu_V^2-2B\mu_V+D}{AD-B^2}$ & from Prop.\ 5.10\\
+13 & $\sigma_V^2=\dfrac{A\mu_V^2-2B\mu_V+D}{AD-B^2}=\dfrac1A+\dfrac{A}{\Delta}\Big(\mu_V-\dfrac BA\Big)^2$ & from Prop.\ 5.10\\
 14 & Efficient portfolio: $\gamma\vw\vC=\vm-\mu\vu$, $\gamma>0$ & (5.17)\\
-15 & Market portfolio: $\vw_M\propto(\vm-r_F\vu)\Ci$, normalised & \S5.4.1\\
+15 & Market portfolio: $\vw_M=\dfrac{(\vm-r_F\vu)\Ci}{B-Ar_F}$, needs $r_F<\dfrac BA$ & \S5.4.1\\
 16 & CML: $\mu=r_F+\dfrac{\mu_M-r_F}{\sigma_M}\sigma$ & (5.18)\\
 17 & $\beta_V=\dfrac{\Cov(K_V,K_M)}{\sigma_M^2}$, $\alpha_V=\mu_V-\beta_V\mu_M$ & Def.\ 5.3\\
 18 & $\sigma_V^2=\Var(\varepsilon_V)+\beta_V^2\sigma_M^2$ & \S5.4.2\\
 19 & $\beta_V=\sum w_i\beta_i$ & \S5.4.2\\
 20 & SML: $\mu_V=r_F+(\mu_M-r_F)\beta_V$ & (5.19)\\
+21 & Max Sharpe: $\SR_M^2=D-2Br_F+Ar_F^2$ & beyond book\\
+22 & Jensen: $\alpha_J=\mu_V-[r_F+(\mu_M-r_F)\beta_V]$, $\alpha_V=\alpha_J+r_F(1-\beta_V)$ & beyond book\\
 \bottomrule
 \end{tabular}
 \end{center}
 
-\noindent where $A=\vu\Ci\vu\T$, $B=\vu\Ci\vm\T$, $D=\vm\Ci\vm\T$.
+\noindent where $A=\vu\Ci\vu\T$, $B=\vu\Ci\vm\T$, $D=\vm\Ci\vm\T$, $\Delta=AD-B^2$.
 
 % =====================================================================
 \Needspace{12\baselineskip}
@@ -683,8 +950,9 @@ The gap $\mu_V-[r_F+(\mu_M-r_F)\beta_V]$ is \textbf{Jensen's alpha}, used to jud
   \item \textbf{``No short selling''} $\to$ clip $s_0$ to $[0,1]$ (Theorem 5.5). With $n\ge3$, the long-only frontier is \textbf{not} given by Prop.\ 5.10; it needs constrained optimisation.
   \item \textbf{The efficient frontier is only the upper half} of the min-variance line.
   \item \textbf{CML vs SML:} use $\sigma$ on the CML (efficient portfolios only) and $\beta$ on the SML (anything).
-  \item Sanity checks: $\beta_M=1$, $\beta_F=0$, $\sigma^2_{MVP}=1/A$, $\mu_{MVP}=B/A$.
-  \item When you apply Corollary 5.6, label the securities so that $\sigma_1\le\sigma_2$ first.
+  \item Sanity checks: $\beta_M=1$, $\beta_F=0$, $\sigma^2_{MVP}=1/A$, $\mu_{MVP}=B/A$, $\gamma=B-Ar_F>0$, $\sum_iw_{M,i}\beta_i=1$.
+  \item When you apply Corollary 5.6, label the securities so that $\sigma_1\le\sigma_2$ first. In case 3 the security shorted is the \textbf{riskier} one, security 2.
+  \item \textbf{Total risk is not systematic risk:} a stock can have high $\sigma$ and low $\beta$. See security 1 in Example 5.13 continued.
 \end{enumerate}
 
 \end{document}

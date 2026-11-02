@@ -1,113 +1,282 @@
-\contentsline {part}{I\hspace {1em}Counting Fundamentals}{6}{part.1}%
-\contentsline {chapter}{\numberline {1}The Master Decision: What Kind of Problem Is This?}{7}{chapter.1}%
-\contentsline {chapter}{\numberline {2}Fundamental Principles}{8}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Addition principle (OR)}{8}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Multiplication principle (AND)}{8}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Complement principle}{8}{section.2.3}%
-\contentsline {chapter}{\numberline {3}Permutations (Arrangements)}{10}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Core formulas}{10}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Number formation and divisibility}{10}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Restriction toolkit}{11}{section.3.3}%
-\contentsline {section}{\numberline {3.4}Rank of a word (dictionary order)}{11}{section.3.4}%
-\contentsline {chapter}{\numberline {4}Combinations (Selections)}{13}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Core facts}{13}{section.4.1}%
-\contentsline {section}{\numberline {4.2}``At least'' selections -- split into exact cases}{13}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Selecting from identical objects}{13}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Number of divisors}{14}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Selection of letters from a word with repeats}{14}{section.4.5}%
-\contentsline {chapter}{\numberline {5}Circular Arrangements}{15}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Why $(n-1)!$}{15}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Necklaces and garlands}{15}{section.5.2}%
-\contentsline {chapter}{\numberline {6}Distributions: Stars \& Bars and Grouping}{17}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Identical objects into distinct boxes -- stars and bars}{17}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Distinct objects into groups}{17}{section.6.2}%
-\contentsline {section}{\numberline {6.3}The four distribution cases (summary)}{18}{section.6.3}%
-\contentsline {chapter}{\numberline {7}Inclusion--Exclusion}{19}{chapter.7}%
-\contentsline {section}{\numberline {7.1}The formula}{19}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Onto (surjective) functions}{19}{section.7.2}%
-\contentsline {chapter}{\numberline {8}Derangements}{21}{chapter.8}%
-\contentsline {chapter}{\numberline {9}Geometry and Grid Counting}{22}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Points, lines, triangles}{22}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Rectangles and squares}{22}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Lattice paths}{22}{section.9.3}%
-\contentsline {chapter}{\numberline {10}Catalan Numbers}{24}{chapter.10}%
-\contentsline {chapter}{\numberline {11}Pigeonhole Principle}{25}{chapter.11}%
-\contentsline {chapter}{\numberline {12}Number-Based Counting}{26}{chapter.12}%
-\contentsline {section}{\numberline {12.1}Sum of all numbers formed by permuting digits}{26}{section.12.1}%
-\contentsline {section}{\numberline {12.2}Highest power of a prime in $n!$ (Legendre)}{26}{section.12.2}%
-\contentsline {part}{II\hspace {1em}Advanced Counting}{28}{part.2}%
-\contentsline {chapter}{\numberline {13}Recurrence Relations}{29}{chapter.13}%
-\contentsline {section}{\numberline {13.1}The Fibonacci family}{29}{section.13.1}%
-\contentsline {section}{\numberline {13.2}Other classic recurrences}{30}{section.13.2}%
-\contentsline {section}{\numberline {13.3}Recurrences with states}{30}{section.13.3}%
-\contentsline {section}{\numberline {13.4}Solving linear recurrences (closed forms)}{30}{section.13.4}%
-\contentsline {chapter}{\numberline {14}Generating Functions}{32}{chapter.14}%
-\contentsline {section}{\numberline {14.1}Partitions and Euler's theorem}{33}{section.14.1}%
-\contentsline {chapter}{\numberline {15}Symmetry: Burnside's Lemma}{34}{chapter.15}%
-\contentsline {chapter}{\numberline {16}Bijections, Identities, Stirling Numbers and Partitions}{36}{chapter.16}%
-\contentsline {section}{\numberline {16.1}Double counting}{36}{section.16.1}%
-\contentsline {section}{\numberline {16.2}The non-consecutive selection bijection}{36}{section.16.2}%
-\contentsline {section}{\numberline {16.3}Stirling numbers of the second kind: distinct objects into identical boxes}{36}{section.16.3}%
-\contentsline {section}{\numberline {16.4}Stirling numbers of the first kind: round tables}{37}{section.16.4}%
-\contentsline {section}{\numberline {16.5}Integer partitions}{37}{section.16.5}%
-\contentsline {chapter}{\numberline {17}Mixed Counting Practice (Exam Simulation)}{39}{chapter.17}%
-\contentsline {part}{III\hspace {1em}Arithmetic Aptitude}{40}{part.3}%
-\contentsline {chapter}{\numberline {18}Percentages}{41}{chapter.18}%
-\contentsline {section}{\numberline {18.1}The multiplier mindset}{41}{section.18.1}%
-\contentsline {section}{\numberline {18.2}Fraction--percent table (memorise)}{41}{section.18.2}%
-\contentsline {section}{\numberline {18.3}Base effect and the ``reverse'' percentage}{41}{section.18.3}%
-\contentsline {chapter}{\numberline {19}Profit, Loss and Discount}{43}{chapter.19}%
-\contentsline {section}{\numberline {19.1}Vocabulary and the master equation}{43}{section.19.1}%
-\contentsline {section}{\numberline {19.2}Standard results}{43}{section.19.2}%
-\contentsline {chapter}{\numberline {20}Simple and Compound Interest}{45}{chapter.20}%
-\contentsline {section}{\numberline {20.1}Formulas}{45}{section.20.1}%
-\contentsline {section}{\numberline {20.2}The CI--SI difference}{45}{section.20.2}%
-\contentsline {section}{\numberline {20.3}Doubling times}{45}{section.20.3}%
-\contentsline {section}{\numberline {20.4}Equal instalments}{45}{section.20.4}%
-\contentsline {chapter}{\numberline {21}Ratio, Proportion, Partnership and Ages}{47}{chapter.21}%
-\contentsline {section}{\numberline {21.1}Working with ratios}{47}{section.21.1}%
-\contentsline {section}{\numberline {21.2}Partnership}{47}{section.21.2}%
-\contentsline {section}{\numberline {21.3}Ages}{47}{section.21.3}%
-\contentsline {chapter}{\numberline {22}Mixtures and Alligation}{49}{chapter.22}%
-\contentsline {section}{\numberline {22.1}Weighted averages}{49}{section.22.1}%
-\contentsline {section}{\numberline {22.2}The alligation rule}{49}{section.22.2}%
-\contentsline {section}{\numberline {22.3}Repeated replacement}{49}{section.22.3}%
-\contentsline {chapter}{\numberline {23}Time and Work, Pipes and Cisterns}{51}{chapter.23}%
-\contentsline {section}{\numberline {23.1}The LCM (work-units) method}{51}{section.23.1}%
-\contentsline {part}{IV\hspace {1em}Logical Reasoning}{53}{part.4}%
-\contentsline {chapter}{\numberline {24}Ordering, Ranking and Linear Arrangements}{54}{chapter.24}%
-\contentsline {section}{\numberline {24.1}Ranking formulas}{54}{section.24.1}%
-\contentsline {section}{\numberline {24.2}Linear seating: conventions}{54}{section.24.2}%
-\contentsline {section}{\numberline {24.3}A method that always works}{54}{section.24.3}%
-\contentsline {chapter}{\numberline {25}Circular Seating Arrangements}{56}{chapter.25}%
-\contentsline {section}{\numberline {25.1}The left/right convention (the most common trap)}{56}{section.25.1}%
-\contentsline {chapter}{\numberline {26}Multi-Attribute Puzzles (Floors, Schedules, Grids)}{58}{chapter.26}%
-\contentsline {chapter}{\numberline {27}Blood Relations}{60}{chapter.27}%
-\contentsline {section}{\numberline {27.1}Method: draw the family tree}{60}{section.27.1}%
-\contentsline {chapter}{\numberline {28}Syllogisms}{61}{chapter.28}%
-\contentsline {section}{\numberline {28.1}The four statement types and their Venn pictures}{61}{section.28.1}%
-\contentsline {section}{\numberline {28.2}Combination rules (premise 1 + premise 2, sharing a middle term B)}{61}{section.28.2}%
-\contentsline {chapter}{\numberline {29}Data Sufficiency}{63}{chapter.29}%
-\contentsline {part}{V\hspace {1em}Probability: From Basics to Quant-Interview Puzzles}{65}{part.5}%
-\contentsline {chapter}{\numberline {30}Foundations}{66}{chapter.30}%
-\contentsline {section}{\numberline {30.1}The language}{66}{section.30.1}%
-\contentsline {chapter}{\numberline {31}Conditional Probability and Bayes' Theorem}{68}{chapter.31}%
-\contentsline {section}{\numberline {31.1}Bayes' theorem}{68}{section.31.1}%
-\contentsline {section}{\numberline {31.2}Classic puzzles}{68}{section.31.2}%
-\contentsline {chapter}{\numberline {32}Counting-Based Probability}{70}{chapter.32}%
-\contentsline {section}{\numberline {32.1}Cards, dice, birthdays}{70}{section.32.1}%
-\contentsline {section}{\numberline {32.2}The hypergeometric pattern}{70}{section.32.2}%
-\contentsline {chapter}{\numberline {33}Distributions Toolkit}{72}{chapter.33}%
-\contentsline {chapter}{\numberline {34}Expectation and the Linearity Trick}{73}{chapter.34}%
-\contentsline {chapter}{\numberline {35}First-Step Analysis and Markov Chains}{75}{chapter.35}%
-\contentsline {section}{\numberline {35.1}The method}{75}{section.35.1}%
-\contentsline {section}{\numberline {35.2}Races between patterns (Penney's game)}{75}{section.35.2}%
-\contentsline {section}{\numberline {35.3}Gambler's ruin}{76}{section.35.3}%
-\contentsline {chapter}{\numberline {36}Continuous and Geometric Probability}{77}{chapter.36}%
-\contentsline {chapter}{\numberline {37}Optimal Stopping, Games and Betting}{79}{chapter.37}%
-\contentsline {section}{\numberline {37.1}Backward induction}{79}{section.37.1}%
-\contentsline {section}{\numberline {37.2}The secretary problem}{79}{section.37.2}%
-\contentsline {section}{\numberline {37.3}Betting: expectation is not everything}{79}{section.37.3}%
-\contentsline {chapter}{\numberline {38}Famous Puzzles Collection}{81}{chapter.38}%
-\contentsline {part}{Solutions}{83}{part*.2}%
-\contentsline {chapter}{Solutions to Exercises}{83}{chapter*.3}%
+\contentsline {part}{I\hspace {1em}Counting Fundamentals}{11}{part.1}%
+\contentsline {chapter}{\numberline {1}The Master Decision: What Kind of Problem Is This?}{12}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Fundamental Principles}{13}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Addition principle (OR)}{13}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Multiplication principle (AND)}{13}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Complement principle}{13}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Permutations (Arrangements)}{15}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Core formulas}{15}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Number formation and divisibility}{15}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Restriction toolkit}{16}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Rank of a word (dictionary order)}{16}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Combinations (Selections)}{18}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Core facts}{18}{section.4.1}%
+\contentsline {section}{\numberline {4.2}``At least'' selections -- split into exact cases}{18}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Selecting from identical objects}{18}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Number of divisors}{19}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Selection of letters from a word with repeats}{19}{section.4.5}%
+\contentsline {chapter}{\numberline {5}Circular Arrangements}{20}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Why $(n-1)!$}{20}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Necklaces and garlands}{20}{section.5.2}%
+\contentsline {chapter}{\numberline {6}Distributions: Stars \& Bars and Grouping}{22}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Identical objects into distinct boxes -- stars and bars}{22}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Distinct objects into groups}{22}{section.6.2}%
+\contentsline {section}{\numberline {6.3}The four distribution cases (summary)}{23}{section.6.3}%
+\contentsline {chapter}{\numberline {7}Inclusion--Exclusion}{24}{chapter.7}%
+\contentsline {section}{\numberline {7.1}The formula}{24}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Onto (surjective) functions}{24}{section.7.2}%
+\contentsline {chapter}{\numberline {8}Derangements}{26}{chapter.8}%
+\contentsline {chapter}{\numberline {9}Geometry and Grid Counting}{27}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Points, lines, triangles}{27}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Rectangles and squares}{27}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Lattice paths}{27}{section.9.3}%
+\contentsline {chapter}{\numberline {10}Catalan Numbers}{29}{chapter.10}%
+\contentsline {chapter}{\numberline {11}Pigeonhole Principle}{30}{chapter.11}%
+\contentsline {chapter}{\numberline {12}Number-Based Counting}{31}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Sum of all numbers formed by permuting digits}{31}{section.12.1}%
+\contentsline {section}{\numberline {12.2}Highest power of a prime in $n!$ (Legendre)}{31}{section.12.2}%
+\contentsline {part}{II\hspace {1em}Advanced Counting}{33}{part.2}%
+\contentsline {chapter}{\numberline {13}Recurrence Relations}{34}{chapter.13}%
+\contentsline {section}{\numberline {13.1}The Fibonacci family}{34}{section.13.1}%
+\contentsline {section}{\numberline {13.2}Other classic recurrences}{35}{section.13.2}%
+\contentsline {section}{\numberline {13.3}Recurrences with states}{35}{section.13.3}%
+\contentsline {section}{\numberline {13.4}Solving linear recurrences (closed forms)}{35}{section.13.4}%
+\contentsline {chapter}{\numberline {14}Generating Functions}{37}{chapter.14}%
+\contentsline {section}{\numberline {14.1}Partitions and Euler's theorem}{38}{section.14.1}%
+\contentsline {chapter}{\numberline {15}Symmetry: Burnside's Lemma}{39}{chapter.15}%
+\contentsline {chapter}{\numberline {16}Bijections, Identities, Stirling Numbers and Partitions}{41}{chapter.16}%
+\contentsline {section}{\numberline {16.1}Double counting}{41}{section.16.1}%
+\contentsline {section}{\numberline {16.2}The non-consecutive selection bijection}{41}{section.16.2}%
+\contentsline {section}{\numberline {16.3}Stirling numbers of the second kind: distinct objects into identical boxes}{41}{section.16.3}%
+\contentsline {section}{\numberline {16.4}Stirling numbers of the first kind: round tables}{42}{section.16.4}%
+\contentsline {section}{\numberline {16.5}Integer partitions}{42}{section.16.5}%
+\contentsline {chapter}{\numberline {17}Mixed Counting Practice (Exam Simulation)}{44}{chapter.17}%
+\contentsline {part}{III\hspace {1em}Number Sense and Speed}{45}{part.3}%
+\contentsline {chapter}{\numberline {18}Exam Strategy: Playing the Paper, Not Just the Questions}{46}{chapter.18}%
+\contentsline {section}{\numberline {18.1}The two-pass method}{46}{section.18.1}%
+\contentsline {section}{\numberline {18.2}When should you guess?}{46}{section.18.2}%
+\contentsline {section}{\numberline {18.3}Using the options as a tool}{46}{section.18.3}%
+\contentsline {section}{\numberline {18.4}A four-week preparation plan}{47}{section.18.4}%
+\contentsline {chapter}{\numberline {19}Speed Maths and Estimation}{48}{chapter.19}%
+\contentsline {section}{\numberline {19.1}Numbers worth memorising}{48}{section.19.1}%
+\contentsline {section}{\numberline {19.2}Multiplication tricks}{48}{section.19.2}%
+\contentsline {section}{\numberline {19.3}Checking with remainders (casting out nines)}{48}{section.19.3}%
+\contentsline {section}{\numberline {19.4}Comparing fractions}{49}{section.19.4}%
+\contentsline {section}{\numberline {19.5}Estimation}{49}{section.19.5}%
+\contentsline {chapter}{\numberline {20}Number System: Divisibility, Factors, HCF and LCM}{51}{chapter.20}%
+\contentsline {section}{\numberline {20.1}Vocabulary and parity}{51}{section.20.1}%
+\contentsline {section}{\numberline {20.2}More divisibility tests}{51}{section.20.2}%
+\contentsline {section}{\numberline {20.3}Counting and adding factors}{51}{section.20.3}%
+\contentsline {section}{\numberline {20.4}HCF and LCM}{52}{section.20.4}%
+\contentsline {section}{\numberline {20.5}Standard word problems}{52}{section.20.5}%
+\contentsline {section}{\numberline {20.6}Recurring decimals}{53}{section.20.6}%
+\contentsline {chapter}{\numberline {21}Remainders, Cyclicity and Modular Arithmetic}{55}{chapter.21}%
+\contentsline {section}{\numberline {21.1}Working mod $n$}{55}{section.21.1}%
+\contentsline {section}{\numberline {21.2}Powers: find the cycle}{55}{section.21.2}%
+\contentsline {section}{\numberline {21.3}Unit digits}{55}{section.21.3}%
+\contentsline {section}{\numberline {21.4}Last two digits}{56}{section.21.4}%
+\contentsline {section}{\numberline {21.5}Algebraic divisibility}{56}{section.21.5}%
+\contentsline {section}{\numberline {21.6}Simultaneous conditions}{56}{section.21.6}%
+\contentsline {section}{\numberline {21.7}Number bases}{57}{section.21.7}%
+\contentsline {part}{IV\hspace {1em}Arithmetic Aptitude}{58}{part.4}%
+\contentsline {chapter}{\numberline {22}Percentages}{59}{chapter.22}%
+\contentsline {section}{\numberline {22.1}The multiplier mindset}{59}{section.22.1}%
+\contentsline {section}{\numberline {22.2}Fraction--percent table (memorise)}{59}{section.22.2}%
+\contentsline {section}{\numberline {22.3}Base effect and the ``reverse'' percentage}{59}{section.22.3}%
+\contentsline {section}{\numberline {22.4}The fraction method for percent change}{59}{section.22.4}%
+\contentsline {section}{\numberline {22.5}Growth and decay}{60}{section.22.5}%
+\contentsline {chapter}{\numberline {23}Profit, Loss and Discount}{62}{chapter.23}%
+\contentsline {section}{\numberline {23.1}Vocabulary and the master equation}{62}{section.23.1}%
+\contentsline {section}{\numberline {23.2}Standard results}{62}{section.23.2}%
+\contentsline {section}{\numberline {23.3}Margin versus markup}{63}{section.23.3}%
+\contentsline {chapter}{\numberline {24}Simple and Compound Interest}{64}{chapter.24}%
+\contentsline {section}{\numberline {24.1}Formulas}{64}{section.24.1}%
+\contentsline {section}{\numberline {24.2}The CI--SI difference}{64}{section.24.2}%
+\contentsline {section}{\numberline {24.3}Doubling times}{64}{section.24.3}%
+\contentsline {section}{\numberline {24.4}Equal instalments}{64}{section.24.4}%
+\contentsline {section}{\numberline {24.5}Financial maths: the same idea, used by professionals}{65}{section.24.5}%
+\contentsline {chapter}{\numberline {25}Ratio, Proportion, Partnership and Ages}{68}{chapter.25}%
+\contentsline {section}{\numberline {25.1}Working with ratios}{68}{section.25.1}%
+\contentsline {section}{\numberline {25.2}Partnership}{68}{section.25.2}%
+\contentsline {section}{\numberline {25.3}Ages}{68}{section.25.3}%
+\contentsline {section}{\numberline {25.4}Variation}{68}{section.25.4}%
+\contentsline {chapter}{\numberline {26}Averages}{70}{chapter.26}%
+\contentsline {chapter}{\numberline {27}Mixtures and Alligation}{72}{chapter.27}%
+\contentsline {section}{\numberline {27.1}Weighted averages}{72}{section.27.1}%
+\contentsline {section}{\numberline {27.2}The alligation rule}{72}{section.27.2}%
+\contentsline {section}{\numberline {27.3}Repeated replacement}{72}{section.27.3}%
+\contentsline {chapter}{\numberline {28}Time and Work, Pipes and Cisterns}{75}{chapter.28}%
+\contentsline {section}{\numberline {28.1}The LCM (work-units) method}{75}{section.28.1}%
+\contentsline {section}{\numberline {28.2}Efficiency and equivalence}{75}{section.28.2}%
+\contentsline {chapter}{\numberline {29}Time, Speed and Distance}{78}{chapter.29}%
+\contentsline {section}{\numberline {29.1}Average speed}{78}{section.29.1}%
+\contentsline {section}{\numberline {29.2}Relative speed}{78}{section.29.2}%
+\contentsline {section}{\numberline {29.3}Standard patterns}{79}{section.29.3}%
+\contentsline {section}{\numberline {29.4}Circular tracks}{79}{section.29.4}%
+\contentsline {chapter}{\numberline {30}Trains, Boats, Races and Escalators}{81}{chapter.30}%
+\contentsline {section}{\numberline {30.1}Trains}{81}{section.30.1}%
+\contentsline {section}{\numberline {30.2}Boats and streams}{81}{section.30.2}%
+\contentsline {section}{\numberline {30.3}Races}{82}{section.30.3}%
+\contentsline {section}{\numberline {30.4}Escalators}{82}{section.30.4}%
+\contentsline {chapter}{\numberline {31}Clocks and Calendars}{84}{chapter.31}%
+\contentsline {section}{\numberline {31.1}Clock angles}{84}{section.31.1}%
+\contentsline {section}{\numberline {31.2}Meetings of the hands}{84}{section.31.2}%
+\contentsline {section}{\numberline {31.3}Fast and slow clocks}{84}{section.31.3}%
+\contentsline {section}{\numberline {31.4}Calendars: the odd-days method}{85}{section.31.4}%
+\contentsline {part}{V\hspace {1em}Algebra}{87}{part.5}%
+\contentsline {chapter}{\numberline {32}Linear Equations and Word Problems}{88}{chapter.32}%
+\contentsline {section}{\numberline {32.1}Two equations: when is there a solution?}{88}{section.32.1}%
+\contentsline {section}{\numberline {32.2}Tricks that avoid solving}{88}{section.32.2}%
+\contentsline {section}{\numberline {32.3}Integer solutions (Diophantine equations)}{89}{section.32.3}%
+\contentsline {chapter}{\numberline {33}Quadratics and Polynomials}{90}{chapter.33}%
+\contentsline {section}{\numberline {33.1}Quadratic essentials}{90}{section.33.1}%
+\contentsline {section}{\numberline {33.2}Symmetric functions of the roots}{90}{section.33.2}%
+\contentsline {section}{\numberline {33.3}Identities worth knowing}{90}{section.33.3}%
+\contentsline {section}{\numberline {33.4}Remainder and factor theorems}{91}{section.33.4}%
+\contentsline {chapter}{\numberline {34}Inequalities, Functions and Optimisation}{92}{chapter.34}%
+\contentsline {section}{\numberline {34.1}Rules for inequalities}{92}{section.34.1}%
+\contentsline {section}{\numberline {34.2}Sign analysis (the wavy curve)}{92}{section.34.2}%
+\contentsline {section}{\numberline {34.3}Absolute value is distance}{92}{section.34.3}%
+\contentsline {section}{\numberline {34.4}AM--GM: the optimisation workhorse}{93}{section.34.4}%
+\contentsline {section}{\numberline {34.5}Extreme-value puzzles with integers}{93}{section.34.5}%
+\contentsline {section}{\numberline {34.6}Functions and the floor function}{93}{section.34.6}%
+\contentsline {chapter}{\numberline {35}Indices, Surds and Logarithms}{95}{chapter.35}%
+\contentsline {section}{\numberline {35.1}Laws of indices}{95}{section.35.1}%
+\contentsline {section}{\numberline {35.2}Surds}{95}{section.35.2}%
+\contentsline {section}{\numberline {35.3}Logarithms}{95}{section.35.3}%
+\contentsline {section}{\numberline {35.4}Number of digits}{96}{section.35.4}%
+\contentsline {chapter}{\numberline {36}Sequences and Series}{97}{chapter.36}%
+\contentsline {section}{\numberline {36.1}Arithmetic progressions}{97}{section.36.1}%
+\contentsline {section}{\numberline {36.2}Geometric progressions}{97}{section.36.2}%
+\contentsline {section}{\numberline {36.3}Means}{97}{section.36.3}%
+\contentsline {section}{\numberline {36.4}Standard sums}{97}{section.36.4}%
+\contentsline {part}{VI\hspace {1em}Geometry and Mensuration}{100}{part.6}%
+\contentsline {chapter}{\numberline {37}Lines, Angles and Triangles}{101}{chapter.37}%
+\contentsline {section}{\numberline {37.1}Angle facts}{101}{section.37.1}%
+\contentsline {section}{\numberline {37.2}Triangle sides}{101}{section.37.2}%
+\contentsline {section}{\numberline {37.3}Area and the special segments}{101}{section.37.3}%
+\contentsline {section}{\numberline {37.4}Similarity}{102}{section.37.4}%
+\contentsline {chapter}{\numberline {38}Circles, Quadrilaterals and Polygons}{104}{chapter.38}%
+\contentsline {section}{\numberline {38.1}Circle theorems}{104}{section.38.1}%
+\contentsline {section}{\numberline {38.2}Power of a point}{104}{section.38.2}%
+\contentsline {section}{\numberline {38.3}Two circles}{104}{section.38.3}%
+\contentsline {section}{\numberline {38.4}Quadrilaterals}{104}{section.38.4}%
+\contentsline {section}{\numberline {38.5}Regular polygons}{104}{section.38.5}%
+\contentsline {chapter}{\numberline {39}Mensuration: Areas and Volumes}{106}{chapter.39}%
+\contentsline {section}{\numberline {39.1}Plane figures}{106}{section.39.1}%
+\contentsline {section}{\numberline {39.2}Solids}{106}{section.39.2}%
+\contentsline {chapter}{\numberline {40}Coordinate Geometry}{108}{chapter.40}%
+\contentsline {section}{\numberline {40.1}Toolkit}{108}{section.40.1}%
+\contentsline {chapter}{\numberline {41}Trigonometry, Heights and Distances}{110}{chapter.41}%
+\contentsline {section}{\numberline {41.1}Ratios}{110}{section.41.1}%
+\contentsline {section}{\numberline {41.2}Identities}{110}{section.41.2}%
+\contentsline {section}{\numberline {41.3}Any triangle}{110}{section.41.3}%
+\contentsline {section}{\numberline {41.4}Heights and distances}{110}{section.41.4}%
+\contentsline {part}{VII\hspace {1em}Data Interpretation and Statistics}{112}{part.7}%
+\contentsline {chapter}{\numberline {42}Data Interpretation: Tables and Charts}{113}{chapter.42}%
+\contentsline {section}{\numberline {42.1}Tables}{113}{section.42.1}%
+\contentsline {section}{\numberline {42.2}Bar charts}{114}{section.42.2}%
+\contentsline {section}{\numberline {42.3}Pie charts}{114}{section.42.3}%
+\contentsline {section}{\numberline {42.4}Line graphs}{115}{section.42.4}%
+\contentsline {chapter}{\numberline {43}Caselets, Venn Logic and Max--Min Overlap}{117}{chapter.43}%
+\contentsline {section}{\numberline {43.1}Three-set Venn diagrams}{117}{section.43.1}%
+\contentsline {section}{\numberline {43.2}Max--min overlap}{117}{section.43.2}%
+\contentsline {section}{\numberline {43.3}Two-way tables}{117}{section.43.3}%
+\contentsline {section}{\numberline {43.4}Network and flow caselets}{118}{section.43.4}%
+\contentsline {chapter}{\numberline {44}Descriptive Statistics}{119}{chapter.44}%
+\contentsline {section}{\numberline {44.1}Centre}{119}{section.44.1}%
+\contentsline {section}{\numberline {44.2}Spread}{119}{section.44.2}%
+\contentsline {section}{\numberline {44.3}Shifting and scaling}{119}{section.44.3}%
+\contentsline {section}{\numberline {44.4}Combining groups}{119}{section.44.4}%
+\contentsline {section}{\numberline {44.5}Correlation and regression}{120}{section.44.5}%
+\contentsline {part}{VIII\hspace {1em}Logical Reasoning}{122}{part.8}%
+\contentsline {chapter}{\numberline {45}Ordering, Ranking and Linear Arrangements}{123}{chapter.45}%
+\contentsline {section}{\numberline {45.1}Ranking formulas}{123}{section.45.1}%
+\contentsline {section}{\numberline {45.2}Linear seating: conventions}{123}{section.45.2}%
+\contentsline {section}{\numberline {45.3}A method that always works}{123}{section.45.3}%
+\contentsline {chapter}{\numberline {46}Circular Seating Arrangements}{125}{chapter.46}%
+\contentsline {section}{\numberline {46.1}The left/right convention (the most common trap)}{125}{section.46.1}%
+\contentsline {chapter}{\numberline {47}Multi-Attribute Puzzles (Floors, Schedules, Grids)}{127}{chapter.47}%
+\contentsline {chapter}{\numberline {48}Blood Relations}{129}{chapter.48}%
+\contentsline {section}{\numberline {48.1}Method: draw the family tree}{129}{section.48.1}%
+\contentsline {chapter}{\numberline {49}Syllogisms}{130}{chapter.49}%
+\contentsline {section}{\numberline {49.1}The four statement types and their Venn pictures}{130}{section.49.1}%
+\contentsline {section}{\numberline {49.2}Combination rules (premise 1 + premise 2, sharing a middle term B)}{130}{section.49.2}%
+\contentsline {chapter}{\numberline {50}Data Sufficiency}{132}{chapter.50}%
+\contentsline {chapter}{\numberline {51}Number and Letter Series, Analogies, Odd One Out}{134}{chapter.51}%
+\contentsline {section}{\numberline {51.1}A checklist for number series}{134}{section.51.1}%
+\contentsline {section}{\numberline {51.2}Letter series}{134}{section.51.2}%
+\contentsline {section}{\numberline {51.3}Analogies and odd one out}{134}{section.51.3}%
+\contentsline {chapter}{\numberline {52}Coding--Decoding and Direction Sense}{136}{chapter.52}%
+\contentsline {section}{\numberline {52.1}Coding patterns}{136}{section.52.1}%
+\contentsline {section}{\numberline {52.2}Direction sense}{136}{section.52.2}%
+\contentsline {chapter}{\numberline {53}Cubes, Dice and Counting in Figures}{138}{chapter.53}%
+\contentsline {section}{\numberline {53.1}Painted cube}{138}{section.53.1}%
+\contentsline {section}{\numberline {53.2}Dice}{138}{section.53.2}%
+\contentsline {section}{\numberline {53.3}Nets}{138}{section.53.3}%
+\contentsline {section}{\numberline {53.4}Counting in figures}{138}{section.53.4}%
+\contentsline {chapter}{\numberline {54}Formal Logic, Truth-Tellers and Weighing}{140}{chapter.54}%
+\contentsline {section}{\numberline {54.1}Implications}{140}{section.54.1}%
+\contentsline {section}{\numberline {54.2}Truth-tellers and liars}{140}{section.54.2}%
+\contentsline {section}{\numberline {54.3}Critical reasoning formats}{140}{section.54.3}%
+\contentsline {section}{\numberline {54.4}Weighing puzzles}{141}{section.54.4}%
+\contentsline {part}{IX\hspace {1em}Probability and Quant Interviews}{142}{part.9}%
+\contentsline {chapter}{\numberline {55}Foundations}{143}{chapter.55}%
+\contentsline {section}{\numberline {55.1}The language}{143}{section.55.1}%
+\contentsline {chapter}{\numberline {56}Conditional Probability and Bayes' Theorem}{145}{chapter.56}%
+\contentsline {section}{\numberline {56.1}Bayes' theorem}{145}{section.56.1}%
+\contentsline {section}{\numberline {56.2}Classic puzzles}{145}{section.56.2}%
+\contentsline {chapter}{\numberline {57}Counting-Based Probability}{147}{chapter.57}%
+\contentsline {section}{\numberline {57.1}Cards, dice, birthdays}{147}{section.57.1}%
+\contentsline {section}{\numberline {57.2}The hypergeometric pattern}{147}{section.57.2}%
+\contentsline {chapter}{\numberline {58}Distributions Toolkit}{149}{chapter.58}%
+\contentsline {chapter}{\numberline {59}Expectation and the Linearity Trick}{150}{chapter.59}%
+\contentsline {chapter}{\numberline {60}First-Step Analysis and Markov Chains}{152}{chapter.60}%
+\contentsline {section}{\numberline {60.1}The method}{152}{section.60.1}%
+\contentsline {section}{\numberline {60.2}Races between patterns (Penney's game)}{153}{section.60.2}%
+\contentsline {section}{\numberline {60.3}Gambler's ruin}{153}{section.60.3}%
+\contentsline {chapter}{\numberline {61}Continuous and Geometric Probability}{155}{chapter.61}%
+\contentsline {chapter}{\numberline {62}Optimal Stopping, Games and Betting}{157}{chapter.62}%
+\contentsline {section}{\numberline {62.1}Backward induction}{157}{section.62.1}%
+\contentsline {section}{\numberline {62.2}The secretary problem}{157}{section.62.2}%
+\contentsline {section}{\numberline {62.3}Betting: expectation is not everything}{157}{section.62.3}%
+\contentsline {chapter}{\numberline {63}Variance, Covariance and Correlation}{159}{chapter.63}%
+\contentsline {section}{\numberline {63.1}Definitions}{159}{section.63.1}%
+\contentsline {section}{\numberline {63.2}Variance by indicators}{159}{section.63.2}%
+\contentsline {section}{\numberline {63.3}Two-asset portfolios}{160}{section.63.3}%
+\contentsline {chapter}{\numberline {64}The Normal Distribution, LLN and CLT}{161}{chapter.64}%
+\contentsline {section}{\numberline {64.1}The bell curve}{161}{section.64.1}%
+\contentsline {section}{\numberline {64.2}Law of large numbers}{161}{section.64.2}%
+\contentsline {section}{\numberline {64.3}Central limit theorem}{161}{section.64.3}%
+\contentsline {section}{\numberline {64.4}Confidence intervals and testing}{162}{section.64.4}%
+\contentsline {chapter}{\numberline {65}Conditional Expectation and Recursion}{163}{chapter.65}%
+\contentsline {section}{\numberline {65.1}The tower law}{163}{section.65.1}%
+\contentsline {section}{\numberline {65.2}Random sums (Wald)}{163}{section.65.2}%
+\contentsline {section}{\numberline {65.3}Who shoots first}{163}{section.65.3}%
+\contentsline {section}{\numberline {65.4}Famous recursive results}{164}{section.65.4}%
+\contentsline {chapter}{\numberline {66}Random Walks and Markov Chains in the Long Run}{166}{chapter.66}%
+\contentsline {section}{\numberline {66.1}Symmetric random walk}{166}{section.66.1}%
+\contentsline {section}{\numberline {66.2}The reflection principle}{166}{section.66.2}%
+\contentsline {section}{\numberline {66.3}Martingales and optional stopping}{166}{section.66.3}%
+\contentsline {section}{\numberline {66.4}Stationary distributions}{167}{section.66.4}%
+\contentsline {chapter}{\numberline {67}Trading, Options and Pricing Questions}{168}{chapter.67}%
+\contentsline {section}{\numberline {67.1}Expected value games and market making}{168}{section.67.1}%
+\contentsline {section}{\numberline {67.2}Options}{168}{section.67.2}%
+\contentsline {section}{\numberline {67.3}One-step binomial pricing}{169}{section.67.3}%
+\contentsline {section}{\numberline {67.4}Arbitrage and odds}{169}{section.67.4}%
+\contentsline {section}{\numberline {67.5}Risk-adjusted performance}{169}{section.67.5}%
+\contentsline {chapter}{\numberline {68}Maths Refresher for Quant Interviews}{171}{chapter.68}%
+\contentsline {section}{\numberline {68.1}Approximations}{171}{section.68.1}%
+\contentsline {section}{\numberline {68.2}Calculus essentials}{171}{section.68.2}%
+\contentsline {section}{\numberline {68.3}Series}{171}{section.68.3}%
+\contentsline {section}{\numberline {68.4}Linear algebra essentials}{171}{section.68.4}%
+\contentsline {chapter}{\numberline {69}Brainteasers and Fermi Estimates}{173}{chapter.69}%
+\contentsline {section}{\numberline {69.1}Thinking habits}{173}{section.69.1}%
+\contentsline {section}{\numberline {69.2}Fermi estimates}{173}{section.69.2}%
+\contentsline {chapter}{\numberline {70}Famous Puzzles Collection}{175}{chapter.70}%
+\contentsline {part}{X\hspace {1em}Mock Tests and Formula Sheets}{176}{part.10}%
+\contentsline {chapter}{\numberline {71}Mock Test 1: Screening Paper}{177}{chapter.71}%
+\contentsline {chapter}{\numberline {72}Mock Test 2: Harder Paper}{179}{chapter.72}%
+\contentsline {chapter}{\numberline {73}Formula Sheets}{181}{chapter.73}%
+\contentsline {part}{Solutions}{184}{part*.2}%
+\contentsline {chapter}{Solutions to Exercises}{184}{chapter*.3}%

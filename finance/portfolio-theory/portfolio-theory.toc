@@ -2,26 +2,32 @@
 \contentsline {section}{\numberline {1}Notation cheat-sheet}{2}{section.1}%
 \contentsline {section}{\numberline {2}Section 5.1: Risk}{3}{section.2}%
 \contentsline {subsection}{\numberline {2.1}What should ``risk'' capture?}{3}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Remark 5.1: why ordinary returns, not log returns?}{3}{subsection.2.2}%
-\contentsline {section}{\numberline {3}Section 5.2: Two securities}{3}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Diversification in one example}{3}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Weights}{4}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Portfolio return}{4}{subsection.3.3}%
+\contentsline {subsection}{\numberline {2.2}Remark 5.1: why ordinary returns, not log returns?}{4}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Section 5.2: Two securities}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Diversification in one example}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Weights}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Portfolio return}{5}{subsection.3.3}%
 \contentsline {subsection}{\numberline {3.4}Expected return and variance of a two-asset portfolio}{5}{subsection.3.4}%
-\contentsline {subsubsection}{\numberline {3.4.1}Illustration (Example 5.6 data)}{5}{subsubsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.5}The extreme cases $\rho _{12}=\pm 1$: risk can be eliminated}{6}{subsection.3.5}%
-\contentsline {subsection}{\numberline {3.6}General $\rho _{12}$: the portfolio line and the minimum-variance portfolio}{6}{subsection.3.6}%
-\contentsline {subsection}{\numberline {3.7}One risky + one risk-free security}{8}{subsection.3.7}%
-\contentsline {section}{\numberline {4}Section 5.3: Several securities}{9}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Matrix set-up}{9}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}The two optimisation problems}{9}{subsection.4.2}%
-\contentsline {subsubsection}{\numberline {4.2.1}Example 5.10 (three securities): the main worked example}{10}{subsubsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.3}Visualising the attainable set (Examples 5.11, 5.12)}{11}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Efficient frontier (\S 5.3.2)}{12}{subsection.4.4}%
-\contentsline {section}{\numberline {5}Section 5.4: Capital Asset Pricing Model (CAPM)}{13}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Capital Market Line (CML)}{13}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Beta factor}{15}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Security Market Line (SML)}{15}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Equilibrium and mispricing}{17}{subsection.5.4}%
-\contentsline {section}{\numberline {6}One-page formula sheet}{18}{section.6}%
-\contentsline {section}{\numberline {7}Common mistakes and quick checks}{19}{section.7}%
+\contentsline {subsubsection}{\numberline {3.4.1}Illustration (Example 5.6 data)}{6}{subsubsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.5}The extreme cases $\rho _{12}=\pm 1$: risk can be eliminated}{7}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}General $\rho _{12}$: the portfolio line and the minimum-variance portfolio}{7}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}One risky + one risk-free security}{10}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Section 5.3: Several securities}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Matrix set-up}{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}The two optimisation problems}{11}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Example 5.10 (three securities): the main worked example}{13}{subsubsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.3}Visualising the attainable set (Examples 5.11, 5.12)}{13}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Efficient frontier (\S 5.3.2)}{15}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Section 5.4: Capital Asset Pricing Model (CAPM)}{17}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Capital Market Line (CML)}{17}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Beta factor}{20}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Security Market Line (SML)}{21}{subsection.5.3}%
+\contentsline {subsubsection}{\numberline {5.3.1}Example 5.13 continued: the three securities under CAPM (beyond the book)}{23}{subsubsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.4}Equilibrium and mispricing}{24}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Beyond the book: where the theory meets reality}{24}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Estimation error}{24}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Does CAPM hold?}{25}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Main extensions}{26}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Further reading}{26}{subsection.6.4}%
+\contentsline {section}{\numberline {7}One-page formula sheet}{27}{section.7}%
+\contentsline {section}{\numberline {8}Common mistakes and quick checks}{28}{section.8}%
