@@ -1,6 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1793621678.3553 "portfolio-theory.tex" "portfolio-theory.pdf" "portfolio-theory" 1793621680.1744 0
+["pdflatex"] 1793621771.28182 "/home/paradox/code/finance/portfolio-theory/portfolio-theory.tex" "portfolio-theory.pdf" "portfolio-theory" 1793621773.00034 0
   "/etc/texmf/web2c/texmf.cnf" 1793269959.71542 475 c0e671620eb5563b2130f56340a5fde8 ""
+  "/home/paradox/code/finance/portfolio-theory/portfolio-theory.tex" 1793621771.08357 34040 70d4e11c4bd051d946f48a56ce0d3851 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm" 1136768653 3584 929cdff2b7a8c11bd4d49fd68cb0ae70 ""
@@ -251,10 +252,10 @@
   "figures_pdf/fig7_characteristic_line.pdf" 1793620457.96245 54329 cf41e9146c1cefb61232f57a50862447 ""
   "figures_pdf/fig8_cml_vs_sml.pdf" 1793620458.44404 100192 e820353b079560e2a8462ce2a3f199cb ""
   "figures_pdf/fig9_diversification.pdf" 1793620458.82061 49729 4d826a7f38dabcfc612a2143bdd19456 ""
-  "portfolio-theory.aux" 1793621680.04767 6477 29e5c8c8204628290e250e03c9813864 "pdflatex"
-  "portfolio-theory.out" 1793621680.04767 5895 cc62db92837da457686e4ed68b1573ac "pdflatex"
-  "portfolio-theory.tex" 1793621676.42149 34040 70d4e11c4bd051d946f48a56ce0d3851 ""
-  "portfolio-theory.toc" 1793621680.04867 2591 f607f4f6960143b39bc03dfabf3e4b22 "pdflatex"
+  "portfolio-theory.aux" 1793621772.89885 6477 29e5c8c8204628290e250e03c9813864 "pdflatex"
+  "portfolio-theory.out" 1793621772.89985 5895 cc62db92837da457686e4ed68b1573ac "pdflatex"
+  "portfolio-theory.tex" 1793621771.08357 34040 70d4e11c4bd051d946f48a56ce0d3851 ""
+  "portfolio-theory.toc" 1793621772.89985 2591 f607f4f6960143b39bc03dfabf3e4b22 "pdflatex"
   (generated)
   "portfolio-theory.aux"
   "portfolio-theory.log"
