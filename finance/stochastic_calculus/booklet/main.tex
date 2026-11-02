@@ -1,0 +1,45 @@
+\documentclass[11pt,a4paper,openany]{book}
+\input{preamble}
+
+\title{\Huge\bfseries Stochastic Calculus and\\[4pt] Quantitative Finance\\[14pt]
+\Large\mdseries A rigorous companion, with intuition}
+\author{Companion to the \emph{Stochastic Calculus Notes} of Lokesh Parihar}
+\date{November 2026}
+
+\begin{document}
+\frontmatter
+\maketitle
+\tableofcontents
+\input{chapters/00_preface}
+
+\mainmatter
+\part{Foundations of Probability}
+\include{chapters/01_measure}
+\include{chapters/02_martingales}
+
+\part{Stochastic Calculus}
+\include{chapters/03_brownian}
+\include{chapters/04_ito}
+\include{chapters/05_girsanov}
+\include{chapters/06_sde}
+\include{chapters/07_jumps}
+
+\part{Pricing Beyond Black--Scholes}
+\include{chapters/08_smile}
+\include{chapters/09_localvol}
+\include{chapters/10_stochvol}
+\include{chapters/11_rates}
+
+\part{Numerical Methods}
+\include{chapters/12_montecarlo}
+\include{chapters/13_pde}
+
+\part{Risk, Portfolios and Data}
+\include{chapters/14_risk}
+\include{chapters/15_portfolio}
+\include{chapters/16_statistics}
+\include{chapters/17_practice}
+
+\backmatter
+\include{chapters/18_roadmap}
+\end{document}

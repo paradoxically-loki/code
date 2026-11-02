@@ -1,0 +1,210 @@
+\chapter{The It\^o Integral and It\^o's Formula}\label{ch:ito}
+
+\section{Why a new integral, and why the left endpoint}
+
+Paths of $W$ have infinite first variation, so $\int_0^TH_t\,\dd W_t$ cannot be a Stieltjes integral defined path by path. The second problem is that a Riemann-type limit depends on where in each interval you evaluate. Compare three choices for $\int_0^TW\,\dd W$, using a partition with mesh going to zero.
+
+\begin{proposition}\label{prop:threechoices}
+The following limits hold in $L^2$:
+\begin{align*}
+\sum_jW_{t_j}\Delta W_j&\to\tfrac12(W_T^2-T)&&\text{(It\^o, left point)},\\
+\sum_jW_{t_{j+1}}\Delta W_j&\to\tfrac12(W_T^2+T)&&\text{(anti-It\^o, right point)},\\
+\sum_jW_{(t_j+t_{j+1})/2}\Delta W_j&\to\tfrac12W_T^2&&\text{(Stratonovich, midpoint)}.
+\end{align*}
+\end{proposition}
+\begin{proof}
+From $a(b-a)=\tfrac12(b^2-a^2)-\tfrac12(b-a)^2$ and $b(b-a)=\tfrac12(b^2-a^2)+\tfrac12(b-a)^2$, the first two sums are $\tfrac12W_T^2\mp\tfrac12\sum(\Delta W_j)^2$, and Theorem~\ref{thm:qv} finishes them. The midpoint sum has mean $\sum_j\tfrac12\Delta t_j=T/2$; a similar computation identifies its limit.
+\end{proof}
+
+The class notes mention these choices. The difference between them is exactly the quadratic variation. The Stratonovich answer looks like ordinary calculus. So why choose Itô?
+
+\begin{intuition}
+Because a trader must decide a position \emph{before} the price moves. In the sum $\sum H_{t_j}(W_{t_{j+1}}-W_{t_j})$, the holding is fixed at the start of the interval. With this choice, Theorem~\ref{thm:transform} says a fair game stays fair, so the integral is a martingale. The left point is the only non-anticipating choice. The right point amounts to trading on tomorrow's price, and it adds a free expected profit of $T/2$ in the calculation above. The cost of Itô's choice is a modified chain rule.
+\end{intuition}
+
+\section{Construction}
+
+Fix $(\Omega,\F,(\F_t),\Prob)$ and a Brownian motion $W$. Let $L^2_{\rm ad}$ be the space of progressively measurable $H$ with $\|H\|^2:=\E\int_0^TH_t^2\,\dd t<\infty$. (Progressive measurability is a technical strengthening of adaptedness; adapted and left-continuous is sufficient.)
+
+\paragraph{Step 1: simple processes.} A \emph{simple} process is $H_t=\sum_{j=0}^{n-1}\xi_j\ind_{(t_j,t_{j+1}]}(t)$ with each $\xi_j$ bounded and $\F_{t_j}$-measurable. Define
+\[
+I_T(H)=\sum_j\xi_j(W_{t_{j+1}}-W_{t_j}).
+\]
+
+\begin{lemma}[It\^o isometry for simple processes]\label{lem:iso}
+$\E[I_T(H)]=0$ and $\E[I_T(H)^2]=\E\int_0^TH_t^2\,\dd t$.
+\end{lemma}
+\begin{proof}
+For $j<k$: $\E[\xi_j\Delta W_j\xi_k\Delta W_k]=\E[\xi_j\Delta W_j\xi_k\E[\Delta W_k\mid\F_{t_k}]]=0$. For $j=k$: $\E[\xi_j^2(\Delta W_j)^2]=\E[\xi_j^2\E[(\Delta W_j)^2\mid\F_{t_j}]]=\E[\xi_j^2]\Delta t_j$. Note how each step uses $\xi_j\in\F_{t_j}$; this is what fails for the other two choices.
+\end{proof}
+
+\paragraph{Step 2: density.} Simple processes are dense in $L^2_{\rm ad}$. The approximation proceeds in three stages: a bounded continuous $H$ is approximated by its left-point step functions (dominated convergence); a bounded $H$ by the continuous $\tfrac1h\int_{t-h}^tH_s\,\dd s$; a general $H$ by truncation.
+
+\paragraph{Step 3: extension.} If $H^n\to H$ in $L^2_{\rm ad}$, then $I_T(H^n)$ is Cauchy in $L^2(\Omega)$ by the isometry, and it has a limit by completeness. The limit is independent of the approximating sequence.
+
+\paragraph{Step 4: a continuous version in $t$.} For simple $H$, $I_t(H)$ is a continuous martingale. By Doob's inequality (Theorem~\ref{thm:doobmax}),
+\[
+\E\sup_{t\le T}|I_t(H^n)-I_t(H^m)|^2\le4\,\E\int_0^T(H^n_t-H^m_t)^2\,\dd t.
+\]
+Along a fast subsequence, Borel--Cantelli gives a.s.\ uniform convergence. The limit is thus a continuous process.
+
+\begin{theorem}\label{thm:itoprops}
+For $H,G\in L^2_{\rm ad}$, the process $I_t=\int_0^tH_s\,\dd W_s$ is a continuous square-integrable martingale, linear in $H$, with
+\[
+\E[I_t^2]=\E\int_0^tH_s^2\,\dd s,\qquad [I]_t=\int_0^tH_s^2\,\dd s,\qquad \Big[\int H\,\dd W,\int G\,\dd W\Big]_t=\int_0^tH_sG_s\,\dd s.
+\]
+Moreover $I_t^2-\int_0^tH_s^2\,\dd s$ is a martingale.
+\end{theorem}
+\begin{proof}
+Martingale property and isometry pass to the limit because $L^2$ limits preserve conditional expectations. For the quadratic variation with a simple $H$, on each $(t_j,t_{j+1}]$ the integral is $\xi_j$ times a Brownian increment, so Theorem~\ref{thm:qv} gives the quadratic variation $\xi_j^2\Delta t_j$. A density argument gives the general case. The cross variation follows by polarisation.
+\end{proof}
+
+\begin{intuition}
+The isometry is Pythagoras for orthogonal increments (Proposition~\ref{prop:orth}). The quadratic variation statement says: \emph{each infinitesimal bet of size $H_t$ on a noise of variance $\dd t$ contributes $H_t^2\dd t$}, and those contributions accumulate pathwise. For a deterministic $H$, $I_t$ is a Gaussian process with independent increments and $\Var I_t=\int_0^tH_s^2\dd s$. With random $H$ the integral is generally \emph{not} Gaussian, even though it is built from Gaussian noise.
+\end{intuition}
+
+\paragraph{Step 5: localisation.} Let $L^2_{\rm loc}$ be the space of progressive $H$ with $\int_0^TH_t^2\,\dd t<\infty$ a.s. For such $H$, the times $\tau_n=\inf\{t:\int_0^tH_s^2\dd s\ge n\}$ increase to infinity, $H\ind_{[0,\tau_n]}\in L^2_{\rm ad}$, and the integrals agree on overlaps, so $\int_0^tH\,\dd W$ is well defined. It is a continuous \emph{local} martingale, but it need not be a true martingale.
+
+\begin{pitfall}
+Every result that uses the martingale property of $\int H\,\dd W$ needs $\E\int H^2\dd t<\infty$, or some other argument. Students often write ``no $\dd t$ term, so it is a martingale'' and it is true only for local martingales. For example, take $H_t=1/\sqrt{T-t}$ on $[0,T)$: then $\int_0^tH^2\dd s=\ln(T/(T-t))\to\infty$, and the integral (a time-changed Brownian motion) reaches any level before time $T$ almost surely. Stopped at its first hit of $+1$, it has value $1$ at time $T$ a.s., starting at zero. It is a local martingale, not a martingale, and it is the mathematical form of the doubling strategy (Section~\ref{sec:admiss}).
+\end{pitfall}
+
+\section{It\^o processes}
+
+\begin{definition}
+An \emph{It\^o process} is $X_t=X_0+\int_0^t\Delta_s\,\dd W_s+\int_0^t\Theta_s\,\dd s$ with $\Delta\in L^2_{\rm loc}$ and $\int_0^T|\Theta_s|\dd s<\infty$ a.s. Its quadratic variation is $[X]_t=\int_0^t\Delta_s^2\dd s$, since the finite-variation part contributes nothing.
+\end{definition}
+
+\begin{theorem}\label{thm:decomp}
+The decomposition is unique: a continuous local martingale with finite variation is constant. So $\Delta$ and $\Theta$ are determined by $X$, and an It\^o process is a local martingale if and only if $\Theta=0$ a.e.
+\end{theorem}
+\begin{proof}
+If $M$ is a continuous local martingale of finite variation, then $[M]=0$ since $\sum(\Delta M)^2\le\max|\Delta M|\sum|\Delta M|\to0$. Stopping to make $M$ bounded, $\E M_t^2=\E[M]_t=0$.
+\end{proof}
+
+This gives the reasoning behind every ``match the $\dd W$ terms and the $\dd t$ terms'' argument in the class notes. Matching coefficients is legitimate exactly because of this uniqueness.
+
+\section{It\^o's formula}
+
+\begin{theorem}[It\^o--Doeblin]\label{thm:ito}
+Let $f\in C^{1,2}$ and let $X$ be an It\^o process. Then a.s., for all $t$,
+\[
+f(t,X_t)=f(0,X_0)+\int_0^t\partial_tf(s,X_s)\,\dd s+\int_0^t\partial_xf(s,X_s)\,\dd X_s+\frac12\int_0^t\partial_{xx}f(s,X_s)\,\dd[X]_s.
+\]
+\end{theorem}
+\begin{proof}[Proof for $f=f(x)$, $X=W$]
+\emph{Localisation.} Let $\tau_n$ be the first exit from $(-n,n)$. It suffices to work on $[0,\tau_n]$, so we can assume $f$, $f'$ and $f''$ are bounded and $f''$ is uniformly continuous.
+
+\emph{Taylor expansion.} On a partition, there are points $\xi_j$ between $W_{t_j}$ and $W_{t_{j+1}}$ with
+\[
+f(W_t)-f(W_0)=\underbrace{\sum_jf'(W_{t_j})\Delta W_j}_{A_\Pi}+\underbrace{\frac12\sum_jf''(W_{t_j})(\Delta W_j)^2}_{B_\Pi}+\underbrace{\frac12\sum_j\bigl(f''(\xi_j)-f''(W_{t_j})\bigr)(\Delta W_j)^2}_{C_\Pi}.
+\]
+\emph{The first term.} $A_\Pi\to\int_0^tf'(W_s)\dd W_s$ in $L^2$, as left-point step functions converge to the continuous bounded integrand.
+
+\emph{The second term.} Compare $B_\Pi$ with $\tfrac12\sum_jf''(W_{t_j})\Delta t_j\to\tfrac12\int_0^tf''(W_s)\dd s$. The difference is $\tfrac12\sum_jf''(W_{t_j})\bigl[(\Delta W_j)^2-\Delta t_j\bigr]$. Its terms have conditional mean zero given earlier terms, so they are orthogonal:
+\[
+\E\Big(\sum_jf''(W_{t_j})[(\Delta W_j)^2-\Delta t_j]\Big)^2=\sum_j\E[f''(W_{t_j})^2]\cdot2\Delta t_j^2\le2\|f''\|_\infty^2\,t\,\|\Pi\|\to0.
+\]
+\emph{The third term.} $|C_\Pi|\le\frac12\max_j|f''(\xi_j)-f''(W_{t_j})|\sum_j(\Delta W_j)^2$. Uniform continuity of $f''$ and of the path makes the maximum go to zero a.s., while the sum converges to $t$ in probability. So $C_\Pi\to0$ in probability.
+
+\emph{Higher terms.} None are needed. Both sides are continuous in $t$, so the identity holds simultaneously for all $t$ a.s.
+\end{proof}
+
+The class notes' derivation replaced $(\Delta W)^2$ by $\Delta t$ directly; the orthogonality step above is what justifies it.
+
+\begin{intuition}
+Why does a second-order term survive? $\Delta W\sim\sqrt{\Delta t}$, so $(\Delta W)^2\sim\Delta t$, the same size as the time step. Each individual $(\Delta W)^2$ is random, but there are $n$ of them with independent fluctuations of size $\Delta t$ around their mean. So the total fluctuation is of size $\sqrt n\,\Delta t\to0$ while the mean stays fixed. A law of large numbers converts randomness into a deterministic $\dd t$. Convexity makes this visible: for convex $f$, $\tfrac12f''\dd t$ is a positive drift, the Jensen gain. For an option holder, this is the gamma, and it reappears as $\tfrac12\Gamma S^2\sigma^2\dd t$.
+\end{intuition}
+
+\paragraph{Multi-dimensional form and the product rule.} For It\^o processes $X^1,\dots,X^n$,
+\[
+\dd f(t,X)=\partial_tf\,\dd t+\sum_i\partial_if\,\dd X^i+\frac12\sum_{i,j}\partial_{ij}f\,\dd[X^i,X^j],
+\]
+under the box calculus $\dd W^i\dd W^j=\delta_{ij}\dd t$ (or $\rho_{ij}\dd t$ for correlated motions), $\dd t\,\dd W=\dd t\,\dd t=0$. Taking $f(x,y)=xy$,
+\[
+\dd(X_tY_t)=X_t\dd Y_t+Y_t\dd X_t+\dd[X,Y]_t.
+\]
+
+\begin{example}[Moments by recursion]\label{ex:moments}
+$\dd W^{k}=kW^{k-1}\dd W+\tfrac12k(k-1)W^{k-2}\dd t$. Taking expectations, $\E W_t^{k}=\tfrac12k(k-1)\int_0^t\E W_s^{k-2}\dd s$. Hence $\E W_t^4=3t^2$ and $\E W_t^6=15t^3$. This is a common interview question.
+\end{example}
+
+\begin{example}[Exponential martingale]\label{ex:expmart}
+For $\Theta\in L^2_{\rm loc}$, set $Z_t=\exp(\int_0^t\Theta\,\dd W-\tfrac12\int_0^t\Theta^2\dd s)$. Applying It\^o's formula to $\exp$ gives $\dd Z_t=Z_t\Theta_t\dd W_t$. So $Z$ is a positive local martingale, and thus a supermartingale. The $-\tfrac12\Theta^2$ term exactly cancels the It\^o drift. This is the \emph{Dol\'eans-Dade exponential} $\mathcal{E}(\int\Theta\,\dd W)$, the stochastic analogue of $e^x$: it solves $\dd Z=Z\,\dd M$.
+\end{example}
+
+\begin{example}[Stochastic integral of a deterministic integrand]
+$\int_0^tf(s)\dd W_s\sim\Nc(0,\int_0^tf^2)$, and integration by parts gives $\int_0^tW_s\dd s=\int_0^t(t-s)\dd W_s\sim\Nc(0,t^3/3)$. This is how one prices Bachelier-model Asians, and how the Vasicek model's integrated short rate is Gaussian.
+\end{example}
+
+\section{L\'evy's characterisation}
+
+\begin{theorem}\label{thm:levychar}
+A continuous local martingale $M$ with $M_0=0$ and $[M]_t=t$ is a Brownian motion. The $d$-dimensional version requires $[M^i,M^j]_t=\delta_{ij}t$.
+\end{theorem}
+\begin{proof}
+Fix $u\in\R$. Applying It\^o's formula to $Y_t=\exp(iuM_t+\tfrac12u^2t)$, the drift terms cancel: $\dd Y_t=iuY_t\,\dd M_t$. So $Y$ is a local martingale that is bounded on $[0,T]$, hence a true martingale. Therefore, for $s<t$,
+\[
+\E[e^{iu(M_t-M_s)}\mid\F_s]=e^{-u^2(t-s)/2},
+\]
+which says the increment is $\Nc(0,t-s)$ and independent of $\F_s$.
+\end{proof}
+
+\begin{intuition}
+This is an extraordinary rigidity result. Continuity plus the martingale property plus a clock running at unit speed \emph{force} Gaussianity. It is why Girsanov's theorem has such a short proof, and it implies the following generalisation.
+\end{intuition}
+
+\begin{theorem}[Dambis--Dubins--Schwarz, stated]\label{thm:dds}
+Every continuous local martingale with $[M]_\infty=\infty$ is a time-changed Brownian motion: $M_t=B_{[M]_t}$ for a Brownian motion $B$.
+\end{theorem}
+
+So $[M]_t$ is the intrinsic clock of $M$. In finance: if $\dd\ln F_t=\sigma_t\dd W_t-\tfrac12\sigma_t^2\dd t$ then log-returns are Brownian on the clock of integrated variance $\int\sigma^2\dd t$. Fat tails in calendar time can be pure normal noise in ``business time''.
+
+\begin{theorem}[Burkholder--Davis--Gundy, stated]\label{thm:bdg}
+For $p>0$ there exist constants with $c_p\E[M]_\tau^{p/2}\le\E\sup_{t\le\tau}|M_t|^p\le C_p\E[M]_\tau^{p/2}$ for any continuous local martingale $M$ with $M_0=0$ and any stopping time $\tau$.
+\end{theorem}
+
+\section{Stratonovich calculus}
+
+The Stratonovich integral is $\int H\circ\dd X=\int H\,\dd X+\tfrac12[H,X]$. It obeys the ordinary chain rule, $\dd f(X)=f'(X)\circ\dd X$. It has a place in physics and on manifolds, where coordinate changes are essential. Since it is not a martingale transform, in finance it is mainly a computational device: the SDE $\dd X=\sigma(X)\dd W$ (It\^o) has Stratonovich form $\dd X=-\tfrac12\sigma\sigma'(X)\dd t+\sigma(X)\circ\dd W$. The Wong--Zakai theorem says that if you smooth the noise in an ODE and take the limit, you get a Stratonovich SDE, not an Itô SDE.
+
+\section{Tanaka's formula and local time}\label{sec:tanaka}
+
+It\^o's formula needs $f\in C^2$, but option payoffs have kinks. What is $\dd|W_t|$?
+
+\begin{theorem}[Tanaka]\label{thm:tanaka}
+There is a continuous increasing process $L^a$, the \emph{local time} of $W$ at $a$, such that
+\[
+|W_t-a|=|W_0-a|+\int_0^t\sgn(W_s-a)\,\dd W_s+L^a_t,\qquad L^a_t=\lim_{\epsilon\downarrow0}\frac1{2\epsilon}\int_0^t\ind_{\{|W_s-a|<\epsilon\}}\dd s,
+\]
+where $L^a$ grows only on the set $\{t:W_t=a\}$. Likewise,
+\[
+(W_t-a)^+=(W_0-a)^++\int_0^t\ind_{\{W_s>a\}}\dd W_s+\tfrac12L^a_t.
+\]
+\end{theorem}
+\begin{proof}[Idea]
+Take $f_\epsilon$ smooth and convex with $f_\epsilon\to|x-a|$, $f_\epsilon''=\epsilon^{-1}\ind_{(a-\epsilon,a+\epsilon)}$ (smoothed). It\^o's formula gives $f_\epsilon(W_t)=f_\epsilon(W_0)+\int f_\epsilon'(W)\dd W+\frac1{2\epsilon}\int\ind_{\{|W-a|<\epsilon\}}\dd s$. Pass to the limit.
+\end{proof}
+
+Formally, $\tfrac12f''=\delta_a$ and $L^a_t=\int_0^t\delta_a(W_s)\dd s$. The \emph{occupation times formula} generalises this: $\int_0^tg(W_s)\dd s=\int_\R g(a)L^a_t\,\dd a$. So $a\mapsto L^a_t$ is the density of time spent at level $a$, and it exists precisely because Brownian motion is so rough. A smooth path has no such density at a typical level of a stationary point.
+
+The stochastic integral $\beta_t=\int_0^t\sgn(W_s)\dd W_s$ is itself a Brownian motion, by L\'evy's characterisation, since $[\beta]_t=t$. So $|W|=\beta+L^0$: reflected Brownian motion is Brownian motion plus an increasing push exerted only at zero.
+
+\begin{example}[The stop-loss start-gain paradox]\label{ex:stoploss}
+Consider this strategy for a call struck at $K$, with zero rates: hold one share when $S>K$ and none when $S<K$. Payoff replicated: $(S_T-K)^+$. It seems to cost just the intrinsic value $(S_0-K)^+$ and to be free of model dependence! Yet the call costs more. The resolution is Tanaka--Meyer applied to $S$:
+\[
+(S_T-K)^+=(S_0-K)^++\int_0^T\ind_{\{S_t>K\}}\dd S_t+\tfrac12\int_0^T\delta_K(S_t)\,\dd[S]_t.
+\]
+The last term is a local time, and it is the \emph{loss} you take by buying slightly above $K$ and selling slightly below on each of the infinitely many crossings. Its expected value is the time value of the option. Discretising the strategy makes it look fine until you notice the crossings get denser as you refine. In this picture, an option's time value is exactly the expected local time at the strike. The same idea gives Dupire's formula (Chapter~\ref{ch:localvol}).
+\end{example}
+
+\begin{exercises}
+\item Compute $\E\big[\big(\int_0^TW_t\,\dd W_t\big)^2\big]$ two ways: by isometry and from Proposition~\ref{prop:threechoices}.
+\item Find $\Var\big(\int_0^T W_t^2\dd W_t\big)$.
+\item Solve for the distribution of $\int_0^T e^{-\kappa(T-t)}\dd W_t$. Why is it Gaussian?
+\item Let $X_t=W_t^3-3tW_t$. Show by It\^o's formula that it is a martingale and identify its integrand. What is $[X]_t$?
+\item Compute $\dd(W_t/\sqrt{1+t})$ and $\dd(\ln S_t)$ for GBM. Why is the $\tfrac12\sigma^2$ in the latter sometimes called the \emph{volatility drag}? Show that the median of $S_T$ is below its mean.
+\item Let $W^1,W^2$ be independent Brownian motions. Show that $B_t=\int_0^t\cos(W^2_s)\dd W^1_s+\int_0^t\sin(W^2_s)\dd W^2_s$ is a Brownian motion. Is it Gaussian jointly with $W^2$?
+\item Show that $\dd W^3=3W^2\circ\dd W$ in the Stratonovich sense, and convert it to an It\^o statement to check it.
+\item Explain why the anti-It\^o integral of $W$ fails to be a martingale; compute its drift.
+\end{exercises}

@@ -1,0 +1,110 @@
+\chapter{Local Volatility}\label{ch:localvol}
+
+The simplest way to produce a smile is to let volatility depend on the spot price and time:
+\[
+\dd S_t=(r-q)S_t\dd t+\sigma_{\rm loc}(t,S_t)S_t\dd W_t.
+\]
+There remains one Brownian motion, so the market is complete, and vanilla options are hedged with the stock alone. Dupire (1994) and Derman--Kani (1994) showed there is exactly one such function matching a full, arbitrage-free surface of call prices.
+
+\section{Dupire's formula}
+
+\begin{theorem}[Dupire]\label{thm:dupire}
+Let $C(K,T)$ be the (discounted) call price with spot $S_0$ and let $r,q$ be constants. If $C$ is smooth, with $\partial_{KK}C>0$, then the local volatility reproducing all call prices is
+\[
+\sigma_{\rm loc}^2(T,K)=\frac{\partial_TC+(r-q)K\partial_KC+qC}{\tfrac12K^2\partial_{KK}C}.
+\]
+\end{theorem}
+\begin{proof}
+Take $r=q=0$ for clarity. Let $\rho(T,y)=\partial_{KK}C(K,T)|_{K=y}$ be the density (Theorem~\ref{thm:bl}). The forward equation \eqref{eq:fp} says
+\[
+\partial_T\rho=\tfrac12\partial_{yy}\bigl(\sigma_{\rm loc}^2y^2\rho\bigr).
+\]
+Write $\partial_TC=\int(y-K)^+\partial_T\rho\,\dd y=\tfrac12\int(y-K)^+\partial_{yy}(\sigma_{\rm loc}^2y^2\rho)\dd y$. Integrate by parts twice: $\partial_{yy}(y-K)^+=\delta_K(y)$, and boundary terms vanish. So
+\[
+\partial_TC=\tfrac12\sigma_{\rm loc}^2(T,K)K^2\rho(T,K)=\tfrac12\sigma_{\rm loc}^2K^2\partial_{KK}C.
+\]
+\end{proof}
+
+\begin{intuition}
+The Dupire equation is a \emph{forward} PDE in $(T,K)$, whereas Black--Scholes is backward in $(t,S)$. Numerator: the calendar spread $\partial_TC$, the cost of extending maturity by a moment. Denominator: the butterfly $\partial_{KK}C$, the probability density of being at $K$. By Tanaka (Example~\ref{ex:stoploss}), extending a call from $T$ to $T+\dd T$ pays off exactly $\tfrac12\sigma^2S^2\delta_K(S)\dd T$: gamma P\&L at the strike. Thus local variance is the ratio \emph{cost of a calendar spread} over \emph{cost of a butterfly}.
+
+So no-arbitrage on the surface (Chapter~\ref{ch:smile}) is exactly what makes $\sigma_{\rm loc}^2$ positive and finite.
+\end{intuition}
+
+\paragraph{In implied-variance coordinates.} Prices are hard to differentiate numerically from noisy data. Let $w(k,T)=\sigma_{\rm imp}^2T$ with $k=\ln(K/F_T)$. Gatheral shows, by the chain rule on Black's formula,
+\begin{equation}\label{eq:gath}
+\sigma_{\rm loc}^2(T,k)=\frac{\partial_Tw}{1-\frac{k}{w}\partial_kw+\frac14\bigl(-\frac14-\frac1w+\frac{k^2}{w^2}\bigr)(\partial_kw)^2+\frac12\partial_{kk}w}.
+\end{equation}
+Numerator and denominator are precisely the calendar and butterfly no-arbitrage conditions. The surface is free of static arbitrage if and only if both are nonnegative.
+
+\begin{numcheck}
+For the toy surface $\sigma_{\rm imp}(k)=0.20-0.10k+0.15k^2$ at $T=0.5$, price-based Dupire (by finite differences) and formula \eqref{eq:gath} agree to four decimals: $22.30\%$, $19.71\%$ and $18.28\%$ at $K=90,100,110$, against implied $21.22\%$, $20.00\%$ and $19.18\%$. Local vol is steeper than implied, as the next section explains.
+\end{numcheck}
+
+\section{Local vol as a conditional expectation}
+
+\begin{theorem}[Gy\"ongy; Dupire]\label{thm:gyongy}
+Let $\dd S_t=\sigma_tS_t\dd W_t$ for an arbitrary adapted $\sigma_t$. Then the local vol model with
+\[
+\sigma_{\rm loc}^2(T,K)=\E^\Q\bigl[\sigma_T^2\mid S_T=K\bigr]
+\]
+has the same one-dimensional marginal laws of $S_T$ as the original model, for every $T$.
+\end{theorem}
+\begin{proof}
+By Tanaka--Meyer applied to $(S_T-K)^+$,
+\[
+\E(S_{T+\dd T}-K)^+-\E(S_T-K)^+=\tfrac12\E[\delta_K(S_T)S_T^2\sigma_T^2]\dd T=\tfrac12K^2\E[\sigma_T^2\mid S_T=K]\rho(T,K)\dd T.
+\]
+Comparing with the Dupire equation gives the result.
+\end{proof}
+
+\begin{intuition}
+Local variance is the market's consensus forecast of future instantaneous variance, conditional on the stock being at that level at that date. It is to instantaneous variance what the forward rate is to the short rate. A local vol model is the unique Markov model with these marginals. But marginals are not joint distributions: Stochastic vol and its local vol ``mimic'' price all European options identically, yet disagree on everything path-dependent.
+\end{intuition}
+
+\section{Relating implied to local volatility}
+
+For $r=0$ the Berestycki--Busca--Florent (BBF) short-maturity result says that implied volatility at $K$ is a harmonic-mean-type average of local vol along the straight line from spot to strike:
+\[
+\frac{1}{\sigma_{\rm imp}(K)}=\frac{1}{\ln(K/S)}\int_S^K\frac{\dd s}{s\,\sigma_{\rm loc}(s)}\quad(T\to0).
+\]
+Taylor-expanding, it gives the \emph{one-half rule}.
+
+\begin{proposition}[Skew rule]\label{prop:skewrule}
+For short maturities, near the money, implied volatility is the average of local volatility between spot and strike. So
+\[
+\sigma_{\rm imp}(K)\approx\frac{\sigma_{\rm loc}(S)+\sigma_{\rm loc}(K)}{2},\qquad\partial_K\sigma_{\rm loc}\approx2\,\partial_K\sigma_{\rm imp}.
+\]
+\end{proposition}
+
+\begin{numcheck}
+For the toy surface (slope $-0.10$ in $k$), the local vol slope at the money computed from \eqref{eq:gath} is $-0.1997$ at $T=0.02$ (ratio $1.997$) and $-0.1928$ at $T=0.5$ (ratio $1.93$). The factor of $2$ holds well, particularly at short maturity.
+\end{numcheck}
+
+\section{The flaw: smile dynamics}
+
+Suppose today's smile is fitted. What does the model say about tomorrow's smile if spot rises? Roughly, the implied vol at strike $K$ averages local vol over the path from $S$ to $K$. If $S$ rises, the average shifts to include higher strikes, where local vol is lower on a negative skew. By the rule above, the local vol model predicts that the at-the-money vol falls as spot rises at about twice the slope of the skew:
+\[
+\frac{\dd\sigma_{\rm ATM}}{\dd S}\approx2\,\partial_K\sigma_{\rm imp}\quad\text{(local vol)},\qquad\text{but}\quad\sigma_{\rm imp}(K;S)\approx g\Bigl(\frac{K+S}{2}\Bigr).
+\]
+Thus the local vol smile moves \emph{opposite} to spot: a rise in spot moves the smile left. Hagan et al.\ (2002) highlighted that this is contrary to what is observed and to what stochastic vol models give, and showed that delta hedges computed from local vol can be worse than plain Black--Scholes.
+
+\begin{pitfall}
+Fitting today's surface perfectly does not make a model right. Local vol has zero residual on vanilla options by construction, which proves nothing about their \emph{dynamics}. It also predicts that forward smiles flatten as the local vol surface flattens with time. So forward-starting options and cliquets, which depend on forward smiles, are systematically mispriced by local vol.
+\end{pitfall}
+
+\section{Practice}
+
+Local vol remains in wide use: it gives a consistent price for any barrier or path-dependent option that matches the vanilla hedges, and a PDE exists in one spatial dimension. To compute it stably, fit a smooth arbitrage-free parametrisation (say, SVI by slices) first, and then use \eqref{eq:gath}. Applying the price formula to raw quotes amplifies noise: second derivatives of noisy data are unusable. Combining with stochastic volatility yields stochastic-local volatility (SLV):
+\[
+\dd S=\sqrt{v_t}\,L(t,S)\,S\dd W,\quad L^2(t,K)=\frac{\sigma_{\rm Dup}^2(t,K)}{\E[v_t\mid S_t=K]},
+\]
+where the leverage function $L$ is chosen by Theorem~\ref{thm:gyongy} to refit vanillas exactly while retaining stochastic-vol dynamics.
+
+\begin{exercises}
+\item Suppose $\sigma_{\rm imp}$ is flat. Show that Dupire returns that constant.
+\item Show that the CEV model $\sigma_{\rm loc}(S)=\sigma S^{\beta-1}$ gives an implied skew of $\approx\frac12(\beta-1)\sigma$ in $k$, with $\sigma\equiv\sigma_{\rm loc}(S)$.
+\item Derive Dupire's formula with $r,q\ne0$. \emph{Hint:} start from the discounted forward equation for $e^{-rT}\rho$.
+\item Why might a butterfly price zero at some strike imply an infinite local vol? Interpret with a discrete distribution for $S_T$.
+\item Consider a two-state stochastic vol model with $\sigma_T\in\{\sigma_L,\sigma_H\}$ fixed at time zero, probabilities $\tfrac12$. Write the local vol from Theorem~\ref{thm:gyongy} using Bayes. Sketch it for $\sigma_L=10\%$, $\sigma_H=30\%$, $T=1$. Compare path-dependent price of a one-touch in the two models qualitatively.
+\end{exercises}

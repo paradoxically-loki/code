@@ -1,0 +1,254 @@
+\chapter{Measure-Theoretic Probability}\label{ch:measure}
+
+\section{Why bother?}
+
+In the class notes, the coin-toss expectation was $\E[X]=\sum_\omega X(\omega)\Prob\{\omega\}$. For Brownian motion this formula is useless: $\Omega$ is a space of continuous paths, and every individual path has probability zero, so the sum is $0+0+\dots$ over an uncountable set. Something must replace it. Three separate needs drive the machinery.
+
+\begin{enumerate}
+\item \textbf{Integrals over path space.} We need $\E[X]$ when no single outcome carries mass.
+\item \textbf{Information.} ``What we know at time $t$'' must be a mathematical object, and $\E[X\mid\text{what we know}]$ must make sense even when we condition on events of probability zero, such as $\{W_t=x\}$.
+\item \textbf{Limits.} The It\^o integral is a limit of random variables. We must know in which sense it converges and when limits and expectations can be swapped.
+\end{enumerate}
+
+There is also a reason we cannot just assign a probability to every subset of $\Omega$. Under the uniform distribution on $[0,1)$ with translation invariance, a Vitali set has no consistent probability: translated copies of it partition $[0,1)$ into countably many pieces of equal size, and no number works as that size. So we restrict attention to a well-behaved family of events.
+
+\section{Probability spaces}
+
+\begin{definition}
+A \emph{$\sigma$-algebra} on $\Omega$ is a collection $\F$ of subsets with $\Omega\in\F$, closed under complements and countable unions. A \emph{probability measure} is a map $\Prob:\F\to[0,1]$ with $\Prob(\Omega)=1$ and $\Prob(\bigcup_n A_n)=\sum_n\Prob(A_n)$ for pairwise disjoint $A_n\in\F$. The triple $(\Omega,\F,\Prob)$ is a \emph{probability space}. The \emph{Borel $\sigma$-algebra} $\B(\R)$ is the smallest $\sigma$-algebra containing all open intervals.
+\end{definition}
+
+\begin{intuition}
+Read a $\sigma$-algebra as a \emph{list of yes/no questions you can answer}. If you can answer ``did $A$ happen?'', you can answer ``did $A$ not happen?''. If you can answer each of a sequence of questions, you can answer ``did at least one happen?''. For two coin tosses, $\F_1$ answers questions about the first toss only: it cannot separate $HH$ from $HT$. This is exactly why the class notes' $\F_n$ form a growing family.
+\end{intuition}
+
+Countable additivity gives \emph{continuity}: if $A_n\uparrow A$ then $\Prob(A_n)\uparrow\Prob(A)$, and if $A_n\downarrow A$ then $\Prob(A_n)\downarrow\Prob(A)$. To check that two measures agree, it is enough to check them on a generating family closed under intersections:
+
+\begin{theorem}[$\pi$--$\lambda$ uniqueness]\label{thm:pilambda}
+If two probability measures agree on a $\pi$-system $\mathcal{C}$ (a family closed under finite intersection), they agree on $\sigma(\mathcal{C})$.
+\end{theorem}
+
+So the law of a real random variable is determined by its CDF, since half-lines $(-\infty,x]$ form a $\pi$-system generating $\B(\R)$. The law of a process on path space is determined by its finite-dimensional distributions. This is the reason it was enough, in the class notes, to specify $W$ through its increments.
+
+\section{Random variables and information}
+
+\begin{definition}
+A \emph{random variable} is a map $X:\Omega\to\R$ with $\{X\in B\}\in\F$ for every Borel $B$. The $\sigma$-algebra $\sigma(X)=\{\{X\in B\}:B\in\B(\R)\}$ is the information revealed by $X$. The \emph{law} of $X$ is $\mu_X(B)=\Prob(X\in B)$.
+\end{definition}
+
+\begin{theorem}[Doob--Dynkin]\label{thm:doobdynkin}
+$Y$ is $\sigma(X)$-measurable if and only if $Y=g(X)$ for some Borel function $g$.
+\end{theorem}
+
+This turns a slogan into a theorem: ``$Y$ is known once $X$ is known'' means $Y$ is a function of $X$. It is what lets us write a conditional expectation $\E[h(S_T)\mid S_t]$ as an ordinary function $g(t,S_t)$, the step at the heart of Feynman--Kac.
+
+\section{The Lebesgue integral}
+
+Define $\E[X]=\int_\Omega X\,\dd\Prob$ in three steps.
+\begin{enumerate}
+\item For a simple $X=\sum_{i=1}^n a_i\ind_{A_i}$ with $a_i\ge 0$: $\E[X]=\sum_i a_i\Prob(A_i)$.
+\item For $X\ge 0$: $\E[X]=\sup\{\E[Y]: Y\text{ simple},\ 0\le Y\le X\}\in[0,\infty]$.
+\item For general $X$: $\E[X]=\E[X^+]-\E[X^-]$ when at least one is finite.
+\end{enumerate}
+
+\begin{intuition}
+The Riemann integral slices the \emph{domain} and needs $X$ to be nearly constant on each small slice; on path space there is no useful notion of a small slice. Lebesgue slices the \emph{range}: it asks how much probability sits on $\{v\le X<v+\dd v\}$, whatever shape that set has. This is the ``sum over range instead of domain'' shift mentioned in the class notes.
+\end{intuition}
+
+Three theorems let you exchange limit and expectation. Each is derived from the previous one.
+
+\begin{theorem}[Monotone convergence]
+If $0\le X_n\uparrow X$ a.s., then $\E[X_n]\uparrow\E[X]$.
+\end{theorem}
+
+\begin{theorem}[Fatou's lemma]\label{thm:fatou}
+If $X_n\ge 0$, then $\E[\liminf_n X_n]\le\liminf_n\E[X_n]$.
+\end{theorem}
+\begin{proof}
+Let $Y_n=\inf_{k\ge n}X_k$. Then $Y_n\uparrow\liminf X_n$ and $Y_n\le X_n$. Monotone convergence gives $\E[\liminf X_n]=\lim\E[Y_n]\le\liminf\E[X_n]$.
+\end{proof}
+
+\begin{theorem}[Dominated convergence]\label{thm:dct}
+If $X_n\to X$ a.s. and $|X_n|\le Y$ with $\E[Y]<\infty$, then $\E[X_n]\to\E[X]$.
+\end{theorem}
+\begin{proof}
+Apply Fatou to $Y+X_n\ge 0$ and to $Y-X_n\ge 0$. This gives $\E[X]\le\liminf\E[X_n]$ and $\E[X]\ge\limsup\E[X_n]$.
+\end{proof}
+
+\begin{pitfall}
+Mass can escape to infinity. On $[0,1]$ with Lebesgue measure, $X_n=n\ind_{(0,1/n)}\to 0$ everywhere while $\E[X_n]=1$. In finance the same phenomenon appears as the \emph{doubling strategy}: a process can be almost surely eventually at $+1$ while its expected value stays at zero along the way, because of an unbounded potential loss. The inequality in Fatou is why positive local martingales are only supermartingales (Proposition~\ref{prop:poslocal}).
+\end{pitfall}
+
+\paragraph{Law of the unconscious statistician.} $\E[g(X)]=\int_\R g(x)\,\mu_X(\dd x)$. Prove it for indicators, extend to simple functions, then pass to limits with monotone convergence. This ``standard machine'' proves most identities about integrals.
+
+\section{Inequalities and $L^p$ spaces}
+
+Write $\|X\|_p=\E[|X|^p]^{1/p}$ and let $L^p$ be the space of $X$ with $\|X\|_p<\infty$ (identifying a.s.\ equal variables).
+\begin{itemize}
+\item \textbf{Markov:} for $X\ge0$, $a>0$: $\Prob(X\ge a)\le\E[X]/a$. Proof: $a\ind_{\{X\ge a\}}\le X$.
+\item \textbf{Chebyshev:} $\Prob(|X-\E X|\ge a)\le\Var(X)/a^2$.
+\item \textbf{Jensen:} for convex $\varphi$, $\varphi(\E X)\le\E\varphi(X)$. Proof: take a supporting line $\ell(x)=\varphi(\E X)+c(x-\E X)\le\varphi(x)$, then take expectations.
+\item \textbf{H\"older:} $\E|XY|\le\|X\|_p\|Y\|_q$ for $1/p+1/q=1$. With $p=q=2$ this is Cauchy--Schwarz.
+\item \textbf{Minkowski:} $\|X+Y\|_p\le\|X\|_p+\|Y\|_p$.
+\end{itemize}
+
+The important fact is that $L^2$ is a complete inner product space (a Hilbert space) with $\langle X,Y\rangle=\E[XY]$. Completeness is exactly why the It\^o integral exists: Cauchy sequences of approximations must have a limit.
+
+\section{Modes of convergence}
+
+\begin{definition}
+Let $X_n,X$ be random variables.
+\begin{itemize}
+\item $X_n\to X$ \emph{almost surely} if $\Prob(\lim X_n=X)=1$.
+\item $X_n\to X$ \emph{in probability} if $\Prob(|X_n-X|>\epsilon)\to0$ for all $\epsilon>0$.
+\item $X_n\to X$ \emph{in $L^p$} if $\E|X_n-X|^p\to0$.
+\item $X_n\to X$ \emph{in distribution} if $\E f(X_n)\to\E f(X)$ for all bounded continuous $f$.
+\end{itemize}
+\end{definition}
+
+The implications are: a.s.\ $\Rightarrow$ in probability $\Rightarrow$ in distribution, and $L^p\Rightarrow$ in probability. Neither a.s.\ nor $L^p$ implies the other. Two counterexamples on $[0,1]$ are worth remembering. $n\ind_{(0,1/n)}\to0$ a.s.\ but not in $L^1$. The ``typewriter'' sequence $\ind_{[0,1]},\ind_{[0,1/2]},\ind_{[1/2,1]},\ind_{[0,1/4]},\dots$ tends to $0$ in every $L^p$ but converges at no point. It is true, though, that convergence in probability implies a.s.\ convergence along a subsequence.
+
+The It\^o integral is built as an $L^2$ limit, and quadratic variation is an $L^2$ limit. Almost sure statements are recovered along fast subsequences, using the next lemma.
+
+\begin{lemma}[Borel--Cantelli]\label{lem:bc}
+Let $\{A_n\text{ i.o.}\}=\bigcap_m\bigcup_{n\ge m}A_n$.
+\begin{enumerate}
+\item If $\sum_n\Prob(A_n)<\infty$, then $\Prob(A_n\text{ i.o.})=0$.
+\item If the $A_n$ are independent and $\sum_n\Prob(A_n)=\infty$, then $\Prob(A_n\text{ i.o.})=1$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+(1) $\Prob(\bigcup_{n\ge m}A_n)\le\sum_{n\ge m}\Prob(A_n)\to0$. (2) By independence and $1-x\le e^{-x}$, $\Prob(\bigcap_{n=m}^{M}A_n^c)=\prod_{n=m}^M(1-\Prob(A_n))\le\exp(-\sum_{n=m}^M\Prob(A_n))\to0$ as $M\to\infty$.
+\end{proof}
+
+\begin{definition}
+A family $\{X_i\}$ is \emph{uniformly integrable} (UI) if $\lim_{c\to\infty}\sup_i\E[|X_i|\ind_{\{|X_i|>c\}}]=0$.
+\end{definition}
+
+\begin{theorem}[Vitali]\label{thm:vitali}
+$X_n\to X$ in $L^1$ if and only if $X_n\to X$ in probability and $\{X_n\}$ is UI.
+\end{theorem}
+
+UI is the sharp condition that rules out mass escaping to infinity. Bounded families in $L^p$ for $p>1$ are UI, and so is every family $\{\E[X\mid\G]:\G\subseteq\F\}$ with $X\in L^1$. This is why a true martingale on $[0,T]$ closed by $X_T$ is well behaved, while a strict local martingale is not.
+
+\section{Independence, product measures and limit theorems}
+
+$\sigma$-algebras $\G_1,\G_2$ are \emph{independent} if $\Prob(A\cap B)=\Prob(A)\Prob(B)$ for $A\in\G_1,B\in\G_2$. By Theorem~\ref{thm:pilambda}, it suffices to check this on generating $\pi$-systems. If $X,Y$ are independent and integrable, then $\E[XY]=\E X\,\E Y$.
+
+\begin{theorem}[Fubini--Tonelli]
+If $f\ge0$ or $\E|f|<\infty$ on a product space, the integral can be computed iteratively in either order.
+\end{theorem}
+
+Practically: $\E\int_0^T X_t\,\dd t=\int_0^T\E[X_t]\,\dd t$ whenever $\E\int_0^T|X_t|\,\dd t<\infty$. We use this constantly.
+
+\begin{theorem}[Strong law]
+If the $X_i$ are i.i.d.\ with $\E|X_1|<\infty$, then $\frac1n\sum_{i\le n}X_i\to\E X_1$ a.s.
+\end{theorem}
+
+\begin{theorem}[Central limit theorem]
+If the $X_i$ are i.i.d.\ with mean $\mu$ and variance $\sigma^2<\infty$, then $\sqrt n(\bar X_n-\mu)/\sigma\Rightarrow\Nc(0,1)$.
+\end{theorem}
+\begin{proof}[Sketch]
+Let $\varphi(u)=\E e^{iu(X_1-\mu)/\sigma}=1-u^2/2+o(u^2)$. The characteristic function of the normalised sum is $\varphi(u/\sqrt n)^n\to e^{-u^2/2}$. L\'evy's continuity theorem converts convergence of characteristic functions into convergence in distribution.
+\end{proof}
+
+These two results are the theory behind Monte Carlo (Chapter~\ref{ch:mc}), and the CLT is why the scaled random walk has a Gaussian limit. A functional version (Donsker's theorem) says the whole path $W^{(p)}$ converges in distribution to Brownian motion on $C[0,T]$. That is the rigorous meaning of the limit written in the class notes.
+
+\section{Absolute continuity and the Radon--Nikodym theorem}
+
+\begin{definition}
+$\Q$ is \emph{absolutely continuous} with respect to $\Prob$, written $\Q\ll\Prob$, if $\Prob(A)=0\Rightarrow\Q(A)=0$. They are \emph{equivalent}, $\Q\sim\Prob$, if each is absolutely continuous with respect to the other. They are \emph{mutually singular} if there is an $A$ with $\Prob(A)=1$ and $\Q(A)=0$.
+\end{definition}
+
+\begin{theorem}[Radon--Nikodym]\label{thm:rn}
+If $\Q\ll\Prob$ on $(\Omega,\F)$, there is an a.s.\ unique $Z\ge0$ with $\Q(A)=\E^\Prob[Z\ind_A]$ for all $A\in\F$. We write $Z=\dd\Q/\dd\Prob$. Moreover $\E^\Q[X]=\E^\Prob[XZ]$ whenever either side is defined, and $\Q\sim\Prob$ if and only if $Z>0$ $\Prob$-a.s.
+\end{theorem}
+\begin{proof}[Sketch (von Neumann)]
+Let $\mu=\Prob+\Q$. The map $X\mapsto\E^\Q[X]$ is a bounded linear functional on $L^2(\mu)$, because $|\E^\Q X|\le\|X\|_{L^2(\Q)}\le\|X\|_{L^2(\mu)}$. By the Riesz representation theorem there is $g\in L^2(\mu)$ with $\E^\Q[X]=\int Xg\,\dd\mu$. Taking indicators gives $0\le g\le1$ $\mu$-a.e. Rearranging, $\int X(1-g)\,\dd\Q=\int Xg\,\dd\Prob$. Absolute continuity forces $g<1$ $\Q$-a.e.; putting $X=Y/(1-g)$ gives $Z=g/(1-g)$.
+\end{proof}
+
+\begin{intuition}
+$Z(\omega)$ is the factor by which $\Q$ inflates or deflates the likelihood of $\omega$ relative to $\Prob$. In a finite world it is just the ratio $\Q\{\omega\}/\Prob\{\omega\}$ from the class notes. It is a \emph{likelihood ratio}, the same object a statistician uses to compare hypotheses.
+\end{intuition}
+
+\begin{example}[The homework in the class notes: changing the variance]\label{ex:variance}
+Let $X\sim\Nc(0,\sigma^2)$ under $\Prob$ and let $\Q$ make $X\sim\Nc(0,s^2)$. The ratio of the two densities gives
+\[
+Z=\frac{\sigma}{s}\exp\!\Big(-\frac{X^2}{2}\Big(\frac1{s^2}-\frac1{\sigma^2}\Big)\Big).
+\]
+This is a valid derivative: $Z>0$ and $\E^\Prob Z=1$. So for a \emph{single} Gaussian, the variance can be changed.
+
+For a \emph{path} it cannot. Take $n$ i.i.d.\ increments; the likelihood ratio is a product of $n$ such terms. By the strong law, under $\Prob$ the realised variance $\frac1n\sum X_i^2\to\sigma^2$, and under $\Q$ it tends to $s^2$. Those two events are disjoint, so the limiting measures are mutually singular. Continuous Brownian paths with volatility $\sigma$ and with volatility $s\ne\sigma$ live on disjoint sets, distinguished by quadratic variation. That is the deep reason Girsanov's theorem changes the drift only, and why volatility is the same under $\Prob$ and $\Q$.
+\end{example}
+
+\section{Conditional expectation}
+
+This is the most important definition in the booklet.
+
+\begin{definition}\label{def:condexp}
+Let $X\in L^1(\F)$ and $\G\subseteq\F$ be a $\sigma$-algebra. $\E[X\mid\G]$ is a random variable $Y$ with
+\begin{enumerate}
+\item $Y$ is $\G$-measurable,
+\item $\E[Y\ind_G]=\E[X\ind_G]$ for every $G\in\G$.
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}
+$\E[X\mid\G]$ exists and is a.s.\ unique.
+\end{theorem}
+\begin{proof}
+\emph{Uniqueness.} If $Y,Y'$ both work, then $G=\{Y>Y'\}\in\G$ and $\E[(Y-Y')\ind_G]=0$ with a positive integrand on $G$, so $\Prob(G)=0$. Symmetrically, $\Prob(Y<Y')=0$.
+
+\emph{Existence.} Assume $X\ge0$ (split into $X^\pm$ otherwise). On $(\Omega,\G)$ define $\nu(G)=\E[X\ind_G]$. Then $\nu$ is a finite measure with $\nu\ll\Prob|_\G$, and Radon--Nikodym on $\G$ supplies a $\G$-measurable density $Y$.
+\end{proof}
+
+\begin{intuition}
+For $X\in L^2$, $\E[X\mid\G]$ is the \emph{orthogonal projection} of $X$ onto the closed subspace $L^2(\G)$. Condition (2) says $X-Y$ is orthogonal to every indicator in $\G$, hence to all of $L^2(\G)$. So $\E[X\mid\G]$ minimises $\E[(X-Y)^2]$ over all $\G$-measurable $Y$: it is the \emph{best forecast of $X$ given the information $\G$}. This picture also explains the following properties, since a projection onto a smaller subspace after projecting onto a bigger one is the same as projecting straight onto the smaller one.
+\end{intuition}
+
+\begin{proposition}\label{prop:ce}
+For integrable $X,Y$, sub-$\sigma$-algebras $\mathcal{H}\subseteq\G$:
+\begin{enumerate}
+\item \textbf{Linearity and positivity:} $\E[aX+bY\mid\G]=a\E[X\mid\G]+b\E[Y\mid\G]$, and $X\ge0\Rightarrow\E[X\mid\G]\ge0$.
+\item \textbf{Tower:} $\E[\E[X\mid\G]\mid\mathcal{H}]=\E[X\mid\mathcal{H}]$. In particular $\E[\E[X\mid\G]]=\E[X]$.
+\item \textbf{Taking out what is known:} if $Y$ is $\G$-measurable and $XY$ is integrable, $\E[XY\mid\G]=Y\E[X\mid\G]$.
+\item \textbf{Independence:} if $\sigma(X)$ is independent of $\G$, $\E[X\mid\G]=\E[X]$.
+\item \textbf{Jensen:} for convex $\varphi$, $\varphi(\E[X\mid\G])\le\E[\varphi(X)\mid\G]$.
+\item \textbf{Freezing:} if $X$ is independent of $\G$, $Y$ is $\G$-measurable and $g$ is bounded, then $\E[g(X,Y)\mid\G]=h(Y)$, where $h(y)=\E[g(X,y)]$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+All follow by checking Definition~\ref{def:condexp}. For (2): for $H\in\mathcal{H}\subseteq\G$, $\E[\E[X\mid\G]\ind_H]=\E[X\ind_H]$ by the definition for $\G$, and that is the defining identity for $\E[X\mid\mathcal{H}]$. For (3): take $Y=\ind_{G'}$ first, where it reduces to the definition with $G\cap G'$, then extend by the standard machine. For (4): $\E[X\ind_G]=\E[X]\Prob(G)=\E[\E[X]\ind_G]$. For (6): check it for products $g(x,y)=a(x)b(y)$ using (3) and (4), then extend by a monotone class argument.
+\end{proof}
+
+Property (6) is how we actually compute. When the class notes write $\E[(S_T-K)^+\mid\F_t]$ and treat $S_t$ as a constant $x$ while integrating over the independent increment, that is the freezing lemma.
+
+\begin{theorem}[Bayes rule for measure changes]\label{thm:bayes}
+Let $\Q\sim\Prob$ on $\F$ with density $Z$, let $\G\subseteq\F$, and let $Z_\G=\E^\Prob[Z\mid\G]$. For $X$ with $\E^\Q|X|<\infty$,
+\[
+\E^\Q[X\mid\G]=\frac{\E^\Prob[XZ\mid\G]}{Z_\G}.
+\]
+\end{theorem}
+\begin{proof}
+The right side, call it $Y$, is $\G$-measurable. For $G\in\G$, using the tower property and taking out what is known,
+\[
+\E^\Q[Y\ind_G]=\E^\Prob[YZ\ind_G]=\E^\Prob[Y\ind_G\E^\Prob[Z\mid\G]]=\E^\Prob[\E^\Prob[XZ\mid\G]\ind_G]=\E^\Prob[XZ\ind_G]=\E^\Q[X\ind_G].\qedhere
+\]
+\end{proof}
+
+\begin{example}[Gaussian conditioning]\label{ex:gauss}
+If $(X,Y)$ is jointly Gaussian with $\Var Y>0$, set $\beta=\Cov(X,Y)/\Var(Y)$. Then $X-\beta Y$ is uncorrelated with $Y$, hence independent of $Y$ (jointly Gaussian). So
+\[
+\E[X\mid Y]=\E X+\beta(Y-\E Y),\qquad \Var(X\mid Y)=\Var X-\beta^2\Var Y.
+\]
+Conditional expectation is linear regression, and the conditional variance does not depend on $Y$. Applied to the Brownian bridge this gives $\E[W_s\mid W_t]=(s/t)W_t$ for $s<t$. The Kalman filter (Section~\ref{sec:kalman}) is a repeated application of this one formula.
+\end{example}
+
+\begin{exercises}
+\item Let $\Omega=\{HH,HT,TH,TT\}$. List $\sigma(M_2)$, where $M_2$ is the symmetric walk at time 2. Show that $\sigma(M_1,M_2)$ has 16 elements and is strictly larger.
+\item Prove $\Var(X)=\E[\Var(X\mid\G)]+\Var(\E[X\mid\G])$. Use the result to show that conditional expectation reduces variance. This fact is the basis of conditional Monte Carlo.
+\item Show that if $X_n\to X$ in probability then a subsequence converges a.s. \emph{Hint:} pick $n_k$ with $\Prob(|X_{n_k}-X|>2^{-k})<2^{-k}$ and use Borel--Cantelli.
+\item Let $X\sim\Nc(0,1)$ under $\Prob$. Find the density $Z$ turning $X$ into $\Nc(\mu,1)$. Compute $\E^\Prob[Z^2]$, and interpret it for importance sampling.
+\item Prove that if $X_n\ge0$, $X_n\to X$ a.s.\ and $\E X_n\to\E X<\infty$, then $X_n\to X$ in $L^1$ (Scheff\'e). \emph{Hint:} apply dominated convergence to $(X-X_n)^+$.
+\item Compute $\E[W_s\mid W_t,W_u]$ for $s<t<u$ and for $t<s<u$.
+\end{exercises}

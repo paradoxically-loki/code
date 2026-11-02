@@ -1,0 +1,164 @@
+\chapter{Financial Statistics and Time Series}\label{ch:stats}
+
+\section{Stylised facts}
+
+Log-returns $r_t=\ln(S_t/S_{t-1})$ share some empirical regularities across assets (Cont, 2001):
+\begin{enumerate}
+\item Linear autocorrelation of returns is close to zero beyond very short lags.
+\item Unconditional distributions have fat tails, with tail index around $3$ to $5$.
+\item \emph{Volatility clustering:} squared and absolute returns have strong, slowly decaying autocorrelation.
+\item \emph{Leverage effect:} volatility is negatively correlated with past returns.
+\item Aggregational Gaussianity: tails thin as horizon lengthens.
+\item Volume and volatility are positively related, and there are intraday patterns.
+\end{enumerate}
+Black--Scholes (i.i.d.\ Gaussian log returns) explains none of (2) to (6). The rest of this chapter deals with the tools for them.
+
+\section{Regression and inference}
+
+For $y=X\beta+\epsilon$ with full-rank $X$, $\hat\beta=(X^\top X)^{-1}X^\top y$ is the orthogonal projection of $y$ onto the column space of $X$.
+
+\begin{theorem}[Gauss--Markov]
+If $\E[\epsilon\mid X]=0$ and $\Var(\epsilon\mid X)=\sigma^2I$, then $\hat\beta$ has the least variance among linear unbiased estimators, with $\Var(\hat\beta\mid X)=\sigma^2(X^\top X)^{-1}$.
+\end{theorem}
+
+Financial data usually violate the assumptions, and the \emph{point estimate often survives, but the standard errors do not}.
+\begin{itemize}
+\item \textbf{Heteroskedasticity:} use White's standard errors, $(X^\top X)^{-1}(\sum\hat\epsilon_t^2x_tx_t^\top)(X^\top X)^{-1}$.
+\item \textbf{Autocorrelation:} use Newey--West. This is essential when returns overlap. Regressing 12-month returns sampled monthly inflates $t$-statistics hugely.
+\item \textbf{Regressors that are not exogenous:} a predictor like dividend yield is a persistent, lagged function of price, and this causes the Stambaugh bias in predictive regressions.
+\item \textbf{Errors in variables:} attenuation of the slope towards zero.
+\end{itemize}
+
+\paragraph{Maximum likelihood.} Under regularity conditions, $\sqrt T(\hat\theta-\theta)\Rightarrow\Nc(0,I(\theta)^{-1})$, where $I$ is the Fisher information, and this is asymptotically efficient. If the likelihood is misspecified (say, Gaussian likelihood for $t$-distributed data), we have \emph{quasi}-MLE. It is often still consistent, but needs the sandwich covariance $H^{-1}GH^{-1}$.
+
+\paragraph{What can be estimated from a price path?}
+\begin{proposition}
+Let $\dd\ln S=\nu\dd t+\sigma\dd W$ be observed at $n$ intervals over total time $T$. The MLE of $\nu$ is $(\ln S_T-\ln S_0)/T$, with variance $\sigma^2/T$, \emph{independent of $n$}. The realised variance estimator $\hat\sigma^2=\frac1T\sum(\Delta\ln S)^2$ has a variance of about $2\sigma^4/n$, which goes to zero with $n$.
+\end{proposition}
+
+\begin{intuition}
+This is the quadratic variation theorem in statistical clothing: sampling more often over a fixed interval tells you nothing about drift (you only need the endpoints), but with continuous observation volatility is known exactly. It also explains why mean estimation is the heart of portfolio trouble. To pin down a drift of $8\%$ with a volatility of $20\%$ to one standard error of $2\%$ takes $100$ years.
+\end{intuition}
+
+\section{Time series}
+
+\paragraph{Stationarity and ARMA.} A process is weakly stationary when its mean and autocovariance $\gamma(k)$ do not depend on time. By Wold's theorem, a stationary process is a moving average of white noise, plus a deterministic part. An AR(1), $x_t=c+\phi x_{t-1}+\epsilon_t$ with $|\phi|<1$, has $\E x=c/(1-\phi)$, $\Var x=\sigma_\epsilon^2/(1-\phi^2)$ and $\rho(k)=\phi^k$. It is exactly the discrete sampling of OU, with $\phi=e^{-\kappa h}$. ARMA$(p,q)$ is identified by the ACF and PACF shapes, and estimated by MLE; information criteria (AIC, BIC) pick the order; and the Ljung--Box statistic tests residual autocorrelation.
+
+\paragraph{Unit roots.} When $\phi=1$, $x_t$ is a random walk: not stationary, variance growing. Estimating $\phi$ under the unit root has a non-standard distribution (Dickey--Fuller), biased downward, with critical values different from $t$. Regressing one independent random walk on another gives ``significant'' $t$-statistics with high $R^2$: the \emph{spurious regression} (Granger--Newbold). So regress returns, not prices, unless there is cointegration.
+
+\paragraph{Cointegration.} Two $I(1)$ series are cointegrated if a linear combination $x_t-\beta y_t$ is stationary. Engle--Granger: estimate $\beta$ by OLS, then run a unit-root test on the residual (with its own critical values). Johansen's test handles multiple series. This underlies pairs trading: if the spread $s_t=x_t-\beta y_t$ is OU with speed $\kappa$, the half-life is $\ln2/\kappa$. Entry when the spread is unusually far from its mean is a standard statistical arbitrage. Note that the trade's main risk is that the relationship breaks: the OU parameters are not structural.
+
+\section{Conditional volatility: GARCH}
+
+\begin{definition}[GARCH$(1,1)$; Bollerslev 1986]
+$r_t=\sqrt{h_t}\,z_t$, with $z_t$ i.i.d.\ zero mean and unit variance, and
+\[
+h_t=\omega+\alpha r_{t-1}^2+\beta h_{t-1},\qquad\omega>0,\ \alpha,\beta\ge0.
+\]
+\end{definition}
+
+\begin{proposition}
+If $\alpha+\beta<1$:
+\begin{enumerate}
+\item $\E r_t^2=v:=\omega/(1-\alpha-\beta)$.
+\item \textbf{Forecast:} $\E_t[h_{t+k}]=v+(\alpha+\beta)^{k-1}(h_{t+1}-v)$, with half-life $\ln\tfrac12/\ln(\alpha+\beta)$.
+\item \textbf{Fat tails} from Gaussian $z$ (when $1-(\alpha+\beta)^2-2\alpha^2>0$): kurtosis is
+\[
+\frac{\E r^4}{(\E r^2)^2}=\frac{3\bigl(1-(\alpha+\beta)^2\bigr)}{1-(\alpha+\beta)^2-2\alpha^2}>3.
+\]
+\item \textbf{Clustering:} $r_t^2$ follows an ARMA(1,1), with $\rho(1)=\frac{\alpha(1-\alpha\beta-\beta^2)}{1-2\alpha\beta-\beta^2}$ and $\rho(k)=(\alpha+\beta)\rho(k-1)$ for $k\ge2$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(1) Taking expectations, $v=\omega+\alpha v+\beta v$. (2) follows from $h_{t+1}-v=(\alpha+\beta)(h_t-v)+\alpha h_t(z_t^2-1)$, and the last term has conditional mean $0$. (3) Square the recursion and use $\E z^4=3$ to solve for $\E h^2$. Then $\E r^4=3\E h^2$. (4) Writing $u_t=r_t^2-h_t$, a martingale difference, gives $r_t^2=\omega+(\alpha+\beta)r_{t-1}^2+u_t-\beta u_{t-1}$.
+\end{proof}
+
+\begin{intuition}
+Today's squared shock raises tomorrow's variance. So a large move today predicts larger moves for some time. Even with Gaussian $z_t$, the unconditional distribution is a mixture over random $h_t$, hence fat-tailed. In practice $\alpha+\beta$ is close to $1$ (around $0.98$), which is high persistence. RiskMetrics' EWMA, $h_t=\lambda h_{t-1}+(1-\lambda)r_{t-1}^2$ with $\lambda=0.94$, is the limit $\omega=0$, $\alpha+\beta=1$.
+\end{intuition}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=1.05cm,xticklabels at=edge bottom},booklet,width=0.92\linewidth,height=3.5cm,ymin=-7,ymax=7,xmin=0,xmax=999]
+\nextgroupplot[ylabel={\% return},title={GARCH(1,1): clusters of large moves}]
+\addplot[ser1,line width=0.35pt] table[x=t,y=garch]{\datapath/garch.dat};
+\nextgroupplot[ylabel={\% return},xlabel={day},title={i.i.d.\ Gaussian with the same unconditional variance}]
+\addplot[ser2,line width=0.35pt] table[x=t,y=iid]{\datapath/garch.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{1{,}000 simulated days for $\omega=2\times10^{-6}$, $\alpha=0.08$, $\beta=0.90$ (annualised unconditional volatility $15.9\%$) and for a constant-volatility model.}\label{fig:garch}
+\end{figure}
+
+\begin{numcheck}
+Simulating 2{,}000{,}000 days with these parameters: unconditional variance $1.005\times10^{-4}$ (theory $1.000\times10^{-4}$); kurtosis $4.57$ (theory $4.43$; convergence is slow, since high moments of GARCH are heavy-tailed); autocorrelation of $r^2$ at lags $1,2,5,10$ is $0.213,0.217,0.193,0.180$ (theory $0.205,0.201,0.189,0.171$).
+\end{numcheck}
+
+\paragraph{Estimation and variants.} Estimate by quasi-MLE, maximising the Gaussian log-likelihood $-\tfrac12\sum[\ln h_t+r_t^2/h_t]$, which is consistent for non-Gaussian $z$. Variants: GJR-GARCH and EGARCH add the leverage effect with asymmetry between up and down moves. As a diffusion limit, GARCH converges to a stochastic vol model with $\dd h=\kappa(\theta-h)\dd t+\xi h\dd B$ (Nelson 1990). Heston and Nandi (2000) built a GARCH with closed-form option prices, connecting the discrete and continuous worlds.
+
+\section{Realised volatility}
+
+Theorem~\ref{thm:qv} suggests estimating integrated variance with $\mathrm{RV}=\sum_ir_i^2$ from intraday data. With continuous semimartingale prices, it converges to $\int\sigma^2\dd t$, with jumps adding $\sum(\Delta J)^2$. Bipower variation $\frac\pi2\sum|r_i||r_{i-1}|$ removes the jump part.
+
+\begin{pitfall}
+At very high frequency, prices are not semimartingales. Bid--ask bounce adds noise: observed $=$ true $+\epsilon$. Then $\E\mathrm{RV}=\int\sigma^2+2n\,\Var\epsilon$, which \emph{diverges} with $n$. The \emph{volatility signature plot} shows this. So practitioners sample at about five minutes, or use noise-robust estimators: two-scale (Zhang--Mykland--A\"it-Sahalia), realised kernels.
+\end{pitfall}
+
+Range-based estimators use more information per day: Parkinson's $\hat\sigma^2=\frac{1}{4\ln2}\bigl(\ln\frac HL\bigr)^2$ is about five times more efficient than a close-to-close squared return, as the range distribution comes from reflection (Chapter~\ref{ch:bm}). Corsi's HAR model forecasts RV with a regression on daily, weekly and monthly RV, approximating the long memory seen in the data.
+
+\section{The Kalman filter}\label{sec:kalman}
+
+Consider a linear Gaussian state-space model:
+\begin{align*}
+x_t&=Fx_{t-1}+w_t,&w_t&\sim\Nc(0,Q),&&\text{(state)}\\
+y_t&=Hx_t+v_t,&v_t&\sim\Nc(0,R).&&\text{(observation)}
+\end{align*}
+We want $\E[x_t\mid y_1,\dots,y_t]$. All joint laws are Gaussian, so Example~\ref{ex:gauss} gives everything. Let $(m_{t-1},P_{t-1})$ be the posterior mean and covariance at $t-1$.
+
+\begin{theorem}[Kalman]
+\emph{Predict:} $m_t^-=Fm_{t-1}$, $P_t^-=FP_{t-1}F^\top+Q$.\\
+\emph{Update:} with $S_t=HP_t^-H^\top+R$ and gain $K_t=P_t^-H^\top S_t^{-1}$,
+\[
+m_t=m_t^-+K_t(y_t-Hm_t^-),\qquad P_t=(I-K_tH)P_t^-.
+\]
+\end{theorem}
+\begin{proof}
+Given $y_{1:t-1}$, the pair $(x_t,y_t)$ is jointly Gaussian with means $(m_t^-,Hm_t^-)$, $\Var y_t=S_t$, and $\Cov(x_t,y_t)=P_t^-H^\top$. The conditional mean and variance of $x_t$ given $y_t$ are therefore exactly the formulas above, by the regression formula of Example~\ref{ex:gauss}.
+\end{proof}
+
+\begin{intuition}
+The filter is a running regression. It predicts, sees the surprise (innovation) $y_t-Hm_t^-$, and updates in proportion to how much it trusts the data: gain near $1$ when state noise dominates, near $0$ when observation noise dominates. For a random walk plus noise (scalar $F=H=1$), the steady state is exponential smoothing, with a gain fixed by signal-to-noise $q/R$.
+\end{intuition}
+
+\begin{numcheck}
+For the local level model with $Q=0.01$, $R=0.25$ over $500$ steps: gain converges to $0.1810$, equal to the steady-state Riccati solution. The filter's RMSE is $0.246$, compared with $0.512$ for using the raw observation.
+\end{numcheck}
+
+Applications: time-varying hedge ratios in pairs trading, trend extraction, estimating unobserved volatility or the short rate from yields, and dealing with missing data. Likelihoods are produced from the innovations, so parameter estimation by MLE is cheap. For non-linear models, the extended and unscented filters use local linearisations, and particle filters use Monte Carlo.
+
+\section{Backtests and multiple testing}
+
+\paragraph{Sharpe ratio error.} For i.i.d.\ Gaussian returns, the annualised Sharpe has an approximate standard error of $\sqrt{(1+\tfrac12\mathrm{SR}^2)/T}$ with $T$ in years. A Sharpe of $1$ over $4$ years has a standard error of $0.6$; a $t$-statistic of $1.6$ is not significant. Lo (2002) gives autocorrelation corrections.
+
+\paragraph{Multiple testing.} Try $N$ independent zero-alpha strategies and pick the best. Its Sharpe $t$-statistic has expected value about $\sqrt{2\ln N}$. So a thousand strategies give an apparent $t\approx3.7$ from pure noise. Published factors face this issue (Harvey--Liu--Zhu suggest a hurdle of $t>3$). Bonferroni and Benjamini--Hochberg control false positives; the \emph{deflated Sharpe ratio} (Bailey--L\'opez de Prado) adjusts for the number of trials. So keep a record of how many ideas you tested.
+
+\begin{pitfall}
+Common ways to fool yourself in a backtest:
+\begin{itemize}
+\item \emph{Look-ahead bias:} features using information unavailable at the time (restated data, full-sample normalisation).
+\item \emph{Survivorship bias:} a universe of today's survivors, not all names that existed at the time.
+\item \emph{Costs:} ignoring spread, impact, borrow, funding.
+\item \emph{Overfitting:} tuning on a test set. Purged and embargoed cross-validation addresses leakage from overlapping labels.
+\item \emph{Regime dependence:} all data come from a few correlated macro regimes.
+\end{itemize}
+\end{pitfall}
+
+\begin{exercises}
+\item Show that OLS on $x_t=\phi x_{t-1}+\epsilon_t$ has $\E\hat\phi\approx\phi-(1+3\phi)/T$ (Kendall bias). Why does this bias inflate mean reversion estimates, and overstate pairs-trading profits?
+\item Derive the steady-state gain of the local level Kalman filter, as a function of $q/R$.
+\item Derive the GARCH$(1,1)$ kurtosis formula from the proposition.
+\item Simulate a Merton jump process and compare $\mathrm{RV}$ with bipower variation. Which one estimates $\sigma^2$?
+\item Estimate OU parameters by regression from a discrete sample. What is the distribution of the half-life estimator for a small sample?
+\item Show the expected range $\E[\max W-\min W]$ on $[0,T]$ is $\sqrt{8T/\pi}$. Using reflection, justify Parkinson's estimator: find $\E[(\max-\min)^2]$ and check the factor $4\ln2$.
+\item Show that the expected maximum of $N$ independent standard normals is near $\sqrt{2\ln N}$. Interpret for multiple testing.
+\end{exercises}

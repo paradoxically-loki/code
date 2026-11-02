@@ -1,0 +1,223 @@
+\chapter{Stochastic Volatility and Fourier Pricing}\label{ch:sv}
+
+\section{Pricing when volatility is a second risk}
+
+Let, under $\Prob$,
+\[
+\dd S=\mu S\dd t+\sqrt{v}S\dd W^1,\qquad\dd v=a(t,v)\dd t+b(t,v)\dd W^2,\qquad\dd W^1\dd W^2=\rho\dd t.
+\]
+The variance $v$ is not traded, so the stock alone cannot hedge an option. The usual argument uses a \emph{second option}. Let $V$ and $U$ be two options. Form $\Pi=V-\Delta S-\phi U$. Applying It\^o's formula and choosing $\phi=\partial_vV/\partial_vU$ and $\Delta=\partial_SV-\phi\partial_SU$ eliminates both $\dd W^1$ and $\dd W^2$. So $\Pi$ is riskless and must earn $r$. Rearranging gives
+\[
+\frac{\mathcal{G}V+rS\partial_SV-rV}{\partial_vV}=\frac{\mathcal{G}U+rS\partial_SU-rU}{\partial_vU},
+\qquad\mathcal{G}=\partial_t+\tfrac12vS^2\partial_{SS}+\rho\sqrt v\,bS\partial_{Sv}+\tfrac12b^2\partial_{vv}.
+\]
+The left side depends only on $V$ and the right side only on $U$, so both equal a function $-(a-\lambda b)$ of $(t,S,v)$. So every derivative solves
+\begin{equation}\label{eq:svpde}
+\partial_tV+\tfrac12vS^2\partial_{SS}V+\rho\sqrt v\,bS\partial_{Sv}V+\tfrac12b^2\partial_{vv}V+rS\partial_SV+(a-\lambda b)\partial_vV-rV=0.
+\end{equation}
+Here $\lambda(t,S,v)$ is the \emph{market price of volatility risk}. By Feynman--Kac, it is a pricing equation under the measure $\Q$ for which $\dd v=(a-\lambda b)\dd t+b\dd W^{\Q,2}$. No-arbitrage alone cannot fix $\lambda$. This is the second fundamental theorem at work (Theorem~\ref{thm:ftap2}): two shocks, one traded asset, infinitely many $\Q$. In practice one takes the model under $\Q$ directly and calibrates to option prices. What a calibrated $\theta$ means under $\Q$ need not be the actual long-run variance; the difference is the variance risk premium, which is typically negative for the buyer.
+
+\section{The mixing theorem}
+
+\begin{theorem}[Hull--White]\label{thm:hw}
+If $\rho=0$ and $v$ is independent of $W^1$, then
+\[
+C=\E^\Q\bigl[C_{\rm BS}(S_0,K,T,r,\bar\sigma)\bigr],\qquad\bar\sigma^2=\frac1T\int_0^Tv_t\dd t.
+\]
+\end{theorem}
+\begin{proof}
+Conditional on the whole path of $v$, $\ln S_T$ is normal with variance $\int_0^Tv_t\dd t$, because $W^1$ is independent of $v$. So the conditional price is Black--Scholes with volatility $\bar\sigma$. Apply the tower law.
+\end{proof}
+
+\begin{intuition}
+The price is an average of Black--Scholes prices over total variance. Black--Scholes is roughly linear in $\sigma$ near the money and strongly convex in $\sigma$ in the wings (\emph{volga} is positive there). By Jensen, randomness in volatility lifts wing prices more than ATM prices. This gives a smile that is \emph{symmetric} in log-moneyness. Non-zero $\rho$ tilts it. If $\rho<0$, down-moves come with high vol. Then the left tail fattens, and the smile turns into a skew.
+\end{intuition}
+
+\section{The Heston model}\label{sec:heston}
+
+Heston (1993) takes the CIR process for variance, under $\Q$ with zero dividends:
+\[
+\dd S=rS\dd t+\sqrt vS\dd W^1,\qquad\dd v=\kappa(\theta-v)\dd t+\xi\sqrt v\dd W^2,\qquad\dd W^1\dd W^2=\rho\dd t.
+\]
+Parameters: $v_0$ (spot variance), $\theta$ (long-run variance), $\kappa$ (speed of mean reversion), $\xi$ (vol of vol), $\rho$ (spot--vol correlation).
+
+\paragraph{The characteristic function.} Let $X_t=\ln(S_t/F_t)$, with $F_t=S_0e^{rt}$. Then $\dd X=-\tfrac12v\dd t+\sqrt v\dd W^1$. Define $\phi(\tau;u,x,v)=\E[e^{iuX_T}\mid X_{T-\tau}=x,v_{T-\tau}=v]$. By Feynman--Kac (with $\tau$ time to go),
+\[
+\partial_\tau\phi=\tfrac12v(\partial_{xx}\phi-\partial_x\phi)+\rho\xi v\partial_{xv}\phi+\tfrac12\xi^2v\partial_{vv}\phi+\kappa(\theta-v)\partial_v\phi,\qquad\phi(0)=e^{iux}.
+\]
+All coefficients are affine in the state $(x,v)$, so we guess an exponential-affine solution $\phi=\exp(C(\tau)+D(\tau)v+iux)$. Substituting and matching the coefficient of $v$ and the constant term gives
+\begin{align*}
+D'&=\tfrac12\xi^2D^2-(\kappa-\rho\xi iu)D-\tfrac12(u^2+iu),&D(0)&=0,\\
+C'&=\kappa\theta D,&C(0)&=0.
+\end{align*}
+The first is a scalar Riccati equation with constant coefficients. With $a=\kappa-\rho\xi iu$, $d=\sqrt{a^2+\xi^2(iu+u^2)}$ and $g=(a-d)/(a+d)$, its roots are $(a\pm d)/\xi^2$, and the solution is
+\begin{equation}\label{eq:hestoncf}
+D(\tau)=\frac{a-d}{\xi^2}\cdot\frac{1-e^{-d\tau}}{1-ge^{-d\tau}},\qquad C(\tau)=\frac{\kappa\theta}{\xi^2}\Bigl[(a-d)\tau-2\ln\frac{1-ge^{-d\tau}}{1-g}\Bigr].
+\end{equation}
+
+\begin{pitfall}
+\emph{The little Heston trap.} The original paper's form used $g^{-1}$ and $e^{d\tau}$. The complex logarithm in that form crosses its branch cut for long maturities, giving wrong prices without warning. The form above (Albrecher et al.\ 2007) stays on the principal branch. Always plot the integrand when coding a Fourier pricer.
+\end{pitfall}
+
+\section{Fourier pricing}\label{sec:fourier}
+
+\begin{theorem}[Lewis's formula]\label{thm:lewis}
+Let $\phi(u)=\E^\Q e^{iuX}$ be the characteristic function of $X=\ln(S_T/F)$, with $\E^\Q e^X=1$, and let $k=\ln(F/K)$. Then the undiscounted call price is
+\[
+\E^\Q(S_T-K)^+=F-\frac{\sqrt{FK}}{\pi}\int_0^\infty\frac{\mathrm{Re}\bigl[e^{iuk}\phi(u-\tfrac i2)\bigr]}{u^2+\frac14}\dd u.
+\]
+\end{theorem}
+\begin{proof}
+Since $(s-K)^+=s-\min(s,K)$ and $\E S_T=F$, we need $\E\min(S_T,K)$. With $y=\ln(S_T/K)=X+k$,
+\[
+\min(S_T,K)=\sqrt{S_TK}\,e^{-|y|/2}=\sqrt{FK}\,e^{X/2}e^{-|X+k|/2}.
+\]
+The function $e^{-|y|/2}$ has Fourier transform $\int e^{-|y|/2}e^{-iuy}\dd y=\frac{1}{u^2+1/4}$, so $e^{-|y|/2}=\frac1\pi\int_0^\infty\frac{\mathrm{Re}\,e^{iuy}}{u^2+1/4}\dd u$. Insert this, exchange order (legitimate because $\E e^{X/2}<\infty$), and use $\E[e^{X/2}e^{iuX}]=\phi(u-\tfrac i2)$.
+\end{proof}
+
+\begin{intuition}
+Characteristic functions are often known in closed form when densities are not. Taking a Fourier transform turns a convolution (payoff against density) into a product. The damping factor $e^{X/2}$ shifts the integration contour so that the payoff's transform exists; that shift is the $-i/2$. The Carr--Madan method does the same, with a dampening parameter and an FFT, computing all strikes at once on a grid. COS methods use a cosine expansion of the density.
+\end{intuition}
+
+Any model with known $\phi$ can use this: Heston, Merton, variance gamma, Bates. For Merton's model,
+\[
+\phi(u)=\exp\Bigl(T\bigl[-\tfrac12\sigma^2(iu+u^2)-iu\lambda\bar m+\lambda\bigl(e^{iu\mu_J-\frac12\delta^2u^2}-1\bigr)\bigr]\Bigr).
+\]
+
+\begin{numcheck}
+With $v_0=\theta=0.04$, $\kappa=2$, $\xi=0.5$, $\rho=-0.7$, $S_0=100$, $r=0$, $T=1$. (Note that $2\kappa\theta-\xi^2=-0.09<0$: the Feller condition fails.)
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+$K$ & Formula \eqref{eq:hestoncf} + Lewis & Monte Carlo (400k paths, 400 steps) & Std error\\
+\midrule
+80 & 21.8133 & 21.8205 & 0.0237\\
+100 & 7.1926 & 7.1931 & 0.0149\\
+120 & 0.7981 & 0.7968 & 0.0051\\
+\bottomrule
+\end{tabular}
+\end{center}
+The Lewis pricer applied to a pure Black--Scholes characteristic function reproduces the closed form to at least eight significant figures, which verifies the integrator.
+\end{numcheck}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 1,horizontal sep=1.2cm},booklet,width=0.5\linewidth,height=5.2cm,ymin=0.1,ymax=0.32,xmin=-0.35,xmax=0.3]
+\nextgroupplot[title={$T=0.25$},xlabel={$\ln(K/F)/\sqrt T$},ylabel={implied volatility}]
+\addplot[ser1] table[x=m,y=heston]{\datapath/smile_025.dat};
+\addlegendentry{Heston}
+\addplot[ser2] table[x=m,y=merton]{\datapath/smile_025.dat};
+\addlegendentry{Merton}
+\nextgroupplot[title={$T=1$},xlabel={$\ln(K/F)/\sqrt T$}]
+\addplot[ser1] table[x=m,y=heston]{\datapath/smile_100.dat};
+\addlegendentry{Heston}
+\addplot[ser2] table[x=m,y=merton]{\datapath/smile_100.dat};
+\addlegendentry{Merton}
+\end{groupplot}
+\end{tikzpicture}
+\caption{Implied volatility from Fourier prices in Heston (parameters above) and Merton ($\sigma=15\%$, $\lambda=0.5$, $\mu_J=-15\%$, $\delta=15\%$). The parameters are for illustration and not fitted to each other. Merton's jumps give the sharper short-dated skew.}\label{fig:smile}
+\end{figure}
+
+\section{What each parameter does}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Parameter & Main effect on the implied surface\\
+\midrule
+$v_0$ & level of short-dated volatility\\
+$\theta$ & level of long-dated volatility\\
+$\kappa$ & speed of move from $v_0$ to $\theta$; larger values flatten the long-dated smile\\
+$\xi$ & curvature of the smile (kurtosis of returns); larger means more convex\\
+$\rho$ & slope of the smile (skewness of returns); more negative means steeper skew\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+To first order in small $T$ the ATM skew is $\partial_k\sigma_{\rm imp}\to\rho\xi/(4\sqrt{v_0})$: \emph{constant} as $T\to0$. The Heston model does not produce the steep short-dated skew observed in indices. At large $T$, it decays like $1/(\kappa T)$. The expected variance has the simple form
+\[
+\E^\Q\Bigl[\frac1T\int_0^Tv_t\dd t\Bigr]=\theta+(v_0-\theta)\frac{1-e^{-\kappa T}}{\kappa T}.
+\]
+
+\paragraph{Calibration in practice.} One minimises the weighted squared differences of model and market prices or vols. There are five parameters and a surface of quotes. $\kappa$ and $\xi$ are usually poorly identified separately (they trade off), and parameters can be unstable day to day, even when the fit is good. So a stable hedge may need regularisation or a fixed $\kappa$.
+
+\section{The SABR model}
+
+Hagan, Kumar, Lesniewski and Woodward (2002) proposed, for a forward $F$ under its own forward measure,
+\[
+\dd F=\alpha F^\beta\dd W^1,\qquad\dd\alpha=\nu\alpha\dd W^2,\qquad\dd W^1\dd W^2=\rho\dd t.
+\]
+Singular perturbation in small $\nu^2T$ gives the implied volatility approximation
+\begin{multline*}
+\sigma_{\rm imp}(K)=\frac{\alpha}{(FK)^{\frac{1-\beta}{2}}\bigl[1+\frac{(1-\beta)^2}{24}\ln^2\frac FK+\frac{(1-\beta)^4}{1920}\ln^4\frac FK\bigr]}\cdot\frac{z}{x(z)}\\
+\cdot\Bigl\{1+\Bigl[\frac{(1-\beta)^2\alpha^2}{24(FK)^{1-\beta}}+\frac{\rho\beta\nu\alpha}{4(FK)^{\frac{1-\beta}{2}}}+\frac{2-3\rho^2}{24}\nu^2\Bigr]T\Bigr\},
+\end{multline*}
+with $z=\frac\nu\alpha(FK)^{\frac{1-\beta}{2}}\ln\frac FK$ and $x(z)=\ln\frac{\sqrt{1-2\rho z+z^2}+z-\rho}{1-\rho}$.
+
+\begin{numcheck}
+For $F=1$, $\alpha=0.3$, $\beta=0.5$, $\rho=-0.3$, $\nu=0.4$, $T=1$:
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+$K$ & 0.70 & 0.85 & 1.00 & 1.20 & 1.40\\
+\midrule
+Hagan & 35.90\% & 32.64\% & 30.24\% & 28.08\% & 26.82\%\\
+Monte Carlo & 36.02\% & 32.70\% & 30.29\% & 28.11\% & 26.81\%\\
+\bottomrule
+\end{tabular}
+\end{center}
+The simulation uses 400{,}000 paths and 500 Euler steps with absorption at zero. The expansion is within about 12 basis points at the lowest strike, and closer elsewhere.
+\end{numcheck}
+
+\paragraph{Interpretation.}
+\begin{itemize}
+\item $\alpha$ sets the ATM level. The \emph{backbone} of how ATM vol moves with forward is governed by $\beta$: $\sigma_{\rm ATM}\approx\alpha F^{\beta-1}$.
+\item Skew comes from both $\beta$ and $\rho$. Since they are close to redundant in fit, $\beta$ is usually fixed, from a view on the backbone. $\beta=1$ is lognormal and $\beta=0$ normal.
+\item $\nu$ gives curvature.
+\end{itemize}
+Since SABR puts its smile dynamics in the right direction (the smile follows the forward), it remedies the flaw of local vol, and it became the standard for interest-rate smiles.
+
+\begin{pitfall}
+The Hagan formula is an asymptotic expansion, not an exact price. For small $F$ and long $T$ (low strikes) it implies a negative density, a real arbitrage. Normal SABR variants and arbitrage-free PDE reformulations fix this.
+\end{pitfall}
+
+\section{Rough volatility}\label{sec:rough}
+
+Gatheral, Jaisson and Rosenbaum (2018) found that realised log-volatility behaves like fractional Brownian motion with very small Hurst exponent, $H\approx0.1$, far from the Markov case $H=\frac12$. In a rough Bergomi-type model,
+\[
+v_t=\xi_0(t)\,\mathcal{E}\Bigl(\eta\sqrt{2H}\int_0^t(t-s)^{H-\frac12}\dd W_s\Bigr),
+\]
+and the implied skew is predicted to blow up as $T^{H-\frac12}$. This matches the power law for short-dated index skew with few parameters. The cost: the process is not Markov and not a semimartingale in its driver, and simulation is expensive. It is an active research area.
+
+\section{How to choose?}
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+Model & Fits & Weaknesses\\
+\midrule
+Black--Scholes & one vol & no smile; still the language of quotes\\
+Local vol & all vanillas & wrong smile dynamics, flat forward smile\\
+Heston & long-dated smile & short-dated skew, unstable calibration\\
+SABR & one maturity at a time & not a joint model across maturities, wings\\
+Merton/Bates & short-dated skew & jump parameters unstable, incomplete hedge\\
+SLV & all vanillas, tunable dynamics & costly, non-trivial numerics\\
+Rough vol & skew term structure & costly, non-Markov\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{intuition}
+Models in this field are \emph{interpolators between hedging instruments}. No model is correct. The questions for a desk are: Does it reprice the hedges? Does it give stable Greeks? Does it make the right prediction for what you are exposed to? For a vanilla book, SABR or SVI may be enough. For a barrier product, the smile dynamics matter. For a cliquet, the forward skew does.
+\end{intuition}
+
+\begin{exercises}
+\item Show that in Theorem~\ref{thm:hw} with $v$ taking two values $\sigma_L^2$, $\sigma_H^2$, the implied smile has a minimum at $k=0$. Using Taylor expansion to the second order, estimate its curvature.
+\item Derive the Riccati system for $\E[e^{iuX_T}]$ in the affine model with $\dd X=-\tfrac12v\dd t+\sqrt v\dd W$. Verify $D$ in \eqref{eq:hestoncf} by differentiation.
+\item In Heston, compute $\E^\Q[\ln S_T]$ and thus the fair strike of a variance swap, and check against Theorem~\ref{thm:varswap}.
+\item Show $\E[v_T]$ in closed form and derive the Heston forward variance curve $\xi_0(T)=\E^\Q[v_T]$.
+\item Set $\beta=1$ in SABR and show $\sigma_{\rm imp}(K)\approx\alpha\frac{z}{x(z)}$ with $z=\frac\nu\alpha\ln(F/K)$. Expand to first order in $\ln(K/F)$: show the skew is $\tfrac12\rho\nu$.
+\item In Heston, find the moment explosion time $T^*(p)$ such that $\E S_T^{p}=\infty$ for $T>T^*$. Using Lee's formula, explain how it determines the wing of the smile. \emph{Hint:} the Riccati blow-up time.
+\end{exercises}

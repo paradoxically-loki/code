@@ -1,0 +1,140 @@
+\chapter{Risk: Greeks and Risk Measures}\label{ch:risk}
+
+\section{The Greeks as a Taylor expansion}
+
+For a position $V(t,S,\sigma,r)$, the change over a short interval is
+\[
+\dd V\approx\Theta\,\dd t+\Delta\,\dd S+\tfrac12\Gamma\,\dd S^2+\mathcal{V}\,\dd\sigma+\text{Vanna}\,\dd S\,\dd\sigma+\tfrac12\text{Volga}\,\dd\sigma^2+\rho\,\dd r.
+\]
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+Greek & Definition & Black--Scholes call (no dividends)\\
+\midrule
+Delta $\Delta$ & $\partial_SV$ & $N(d_+)$\\
+Gamma $\Gamma$ & $\partial_{SS}V$ & $\varphi(d_+)/(S\sigma\sqrt T)$\\
+Vega $\mathcal{V}$ & $\partial_\sigma V$ & $S\varphi(d_+)\sqrt T$\\
+Theta $\Theta$ & $\partial_tV$ & $-S\varphi(d_+)\sigma/(2\sqrt T)-rKe^{-rT}N(d_-)$\\
+Rho & $\partial_rV$ & $KTe^{-rT}N(d_-)$\\
+Vanna & $\partial_{S\sigma}V$ & $-\varphi(d_+)d_-/\sigma$\\
+Volga & $\partial_{\sigma\sigma}V$ & $\mathcal{V}d_+d_-/\sigma$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Useful identities: $\mathcal{V}=\Gamma S^2\sigma T$ (gamma and vega are one function up to scale, in Black--Scholes), and the BSM equation written as
+\[
+\Theta+\tfrac12\sigma^2S^2\Gamma=r(V-S\Delta).
+\]
+\begin{intuition}
+With $r=0$, the BSM equation says theta and gamma are exactly balanced: \emph{time decay is the price of convexity}. A long option position hopes for moves larger than implied; a short position collects the decay and hopes for small moves. Greeks are not separate risks. They are a single budget, spent according to the distribution of future moves. Near expiry at the money, gamma and theta both blow up like $1/\sqrt{T-t}$; gamma risk is concentrated in time and strike. Vega, in contrast, is largest for long-dated ATM options. Hence ``gamma short-dated, vega long-dated'' is the trader's first map.
+\end{intuition}
+
+Vanna and volga matter because volatility is stochastic: a Black--Scholes book with zero vega can still have vega that changes when spot or vol moves. The widely used \emph{vanna--volga} method in FX adjusts Black--Scholes prices using the cost of hedging these exposures by three market instruments.
+
+\section{Discrete hedging error}
+
+Theorem~\ref{thm:hedgepnl} assumed continuous rebalancing. Hedging at $N$ dates leaves a residual. Over one step, the P\&L of the hedged option is about $\tfrac12\Gamma S^2(\Delta R^2-\sigma^2\Delta t)$, where $\Delta R$ is the return.
+
+\begin{theorem}[Boyle--Emanuel; Derman--Kamal]\label{thm:derman}
+For an ATM option hedged at $N$ equally spaced dates, with correct volatility, the standard deviation of final P\&L is approximately
+\[
+\mathrm{sd}(\text{P\&L})\approx\sqrt{\frac\pi4}\,\frac{\sigma\mathcal{V}}{\sqrt N}.
+\]
+\end{theorem}
+\begin{proof}[Sketch]
+Each step has an error $\tfrac12\Gamma_tS_t^2\sigma^2\Delta t(Z^2-1)$ with $Z\sim\Nc(0,1)$ independent of the past, whose variance is $\tfrac12\Gamma^2S^4\sigma^4\Delta t^2$. Summing and integrating against the distribution of $S_t$, with $\Gamma_t$ peaked at the strike, gives $\int_0^T\E[\Gamma_t^2S_t^4]\dd t$; this has a closed form that yields $\tfrac{\pi}{4}\cdot\frac{\mathcal{V}^2\sigma^2}{N}$ at the money.
+\end{proof}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{loglogaxis}[booklet,height=5.4cm,xlabel={rebalances per year $N$},ylabel={sd of hedged P\&L},legend pos=north east,xtick={10,100},xticklabels={10,100},ytick={0.3,1,3},yticklabels={0.3,1,3}]
+\addplot[ser1,mark=*,mark size=1.3pt] table[x=n,y=sim]{\datapath/hedge.dat};
+\addlegendentry{simulation (50{,}000 paths)}
+\addplot[ser2,dashed] table[x=n,y=theory]{\datapath/hedge.dat};
+\addlegendentry{$\sqrt{\pi/4}\,\sigma\mathcal{V}/\sqrt N$}
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{Hedging error of a short 1-year ATM call, $S_0=100$, $\sigma=20\%$, $r=0$. The mean P\&L is within $0.01$ of zero at each frequency; the spread falls as $1/\sqrt N$.}\label{fig:hedge}
+\end{figure}
+
+\begin{numcheck}
+Daily rebalancing ($N=252$) gives $0.441$ in simulation and $0.443$ in theory, about $5.5\%$ of the option's price of $7.97$. Quadrupling $N$ halves the error. At weekly ($N=52$) it is $0.949$ against $0.976$. The approximation improves with $N$.
+\end{numcheck}
+
+So there is no perfect hedge. An option seller holding many independent positions diversifies this; one big position does not.
+
+\paragraph{Transaction costs.} Rebalancing costs money, with a cost that grows with $N$, while the hedging error shrinks with $N$. The optimum balances them. Leland (1985) showed that with proportional cost $k$ (round-trip) and interval $\delta t$, the option should be priced at the modified volatility
+\[
+\sigma_L^2=\sigma^2\Bigl(1+\sqrt{\frac{2}{\pi}}\frac{k}{\sigma\sqrt{\delta t}}\Bigr)
+\]
+for a short position (and lower for a long position). Whalley--Wilmott and Hodges--Neuberger derive no-trade bands around the delta. Practitioners rebalance when the delta drifts out of a band, not on a schedule.
+
+\section{Value at Risk and Expected Shortfall}
+
+Let $L$ be the loss over a horizon (say 1 or 10 days).
+\begin{definition}
+At confidence $\alpha$ (for instance $99\%$), $\VaR_\alpha(L)=\inf\{\ell:\Prob(L\le\ell)\ge\alpha\}$, the $\alpha$-quantile of loss. The \emph{Expected Shortfall} is
+\[
+\ES_\alpha(L)=\frac{1}{1-\alpha}\int_\alpha^1\VaR_u(L)\dd u,
+\]
+which equals $\E[L\mid L\ge\VaR_\alpha]$ when $L$ has a continuous law.
+\end{definition}
+
+For $L\sim\Nc(\mu,\sigma^2)$, $\VaR_\alpha=\mu+\sigma\Phi^{-1}(\alpha)$ and $\ES_\alpha=\mu+\sigma\varphi(\Phi^{-1}(\alpha))/(1-\alpha)$.
+
+\begin{numcheck}
+At $99\%$, a unit variance normal has $\VaR=2.326$ and $\ES=2.666$. A unit-variance Student $t_4$ (5 million simulated draws) has $\VaR=2.650$ and $\ES=3.688$. So fat tails make a modest difference at the $99\%$ quantile but a big one in shortfall. This is one reason regulators moved from $99\%$ VaR to $97.5\%$ ES in the Fundamental Review of the Trading Book.
+\end{numcheck}
+
+\paragraph{Coherence.} Artzner et al.\ (1999) ask for four axioms for a risk measure $\varrho$: monotonicity, translation invariance ($\varrho(L+c)=\varrho(L)+c$), positive homogeneity, and subadditivity ($\varrho(L_1+L_2)\le\varrho(L_1)+\varrho(L_2)$). Subadditivity says diversification should not raise measured risk.
+
+\begin{example}[VaR is not subadditive]
+Two independent bonds each lose $100$ with probability $4\%$ and $0$ otherwise. At $95\%$, each has $\VaR=0$. But the sum loses at least $100$ with probability $1-0.96^2=7.84\%>5\%$, so $\VaR_{95\%}(L_1+L_2)=100>0+0$. The VaR rule says a concentrated position in one bond is safer than a diversified one. This is exactly the type of position (small probability, large loss: writing deep OTM options) that VaR hides.
+\end{example}
+
+\begin{theorem}[Rockafellar--Uryasev]\label{thm:ru}
+$\ES_\alpha(L)=\min_{c\in\R}\bigl\{c+\frac{1}{1-\alpha}\E(L-c)^+\bigr\}$, and the minimum is attained at $c=\VaR_\alpha(L)$.
+\end{theorem}
+\begin{proof}
+For continuous $L$: the function is convex in $c$, with derivative $1-\frac{1}{1-\alpha}\Prob(L>c)$, zero at $\VaR_\alpha$. Plugging in gives $\VaR_\alpha+\frac{1}{1-\alpha}\E(L-\VaR_\alpha)^+=\E[L\mid L\ge\VaR_\alpha]$.
+\end{proof}
+
+This form shows that $\ES$ is subadditive, since $(x+y)^+\le x^++y^+$ and the minimisation can be split. It also makes $\ES$ optimisation a linear program, over scenarios.
+
+\section{Computing and validating risk}
+
+\paragraph{Methods.}
+\begin{itemize}
+\item \textbf{Parametric (delta-normal).} $L\approx-\delta^\top\Delta X$, with $\Delta X\sim\Nc(0,\Sigma)$: fast, poor for options.
+\item \textbf{Delta-gamma.} Adds $\tfrac12\Delta X^\top\Gamma\Delta X$, a quadratic form in Gaussians, computed with moment expansions or Fourier methods.
+\item \textbf{Historical simulation.} Apply past factor returns to today's positions. There is no distribution assumption, but it knows only past scenarios and is slow to respond.
+\item \textbf{Monte Carlo.} Full revaluation under a fitted risk-factor model. The most flexible and costly.
+\end{itemize}
+
+The scaling rule $\VaR_{10d}=\sqrt{10}\,\VaR_{1d}$ assumes i.i.d.\ normal returns. Volatility clustering, autocorrelation and fat tails all make it inaccurate.
+
+\paragraph{Backtesting.} Count exceedances $x$ in $T$ days. Under correct coverage, $x\sim\mathrm{Binomial}(T,p)$, with $p=1-\alpha$. Kupiec's likelihood ratio test uses
+\[
+\mathrm{LR}=-2\ln\frac{(1-p)^{T-x}p^x}{(1-x/T)^{T-x}(x/T)^x}\sim\chi^2_1.
+\]
+Christoffersen's test adds independence: exceedances should not cluster. A correct-coverage model that fails the second is under-reacting to volatility.
+
+\paragraph{Extreme value theory.} Beyond a high threshold $u$, excess losses are approximately Generalised Pareto, $\Prob(L-u>y\mid L>u)\approx(1+\xi y/\beta)^{-1/\xi}$, by the Pickands--Balkema--de Haan theorem. The tail index $\xi>0$ gives a power-law tail, and moments of order $\ge1/\xi$ are infinite. Equity returns have $\xi\approx0.2$ to $0.4$ (finite variance, possibly infinite fourth moment). The practical use is to extrapolate quantiles beyond the data.
+
+\paragraph{Stress testing.} A statistical model is calibrated to a past regime. Stress tests revalue the book under named scenarios (1987, 2008, March 2020) and under hypothetical joint shocks. Liquidity risk adds that a position's liquidation horizon lengthens exactly when it matters.
+
+\begin{pitfall}
+Correlation is not a constant. A portfolio's measured VaR falls as correlations fall in calm periods, and then correlations jump towards one in a crisis. Gaussian copulas have zero tail dependence, and this mattered in pricing CDOs before 2008. A Student-$t$ copula, or scenario-based thinking, addresses the point. Always ask: \emph{what position is this number hiding?}
+\end{pitfall}
+
+\begin{exercises}
+\item Verify the Black--Scholes Greek table, using $S\varphi(d_+)=Ke^{-rT}\varphi(d_-)$.
+\item Show that vega and gamma peak at slightly different strikes, and find them. What is the delta of a straddle at inception?
+\item Use delta--gamma to find the break-even daily move for a long ATM option in terms of implied vol.
+\item Compute the $95\%$ and $99\%$ ES for a Student $t_\nu$ (with unit variance), in closed form. Compare with the simulations above.
+\item Construct a portfolio of an option and a stock whose 1-day VaR is zero by parametric delta-normal, but with very large actual tail losses.
+\item A risk manager wants a 10-day $99\%$ VaR estimate from 250 days of history. How many independent 10-day windows are there? What does that imply about the standard error of this quantile? Derive it from the asymptotic quantile variance $\alpha(1-\alpha)/(nf^2)$.
+\end{exercises}

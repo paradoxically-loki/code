@@ -1,0 +1,39 @@
+\chapter{How to use this booklet}
+\markboth{How to use this booklet}{How to use this booklet}
+
+The class notes build one long argument: random walk, Wiener process, It\^o calculus, change of measure, and the fundamental theorems. They are a fast road, and they leave several things to faith. Why does the Radon--Nikodym derivative exist? Why does the proof of the first fundamental theorem need more care than it seems to? Why does the market quote a whole smile when Black--Scholes has one volatility? This booklet goes back over that road carefully and then continues past where the class stopped.
+
+It is meant to be \emph{read with a pencil}. The structure is:
+\begin{itemize}
+\item \textbf{Part I} gives the measure-theoretic probability the notes use implicitly, and the theory of martingales.
+\item \textbf{Part II} redoes stochastic calculus with proofs: Brownian path properties, the It\^o integral, Girsanov, martingale representation, SDEs, Feynman--Kac, optimal stopping, then jumps.
+\item \textbf{Part III} takes up what practice actually needs: the volatility smile, local and stochastic volatility, and interest rates.
+\item \textbf{Part IV} covers how to compute: Monte Carlo, finite differences, trees.
+\item \textbf{Part V} covers risk measures, portfolio theory, financial statistics, and market conventions.
+\end{itemize}
+
+\paragraph{Three kinds of box.} Blue boxes give the idea behind a result. Orange boxes flag a mistake that is easy to make. Green boxes report a numerical experiment.
+
+\paragraph{About the numbers.} Every number in a green box or a table of results was produced by \texttt{code/make\_data.py}, which sits beside this document and needs only NumPy. Re-running it reproduces \texttt{data/results.txt} exactly. Monte Carlo figures are quoted with their standard errors, and you should expect a closed form to fall within two or three standard errors of its estimate, not exactly on it. The parameter sets are chosen for illustration; none are calibrated to market data.
+
+\paragraph{How rigorous is it?} Theorems are stated with their hypotheses. Proofs are complete where a complete proof is short enough to teach something; where the full argument is long (the Radon--Nikodym theorem, the martingale representation theorem, Lévy--It\^o) the text says so, gives the main idea, and points to a reference. A statement marked ``sketch'' is exactly that.
+
+\paragraph{Notation compared with the class notes.} The notes use blackboard letters for random objects, which works by hand but gets heavy in print. Here:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Class notes & This booklet & Meaning\\
+\midrule
+$\mathbb{W}(t)$, $\tilde{\mathbb{W}}(t)$ & $W_t$, $W^{\Q}_t$ & Wiener process under $\Prob$, $\Q$\\
+$\mathbb{S}(t)$, $\mathbb{X}(t)$ & $S_t$, $X_t$ & stock, wealth\\
+$\tilde{\mathbb{P}}$, $\tilde{\mathbb{E}}$ & $\Q$, $\EQ$ & risk-neutral measure, expectation\\
+$\mathbb{Z}(t)$ & $Z_t$ & Radon--Nikodym derivative process\\
+$\mathbb{D}(t)$ & $D_t$ & discount factor\\
+$[\mathbb{W},\mathbb{W}](t)$ & $[W]_t$ & quadratic variation\\
+$\partial_x$, $\partial_x^2$ & $\partial_x$, $\partial_{xx}$ & partial derivatives\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{If you are short of time.} A first pass that keeps the logical thread is: Chapters 1 (conditional expectation only), 3, 4, 5, 6, then 8 and 10, then 11, then 12. Chapters 14--17 can be read independently of everything else.

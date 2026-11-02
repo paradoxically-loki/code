@@ -1,0 +1,235 @@
+\chapter{Interest Rates and Change of Numeraire}\label{ch:rates}
+
+\section{Instruments}
+
+A \emph{zero-coupon bond} $P(t,T)$ pays $1$ at $T$. Everything in the rates world is defined from it.
+\begin{itemize}
+\item \textbf{Zero yield:} $y(t,T)=-\ln P(t,T)/(T-t)$.
+\item \textbf{Instantaneous forward rate:} $f(t,T)=-\partial_T\ln P(t,T)$, so $P(t,T)=\exp(-\int_t^Tf(t,u)\dd u)$.
+\item \textbf{Short rate:} $r_t=f(t,t)$. Under the risk-neutral measure, with money market account $B_t=\exp(\int_0^tr_s\dd s)$,
+\[
+P(t,T)=\E^\Q_t\Bigl[e^{-\int_t^Tr_s\dd s}\Bigr].
+\]
+\item \textbf{Simple forward rate:} for accrual $\tau=T_2-T_1$, $L(t;T_1,T_2)=\frac1\tau\bigl(\frac{P(t,T_1)}{P(t,T_2)}-1\bigr)$. This is the rate fixed today that makes a forward rate agreement worth zero: it is a pure no-arbitrage statement, since $P(t,T_1)/P(t,T_2)$ is the replicating ratio.
+\item \textbf{Caplet:} pays $\tau(L(T_1;T_1,T_2)-K)^+$ at $T_2$. A \emph{cap} is a strip of caplets.
+\item \textbf{Swap:} exchanges fixed payments at rate $K$ for floating. Its value is zero at the \emph{par swap rate}
+\[
+S(t)=\frac{P(t,T_0)-P(t,T_n)}{A(t)},\qquad A(t)=\sum_{i=1}^n\tau_iP(t,T_i)\quad\text{(the annuity)}.
+\]
+\item \textbf{Swaption:} an option at $T_0$ to enter a swap. A payer swaption pays $A(T_0)(S(T_0)-K)^+$ at $T_0$.
+\end{itemize}
+
+\begin{intuition}
+A term structure is not one random variable but a whole \emph{curve} moving through time. Short-rate models say one number (a low-dimensional state) drives everything. Forward-rate models (HJM, LMM) treat the whole curve as primitive. Also, the first principal component of yield curve moves (parallel shift) explains most variance, with \emph{slope} and \emph{curvature} explaining most of the rest. That is why low-dimensional models work at all.
+\end{intuition}
+
+\section{Short-rate models}
+
+\paragraph{Term-structure equation.} Let $\dd r=a(t,r)\dd t+b(t,r)\dd W$ under $\Prob$. Bonds of two maturities can hedge one another, and the argument of Chapter~\ref{ch:sv} gives a market price of risk $\lambda(t,r)$, the same for all maturities. Under $\Q$, $r$ has drift $a-\lambda b$, and $P(t,T)=u(t,r_t)$ satisfies, by Feynman--Kac,
+\[
+\partial_tu+(a-\lambda b)\partial_ru+\tfrac12b^2\partial_{rr}u-ru=0,\qquad u(T,r)=1.
+\]
+
+\paragraph{Affine models.} Suppose under $\Q$ the drift $\kappa(\theta-r)$ and the variance $b^2=\beta_0+\beta_1r$ are affine in $r$. Try $P(t,T)=\exp(A(\tau)-B(\tau)r)$, with $\tau=T-t$. Matching powers of $r$ gives the Riccati system
+\[
+B'=1-\kappa B-\tfrac12\beta_1B^2,\qquad A'=-\kappa\theta B+\tfrac12\beta_0B^2,\qquad A(0)=B(0)=0.
+\]
+It is the same structure as Heston's Riccati equation. The affine class (Duffie--Kan) is where most tractable models live.
+
+\begin{theorem}[Vasicek]\label{thm:vasicek}
+If $\dd r=\kappa(\theta-r)\dd t+\sigma\dd W^\Q$, then
+\[
+P(t,T)=\exp(A(\tau)-B(\tau)r_t),\quad B(\tau)=\frac{1-e^{-\kappa\tau}}{\kappa},\quad A(\tau)=\Bigl(\theta-\frac{\sigma^2}{2\kappa^2}\Bigr)(B(\tau)-\tau)-\frac{\sigma^2B(\tau)^2}{4\kappa}.
+\]
+\end{theorem}
+\begin{proof}
+Take $\beta_0=\sigma^2$, $\beta_1=0$ in the Riccati system. The equation $B'=1-\kappa B$ gives $B$. Integrate for $A$. Alternatively, from \eqref{eq:ou}, $\int_t^Tr_s\dd s$ is Gaussian given $r_t$; apply $\E e^{-G}=e^{-\E G+\frac12\Var G}$.
+\end{proof}
+
+\begin{theorem}[Cox--Ingersoll--Ross]\label{thm:cir}
+If $\dd r=\kappa(\theta-r)\dd t+\sigma\sqrt r\dd W^\Q$, with $\gamma=\sqrt{\kappa^2+2\sigma^2}$, $P(t,T)=\mathcal{A}(\tau)e^{-B(\tau)r_t}$, where
+\[
+B(\tau)=\frac{2(e^{\gamma\tau}-1)}{(\gamma+\kappa)(e^{\gamma\tau}-1)+2\gamma},\quad\mathcal{A}(\tau)=\Bigl[\frac{2\gamma e^{(\kappa+\gamma)\tau/2}}{(\gamma+\kappa)(e^{\gamma\tau}-1)+2\gamma}\Bigr]^{2\kappa\theta/\sigma^2}.
+\]
+\end{theorem}
+
+\begin{numcheck}
+For Vasicek with $\kappa=0.5$, $\theta=4\%$, $\sigma=1\%$, $r_0=2\%$: $P(0,5)=0.84974$ from the formula, against Monte Carlo $0.84976\pm0.00006$. CIR with $\sigma=0.1$ (and the same other parameters): $0.85051$ versus $0.85058\pm0.00010$.
+\end{numcheck}
+
+\paragraph{Comparison.} Vasicek's rates are Gaussian, may go negative (once a criticism, now sometimes a feature), and give closed forms for bond options. CIR keeps $r>0$, with rate-dependent volatility. Neither can fit today's whole curve with a few constants.
+
+\paragraph{Hull--White: fitting today's curve.} Let $\theta$ depend on time: $\dd r=(\theta(t)-\kappa r)\dd t+\sigma\dd W^\Q$. Choosing
+\[
+\theta(t)=\partial_Tf(0,t)+\kappa f(0,t)+\frac{\sigma^2}{2\kappa}\bigl(1-e^{-2\kappa t}\bigr)
+\]
+makes the model reproduce all initial bond prices. The theorems above extend, and the model retains Gaussian tractability. This is a simple working model for rate-sensitive exotics such as Bermudan swaptions, usually in a two-factor version to decorrelate forward rates.
+
+\section{Change of numeraire}\label{sec:numeraire}
+
+\begin{theorem}\label{thm:numeraire}
+Let $N$ be a strictly positive traded asset (with no dividends), so $D_tN_t$ is a $\Q$-martingale, where $D_t=1/B_t$. Define $\Q^N$ on $\F_T$ by
+\[
+\frac{\dd\Q^N}{\dd\Q}=\frac{D_TN_T}{N_0}.
+\]
+For every traded asset $V$, the ratio $V_t/N_t$ is a $\Q^N$-martingale, and so
+\[
+V_t=N_t\,\E^{\Q^N}_t\Bigl[\frac{V_T}{N_T}\Bigr].
+\]
+\end{theorem}
+\begin{proof}
+$Z_t=D_tN_t/N_0$ is a positive mean-one martingale, so $\Q^N$ is a probability. By Bayes (Theorem~\ref{thm:bayes}),
+\[
+\E^{\Q^N}_t\Bigl[\frac{V_T}{N_T}\Bigr]=\frac{\E^\Q_t[Z_TV_T/N_T]}{Z_t}=\frac{\E^\Q_t[D_TV_T]}{D_tN_t}=\frac{D_tV_t}{D_tN_t}=\frac{V_t}{N_t}.\qedhere
+\]
+\end{proof}
+
+\begin{intuition}
+Prices have units. Quote every asset in units of the numeraire: dollars, apples, or shares of IBM. With each numeraire there is a probability measure in which every relative price is a fair game. The risk-neutral measure is the one for the money market account. Choosing a clever numeraire removes a random discount factor from the expectation, turning a hard joint problem into a marginal one. The rule of thumb: \emph{pick the numeraire that makes the payoff simplest}.
+\end{intuition}
+
+\paragraph{Effect on Brownian motion.} If $\dd N/N=r\dd t+\sigma^N\dd W^\Q$, then $\dd Z/Z=\sigma^N\dd W^\Q$, and Girsanov gives that
+\[
+\dd W^N=\dd W^\Q-\sigma^N\dd t
+\]
+is a $\Q^N$-Brownian motion. So the drift change equals the numeraire's volatility, or, for a correlated asset $X$, the instantaneous covariance of $\ln N$ with $X$.
+
+\begin{example}[Stock numeraire and the $N(d_+)$ term]
+Take $N=S$. Then
+\[
+C=\E^\Q[D_TS_T\ind_{\{S_T>K\}}]-K\E^\Q[D_T\ind_{\{S_T>K\}}]=S_0\Q^S(S_T>K)-Ke^{-rT}\Q(S_T>K).
+\]
+So $N(d_+)$ is the probability of finishing in the money under the stock measure, and $N(d_-)$ is the same probability under the risk-neutral measure. Under $\Q^S$, $\ln S$ has drift $r+\tfrac12\sigma^2$ rather than $r-\tfrac12\sigma^2$, whence the difference between $d_+$ and $d_-$.
+\end{example}
+
+\begin{example}[Margrabe's exchange option]\label{ex:margrabe}
+A payoff $(S^1_T-S^2_T)^+$. Under $\Q^{S^2}$, the price is $V_0=S^2_0\E^{S^2}[(S^1_T/S^2_T-1)^+]$. The ratio $R=S^1/S^2$ is a martingale, with volatility $\sigma_m^2=\sigma_1^2+\sigma_2^2-2\rho\sigma_1\sigma_2$. It is thus Black's formula with zero rate, no matter what the rate $r$ is:
+\[
+V_0=S^1_0N(d_+)-S^2_0N(d_-),\qquad d_\pm=\frac{\ln(S_0^1/S_0^2)\pm\frac12\sigma_m^2T}{\sigma_m\sqrt T}.
+\]
+\end{example}
+
+\begin{numcheck}
+For $S^1_0=100$, $S^2_0=95$, $\sigma_1=30\%$, $\sigma_2=20\%$, $\rho=0.5$, $T=1$, Margrabe gives $12.9523$. Monte Carlo at $r=3\%$ (2m paths) gives $12.9838\pm0.0137$, which is $2.3$ standard errors high. A larger independent run (8m paths) gives $12.9585\pm0.0068$, within one standard error.
+\end{numcheck}
+
+\begin{example}[Quanto adjustment]
+Let $S$ be a foreign stock with volatility $\sigma_S$, and let $X$ be the FX rate (domestic per foreign) with volatility $\sigma_X$ and correlation $\rho$. Under the foreign risk-neutral measure, $S$ drifts at $r_f$. Using the numeraire covariance rule, the drift of $S$ under the domestic risk-neutral measure is $r_f-\rho\sigma_S\sigma_X$. So a quanto call on $S$ paid in domestic currency at a fixed FX rate is a Black--Scholes call with a dividend-yield-like adjustment.
+\end{example}
+
+\section{The forward measure and Black's formula}
+
+Let $N=P(t,T)$. This defines the \emph{$T$-forward measure} $\Q^T$. Then $P(T,T)=1$ removes the stochastic discount factor:
+\[
+V_t=P(t,T)\E^{T}_t[V_T].
+\]
+Three consequences:
+\begin{enumerate}
+\item The forward price of a traded asset, $S_t/P(t,T)$, is a $\Q^T$-martingale.
+\item Taking $V_t=P(t,T+\epsilon)$ and $\epsilon\to0$ gives $f(t,T)=\E^T_t[r_T]$. The forward rate is the $\Q^T$-expectation of the future short rate. It is \emph{not} the $\Q$-expectation, and it is not a real-world forecast.
+\item $L(t;T_1,T_2)$ is a $\Q^{T_2}$-martingale, because it is $\frac1\tau(P(t,T_1)-P(t,T_2))/P(t,T_2)$, a traded asset divided by the numeraire.
+\end{enumerate}
+
+\begin{theorem}[Black's caplet formula]\label{thm:blackcaplet}
+If $L$ is lognormal under $\Q^{T_2}$ with volatility $\sigma$, then
+\[
+\text{Caplet}=\tau P(0,T_2)\bigl[L_0N(d_+)-KN(d_-)\bigr],\qquad d_\pm=\frac{\ln(L_0/K)\pm\frac12\sigma^2T_1}{\sigma\sqrt{T_1}}.
+\]
+\end{theorem}
+
+\begin{proof}
+$V_0=P(0,T_2)\E^{T_2}[\tau(L_{T_1}-K)^+]$, and the expectation is the zero-rate Black--Scholes formula applied to the martingale $L$.
+\end{proof}
+
+Market quotes for caplets are Black vols (or, with low or negative rates, Bachelier normal vols, with $L$ an arithmetic Brownian motion).
+
+\begin{example}[Option on a bond]
+Under Vasicek, the forward bond price $P(t,S)/P(t,T)$ is a lognormal $\Q^T$-martingale with deterministic volatility $\sigma(B(S-t)-B(T-t))$. So the call with strike $K$ on a bond maturing at $S$, expiring at $T$, has Jamshidian's formula
+\[
+\mathrm{ZBC}=P(0,S)N(h)-KP(0,T)N(h-\sigma_p),
+\]
+where
+\[
+\sigma_p=\sigma\sqrt{\frac{1-e^{-2\kappa T}}{2\kappa}}\,B(S-T),\qquad h=\frac1{\sigma_p}\ln\frac{P(0,S)}{KP(0,T)}+\frac{\sigma_p}2.
+\]
+\end{example}
+
+\begin{numcheck}
+Vasicek with the earlier parameters, a one-year call on a five-year bond at strike $P(1,5)|_{r=r_0}$: the formula gives $0.001020$, and Monte Carlo under $\Q$, with discounting along each path, gives $0.001020\pm0.000007$.
+\end{numcheck}
+
+\paragraph{Swaptions.} Take $N=A$, the annuity. Then $S(t)$ is a $\Q^A$-martingale, as a difference of bonds divided by the numeraire. The swaption price is
+\[
+V_0=A(0)\E^A[(S(T_0)-K)^+],
+\]
+so Black (or SABR) on the swap rate applies. Each swap rate has its own measure, and rates that are lognormal under one measure generally are not under another.
+
+\section{The HJM framework}
+
+Heath, Jarrow and Morton (1992) model the whole forward curve. Under $\Q$:
+\[
+\dd f(t,T)=\alpha(t,T)\dd t+\sigma(t,T)\dd W_t,\qquad T\ge t.
+\]
+
+\begin{theorem}[HJM drift condition]\label{thm:hjm}
+If the discounted bonds are $\Q$-martingales, then
+\[
+\alpha(t,T)=\sigma(t,T)\int_t^T\sigma(t,u)\dd u.
+\]
+\end{theorem}
+\begin{proof}
+Let $X_t=\ln P(t,T)=-\int_t^Tf(t,u)\dd u$. By stochastic Fubini,
+\[
+\dd X_t=\bigl(r_t-\alpha^*(t,T)\bigr)\dd t+\Sigma(t,T)\dd W_t,\quad\alpha^*=\int_t^T\alpha(t,u)\dd u,\quad\Sigma=-\int_t^T\sigma(t,u)\dd u.
+\]
+By It\^o, $\dd P/P=(r_t-\alpha^*+\tfrac12\Sigma^2)\dd t+\Sigma\dd W$. The discounted bond has zero drift if and only if $\alpha^*=\tfrac12\Sigma^2$ for all $T$. Differentiating in $T$ gives $\alpha=\Sigma\,\partial_T\Sigma=\sigma\int_t^T\sigma(t,u)\dd u$.
+\end{proof}
+
+\begin{intuition}
+Under $\Q$, the drift of forward rates is not a free choice. \emph{Specify volatilities only}; no-arbitrage determines drifts. It is the rates analogue of the fact that the stock's drift under $\Q$ is $r$, independent of its real-world drift. Why the positive convexity term? A bond price is a convex function of rates. Without the drift, bonds would earn more than $r$ on average.
+\end{intuition}
+
+\paragraph{Examples.}
+\begin{itemize}
+\item Ho--Lee: $\sigma(t,T)=\sigma$. Then $\alpha=\sigma^2(T-t)$, and $r_t=f(0,t)+\tfrac12\sigma^2t^2+\sigma W_t$.
+\item Hull--White: $\sigma(t,T)=\sigma e^{-\kappa(T-t)}$. The short rate is Markov.
+\end{itemize}
+For general $\sigma(t,T)$, $r$ is not Markov and the state is infinite-dimensional. A separable volatility $\sigma(t,T)=g(t)h(T)$ gives Markov representations (Cheyette models).
+
+\section{The LIBOR market model}
+
+Brace--G{\k{a}}tarek--Musiela (1997) and Jamshidian model the discrete forwards that are actually quoted, $L_k(t)=L(t;T_k,T_{k+1})$, with $\tau_k=T_{k+1}-T_k$. Under its own forward measure $\Q^{k+1}$, each is a lognormal martingale:
+\[
+\dd L_k=L_k\sigma_k(t)\dd W^{k+1}_k(t).
+\]
+That reproduces Black's caplet formula by construction. But to price anything depending on several $L_k$, all dynamics must be in one measure.
+
+\begin{proposition}[Drift under the terminal and spot measures]
+Let $\rho_{ki}$ be the correlation between $W_k$ and $W_i$. Moving from $\Q^{i+1}$ to $\Q^{i}$ changes the driver of $L_k$ by
+\[
+\dd W_k^{i}=\dd W_k^{i+1}-\rho_{ki}\frac{\tau_iL_i\sigma_i}{1+\tau_iL_i}\dd t.
+\]
+Therefore, under the spot measure (numeraire: rolled-over short bonds, with $q(t)$ the index of the next reset),
+\[
+\dd L_k=L_k\sigma_k\sum_{i=q(t)}^{k}\rho_{ki}\frac{\tau_iL_i\sigma_i}{1+\tau_iL_i}\dd t+L_k\sigma_k\dd W_k.
+\]
+\end{proposition}
+\begin{proof}
+The density of $\Q^{i}$ relative to $\Q^{i+1}$ is proportional to the ratio of numeraires $P(t,T_i)/P(t,T_{i+1})=1+\tau_iL_i$, a $\Q^{i+1}$-martingale with $\dd\ln(1+\tau_iL_i)$ having volatility $\tau_iL_i\sigma_i/(1+\tau_iL_i)$. Girsanov gives the first statement (with correlation $\rho_{ki}$ for the $k$-th driver), and telescoping gives the second.
+\end{proof}
+
+The drift is state-dependent, so there are no closed-form path distributions; the LMM is simulated by Monte Carlo. Calibrating the correlation structure and the swaption surface is an art of its own.
+
+\paragraph{After LIBOR.} USD LIBOR ceased in 2023, replaced by the overnight secured rate SOFR, a \emph{backward-looking} compounded rate. A compounded-in-arrears caplet depends on the path over the accrual period, and its volatility decays during the period. Lyashenko and Mercurio's generalised forward market model extends the LMM to these rates. The change-of-numeraire logic is the same.
+
+\paragraph{Futures versus forwards.} A futures price is a $\Q$-martingale (it is marked to market daily, and has zero value at resets), while a forward price is a $\Q^T$-martingale. They differ by a covariance: $\text{Fut}_t-\text{For}_t\approx\Cov^\Q(\text{asset},\int r)$. In Ho--Lee, the Eurodollar futures convexity adjustment is approximately $\tfrac12\sigma^2T_1T_2$. For a typical bank desk, this was a real and well-known source of P\&L.
+
+\begin{exercises}
+\item Show that Vasicek's $P(t,T)$ has bond volatility $\sigma B(T-t)$. Find the model's long-run yield, $y_\infty=\lim_{T\to\infty}y(t,T)$. Can you find an arbitrage in a model where the long yield moves?
+\item In Hull--White, derive $\theta(t)$ from the condition that the model matches $f(0,T)$.
+\item Show that the $\Q^{T}$-dynamics in Vasicek are $\dd r=\kappa(\theta-\frac{\sigma^2}{\kappa}B(T-t)-r)\dd t+\sigma\dd W^T$. Use this to find $\E^T[r_T]$ and hence verify $f(0,T)$.
+\item Price a caplet under Vasicek by writing it as a put on a bond. Why is this exact?
+\item Use a change of numeraire to price an option paying $S_T\ind_{\{S_T>K\}}$ (asset-or-nothing).
+\item Derive the Ho--Lee convexity adjustment for a futures rate, and calculate its size for $T_1=5$, $T_2=5.25$, $\sigma=1\%$.
+\item Taking $S$ as numeraire, show that $1/S$ is a $\Q^S$-martingale with the same volatility as $S$. Use this to relate a call on $S$ to a put on $1/S$ (put--call symmetry). Which FX fact does it explain?
+\end{exercises}

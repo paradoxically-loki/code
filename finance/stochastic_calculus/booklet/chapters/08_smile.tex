@@ -1,0 +1,170 @@
+\chapter{The Volatility Smile}\label{ch:smile}
+
+\section{Implied volatility}
+
+Black--Scholes has one unknown input, $\sigma$. The call price is strictly increasing in $\sigma$ (vega $=S\varphi(d_+)\sqrt T>0$), moving from intrinsic value at $\sigma\to0$ to $S$ at $\sigma\to\infty$. So every price between these bounds has a unique \emph{implied volatility} $\sigma_{\rm imp}(K,T)$.
+
+\begin{intuition}
+Implied volatility is not a model belief; it is a quoting convention, like quoting a bond by yield. It is the \emph{wrong number to put in the wrong formula to get the right price}. Yet it is a useful unit. It strips out the first-order dependence on spot, strike and maturity, so that options on different underlyings can be compared.
+\end{intuition}
+
+If Black--Scholes were right, $\sigma_{\rm imp}$ would be flat across $K$ and $T$. In practice, equity index options show a downward sloping \emph{skew}: low-strike puts trade at higher vols than high-strike calls. FX options show a more symmetric \emph{smile}. Commodities can tilt either way. After the 1987 crash, the equity skew emerged and never left.
+
+\paragraph{Useful coordinates.} Let $F=Se^{(r-q)T}$ be the forward, $k=\ln(K/F)$ log-moneyness, and $w=\sigma_{\rm imp}^2T$ the total implied variance. Then Black's formula depends only on $(k,w)$ after dividing by $F$ and discount:
+\[
+\frac{C}{DF}=N(d_+)-e^kN(d_-),\qquad d_\pm=-\frac{k}{\sqrt w}\pm\frac{\sqrt w}{2}.
+\]
+
+\section{Model-free constraints}
+
+Fix $T$, let $C(K)$ be the undiscounted call price $\E^\Q(S_T-K)^+$, and assume no arbitrage. Then
+\begin{enumerate}
+\item $C$ is decreasing in $K$, with $-1\le\partial_KC\le0$ (a call spread is positive, and at most worth its width);
+\item $C$ is convex in $K$ (a butterfly spread has positive payoff, hence positive value);
+\item $C(K)\ge(F-K)^+$ and $C(K)\to0$ as $K\to\infty$;
+\item total variance is nondecreasing in $T$ at a fixed forward-moneyness: $\partial_Tw(k,T)\ge0$ (calendar spreads, using that $C_T(Fe^{k})/F$ is convex in $k$ and that a convex function of a martingale increases).
+\end{enumerate}
+Each comes from an explicit portfolio, so a violation would be a real arbitrage.
+
+\begin{theorem}[Breeden--Litzenberger]\label{thm:bl}
+Differentiating $C(K)=\int(s-K)^+\rho(s)\dd s$ twice gives
+\[
+\partial_KC=-\Q(S_T>K),\qquad\partial_{KK}C=\rho(K).
+\]
+The risk-neutral density of $S_T$ is the second strike derivative of undiscounted call prices.
+\end{theorem}
+
+\begin{intuition}
+A butterfly at $K$ with width $h$, scaled by $1/h$, is an approximate Arrow--Debreu claim: a payoff of about $1$ if $S_T$ is near $K$, and $0$ otherwise. Its value is thus the state price density. Options reveal the market's whole probability distribution, not just a volatility. Note that it reveals $\Q$, not $\Prob$. High put prices are a mix of a crash forecast and a premium for insurance.
+\end{intuition}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[booklet,height=5.4cm,xlabel={terminal price $S_T$},ylabel={density},xmin=40,xmax=180,ymin=0,legend pos=north east]
+\addplot[ser1] table[x=K,y=heston]{\datapath/density.dat};
+\addlegendentry{implied by Heston calls}
+\addplot[ser2,dashed] table[x=K,y=lognormal]{\datapath/density.dat};
+\addlegendentry{lognormal, same ATM vol}
+\end{axis}
+\end{tikzpicture}
+\caption{Breeden--Litzenberger: density from the second difference of call prices for the Heston parameters of Section~\ref{sec:heston}, against the lognormal with the same at-the-money implied volatility ($18.05\%$). Negative spot--vol correlation fattens the left tail and thins the right.}\label{fig:density}
+\end{figure}
+
+\section{Static replication}
+
+\begin{theorem}[Carr--Madan]\label{thm:carrmadan}
+For $f\in C^2$ and any reference $x_0$,
+\[
+f(x)=f(x_0)+f'(x_0)(x-x_0)+\int_0^{x_0}f''(K)(K-x)^+\dd K+\int_{x_0}^\infty f''(K)(x-K)^+\dd K.
+\]
+\end{theorem}
+\begin{proof}
+It is Taylor's theorem with integral remainder, written with payoff kinks. For $x>x_0$, $\int_{x_0}^xf''(K)(x-K)\dd K=f(x)-f(x_0)-f'(x_0)(x-x_0)$ by parts; for $x<x_0$ use the put term.
+\end{proof}
+
+So any European payoff is a bond, a forward and a strip of options, with the strip weighted by $f''(K)$. Taking risk-neutral expectations, with $F$ as $x_0$ and $D$ the discount factor,
+\[
+V_0=Df(F)+\int_0^{F}f''(K)P(K)\dd K+\int_F^\infty f''(K)C(K)\dd K.
+\]
+
+\section{Variance swaps}\label{sec:varswap}
+
+A \emph{variance swap} pays at $T$ the realised variance $\frac1T\sum_i(\ln S_{t_{i+1}}/S_{t_i})^2$ minus a fixed strike $K_{\rm var}$. In the continuous limit, the realised variance is $\frac1T\int_0^T\sigma_t^2\dd t$ for an It\^o stock with any stochastic $\sigma$ (no jumps).
+
+\begin{theorem}[Log-contract replication]\label{thm:varswap}
+Let $\dd S=S(\mu_t\dd t+\sigma_t\dd W_t)$, with $S$ continuous, and $r=0$ for simplicity. Then
+\[
+\frac12\int_0^T\sigma_t^2\dd t=\int_0^T\frac{\dd S_t}{S_t}-\ln\frac{S_T}{S_0},
+\]
+and the fair strike is
+\[
+K_{\rm var}=\frac1T\E^\Q\int_0^T\sigma_t^2\dd t=\frac2T\Bigl[\int_0^{F}\frac{P(K)}{K^2}\dd K+\int_{F}^\infty\frac{C(K)}{K^2}\dd K\Bigr].
+\]
+\end{theorem}
+\begin{proof}
+It\^o's formula for $\ln S$: $\dd\ln S=\dd S/S-\tfrac12\sigma^2\dd t$. This is a pathwise identity. Since $\int\dd S/S$ is a $\Q$-martingale (under integrability), $\E^\Q\int_0^T\sigma_t^2\dd t=-2\E^\Q\ln(S_T/S_0)$. Apply Carr--Madan to $f(x)=-\ln x$ with $f''=1/x^2$ and $x_0=F=S_0$.
+\end{proof}
+
+\begin{intuition}
+The result is striking: \emph{whatever $\sigma_t$ does}, realised variance is replicated by holding a static log contract and delta hedging it, which means keeping a constant dollar amount in the stock (that is $1/S_t$ shares per unit of notional). The weight $1/K^2$ means low strikes matter a lot, so this is expensive when the skew is steep. It needs no volatility model, but it does assume no jumps, a limit on the range of strikes, and continuous rebalancing. The VIX index is exactly this strip computed from listed S\&P options, at $30$ days.
+\end{intuition}
+
+\begin{numcheck}
+For the Heston parameters of Section~\ref{sec:heston} with $v_0=\theta=0.04$, $T=1$, the strip gives fair variance $0.04000$, against $\E^\Q\int v_t\dd t/T=0.04000$. With $v_0=0.09$, the strip gives $0.06162$, matching the theoretical $\theta+(v_0-\theta)\frac{1-e^{-\kappa T}}{\kappa T}=0.06162$, whereas the ATM implied variance is $0.05189$. The variance swap strike lies \emph{above} ATM implied variance when the skew is negative: it pays for the wings.
+\end{numcheck}
+
+\section{What delta hedging actually earns}\label{sec:gammapnl}
+
+This is the most important practical identity in the theory of volatility.
+
+\begin{theorem}[Hedging P\&L]\label{thm:hedgepnl}
+Let $S$ have realised volatility $\sigma_t$ (any adapted process). Buy an option at implied volatility $\sigma_i$, and delta hedge using the Black--Scholes delta at $\sigma_i$, with $V(t,S)$ denoting the Black--Scholes price at $\sigma_i$. With all money financed at rate $r$, the terminal P\&L is
+\[
+\text{P\&L}=\frac12\int_0^Te^{r(T-t)}\,\Gamma_t\,S_t^2\,\bigl(\sigma_t^2-\sigma_i^2\bigr)\,\dd t,
+\]
+where $\Gamma_t=\partial_{SS}V(t,S_t)$. A short position earns the negative of this.
+\end{theorem}
+\begin{proof}
+Take $r=0$ for readability. By It\^o's formula, $\dd V=\partial_tV\dd t+\partial_SV\dd S+\tfrac12\Gamma S^2\sigma_t^2\dd t$. The Black--Scholes PDE with $\sigma_i$ gives $\partial_tV=-\tfrac12\Gamma S^2\sigma_i^2$. So
+\[
+\dd V-\partial_SV\,\dd S=\tfrac12\Gamma S^2(\sigma_t^2-\sigma_i^2)\dd t.
+\]
+The left side is the increment in the hedged portfolio's value. Integrating, and using $V(T,\cdot)=$ payoff, we get the result.
+\end{proof}
+
+\begin{intuition}
+Over a small step, long gamma earns $\tfrac12\Gamma(\Delta S)^2$ and pays theta $\tfrac12\Gamma S^2\sigma_i^2\Delta t$. You break even when the stock's squared return equals $\sigma_i^2\Delta t$, i.e.\ when it moves by one ``implied'' standard deviation. Note what this does and does not say. You earn $\sigma^2-\sigma_i^2$ weighted by \emph{dollar gamma}, which is large near the money and near expiry. Two paths with the same realised volatility but with different timing of moves relative to strike give different P\&Ls. A big move while you are far from the strike earns nothing. This path-dependence is the reason a variance swap, whose weighting is uniform, exists.
+\end{intuition}
+
+\begin{numcheck}
+Selling a 1-year ATM call at $20\%$, hedging daily at $\sigma_i=20\%$, when the stock realises $25\%$, over 50{,}000 paths, gives a mean P\&L of $-1.990$ with standard deviation $1.003$ (see \texttt{results.txt}). The Black--Scholes value difference at $25\%$ and $20\%$ is $1.982$. So the average is the expected model difference, while the standard deviation shows how much realised path-dependence remains.
+\end{numcheck}
+
+\section{Why smiles exist}
+
+The Black--Scholes assumptions fail in three ways, each giving a smile or skew.
+\begin{enumerate}
+\item \textbf{Fat tails.} Returns are leptokurtic, so OTM options are more valuable than a lognormal suggests. Mixtures of normals give a symmetric smile (Hull--White, Theorem~\ref{thm:hw}).
+\item \textbf{Leverage and spot--vol correlation.} When equity falls, volatility rises. So large down moves occur with high volatility, fattening the left tail; large up moves occur at low volatility, thinning the right. This gives a skew.
+\item \textbf{Jumps and crash risk.} A negative jump premium lifts short-dated OTM puts. Demand from portfolio insurers, who structurally buy puts, adds to this.
+\end{enumerate}
+
+\paragraph{Term structure.} At-the-money skew $\partial_k\sigma_{\rm imp}$ decays with maturity, in equity indices roughly like $T^{-\alpha}$ with $\alpha$ around $0.3$ to $0.5$. Diffusive stochastic volatility with mean reversion predicts a roughly flat short end, then decay like $1/T$. L\'evy models also decay like $1/T$ at long maturities, and they are much steeper at short ones. Rough volatility (Section~\ref{sec:rough}) reproduces the power law.
+
+\section{Asymptotic constraints}
+
+\begin{theorem}[Lee's moment formula, stated]\label{thm:lee}
+Let $\tilde p=\sup\{p:\E S_T^{1+p}<\infty\}$. Then
+\[
+\limsup_{k\to\infty}\frac{w(k)}{k}=\beta_R\in[0,2],\quad\text{where}\quad\tilde p=\frac{1}{2\beta_R}+\frac{\beta_R}{8}-\frac12,
+\]
+and similarly for the left wing, with negative moments. So implied total variance is \emph{at most linear} in log-strike at extreme strikes, with slope at most $2$.
+\end{theorem}
+
+The bound $\beta_R\le2$ comes from no arbitrage: a steeper wing implies call prices increasing in $K$. Therefore any parametrisation should go linearly in the wings. The SVI parametrisation (Gatheral) has this by construction:
+\[
+w(k)=a+b\bigl(\rho(k-m)+\sqrt{(k-m)^2+s^2}\bigr).
+\]
+It has five parameters: level $a$, wing slope $b$, rotation $\rho$, shift $m$ and curvature $s$. With constraints, it fits most equity slices well and can be made free of static arbitrage.
+
+\section{How smiles are quoted and how they move}
+
+\paragraph{FX conventions.} Volatility is quoted by \emph{delta}, not strike, using ATM vol, risk reversal $\mathrm{RR}_{25}=\sigma_{25C}-\sigma_{25P}$ (the skew) and butterfly $\mathrm{BF}_{25}=\tfrac12(\sigma_{25C}+\sigma_{25P})-\sigma_{\rm ATM}$ (the convexity).
+
+\paragraph{Sticky rules.} When spot moves, how does the smile move?
+\begin{itemize}
+\item \emph{Sticky strike:} $\sigma(K)$ stays put. The delta is then Black--Scholes delta.
+\item \emph{Sticky delta (moneyness):} $\sigma(K/S)$ stays put. The smile moves with spot. Then $\partial_S\sigma$ contributes to the hedge: with $\sigma_{\rm imp}=g(K/S)$, the true delta is $\Delta_{\rm BS}+\text{vega}\cdot\partial_S\sigma$.
+\item A true model gives its own rule, and for the skew it matters: a local vol model predicts the smile moves opposite to spot, and stochastic vol moves with it (Chapter~\ref{ch:localvol}).
+\end{itemize}
+Choice of the smile dynamics affects delta even when all vanilla prices are fit, so it directly affects the hedge. It is a key risk in practice.
+
+\begin{exercises}
+\item Show that if $C(K_1)-C(K_2)>K_2-K_1$ with $K_1<K_2$, there is an arbitrage; write down the trades.
+\item Show that for a given maturity, a smile implies digital prices differ from their naive BS values: $D(K)=-\partial_KC=\Phi(d_-)-\text{vega}\cdot\partial_K\sigma_{\rm imp}$. With a negative skew, is the digital call worth more or less than its flat-vol value?
+\item Use Carr--Madan to replicate $x^2$ and $\sqrt x$, and price them in Black--Scholes as a check.
+\item For ATM forward options, $\sigma_{\rm imp}\approx C\sqrt{2\pi}/(S\sqrt T)$ (Brenner--Subrahmanyam). Derive it from $C\approx0.4S\sigma\sqrt T$.
+\item Show the fair volatility swap strike is below the square root of the fair variance strike, by Jensen. What is the size of the convexity gap in terms of the variance of realised variance?
+\item In the theorem on hedging P\&L, set $\sigma_i=\sigma$ constant, and consider hedging at $\sigma_h\ne\sigma_i$. How does the P\&L formula change? Discuss which hedge volatility gives a deterministic P\&L, if any.
+\end{exercises}

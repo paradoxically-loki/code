@@ -1,0 +1,155 @@
+\chapter{Portfolio Theory and Asset Pricing}\label{ch:port}
+
+\section{Mean--variance optimisation}
+
+There are $n$ risky assets with mean returns $\mu$ and covariance $\Sigma\succ0$. A portfolio $w$ with $\mathbf{1}^\top w=1$ has mean $w^\top\mu$ and variance $w^\top\Sigma w$. Markowitz (1952) asks for the least variance at each given mean:
+\[
+\min_w\tfrac12w^\top\Sigma w\quad\text{subject to}\quad\mu^\top w=m,\ \mathbf{1}^\top w=1.
+\]
+
+\begin{theorem}[Frontier]\label{thm:frontier}
+With $A=\mathbf{1}^\top\Sigma^{-1}\mathbf{1}$, $B=\mathbf{1}^\top\Sigma^{-1}\mu$, $C=\mu^\top\Sigma^{-1}\mu$ and $D=AC-B^2>0$ (assets not all the same mean), the solution is $w=\Sigma^{-1}(\lambda\mu+\gamma\mathbf{1})$ with
+\[
+\lambda=\frac{Am-B}{D},\quad\gamma=\frac{C-Bm}{D},\qquad\text{and}\qquad\sigma^2(m)=\frac{Am^2-2Bm+C}{D}.
+\]
+\end{theorem}
+\begin{proof}
+The Lagrangian condition $\Sigma w=\lambda\mu+\gamma\mathbf{1}$ gives $w$. Substituting into the constraints gives the linear system $C\lambda+B\gamma=m$, $B\lambda+A\gamma=1$. Then $\sigma^2=w^\top\Sigma w=\lambda m+\gamma$.
+\end{proof}
+
+The frontier is a parabola in $(m,\sigma^2)$, a hyperbola in $(\sigma,m)$. The vertex is the \emph{global minimum variance} portfolio $w_g=\Sigma^{-1}\mathbf{1}/A$, of mean $B/A$ and variance $1/A$. Since $w$ is linear in $m$, any two frontier portfolios span the entire frontier (\emph{two-fund separation}).
+
+\paragraph{Adding a riskless asset.} With rate $r$, invest $x$ in risky assets and $1-\mathbf{1}^\top x$ in cash. Minimising the variance at a target excess return gives $x\propto\Sigma^{-1}(\mu-r\mathbf{1})$. So the risky proportions are the same for everyone. The \emph{tangency portfolio} is
+\[
+w_T=\frac{\Sigma^{-1}(\mu-r\mathbf{1})}{\mathbf{1}^\top\Sigma^{-1}(\mu-r\mathbf{1})},
+\]
+which has the highest Sharpe ratio, with $\mathrm{SR}^2=(\mu-r\mathbf{1})^\top\Sigma^{-1}(\mu-r\mathbf{1})$. The frontier becomes a straight line, the \emph{capital market line}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[booklet,height=5.8cm,xlabel={volatility},ylabel={expected return},xmin=0,xmax=0.3,ymin=0,ymax=0.17,xtick={0,0.05,0.1,0.15,0.2,0.25,0.3},legend pos=north west,yticklabel style={/pgf/number format/fixed},xticklabel style={/pgf/number format/fixed},scaled ticks=false]
+\addplot[ser1] table[x=sd,y=m]{\datapath/frontier.dat};
+\addlegendentry{risky frontier}
+\addplot[ser2] table[x=sd,y=m]{\datapath/cml.dat};
+\addlegendentry{capital market line}
+\addplot[only marks,mark=*,mark size=1.6pt,inkmuted] table[x=sd,y=m]{\datapath/assets.dat};
+\addlegendentry{assets}
+\node[font=\footnotesize,text=inkmuted,anchor=south east] at (axis cs:0.1022,0.0784) {tangency};
+\addplot[only marks,mark=o,mark size=2.2pt,ser2,forget plot] coordinates {(0.1022,0.0784)};
+\end{axis}
+\end{tikzpicture}
+\caption{Frontier for three assets (means $6,9,12\%$; volatilities $10,18,25\%$; correlations $0.2,0.1,0.4$) with $r=2\%$. The tangency portfolio $(0.589,0.208,0.202)$ has mean $7.84\%$, volatility $10.22\%$, and Sharpe ratio $0.5716$, which equals the quantity $\sqrt{(\mu-r\mathbf{1})^\top\Sigma^{-1}(\mu-r\mathbf{1})}$.}\label{fig:frontier}
+\end{figure}
+
+\begin{intuition}
+Diversification works because variance adds with correlation, while mean adds without it. Note the structure of the optimal weights, $\Sigma^{-1}(\mu-r)$. The matrix inverse is the danger. It finds the combinations with the smallest apparent risk and bets heavily on them, and these are exactly the eigenvectors of $\Sigma$ with the smallest, worst-estimated eigenvalues. An optimiser is an \emph{error maximiser}.
+\end{intuition}
+
+\section{Estimation error}
+
+The sampling error in means is huge. The standard error of a mean annual return over $T$ years is $\sigma/\sqrt T$, whatever the sampling frequency. With $\sigma=20\%$, even $25$ years leaves $\pm4\%$. This is often as large as the premium itself. (Volatility, in contrast, is estimated much better by sampling more often.)
+
+\begin{numcheck}
+For the three assets above, with the true covariance known and only means estimated from five years of monthly returns, 5{,}000 simulations of the tangency weights give these 5\%--95\% intervals: first asset $[-1.05,2.42]$, second $[-1.53,1.99]$, third $[-1.19,1.45]$. The true weights are $0.589$, $0.208$, $0.202$. So the data are almost silent, even in this idealised experiment.
+\end{numcheck}
+
+Remedies:
+\begin{itemize}
+\item \textbf{Shrinkage of the covariance} (Ledoit--Wolf): $\hat\Sigma=(1-\delta)S+\delta F$, with target $F$ being a multiple of the identity or a factor model, and an optimal $\delta$ estimated from the data. With $n$ comparable to $T$, the sample covariance's eigenvalues are badly spread (Mar\v{c}enko--Pastur), and shrinking them helps.
+\item \textbf{Constraints:} no-short limits act as implicit shrinkage (Jagannathan--Ma).
+\item \textbf{Bayesian views (Black--Litterman).} Start with the equilibrium returns $\pi=\delta\Sigma w_{\rm mkt}$ implied by market-cap weights. Express views as $P\mu=q+\epsilon$, with $\epsilon\sim\Nc(0,\Omega)$. The posterior mean is
+\[
+\mu_{\rm BL}=\bigl[(\tau\Sigma)^{-1}+P^\top\Omega^{-1}P\bigr]^{-1}\bigl[(\tau\Sigma)^{-1}\pi+P^\top\Omega^{-1}q\bigr].
+\]
+It is Gaussian conditioning (Example~\ref{ex:gauss}) again, and yields sensible portfolios close to market weights unless views are strong.
+\item \textbf{Risk parity:} ignore means, and equalise each asset's contribution to risk, $w_i(\Sigma w)_i=$ const. It avoids the worst estimation problem at the price of ignoring return views.
+\end{itemize}
+
+\section{CAPM and factor models}
+
+\begin{theorem}[CAPM]\label{thm:capm}
+Suppose all investors are mean--variance optimisers with the same beliefs and riskless borrowing. Then the market portfolio is the tangency portfolio, and for every asset,
+\[
+\E R_i-r=\beta_i(\E R_m-r),\qquad\beta_i=\frac{\Cov(R_i,R_m)}{\Var R_m}.
+\]
+\end{theorem}
+\begin{proof}
+Each investor holds a combination of cash and $w_T$. Summing over investors, supply equals demand, so $w_T=w_m$. From $\Sigma w_m\propto\mu-r\mathbf{1}$, the $i$-th row reads $\Cov(R_i,R_m)=c(\E R_i-r)$. Multiply by $w_m^\top$ to find $c=\Var R_m/(\E R_m-r)$.
+\end{proof}
+
+\begin{intuition}
+The only risk that earns a premium is the part you cannot diversify. An asset's idiosyncratic variance is irrelevant to its expected return. What counts is covariance with what you already hold. An asset that pays off in bad times (low beta, or an insurance asset) can have a low or negative premium.
+\end{intuition}
+
+\paragraph{Arbitrage pricing and factor models.} Suppose $R_i=\E R_i+\sum_k\beta_{ik}F_k+\epsilon_i$, with $\epsilon_i$ diversifiable. Ross's APT says that if there is no asymptotic arbitrage, $\E R_i-r\approx\sum_k\beta_{ik}\lambda_k$. Unlike CAPM, it needs no equilibrium, just a law of large numbers. Empirical factors include value, size, momentum, quality and low-vol (Fama--French, Carhart). Factor models also give a low-rank covariance $\Sigma=BFB^\top+D$, which has far fewer parameters than $n^2/2$, and an easy inverse (Woodbury).
+
+\section{Stochastic discount factors}
+
+No arbitrage implies (in a finite world, by separation of hyperplanes; generally, by Theorem~\ref{thm:ftap1}) a positive \emph{stochastic discount factor} $M$ such that for every asset
+\[
+P_t=\E_t[M_{T}P_T/M_t].
+\]
+Comparing with the change of measure, $M_T/M_t=D_{t,T}\,Z_T/Z_t$: this is the state price density $\zeta$ of the class notes. So \emph{a single object unifies pricing}: real-world expectation times a kernel, or risk-neutral expectation with discounting. From $\E[M(R_i-r)]=0$,
+\[
+\E R_i-r=-(1+r)\Cov(M,R_i).
+\]
+Assets with a payoff low when $M$ is high (bad states, when wealth is scarce) must offer a higher return. CAPM is the special case where $M$ is linear in $R_m$. Cauchy--Schwarz gives the \emph{Hansen--Jagannathan bound}:
+\[
+\frac{\sigma(M)}{\E M}\ge\frac{|\E R_i-r|}{\sigma(R_i)}.
+\]
+An equity Sharpe ratio of $0.4$ requires a very volatile $M$, much more than consumption data suggest. This is the equity premium puzzle.
+
+\section{Merton's portfolio problem}
+
+Let an investor hold a fraction $\pi_t$ in a GBM stock and the rest in cash:
+\[
+\dd X_t=X_t\bigl[(r+\pi_t(\mu-r))\dd t+\pi_t\sigma\dd W_t\bigr],
+\]
+maximising $\E[U(X_T)]$, with CRRA utility $U(x)=x^{1-\gamma}/(1-\gamma)$.
+
+\begin{theorem}[Merton 1969]\label{thm:mertonport}
+The optimal fraction is constant:
+\[
+\pi^*=\frac{\mu-r}{\gamma\sigma^2}.
+\]
+\end{theorem}
+\begin{proof}
+Let $V(t,x)=\sup_\pi\E_{t,x}U(X_T)$. By the dynamic programming principle, $V(t,X_t)$ is a supermartingale for every $\pi$, and a martingale at the optimum. It\^o's formula gives the \emph{Hamilton--Jacobi--Bellman equation}:
+\[
+\partial_tV+\sup_\pi\Bigl\{(r+\pi(\mu-r))x\partial_xV+\tfrac12\pi^2\sigma^2x^2\partial_{xx}V\Bigr\}=0,\quad V(T,x)=U(x).
+\]
+The first-order condition is $\pi^*=-\frac{(\mu-r)\partial_xV}{\sigma^2x\partial_{xx}V}$. Try $V=f(t)x^{1-\gamma}/(1-\gamma)$. Then $-x\partial_{xx}V/\partial_xV=\gamma$, and so $\pi^*=(\mu-r)/\gamma\sigma^2$. The equation reduces to the ODE $f'+(1-\gamma)\bigl(r+\frac{(\mu-r)^2}{2\gamma\sigma^2}\bigr)f=0$, $f(T)=1$. A verification argument (It\^o's formula on $V$ with an arbitrary $\pi$) completes the proof.
+\end{proof}
+
+\paragraph{The martingale (dual) method.} In a complete market, any wealth $X_T$ with $\E[M_TX_T]=X_0$ can be replicated. So optimise over terminal wealth, not strategies: maximise $\E U(X_T)$ subject to that budget. The first-order condition gives $U'(X_T)=yM_T$, so $X_T=(U')^{-1}(yM_T)$. Then hedge it. For CRRA, it reproduces the theorem, and the method applies where HJB is hard.
+
+\paragraph{Kelly and log-optimality.} For $\gamma=1$ (log utility), $\pi^*=(\mu-r)/\sigma^2$ maximises the long-run growth rate
+\[
+g(\pi)=\lim_{T\to\infty}\frac1T\ln\frac{X_T}{X_0}=r+\pi(\mu-r)-\tfrac12\pi^2\sigma^2.
+\]
+\begin{numcheck}
+For $\mu=8\%$, $\sigma=20\%$, $r=2\%$: Kelly is $\pi^*=1.5$.
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+$\pi/\pi^*$ & $0.5$ & $1$ & $2$ & $3$\\
+\midrule
+Growth rate & $5.375\%$ & $6.500\%$ & $2.000\%$ & $-11.500\%$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Betting twice Kelly gets you exactly the riskless rate: all the extra return is eaten by volatility drag. Further out the growth rate turns negative, and then wealth tends to zero with probability one, despite a positive expected return. Half Kelly gives three-quarters of the excess growth at half the volatility. Since $\mu$ is poorly known, overestimating it risks being on the wrong side, and that is why practitioners stay at or below half Kelly.
+\end{numcheck}
+
+\paragraph{Active management.} Grinold's \emph{fundamental law} says the information ratio is approximately $\mathrm{IR}\approx\mathrm{IC}\sqrt{\mathrm{BR}}$, where $\mathrm{IC}$ is the correlation of forecasts with outcomes and $\mathrm{BR}$ is the number of independent bets per year. A weak signal traded widely (say IC $=0.05$ on $1{,}000$ independent bets, IR $\approx1.6$) can beat a strong one traded rarely. Breadth is the operative word: bets on correlated names are not independent.
+
+\begin{exercises}
+\item Prove the two-fund theorem. Show that the covariance between $w_g$ and any frontier portfolio is $1/A$.
+\item Find the portfolio weights maximising $\mu^\top w-\frac\lambda2w^\top\Sigma w$ with no budget constraint. Interpret $\lambda$ and the result for $\Sigma$ diagonal.
+\item With two assets of correlation $\rho$ and equal volatility, find the GMV variance. For $n$ assets with common correlation $\rho$, show $\sigma^2_p\to\rho\sigma^2$ as $n\to\infty$. What does it say about diversification limits?
+\item Show that the Sharpe ratio of a portfolio with leverage is unchanged, and find the relationship of optimal leverage to the Sharpe ratio under Kelly.
+\item Solve Merton's problem with intermediate consumption $\int_0^Te^{-\delta t}U(c_t)\dd t$ and $T=\infty$. Find $c^*/X$.
+\item In the binomial world of the class notes, compute the SDF $M$ and check $\E[M]=1/(1+r)$. Using the $N=2$ example, verify $V_0=\E[MV_N]$ for a call.
+\item A bet pays $b$-to-$1$ with probability $p$. Derive the Kelly fraction $f^*=p-(1-p)/b$. (This is a common interview question.)
+\end{exercises}

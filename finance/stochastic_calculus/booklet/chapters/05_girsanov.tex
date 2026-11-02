@@ -1,0 +1,171 @@
+\chapter{Girsanov, Representation and the Fundamental Theorems}\label{ch:girsanov}
+
+The class notes state Girsanov's theorem and the martingale representation theorem without proof. Both have short proofs given the tools of Chapter~\ref{ch:ito}, and the proofs clarify the hypotheses.
+
+\section{Girsanov's theorem}
+
+Let $\Theta$ be adapted with $\int_0^T\Theta_s^2\dd s<\infty$ a.s., and let
+\[
+Z_t=\exp\Bigl(-\int_0^t\Theta_s\dd W_s-\frac12\int_0^t\Theta_s^2\dd s\Bigr),\qquad\dd Z_t=-\Theta_tZ_t\dd W_t.
+\]
+$Z$ is a positive local martingale, hence a supermartingale. If $\E Z_T=1$ it is a true martingale on $[0,T]$ (Proposition~\ref{prop:poslocal}), and $\Q(A)=\E[Z_T\ind_A]$ defines a probability measure equivalent to $\Prob$ on $\F_T$.
+
+\begin{lemma}\label{lem:bayesproc}
+Let $Z$ be a true martingale as above. An adapted continuous $Y$ is a $\Q$-(local) martingale if and only if $YZ$ is a $\Prob$-(local) martingale.
+\end{lemma}
+\begin{proof}
+For the martingale case: if $YZ$ is a $\Prob$-martingale, the Bayes rule (Theorem~\ref{thm:bayes}) gives, for $s\le t\le T$, using $\E[Z_T\mid\F_t]=Z_t$,
+\[
+\E^\Q[Y_t\mid\F_s]=\frac{\E^\Prob[Y_tZ_T\mid\F_s]}{Z_s}=\frac{\E^\Prob[Y_tZ_t\mid\F_s]}{Z_s}=\frac{Y_sZ_s}{Z_s}=Y_s.
+\]
+The converse is the same computation in reverse, and the local case follows by stopping.
+\end{proof}
+
+\begin{theorem}[Girsanov]\label{thm:girsanov}
+Assume $\E Z_T=1$. Under $\Q$, the process $W^\Q_t=W_t+\int_0^t\Theta_s\dd s$ is a Brownian motion on $[0,T]$.
+\end{theorem}
+\begin{proof}
+By the product rule,
+\[
+\dd(ZW^\Q)=Z\,\dd W^\Q+W^\Q\dd Z+\dd Z\,\dd W^\Q=Z(\dd W+\Theta\dd t)-W^\Q Z\Theta\,\dd W-Z\Theta\,\dd t=Z(1-\Theta W^\Q)\dd W.
+\]
+The $\dd t$ terms cancel, which is the whole purpose of the $-\Theta$ in $Z$. So $ZW^\Q$ is a $\Prob$-local martingale, and by Lemma~\ref{lem:bayesproc} $W^\Q$ is a $\Q$-local martingale. Quadratic variation is an a.s.\ limit, so it does not change under an equivalent measure, and adding a finite-variation term does not change it either: $[W^\Q]_t=[W]_t=t$. L\'evy's characterisation (Theorem~\ref{thm:levychar}) applied under $\Q$ finishes the proof.
+\end{proof}
+
+\begin{intuition}
+Think of paths as outcomes. Under $\Q$, we reweight each path by a factor $Z_T$ favouring those that went in the direction $-\Theta$. For a constant $\Theta$, $\Q$ tilts the terminal Gaussian exactly as in the class notes' example, moving the mean by $-\Theta t$. Paths are not moved; they are merely given different weights. The same path that looks like driftless noise with a lucky run under one measure looks like drift plus ordinary noise under the other. Because the fine structure of a path (quadratic variation) has probability one under both, only the slow component can change. Volatility is a property of the paths themselves, and drift is a property of the weights.
+\end{intuition}
+
+\begin{theorem}[Novikov's condition, stated]\label{thm:novikov}
+If $\E\exp\bigl(\tfrac12\int_0^T\Theta_s^2\dd s\bigr)<\infty$, then $\E Z_T=1$. In particular this holds for bounded $\Theta$.
+\end{theorem}
+
+\begin{pitfall}
+Novikov is sufficient, not necessary, and the condition truly matters. Sin (1998) shows that for a stock with lognormal stochastic volatility, $\dd S=\sigma_tS\,\dd W$, $\dd\sigma_t=\xi\sigma_t\dd B$, positive correlation $\rho>0$ between $W$ and $B$ makes $S$ a strict local martingale: $\E S_T<S_0$. A calibrated model that fails this would misprice a forward. It is one reason for caution with positive spot--vol correlation, which occurs in some FX and commodity markets.
+\end{pitfall}
+
+\paragraph{The $d$-dimensional version.} With $\vec\Theta$ $d$-dimensional and $Z_t=\exp(-\int\vec\Theta\cdot\dd\vec W-\tfrac12\int|\vec\Theta|^2\dd s)$, each $W^{\Q,i}=W^i+\int\Theta^i\dd s$ is a $\Q$-Brownian motion, and they are independent, using the $d$-dimensional L\'evy theorem. It is the result used in Chapter~5 of the class notes.
+
+\paragraph{Girsanov on a general semimartingale.} If $\dd X=\Delta\dd W+\mu\dd t$, then under $\Q$, $\dd X=\Delta\dd W^\Q+(\mu-\Delta\Theta)\dd t$. For a general local martingale $M$ and density process $Z$, $M-\int\frac{\dd[M,Z]}{Z}$ is a $\Q$-local martingale. The drift adjustment equals the instantaneous covariance of $M$ with $\ln Z$. This form makes change of numeraire computations nearly automatic: \emph{drift change equals covariance with the log of the density}.
+
+\section{Application: Brownian motion with drift}\label{sec:drift}
+
+To simulate $\E[f(\text{path of }W_t+\nu t)]$ under $\Prob$, apply Girsanov with constant $\Theta=-\nu$ (the Cameron--Martin theorem):
+\[
+\E\bigl[f\bigl((W_s+\nu s)_{s\le T}\bigr)\bigr]=\E\bigl[f\bigl((W_s)_{s\le T}\bigr)\,e^{\nu W_T-\frac12\nu^2T}\bigr].
+\]
+
+\begin{proposition}[Maximum with drift]\label{prop:maxdrift}
+Let $X_t=W_t+\nu t$ and $a>0$. Then
+\[
+\Prob\Bigl(\max_{s\le T}X_s\ge a\Bigr)=\Phi\Bigl(\frac{\nu T-a}{\sqrt T}\Bigr)+e^{2\nu a}\Phi\Bigl(\frac{-\nu T-a}{\sqrt T}\Bigr).
+\]
+\end{proposition}
+\begin{proof}
+By Cameron--Martin, the probability is $\E[\ind_{\{M_T\ge a\}}e^{\nu W_T-\nu^2T/2}]$, where $M$ is the maximum of $W$. On $\{W_T\ge a\}$ the event holds automatically, and $\E[\ind_{\{W_T\ge a\}}e^{\nu W_T-\nu^2T/2}]=\Prob(W_T+\nu T\ge a)$ gives the first term. On $\{M_T\ge a,W_T<a\}$, reflect: the path is replaced by one ending at $2a-W_T>a$. The term becomes $\E[\ind_{\{W_T>a\}}e^{\nu(2a-W_T)-\nu^2T/2}]=e^{2\nu a}\Prob(W_T-\nu T>a)$.
+\end{proof}
+
+\section{Application: barrier options}\label{sec:barrier}
+
+The class notes reach up-and-out options at the very end. Here is the cleanest closed form.
+
+\begin{theorem}[Down-and-out call]\label{thm:doc}
+In Black--Scholes, let $C(S,K)$ be the vanilla call. For a barrier $B<S_0$ with $B\le K$, continuously monitored,
+\[
+C_{\rm do}(S_0)=C(S_0,K)-\Bigl(\frac{S_0}{B}\Bigr)^{1-2r/\sigma^2}C\Bigl(\frac{B^2}{S_0},K\Bigr).
+\]
+\end{theorem}
+\begin{proof}
+Under $\Q$, $\ln(S_t/S_0)=\sigma(W_t^\Q+\nu t)$, with $\nu=(r-\tfrac12\sigma^2)/\sigma$. Put $b=\ln(B/S_0)/\sigma<0$. By Cameron--Martin and the reflection principle for the minimum, the sub-density of $y=W_T$ on the event that the path stays above $b$ is
+\[
+e^{\nu y-\frac12\nu^2T}\bigl[\varphi_T(y)-\varphi_T(2b-y)\bigr],\qquad y>b.
+\]
+The call pays only when $S_T>K\ge B$, which means $y>b$ automatically. The $\varphi_T(y)$ term gives the vanilla price. In the other term substitute $z=y-2b$. Then $\varphi_T(2b-y)=\varphi_T(z)$, $S_T=S_0e^{\sigma(2b+z)}=(B^2/S_0)e^{\sigma z}$ and $e^{\nu y}=e^{2\nu b}e^{\nu z}$. Therefore that term equals $e^{2\nu b}$ times a vanilla call on an underlying starting from $B^2/S_0$, where $e^{2\nu b}=(B/S_0)^{2\nu/\sigma}=(S_0/B)^{1-2r/\sigma^2}$.
+\end{proof}
+
+\begin{intuition}
+This is the method of images from electrostatics. The price must vanish at $S=B$. Place a virtual, negatively weighted option at the mirror image of $S_0$ across the barrier (in log space, $B^2/S_0$). Its weight is set so that the two cancel on $S=B$. Check it: at $S_0=B$, $(S_0/B)^{\cdot}=1$ and $B^2/S_0=S_0$, so the two terms cancel.
+\end{intuition}
+
+\begin{numcheck}
+For $S_0=K=100$, $B=90$, $r=5\%$, $\sigma=20\%$, $T=1$: vanilla $10.4506$ and down-and-out $8.6655$. A Monte Carlo with $400{,}000$ paths and $250$ steps, testing the barrier only at grid points, gives $8.9347\pm0.0232$, which is biased high by about 12 standard errors because paths can cross and return unobserved. Using the Brownian bridge crossing probability \eqref{eq:bridge} on each step gives $8.6817\pm0.0231$, consistent with the formula.
+\end{numcheck}
+
+The difference between the two estimates is also real money: a contract monitored daily is a different contract from one monitored continuously. The Broadie--Glasserman--Kou correction shifts the barrier by a factor $\exp(\pm0.5826\,\sigma\sqrt{\Delta t})$ to convert one to the other.
+
+\begin{remark}
+In-out parity: a down-and-in plus a down-and-out gives a vanilla, because exactly one of them is alive at maturity. Up-and-out calls have a more complicated formula, as the payoff is cut off above; the integrand is restricted to $K<S_T<B$, and the result needs digital-type terms. Lookbacks follow from the joint density \eqref{eq:jointmax} with drift.
+\end{remark}
+
+\section{Martingale representation}
+
+\begin{theorem}\label{thm:mrt}
+Let $(\F_t)$ be the (augmented) filtration generated by $W$. Every $F\in L^2(\F_T)$ has a unique representation
+\[
+F=\E F+\int_0^TH_t\,\dd W_t,\qquad H\in L^2_{\rm ad}.
+\]
+Consequently every local martingale of this filtration has a continuous version and is a stochastic integral.
+\end{theorem}
+\begin{proof}[Proof (main ideas)]
+\emph{Uniqueness} follows from the isometry. \emph{Existence:} let $\mathcal{S}\subseteq L^2(\F_T)$ be the set of $F$ that can be represented. By the isometry $\mathcal{S}$ is a closed linear subspace. It contains the exponentials
+\[
+\mathcal{E}_f=\exp\Bigl(\int_0^Tf\,\dd W-\frac12\int_0^Tf^2\dd t\Bigr)=1+\int_0^T\mathcal{E}_f(t)f(t)\,\dd W_t,
+\]
+for deterministic step functions $f$. So it remains to show these are dense. If $G\in L^2(\F_T)$ is orthogonal to every $\mathcal{E}_f$, then
+\[
+\E\bigl[G\exp\bigl(\textstyle\sum_ju_j(W_{t_{j+1}}-W_{t_j})\bigr)\bigr]=0\quad\text{for all real }u_j.
+\]
+This is an entire function of $u$, so it vanishes also for imaginary $u$. Hence the signed measure $G\,\dd\Prob$ has zero Fourier transform on every finite collection of increments, and therefore $\E[G\mid W_{t_1},\dots,W_{t_n}]=0$. Such $\sigma$-algebras generate $\F_T$, and so $G=0$.
+\end{proof}
+
+\begin{pitfall}
+The filtration must be generated by $W$. If $\F_t$ contains additional randomness (an independent coin, a second Brownian motion, a jump process), then there are martingales orthogonal to $W$, and the representation fails. That is the mathematical form of market incompleteness.
+\end{pitfall}
+
+\paragraph{Clark--Ocone formula.} When $F$ is Malliavin differentiable, the integrand can be named: $H_t=\E[D_tF\mid\F_t]$, where $D_tF$ measures the sensitivity of $F$ to a small bump in the noise at time $t$. For example, under $\Q$ with $r=0$, let $F=(S_T-K)^+$. Then $D_tS_T=\sigma S_T$, and $D_tF=\sigma S_T\ind_{\{S_T>K\}}$. Hence $H_t=\sigma\E^\Q[S_T\ind_{\{S_T>K\}}\mid\F_t]=\sigma S_tN(d_+)$. Comparing with $H_t=\sigma S_t\Delta_t$ gives $\Delta_t=N(d_+)$: the Black--Scholes delta, without a PDE.
+
+\begin{intuition}
+The representation theorem says that \emph{with one source of noise, all uncertainty can be hedged by trading that noise}. Each new piece of information arrives through a $\dd W$; a martingale moves only when information arrives, and its move must be proportional to $\dd W$, since there is nothing else. A binomial tree has the same property: at each node there are two branches and two assets. With two assets (stock and bond), every one-step claim can be replicated.
+\end{intuition}
+
+\section{The fundamental theorems, carefully}\label{sec:admiss}
+
+Consider the market with $m$ stocks driven by $d$ Brownian motions from Chapter~5 of the class notes. There the first fundamental theorem was proved by saying that discounted wealth $D_tX_t$ is a $\Q$-martingale. That hides a real problem: it is only a $\Q$-\emph{local} martingale.
+
+\begin{example}[Arbitrage from an unbounded strategy]
+Take one stock with $r=0$ and $\dd S=S\,\dd W^\Q$. Let $\Delta_tS_t=1/\sqrt{T-t}$. The wealth from $X_0=0$ is $X_t=\int_0^t(T-s)^{-1/2}\dd W^\Q_s$, and by the pitfall in Chapter~\ref{ch:ito}, $\tau=\inf\{t:X_t=1\}<T$ almost surely. Stop trading at $\tau$. The strategy turns $0$ into $1$ almost surely, with an equivalent martingale measure present! The catch is that $X$ can go arbitrarily negative on the way.
+\end{example}
+
+\begin{definition}
+A self-financing strategy is \emph{admissible} if its discounted wealth is bounded below by a constant: there is some $c$ with $D_tX_t\ge-c$ for all $t\le T$ a.s.
+\end{definition}
+
+\begin{theorem}[First fundamental theorem, sufficient direction]\label{thm:ftap1}
+If an equivalent local martingale measure $\Q$ exists, there is no admissible arbitrage.
+\end{theorem}
+\begin{proof}
+$D_tX_t+c$ is a nonnegative $\Q$-local martingale, thus a supermartingale by Proposition~\ref{prop:poslocal}. Hence $\E^\Q[D_TX_T]\le X_0$. If $X_0=0$ and $\Prob(X_T\ge0)=1$, then by equivalence $\Q(X_T\ge0)=1$. Combined with $\E^\Q[D_TX_T]\le0$, it follows that $X_T=0$ $\Q$-a.s., hence $\Prob$-a.s.
+\end{proof}
+
+The class notes' argument becomes correct with ``supermartingale'' in place of ``martingale''. A full converse needs more care: \emph{no arbitrage} alone does not imply the existence of a $\Q$ in continuous time. Delbaen and Schachermayer (1994) proved the sharp statement: a suitable condition called \emph{No Free Lunch with Vanishing Risk}, a strengthening of no-arbitrage that also rules out sequences of nearly-arbitrages, is equivalent to the existence of an equivalent local martingale measure.
+
+\begin{theorem}[Second fundamental theorem]\label{thm:ftap2}
+Assume $\F_t$ is generated by $\vec W$ and that a market price of risk exists. The market is complete if and only if the equivalent local martingale measure is unique, if and only if $\sigma_t$ has rank $d$ for a.e.\ $t$, a.s.
+\end{theorem}
+\begin{proof}[Sketch]
+If $\operatorname{rank}\sigma=d$: given a claim $V_T$, the martingale $\E^\Q[D_TV_T\mid\F_t]$ is by $d$-dimensional representation $\int\sum_jH^j\dd W^{\Q,j}$. Solve $H=D\,\sigma^\top(\Delta S)$ for $\Delta$, possible since $\sigma^\top$ is onto $\R^d$. If $\operatorname{rank}\sigma<d$, there is a non-zero adapted $\eta\in\ker\sigma$. Then $\vec\Theta+\epsilon\eta$ gives a second market price of risk and thus a second measure (Novikov for small bounded $\eta$), and the claim $\mathcal{E}(\int\eta\cdot\dd W^\Q)_T$, which has different prices under the two measures, cannot be hedged.
+\end{proof}
+
+\begin{intuition}
+\emph{Prices come from martingale measures, hedges come from completeness.} When $\sigma$ has rank $<d$ there are more shocks than ways to trade them. Then many $\Q$ are consistent with the traded assets. Each gives a different arbitrage-free price of a non-traded claim, and these prices fill an interval. Stochastic volatility and jump models live here. We calibrate $\Q$ to option prices because no-arbitrage alone cannot pin it down.
+\end{intuition}
+
+\begin{exercises}
+\item Use Proposition~\ref{prop:maxdrift} with $T\to\infty$ to show that for $\nu<0$ and $a>0$, $\Prob(\sup_tX_t\ge a)=e^{2\nu a}$. So the overall maximum is exponential. Deduce the probability that a stock with a negative log-drift ever doubles.
+\item (First-passage density with drift.) Derive that $\tau_a$ for $X$ has density $\frac{a}{\sqrt{2\pi t^3}}e^{-(a-\nu t)^2/2t}$, and find $\E\tau_a$ for $\nu>0$.
+\item Derive the price of a one-touch paying $1$ at expiry, in Black--Scholes, if $S$ ever hits $B>S_0$.
+\item Find $F=W_T^2$'s martingale representation by hand, and the integrand for $F=W_T^3$. Compare with Clark--Ocone.
+\item Show that if $\Q\sim\Prob$ on $\F_T$, $\Q$ has a density process $Z_t=\E[\dd\Q/\dd\Prob\mid\F_t]$, and by the representation theorem $Z_t=\mathcal{E}(-\int\Theta\,\dd W)_t$ for some adapted $\Theta$. So in a Brownian filtration, \emph{every} equivalent measure change is a Girsanov change.
+\item Compute $\E^\Q$ of the realised variance of $\ln S$ under $\Q$ and under $\Prob$. Which of the two is the volatility of a Black--Scholes model?
+\item In a market with $m=1$, $d=2$, $\dd S=S(\mu\dd t+\sigma_1\dd W^1+\sigma_2\dd W^2)$, describe all market prices of risk. Find a change of basis showing the market has only one effective Brownian motion. Is it complete with respect to the filtration of $S$? With respect to that of $(W^1,W^2)$?
+\end{exercises}

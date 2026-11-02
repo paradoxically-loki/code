@@ -1,0 +1,67 @@
+\chapter{Where to Go Next}
+\markboth{Where to Go Next}{Where to Go Next}
+
+This booklet is an overview; the books below go deep. They are listed in the rough order they could be read, and each is chosen for a reason.
+
+\section*{Probability and stochastic calculus}
+\begin{itemize}
+\item \textbf{Williams}, \emph{Probability with Martingales.} Short and clear; the right first book in measure-theoretic probability.
+\item \textbf{Shreve}, \emph{Stochastic Calculus for Finance I and II.} The class notes follow it. Do the exercises.
+\item \textbf{\O ksendal}, \emph{Stochastic Differential Equations.} SDEs, diffusions, optimal stopping and control, at a friendly pace.
+\item \textbf{Karatzas and Shreve}, \emph{Brownian Motion and Stochastic Calculus.} The full treatment with complete proofs.
+\item \textbf{Revuz and Yor}, \emph{Continuous Martingales and Brownian Motion.} The advanced reference, for local time and excursions.
+\item \textbf{Protter}, \emph{Stochastic Integration and Differential Equations.} For general semimartingales and jumps.
+\end{itemize}
+
+\section*{Derivatives pricing}
+\begin{itemize}
+\item \textbf{Hull}, \emph{Options, Futures, and Other Derivatives.} Market context and instruments.
+\item \textbf{Bj\"ork}, \emph{Arbitrage Theory in Continuous Time.} Very clean on change of numeraire and on rates.
+\item \textbf{Gatheral}, \emph{The Volatility Surface.} The concise book on smile modelling.
+\item \textbf{Bergomi}, \emph{Stochastic Volatility Modeling.} What a practitioner cares about: dynamics, not calibration.
+\item \textbf{Cont and Tankov}, \emph{Financial Modelling with Jump Processes.} The reference on L\'evy models.
+\item \textbf{Brigo and Mercurio}, \emph{Interest Rate Models: Theory and Practice.} A thorough reference for short-rate models and the LMM.
+\item \textbf{Andersen and Piterbarg}, \emph{Interest Rate Modeling} (3 volumes). The industrial-strength reference.
+\item \textbf{Duffie}, \emph{Dynamic Asset Pricing Theory.} The rigorous general-equilibrium viewpoint.
+\end{itemize}
+
+\section*{Numerical methods}
+\begin{itemize}
+\item \textbf{Glasserman}, \emph{Monte Carlo Methods in Financial Engineering.} Essential.
+\item \textbf{Duffy}, \emph{Finite Difference Methods in Financial Engineering}; or \textbf{Tavella and Randall}, \emph{Pricing Financial Instruments: The Finite Difference Method.}
+\item \textbf{Kloeden and Platen}, \emph{Numerical Solution of Stochastic Differential Equations.} The higher-order schemes.
+\end{itemize}
+
+\section*{Risk, portfolios and statistics}
+\begin{itemize}
+\item \textbf{McNeil, Frey and Embrechts}, \emph{Quantitative Risk Management.} Copulas, EVT, and coherent measures.
+\item \textbf{Cochrane}, \emph{Asset Pricing.} The SDF view of everything.
+\item \textbf{Grinold and Kahn}, \emph{Active Portfolio Management.} The practice of alpha and risk.
+\item \textbf{Tsay}, \emph{Analysis of Financial Time Series}; \textbf{Hamilton}, \emph{Time Series Analysis} for more depth.
+\item \textbf{L\'opez de Prado}, \emph{Advances in Financial Machine Learning.} On avoiding self-deception in backtests.
+\item \textbf{Cartea, Jaimungal and Penalva}, \emph{Algorithmic and High-Frequency Trading.} Market making and execution via stochastic control.
+\end{itemize}
+
+\section*{Trading perspective}
+\begin{itemize}
+\item \textbf{Natenberg}, \emph{Option Volatility and Pricing}; and \textbf{Sinclair}, \emph{Volatility Trading.} How practitioners think about the positions.
+\item \textbf{Taleb}, \emph{Dynamic Hedging.} Practical wisdom about real-world Greeks.
+\end{itemize}
+
+\section*{Suggested projects}
+
+Reading alone will not make this stick. Each of these takes from an evening to a weekend, and each teaches something a book cannot:
+\begin{enumerate}
+\item Rewrite \texttt{code/make\_data.py} in your own way. Break it, then fix it.
+\item Build a smile from real option quotes. Compute the implied vols, fit SVI, check butterfly and calendar arbitrage, and extract the risk-neutral density.
+\item Build a Heston calibrator using the Lewis integral. Observe parameter stability from day to day.
+\item Compute Dupire local vol from your fitted SVI surface. Reprice vanillas with a Monte Carlo under this local vol to check it.
+\item Run a real delta-hedging experiment on an index: compare realised P\&L with the gamma formula of Theorem~\ref{thm:hedgepnl}.
+\item Fit a Hull--White model to today's yield curve and price a Bermudan swaption on a tree.
+\item Fit GARCH by QMLE to index returns, and compare forecasts against realised variance from intraday data.
+\item Backtest a pairs strategy carefully, and then count how many ways the result can be an artefact.
+\end{enumerate}
+
+\section*{Mathematical gaps to fill along the way}
+
+Linear algebra (spectral theory, Cholesky, conditioning), real analysis (Lebesgue, Fourier transforms), PDEs (the maximum principle, the heat kernel, viscosity solutions for HJB), and convex optimisation (duality). Each appears here only as far as it was needed, and each repays further study.

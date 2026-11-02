@@ -1,0 +1,208 @@
+\contentsline {chapter}{How to use this booklet}{vii}{chapter*.2}%
+\contentsline {paragraph}{Three kinds of box.}{vii}{section*.3}%
+\contentsline {paragraph}{About the numbers.}{vii}{section*.4}%
+\contentsline {paragraph}{How rigorous is it?}{vii}{section*.5}%
+\contentsline {paragraph}{Notation compared with the class notes.}{viii}{section*.6}%
+\contentsline {paragraph}{If you are short of time.}{viii}{section*.7}%
+\contentsline {part}{I\hspace {1em}Foundations of Probability}{1}{part.1}%
+\contentsline {chapter}{\numberline {1}Measure-Theoretic Probability}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Why bother?}{2}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Probability spaces}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Random variables and information}{3}{section.1.3}%
+\contentsline {section}{\numberline {1.4}The Lebesgue integral}{3}{section.1.4}%
+\contentsline {paragraph}{Law of the unconscious statistician.}{4}{section*.8}%
+\contentsline {section}{\numberline {1.5}Inequalities and $L^p$ spaces}{4}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Modes of convergence}{4}{section.1.6}%
+\contentsline {section}{\numberline {1.7}Independence, product measures and limit theorems}{5}{section.1.7}%
+\contentsline {section}{\numberline {1.8}Absolute continuity and the Radon--Nikodym theorem}{6}{section.1.8}%
+\contentsline {section}{\numberline {1.9}Conditional expectation}{6}{section.1.9}%
+\contentsline {chapter}{\numberline {2}Martingales}{9}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Discrete-time definitions}{9}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Stopping times and optional stopping}{10}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Maximal inequalities}{11}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Convergence}{11}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Continuous time}{12}{section.2.5}%
+\contentsline {section}{\numberline {2.6}The Snell envelope: optimal stopping in discrete time}{13}{section.2.6}%
+\contentsline {part}{II\hspace {1em}Stochastic Calculus}{14}{part.2}%
+\contentsline {chapter}{\numberline {3}Brownian Motion}{15}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Definition and existence}{15}{section.3.1}%
+\contentsline {paragraph}{Symmetries.}{16}{section*.11}%
+\contentsline {section}{\numberline {3.2}Path properties}{16}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Markov properties and the reflection principle}{18}{section.3.3}%
+\contentsline {section}{\numberline {3.4}The Brownian bridge}{19}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Martingales of Brownian motion}{19}{section.3.5}%
+\contentsline {paragraph}{Heat equation.}{20}{section*.12}%
+\contentsline {chapter}{\numberline {4}The It\^o Integral and It\^o's Formula}{21}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Why a new integral, and why the left endpoint}{21}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Construction}{22}{section.4.2}%
+\contentsline {paragraph}{Step 1: simple processes.}{22}{section*.14}%
+\contentsline {paragraph}{Step 2: density.}{22}{section*.15}%
+\contentsline {paragraph}{Step 3: extension.}{22}{section*.16}%
+\contentsline {paragraph}{Step 4: a continuous version in $t$.}{22}{section*.17}%
+\contentsline {paragraph}{Step 5: localisation.}{23}{section*.18}%
+\contentsline {section}{\numberline {4.3}It\^o processes}{23}{section.4.3}%
+\contentsline {section}{\numberline {4.4}It\^o's formula}{23}{section.4.4}%
+\contentsline {paragraph}{Multi-dimensional form and the product rule.}{24}{section*.19}%
+\contentsline {section}{\numberline {4.5}L\'evy's characterisation}{25}{section.4.5}%
+\contentsline {section}{\numberline {4.6}Stratonovich calculus}{25}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Tanaka's formula and local time}{25}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Girsanov, Representation and the Fundamental Theorems}{27}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Girsanov's theorem}{27}{section.5.1}%
+\contentsline {paragraph}{The $d$-dimensional version.}{28}{section*.21}%
+\contentsline {paragraph}{Girsanov on a general semimartingale.}{28}{section*.22}%
+\contentsline {section}{\numberline {5.2}Application: Brownian motion with drift}{28}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Application: barrier options}{29}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Martingale representation}{29}{section.5.4}%
+\contentsline {paragraph}{Clark--Ocone formula.}{30}{section*.23}%
+\contentsline {section}{\numberline {5.5}The fundamental theorems, carefully}{30}{section.5.5}%
+\contentsline {chapter}{\numberline {6}Stochastic Differential Equations and PDEs}{33}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Strong solutions}{33}{section.6.1}%
+\contentsline {paragraph}{What goes wrong without the conditions.}{33}{section*.25}%
+\contentsline {section}{\numberline {6.2}Solvable models}{34}{section.6.2}%
+\contentsline {paragraph}{Linear SDEs.}{34}{section*.26}%
+\contentsline {paragraph}{Ornstein--Uhlenbeck.}{34}{section*.27}%
+\contentsline {paragraph}{Cox--Ingersoll--Ross.}{34}{section*.28}%
+\contentsline {section}{\numberline {6.3}The generator, Dynkin and exit problems}{35}{section.6.3}%
+\contentsline {paragraph}{Exit problems.}{35}{section*.29}%
+\contentsline {section}{\numberline {6.4}Kolmogorov equations}{35}{section.6.4}%
+\contentsline {paragraph}{Forward (Fokker--Planck) equation.}{35}{section*.30}%
+\contentsline {section}{\numberline {6.5}Feynman--Kac}{36}{section.6.5}%
+\contentsline {paragraph}{The converse.}{36}{section*.31}%
+\contentsline {section}{\numberline {6.6}Optimal stopping and American options}{36}{section.6.6}%
+\contentsline {chapter}{\numberline {7}Jump Processes}{39}{chapter.7}%
+\contentsline {section}{\numberline {7.1}The Poisson process}{39}{section.7.1}%
+\contentsline {paragraph}{Compound Poisson.}{39}{section*.33}%
+\contentsline {section}{\numberline {7.2}It\^o's formula with jumps}{40}{section.7.2}%
+\contentsline {paragraph}{Stock with jumps.}{40}{section*.34}%
+\contentsline {section}{\numberline {7.3}Change of measure with jumps}{40}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Incompleteness: a one-period view}{41}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Merton's jump-diffusion model}{41}{section.7.5}%
+\contentsline {section}{\numberline {7.6}L\'evy processes}{42}{section.7.6}%
+\contentsline {paragraph}{Examples of pure-jump models.}{42}{section*.35}%
+\contentsline {paragraph}{Why stationarity fails in practice.}{43}{section*.36}%
+\contentsline {paragraph}{Why jumps matter for hedging.}{43}{section*.37}%
+\contentsline {part}{III\hspace {1em}Pricing Beyond Black--Scholes}{44}{part.3}%
+\contentsline {chapter}{\numberline {8}The Volatility Smile}{45}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Implied volatility}{45}{section.8.1}%
+\contentsline {paragraph}{Useful coordinates.}{45}{section*.39}%
+\contentsline {section}{\numberline {8.2}Model-free constraints}{45}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Static replication}{46}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Variance swaps}{47}{section.8.4}%
+\contentsline {section}{\numberline {8.5}What delta hedging actually earns}{47}{section.8.5}%
+\contentsline {section}{\numberline {8.6}Why smiles exist}{48}{section.8.6}%
+\contentsline {paragraph}{Term structure.}{48}{section*.40}%
+\contentsline {section}{\numberline {8.7}Asymptotic constraints}{48}{section.8.7}%
+\contentsline {section}{\numberline {8.8}How smiles are quoted and how they move}{49}{section.8.8}%
+\contentsline {paragraph}{FX conventions.}{49}{section*.41}%
+\contentsline {paragraph}{Sticky rules.}{49}{section*.42}%
+\contentsline {chapter}{\numberline {9}Local Volatility}{50}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Dupire's formula}{50}{section.9.1}%
+\contentsline {paragraph}{In implied-variance coordinates.}{51}{section*.44}%
+\contentsline {section}{\numberline {9.2}Local vol as a conditional expectation}{51}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Relating implied to local volatility}{51}{section.9.3}%
+\contentsline {section}{\numberline {9.4}The flaw: smile dynamics}{52}{section.9.4}%
+\contentsline {section}{\numberline {9.5}Practice}{52}{section.9.5}%
+\contentsline {chapter}{\numberline {10}Stochastic Volatility and Fourier Pricing}{54}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Pricing when volatility is a second risk}{54}{section.10.1}%
+\contentsline {section}{\numberline {10.2}The mixing theorem}{54}{section.10.2}%
+\contentsline {section}{\numberline {10.3}The Heston model}{55}{section.10.3}%
+\contentsline {paragraph}{The characteristic function.}{55}{section*.46}%
+\contentsline {section}{\numberline {10.4}Fourier pricing}{55}{section.10.4}%
+\contentsline {section}{\numberline {10.5}What each parameter does}{56}{section.10.5}%
+\contentsline {paragraph}{Calibration in practice.}{57}{section*.47}%
+\contentsline {section}{\numberline {10.6}The SABR model}{57}{section.10.6}%
+\contentsline {paragraph}{Interpretation.}{58}{section*.48}%
+\contentsline {section}{\numberline {10.7}Rough volatility}{58}{section.10.7}%
+\contentsline {section}{\numberline {10.8}How to choose?}{58}{section.10.8}%
+\contentsline {chapter}{\numberline {11}Interest Rates and Change of Numeraire}{60}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Instruments}{60}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Short-rate models}{61}{section.11.2}%
+\contentsline {paragraph}{Term-structure equation.}{61}{section*.50}%
+\contentsline {paragraph}{Affine models.}{61}{section*.51}%
+\contentsline {paragraph}{Comparison.}{61}{section*.52}%
+\contentsline {paragraph}{Hull--White: fitting today's curve.}{61}{section*.53}%
+\contentsline {section}{\numberline {11.3}Change of numeraire}{62}{section.11.3}%
+\contentsline {paragraph}{Effect on Brownian motion.}{62}{section*.54}%
+\contentsline {section}{\numberline {11.4}The forward measure and Black's formula}{63}{section.11.4}%
+\contentsline {paragraph}{Swaptions.}{64}{section*.55}%
+\contentsline {section}{\numberline {11.5}The HJM framework}{64}{section.11.5}%
+\contentsline {paragraph}{Examples.}{64}{section*.56}%
+\contentsline {section}{\numberline {11.6}The LIBOR market model}{65}{section.11.6}%
+\contentsline {paragraph}{After LIBOR.}{65}{section*.57}%
+\contentsline {paragraph}{Futures versus forwards.}{65}{section*.58}%
+\contentsline {part}{IV\hspace {1em}Numerical Methods}{67}{part.4}%
+\contentsline {chapter}{\numberline {12}Monte Carlo Methods}{68}{chapter.12}%
+\contentsline {section}{\numberline {12.1}The basic estimator}{68}{section.12.1}%
+\contentsline {paragraph}{Efficiency.}{68}{section*.60}%
+\contentsline {paragraph}{Generating randomness.}{68}{section*.61}%
+\contentsline {section}{\numberline {12.2}Discretising SDEs}{68}{section.12.2}%
+\contentsline {paragraph}{Bias--variance trade-off.}{69}{section*.62}%
+\contentsline {paragraph}{Square-root processes.}{69}{section*.63}%
+\contentsline {section}{\numberline {12.3}Variance reduction}{70}{section.12.3}%
+\contentsline {paragraph}{Antithetic variates.}{70}{section*.64}%
+\contentsline {paragraph}{Control variates.}{70}{section*.65}%
+\contentsline {paragraph}{Stratified sampling.}{70}{section*.66}%
+\contentsline {paragraph}{Importance sampling.}{70}{section*.67}%
+\contentsline {paragraph}{Conditional Monte Carlo.}{70}{section*.68}%
+\contentsline {section}{\numberline {12.4}Quasi-Monte Carlo}{71}{section.12.4}%
+\contentsline {section}{\numberline {12.5}Barrier options and the bridge correction}{71}{section.12.5}%
+\contentsline {section}{\numberline {12.6}Greeks}{71}{section.12.6}%
+\contentsline {section}{\numberline {12.7}American options: Longstaff--Schwartz}{72}{section.12.7}%
+\contentsline {section}{\numberline {12.8}Multilevel Monte Carlo}{72}{section.12.8}%
+\contentsline {chapter}{\numberline {13}Finite Differences and Trees}{74}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Setting up}{74}{section.13.1}%
+\contentsline {paragraph}{The $\theta $-scheme.}{74}{section*.70}%
+\contentsline {paragraph}{Boundary conditions.}{74}{section*.71}%
+\contentsline {section}{\numberline {13.2}Stability}{74}{section.13.2}%
+\contentsline {paragraph}{Von Neumann analysis.}{75}{section*.72}%
+\contentsline {section}{\numberline {13.3}Accuracy: Crank--Nicolson and the kink}{75}{section.13.3}%
+\contentsline {section}{\numberline {13.4}Early exercise}{76}{section.13.4}%
+\contentsline {section}{\numberline {13.5}Trees}{76}{section.13.5}%
+\contentsline {paragraph}{When to use which.}{77}{section*.73}%
+\contentsline {part}{V\hspace {1em}Risk, Portfolios and Data}{78}{part.5}%
+\contentsline {chapter}{\numberline {14}Risk: Greeks and Risk Measures}{79}{chapter.14}%
+\contentsline {section}{\numberline {14.1}The Greeks as a Taylor expansion}{79}{section.14.1}%
+\contentsline {section}{\numberline {14.2}Discrete hedging error}{80}{section.14.2}%
+\contentsline {paragraph}{Transaction costs.}{80}{section*.75}%
+\contentsline {section}{\numberline {14.3}Value at Risk and Expected Shortfall}{81}{section.14.3}%
+\contentsline {paragraph}{Coherence.}{81}{section*.76}%
+\contentsline {section}{\numberline {14.4}Computing and validating risk}{81}{section.14.4}%
+\contentsline {paragraph}{Methods.}{81}{section*.77}%
+\contentsline {paragraph}{Backtesting.}{82}{section*.78}%
+\contentsline {paragraph}{Extreme value theory.}{82}{section*.79}%
+\contentsline {paragraph}{Stress testing.}{82}{section*.80}%
+\contentsline {chapter}{\numberline {15}Portfolio Theory and Asset Pricing}{83}{chapter.15}%
+\contentsline {section}{\numberline {15.1}Mean--variance optimisation}{83}{section.15.1}%
+\contentsline {paragraph}{Adding a riskless asset.}{83}{section*.82}%
+\contentsline {section}{\numberline {15.2}Estimation error}{84}{section.15.2}%
+\contentsline {section}{\numberline {15.3}CAPM and factor models}{85}{section.15.3}%
+\contentsline {paragraph}{Arbitrage pricing and factor models.}{85}{section*.83}%
+\contentsline {section}{\numberline {15.4}Stochastic discount factors}{85}{section.15.4}%
+\contentsline {section}{\numberline {15.5}Merton's portfolio problem}{86}{section.15.5}%
+\contentsline {paragraph}{The martingale (dual) method.}{86}{section*.84}%
+\contentsline {paragraph}{Kelly and log-optimality.}{86}{section*.85}%
+\contentsline {paragraph}{Active management.}{87}{section*.86}%
+\contentsline {chapter}{\numberline {16}Financial Statistics and Time Series}{88}{chapter.16}%
+\contentsline {section}{\numberline {16.1}Stylised facts}{88}{section.16.1}%
+\contentsline {section}{\numberline {16.2}Regression and inference}{88}{section.16.2}%
+\contentsline {paragraph}{Maximum likelihood.}{89}{section*.88}%
+\contentsline {paragraph}{What can be estimated from a price path?}{89}{section*.89}%
+\contentsline {section}{\numberline {16.3}Time series}{89}{section.16.3}%
+\contentsline {paragraph}{Stationarity and ARMA.}{89}{section*.90}%
+\contentsline {paragraph}{Unit roots.}{89}{section*.91}%
+\contentsline {paragraph}{Cointegration.}{89}{section*.92}%
+\contentsline {section}{\numberline {16.4}Conditional volatility: GARCH}{89}{section.16.4}%
+\contentsline {paragraph}{Estimation and variants.}{91}{section*.93}%
+\contentsline {section}{\numberline {16.5}Realised volatility}{91}{section.16.5}%
+\contentsline {section}{\numberline {16.6}The Kalman filter}{91}{section.16.6}%
+\contentsline {section}{\numberline {16.7}Backtests and multiple testing}{92}{section.16.7}%
+\contentsline {paragraph}{Sharpe ratio error.}{92}{section*.94}%
+\contentsline {paragraph}{Multiple testing.}{92}{section*.95}%
+\contentsline {chapter}{\numberline {17}Market Context}{94}{chapter.17}%
+\contentsline {section}{\numberline {17.1}Forwards, futures and carry}{94}{section.17.1}%
+\contentsline {section}{\numberline {17.2}Option conventions and microstructure}{94}{section.17.2}%
+\contentsline {paragraph}{Market making and optimal execution.}{95}{section*.97}%
+\contentsline {section}{\numberline {17.3}Funding, collateral and XVA}{95}{section.17.3}%
+\contentsline {section}{\numberline {17.4}Credit}{95}{section.17.4}%
+\contentsline {section}{\numberline {17.5}Model risk and validation}{96}{section.17.5}%
+\contentsline {chapter}{Where to Go Next}{97}{chapter*.99}%

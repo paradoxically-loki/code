@@ -1,0 +1,153 @@
+\chapter{Finite Differences and Trees}\label{ch:pde}
+
+Monte Carlo is good in high dimensions. For one or two factors, solving the PDE gives prices and all Greeks on a grid, with deterministic accuracy.
+
+\section{Setting up}
+
+With $x=\ln(S/K)$ and time to maturity $\tau=T-t$, the BSM equation has constant coefficients:
+\begin{equation}\label{eq:bslog}
+\partial_\tau V=\tfrac12\sigma^2\partial_{xx}V+\bigl(r-\tfrac12\sigma^2\bigr)\partial_xV-rV,\qquad V(0,x)=K(e^x-1)^+.
+\end{equation}
+Put a grid $x_j=x_{\min}+jh$, $\tau_n=n\Delta$. Use central differences in space:
+\[
+(\mathcal{L}_hV)_j=\tfrac12\sigma^2\frac{V_{j+1}-2V_j+V_{j-1}}{h^2}+\bigl(r-\tfrac12\sigma^2\bigr)\frac{V_{j+1}-V_{j-1}}{2h}-rV_j.
+\]
+This is $\ell V_{j-1}+dV_j+uV_{j+1}$ with $\ell=a-b$, $d=-2a-r$, $u=a+b$, where $a=\sigma^2/2h^2$ and $b=(r-\sigma^2/2)/2h$.
+
+\paragraph{The $\theta$-scheme.}
+\[
+\frac{V^{n+1}-V^n}{\Delta}=\theta\mathcal{L}_hV^{n+1}+(1-\theta)\mathcal{L}_hV^n.
+\]
+Here $\theta=0$ is explicit, $\theta=1$ fully implicit, $\theta=\tfrac12$ Crank--Nicolson. For $\theta>0$, each step solves a tridiagonal system, which costs $O(J)$ by the Thomas algorithm.
+
+\paragraph{Boundary conditions.} Choose $x_{\min},x_{\max}$ several standard deviations from today's spot, $\pm5\sigma\sqrt T$ being usual. For a call use $V=0$ at the bottom and $V=Se^{-q\tau}-Ke^{-r\tau}$ at the top. Alternatively use linearity, $\partial_{SS}V=0$, which needs no knowledge of the product.
+
+\section{Stability}
+
+\begin{theorem}[Lax equivalence, stated]
+A consistent linear scheme for a well-posed problem converges if and only if it is stable.
+\end{theorem}
+
+\paragraph{Von Neumann analysis.} Insert a Fourier mode $V_j^n=A^ne^{i\omega jh}$ into the scheme. For the explicit method,
+\[
+A=1+\Delta\bigl(-2a(1-\cos\omega h)+2ib\sin\omega h-r\bigr).
+\]
+The worst mode has $\omega h=\pi$, where $A\approx1-4a\Delta$. Stability requires $|A|\le1$, so
+\begin{equation}\label{eq:cfl}
+\sigma^2\Delta/h^2\le1.
+\end{equation}
+The time step must shrink like the \emph{square} of the space step. Double the spatial resolution, and work grows by a factor of $8$. For implicit schemes, $A=1/(1+\Delta\cdot\text{positive})$, unconditionally stable. For Crank--Nicolson, $|A|\le1$ also, but $A\to-1$ for the highest modes as $\Delta/h^2$ grows, so these modes neither decay nor blow up: they just oscillate.
+
+\begin{intuition}
+The explicit scheme is a trinomial tree (Section~\ref{sec:trees}), with weights $\Delta\ell$, $1+\Delta d$, $\Delta u$. Condition \eqref{eq:cfl} says the probability of staying put, $1-2a\Delta$ (ignoring $r$), must not be negative. Information cannot diffuse faster than one grid cell per time step. Implicit schemes pass information across the grid instantly by solving a linear system.
+\end{intuition}
+
+\begin{numcheck}
+ATM call, $r=5\%$, $\sigma=20\%$, $T=1$, on the grid $x\in[-4,4]$ with $200$ cells. Then $h=0.04$ and the limit is $\Delta\le0.04$, i.e.\ $N_t\ge25$. The explicit price errors are:
+\begin{center}
+\begin{tabular}{ccccccc}
+\toprule
+$N_t$ & 20 & 23 & 24 & 25 & 26 & 30\\
+$\Delta/\Delta_{\max}$ & 1.25 & 1.09 & 1.04 & 1.00 & 0.96 & 0.83\\
+\midrule
+Error & $-334.6$ & $+3.59$ & $-0.580$ & $+0.089$ & $-0.0053$ & $-0.0008$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The loss of accuracy is sudden and comes with alternating signs, a typical signature of instability.
+\end{numcheck}
+
+\section{Accuracy: Crank--Nicolson and the kink}
+
+Truncation error is $O(h^2)+O(\Delta)$ for the implicit scheme and $O(h^2)+O(\Delta^2)$ for Crank--Nicolson. These are the rates for smooth data; our data has a kink at the strike. With a grid node at the strike, second-order space convergence survives.
+
+\begin{numcheck}
+Time refinement with a fine space grid ($N_x=1600$). The price error at the money:
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+$N_t$ & 25 & 50 & 100 & 200 & 400\\
+\midrule
+Implicit & $-0.04244$ & $-0.02153$ & $-0.01105$ & $-0.00581$ & $-0.00319$\\
+Crank--Nicolson & $+0.03634$ & $-0.00221$ & $-0.00054$ & $-0.00056$ & $-0.00056$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Implicit shows first order in $\Delta$. Crank--Nicolson reaches the spatial error ($-0.00056$) quickly. Its $N_t=25$ entry shows a large positive error from a different cause, which appears next.
+\end{numcheck}
+
+\begin{pitfall}
+\emph{Crank--Nicolson with non-smooth payoffs.} The kink has high-frequency content, and these modes have $A\approx-1$ under CN when $\Delta\gg h^2$. So they persist and oscillate. Price error may look acceptable, while Greeks are garbage. With $N_x=1600$ and $N_t=10$, the gamma at the strike (exact $0.01876$) is:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Implicit & $0.01957$\\
+Crank--Nicolson & $1.25265$; neighbouring nodes $-0.38228$, $-0.37191$\\
+CN with Rannacher start & $0.01881$\\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Rannacher's fix:} replace the first few CN steps with two half-steps of fully implicit each. The implicit part damps the kink's high frequencies, and the overall second order is retained. Always use it for digital, kinked or barrier payoffs. And always plot the gamma.
+\end{pitfall}
+
+\begin{numcheck}
+Space and time refined together (error at the money):
+\begin{center}
+\begin{tabular}{ccccc}
+\toprule
+$(N_x,N_t)$ & $(100,25)$ & $(200,100)$ & $(400,400)$ & $(800,1600)$\\
+\midrule
+Implicit & $-0.19428$ & $-0.04700$ & $-0.01167$ & $-0.00291$\\
+CN & $-0.14891$ & $-0.03633$ & $-0.00903$ & $-0.00225$\\
+CN--Rannacher & $-0.15071$ & $-0.03644$ & $-0.00904$ & $-0.00226$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Halving $h$ reduces each error fourfold: clean second order. The grid here is wide, $x\in[-4,4]$. A narrower grid, or a non-uniform one concentrated at the strike, gives far smaller errors for the same effort.
+\end{numcheck}
+
+\section{Early exercise}
+
+For the inequality \eqref{eq:vi}, the discrete problem is a \emph{linear complementarity problem}:
+\[
+(I-\theta\Delta\mathcal{L}_h)V^{n+1}\ge b,\quad V^{n+1}\ge g,\quad\bigl[(I-\theta\Delta\mathcal{L}_h)V^{n+1}-b\bigr]^\top(V^{n+1}-g)=0.
+\]
+\begin{itemize}
+\item \textbf{PSOR} (projected successive over-relaxation): Gauss--Seidel sweeps with $V_j\leftarrow\max(V_j,g_j)$ after each update.
+\item \textbf{Brennan--Schwartz:} a one-pass tridiagonal solve, valid for a single exercise boundary.
+\item \textbf{Penalty method:} add a term $\rho\max(g-V,0)$ to the PDE with large $\rho$, and solve by Newton iteration.
+\end{itemize}
+Convergence near the free boundary is usually lower than second order without local refinement. Delta remains continuous at the boundary (smooth pasting), but gamma jumps.
+
+\section{Trees}\label{sec:trees}
+
+A binomial tree is an explicit finite difference scheme on a recombining grid, with a particular relationship between $h$ and $\Delta$. The Cox--Ross--Rubinstein choice is
+\[
+u=e^{\sigma\sqrt\Delta},\quad d=1/u,\quad p=\frac{e^{r\Delta}-d}{u-d}.
+\]
+It matches mean and variance to order $\Delta$. By construction $h=\sigma\sqrt\Delta$, which is exactly at the stability limit, $\sigma^2\Delta/h^2=1$. And that is the reason a two-branch tree has no middle probability.
+
+\begin{numcheck}
+Convergence for an ATM call (exact $10.4506$):
+\begin{center}
+\begin{tabular}{ccccccccc}
+\toprule
+$n$ & 10 & 11 & 50 & 51 & 100 & 101 & 500 & 501\\
+\midrule
+Error & $-0.197$ & $+0.161$ & $-0.040$ & $+0.034$ & $-0.020$ & $+0.017$ & $-0.004$ & $+0.0035$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Convergence is $O(1/n)$ with an odd--even sawtooth. It comes from the position of the strike relative to the terminal nodes. Averaging consecutive $n$ cancels most of the error. Leisen--Reimer trees choose parameters to give $O(1/n^2)$ on vanillas.
+\end{numcheck}
+
+\paragraph{When to use which.} Trees are simple and intuitive for American options. Finite differences are more flexible: non-uniform grids, barriers and local vol. In two dimensions (stochastic vol, or a convertible bond) use alternating-direction implicit (ADI) splitting, as a full implicit matrix solve is expensive. With three or more dimensions, go to Monte Carlo. With jumps, the PIDE's integral operator produces a dense matrix, handled using FFT or an implicit-explicit split.
+
+\begin{exercises}
+\item Derive the von Neumann amplification factor for the implicit and CN schemes for the heat equation $\partial_\tau V=\partial_{xx}V$.
+\item Show that CN's amplification for a mode with eigenvalue $-\Lambda$ is $\frac{1-\Lambda\Delta/2}{1+\Lambda\Delta/2}$, and its limit as $\Lambda\Delta\to\infty$. Why does this explain the oscillation?
+\item Modify the code in \texttt{code/make\_data.py} to price a down-and-out call, setting the grid boundary at the barrier. Compare to Theorem~\ref{thm:doc}. Why is the grid so much easier here than in Monte Carlo?
+\item Implement PSOR for an American put. Plot the exercise boundary against time, and check the limit $L^*$ of Theorem~\ref{thm:perp} at long maturity.
+\item Using \eqref{eq:bslog}, show that the substitution $V=Ke^{\alpha x+\beta\tau}u(x,\tau)$ with suitable $\alpha$ and $\beta$ reduces the PDE to the heat equation. Then derive Black--Scholes by the heat kernel.
+\item Show that a trinomial tree with branching $x\pm h$, $x$ is an explicit scheme. Compute the branch probabilities in terms of $\sigma,\Delta,h$, and find the range of $h$ for which they are positive.
+\end{exercises}

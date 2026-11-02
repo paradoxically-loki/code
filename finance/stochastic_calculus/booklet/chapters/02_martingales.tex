@@ -1,0 +1,171 @@
+\chapter{Martingales}\label{ch:mart}
+
+The class notes define martingales and then use one fact: Itô integrals are martingales. But martingales carry far more than that. Their theory gives sharp inequalities, tells us when strategies cannot beat a fair game, and provides the convergence results behind stochastic integration.
+
+\section{Discrete-time definitions}
+
+A \emph{filtration} is an increasing sequence $\F_0\subseteq\F_1\subseteq\dots$. A process $X$ is \emph{adapted} if each $X_n$ is $\F_n$-measurable, and \emph{predictable} if each $X_n$ is $\F_{n-1}$-measurable.
+
+\begin{definition}
+An adapted integrable $M$ is a \emph{martingale} if $\E[M_{n+1}\mid\F_n]=M_n$. With $\le$ it is a \emph{supermartingale} and with $\ge$ a \emph{submartingale}.
+\end{definition}
+
+By Jensen, a convex function of a martingale is a submartingale (when integrable). Thus $|M|$, $M^2$ and $(M-K)^+$ are submartingales. This is the discrete shadow of why a call option's value, discounted, rises with maturity under zero rates.
+
+\begin{theorem}[You cannot beat a fair game]\label{thm:transform}
+Let $M$ be a martingale and $H$ a bounded predictable process. Then the \emph{martingale transform}
+\[
+(H\cdot M)_n=\sum_{k=1}^n H_k(M_k-M_{k-1})
+\]
+is a martingale.
+\end{theorem}
+\begin{proof}
+$\E[H_k(M_k-M_{k-1})\mid\F_{k-1}]=H_k\E[M_k-M_{k-1}\mid\F_{k-1}]=0$, because $H_k$ is known at time $k-1$.
+\end{proof}
+
+\begin{intuition}
+$H_k$ is your stake on round $k$, decided before the round is played. The transform is your winnings. Whatever you do with the information you have, your expected winnings stay zero. The It\^o integral is the continuous-time limit of this sum; predictability of $H$ is why Itô chose the left endpoint. Allow $H_k$ to depend on $M_k$ (peeking), and the theorem fails.
+\end{intuition}
+
+\begin{theorem}[Doob decomposition]\label{thm:doobdec}
+An integrable adapted $X$ has a unique decomposition $X_n=X_0+M_n+A_n$, with $M$ a martingale, $A$ predictable and $M_0=A_0=0$. Here $A_n=\sum_{k\le n}\E[X_k-X_{k-1}\mid\F_{k-1}]$. $X$ is a submartingale if and only if $A$ is increasing.
+\end{theorem}
+\begin{proof}
+Set $A$ as stated and $M=X-X_0-A$; $M$ has zero conditional increments by construction. For uniqueness, if $M+A=M'+A'$, then $M-M'=A'-A$ is a predictable martingale, so $N_n=\E[N_n\mid\F_{n-1}]=N_{n-1}$, and it starts at zero.
+\end{proof}
+
+Apply this to $M^2$ for a square-integrable martingale $M$. The increasing part is the \emph{predictable quadratic variation}
+\[
+\qv{M}_n=\sum_{k\le n}\E[(M_k-M_{k-1})^2\mid\F_{k-1}],
+\]
+and $M^2-\qv{M}$ is a martingale. For the symmetric random walk, $\qv{M}_n=n$, which recovers $\E M_n^2=n$. Compare the \emph{optional} quadratic variation $[M]_n=\sum_k(M_k-M_{k-1})^2$: it is not predictable, but $M^2-[M]$ is also a martingale. For Brownian motion the two coincide, $\qv{W}_t=[W]_t=t$, but not for a Poisson process, where $[N]_t=N_t$ and $\qv{N}_t=\lambda t$ (Chapter~\ref{ch:jumps}).
+
+\begin{proposition}[Orthogonal increments]\label{prop:orth}
+If $M$ is a square-integrable martingale and $m\le n$, then $\E[(M_n-M_m)^2\mid\F_m]=\E[M_n^2-M_m^2\mid\F_m]$, and
+\[
+\E[M_n^2]=\E[M_0^2]+\sum_{k\le n}\E[(M_k-M_{k-1})^2].
+\]
+\end{proposition}
+\begin{proof}
+Expand the square and use $\E[M_nM_m\mid\F_m]=M_m^2$.
+\end{proof}
+
+This Pythagoras identity is the seed of the It\^o isometry.
+
+\section{Stopping times and optional stopping}
+
+\begin{definition}
+$\tau:\Omega\to\{0,1,\dots\}\cup\{\infty\}$ is a \emph{stopping time} if $\{\tau\le n\}\in\F_n$ for all $n$. You can decide whether to stop using only information available now. The first time a process hits a level is a stopping time; the last time it does so is not.
+\end{definition}
+
+\begin{theorem}[Optional stopping]\label{thm:ost}
+Let $M$ be a martingale and $\tau$ a stopping time. Then the stopped process $M^\tau_n=M_{\tau\wedge n}$ is a martingale. If $\tau$ is bounded, or if $M^\tau$ is UI and $\tau<\infty$ a.s., then $\E[M_\tau]=\E[M_0]$.
+\end{theorem}
+\begin{proof}
+Write $M_{\tau\wedge n}=M_0+\sum_{k\le n}\ind_{\{\tau\ge k\}}(M_k-M_{k-1})$. Since $\{\tau\ge k\}=\{\tau\le k-1\}^c\in\F_{k-1}$, this is a martingale transform, so Theorem~\ref{thm:transform} applies. If $\tau\le N$ then $M_\tau=M^\tau_N$, and taking expectations gives the result. In the UI case, $M_{\tau\wedge n}\to M_\tau$ a.s., hence in $L^1$ by Vitali's theorem.
+\end{proof}
+
+\begin{pitfall}
+\textbf{The doubling strategy.} Let $M$ be a symmetric walk started at zero and $\tau=\inf\{n:M_n=1\}$. Then $\tau<\infty$ a.s.\ and $M_\tau=1$, so $\E M_\tau=1\ne0=\E M_0$. Optional stopping fails because $M^\tau$ is not UI: before hitting $1$ the walk can fall arbitrarily far. The moral for finance: a credit limit (a lower bound on wealth) is what restores the theorem. Hence the admissibility condition in continuous time (Section~\ref{sec:admiss}).
+\end{pitfall}
+
+\begin{example}[Gambler's ruin]\label{ex:ruin}
+A symmetric walk starts at $0$; let $\tau$ be the first exit time from $(-a,b)$ with $a,b>0$. Since $M^\tau$ is bounded, $\E M_\tau=0$, so $-a\,\Prob(M_\tau=-a)+b\,\Prob(M_\tau=b)=0$, giving
+\[
+\Prob(M_\tau=b)=\frac{a}{a+b}.
+\]
+Next, $M_n^2-n$ is a martingale. Stopping and using monotone and bounded convergence yields
+\[
+\E\tau=\E M_\tau^2=a^2\frac{b}{a+b}+b^2\frac{a}{a+b}=ab.
+\]
+Letting $b\to\infty$ gives $\Prob(\text{ever hit }b)=1$ but $\E[\text{hitting time of }b]=\infty$. For an asymmetric walk with up-probability $p\neq\tfrac12$, the \emph{exponential martingale} $(q/p)^{M_n}$ gives $\Prob(M_\tau=b)=\frac{1-(q/p)^{-a}}{(q/p)^{b}-(q/p)^{-a}}$, and $M_n-n(p-q)$ gives $\E\tau=\E M_\tau/(p-q)$. Questions of this type are staples of interviews; the pattern is always to \emph{find a martingale, stop it, and solve}.
+\end{example}
+
+\section{Maximal inequalities}
+
+\begin{theorem}[Doob's maximal inequalities]\label{thm:doobmax}
+Let $M$ be a martingale or nonnegative submartingale and $M_n^*=\max_{k\le n}|M_k|$. For $\lambda>0$,
+\[
+\lambda\Prob(M_n^*\ge\lambda)\le\E[|M_n|\ind_{\{M_n^*\ge\lambda\}}]\le\E|M_n|.
+\]
+For $p>1$, $\|M_n^*\|_p\le\frac{p}{p-1}\|M_n\|_p$. In particular $\E[(M_n^*)^2]\le4\E[M_n^2]$.
+\end{theorem}
+\begin{proof}
+$|M|$ is a submartingale. Let $\tau=\inf\{k:|M_k|\ge\lambda\}$ and $A_k=\{\tau=k\}\in\F_k$. Then
+\[
+\lambda\Prob(M_n^*\ge\lambda)=\sum_{k\le n}\lambda\Prob(A_k)\le\sum_{k\le n}\E[|M_k|\ind_{A_k}]\le\sum_{k\le n}\E[|M_n|\ind_{A_k}]=\E[|M_n|\ind_{\{M_n^*\ge\lambda\}}].
+\]
+For the $L^p$ bound, write $\E[(M_n^*)^p]=\int_0^\infty p\lambda^{p-1}\Prob(M_n^*\ge\lambda)\,\dd\lambda$, insert the first inequality, use Fubini, and then H\"older:
+\[
+\E[(M_n^*)^p]\le\frac{p}{p-1}\E[|M_n|(M_n^*)^{p-1}]\le\frac{p}{p-1}\|M_n\|_p\,\|M_n^*\|_p^{p-1}.\qedhere
+\]
+\end{proof}
+
+\begin{intuition}
+The maximum of a martingale over the whole interval is controlled by its value at the \emph{end}. A martingale cannot make a large excursion and then reliably come back, since it would have to have ``known'' it was going to. This is why, in constructing the It\^o integral, an $L^2$ bound at the final time upgrades to \emph{uniform in time} convergence of paths, which gives path continuity.
+\end{intuition}
+
+\section{Convergence}
+
+\begin{theorem}[Martingale convergence]\label{thm:martconv}
+If $M$ is a submartingale with $\sup_n\E M_n^+<\infty$, then $M_n$ converges a.s.\ to an integrable limit. If moreover $M$ is a UI martingale, convergence holds in $L^1$ and $M_n=\E[M_\infty\mid\F_n]$. If $M$ is bounded in $L^p$ with $p>1$, convergence holds in $L^p$.
+\end{theorem}
+\begin{proof}[Idea]
+Doob's upcrossing inequality: if $U_n[a,b]$ counts completed upcrossings of $[a,b]$ by time $n$, then $(b-a)\E U_n[a,b]\le\E(M_n-a)^+$. Proof: the strategy ``buy at or below $a$, sell at or above $b$'' is a predictable transform of a submartingale, and its profit is at least $(b-a)U_n$ minus the final open position. So $U_\infty[a,b]<\infty$ a.s.\ for each rational pair $a<b$, and a sequence with finitely many upcrossings of all rational intervals must converge.
+\end{proof}
+
+A striking consequence: a positive martingale (or supermartingale) converges a.s. For $Z_t=\exp(\theta W_t-\tfrac12\theta^2t)$ with $\theta\ne0$, the limit is $0$ since $W_t/t\to0$. So $\E Z_t=1$ for every $t$ yet $Z_t\to0$ a.s.: the family is not UI. This gives a warning about changes of measure: the measures $\Q_T$ with density $Z_T$ are each equivalent to $\Prob$ on $\F_T$, but they do not extend to an equivalent measure on $\F_\infty$. The drift $\theta$ is detectable from an infinite path.
+
+\begin{theorem}[L\'evy upward]\label{thm:levy}
+If $X\in L^1$ and $\F_n\uparrow\F_\infty$, then $\E[X\mid\F_n]\to\E[X\mid\F_\infty]$ a.s.\ and in $L^1$.
+\end{theorem}
+
+This is the discrete Radon--Nikodym theorem: with $\F_n$ generated by finite partitions and $\Q\ll\Prob$, the ratios $Z_n=\Q(A)/\Prob(A)$ on atoms $A$ of $\F_n$ form a UI martingale whose limit is $\dd\Q/\dd\Prob$. Densities on path space are thus limits of the elementary coin-toss formula $(\tilde p/p)^{n_H}(\tilde q/q)^{n_T}$ from the class notes.
+
+\section{Continuous time}
+
+Let $(\F_t)_{t\ge0}$ be a filtration satisfying the \emph{usual conditions}: right-continuous, and $\F_0$ contains all null sets. These technical conditions ensure that hitting times of open and closed sets are stopping times and that martingales have c\`adl\`ag (right-continuous with left limits) versions. Doob's inequalities and optional stopping transfer directly by discretising along dyadic times and using path regularity.
+
+\begin{definition}\label{def:localmart}
+An adapted continuous process $M$ is a \emph{local martingale} if there are stopping times $\tau_n\uparrow\infty$ a.s.\ such that $M^{\tau_n}$ is a martingale for each $n$. A local martingale that is not a martingale is a \emph{strict} local martingale.
+\end{definition}
+
+\begin{proposition}\label{prop:poslocal}
+A nonnegative local martingale with $\E M_0<\infty$ is a supermartingale. It is a martingale on $[0,T]$ if and only if $\E M_T=\E M_0$.
+\end{proposition}
+\begin{proof}
+For $s\le t$, by conditional Fatou,
+$\E[M_t\mid\F_s]=\E[\lim_n M_{t\wedge\tau_n}\mid\F_s]\le\liminf_n\E[M_{t\wedge\tau_n}\mid\F_s]=\liminf_n M_{s\wedge\tau_n}=M_s$.
+If $\E M_T=\E M_0$, then $M_s-\E[M_T\mid\F_s]\ge0$ has zero mean, so it vanishes.
+\end{proof}
+
+\begin{example}[Strict local martingale]\label{ex:strict}
+Let $B$ be a three-dimensional Brownian motion started at $x\ne0$ and $M_t=1/|B_t|$. Off the origin, $1/|x|$ is harmonic in $\R^3$, and $B$ a.s.\ never hits the origin, so It\^o's formula gives $\dd M=-M^2\,\tfrac{B}{|B|}\cdot\dd B$, a local martingale. But $\E M_t\to0$ as $t\to\infty$ while $M_0>0$, so it is not a martingale. Such processes occur as asset prices in models of \emph{bubbles}, and a stock like this breaks put--call parity. They are a reason to take care in checking whether an exponential local martingale is a true martingale (Novikov's condition, Theorem~\ref{thm:novikov}).
+\end{example}
+
+\section{The Snell envelope: optimal stopping in discrete time}\label{sec:snell}
+
+Let $G_n$ be adapted and integrable (for example, the discounted exercise value of an American option), on horizon $N$. What is $\sup_\tau\E[G_\tau]$ over stopping times $\tau\le N$? Define by backward induction
+\[
+U_N=G_N,\qquad U_n=\max\bigl(G_n,\ \E[U_{n+1}\mid\F_n]\bigr).
+\]
+
+\begin{theorem}\label{thm:snell}
+$U$ is the smallest supermartingale dominating $G$. The time $\tau^*=\min\{n:U_n=G_n\}$ is optimal, and $\E[G_{\tau^*}]=U_0=\sup_\tau\E[G_\tau]$.
+\end{theorem}
+\begin{proof}
+By construction $U\ge G$ and $U_n\ge\E[U_{n+1}\mid\F_n]$. If $V\ge G$ is another supermartingale, backward induction gives $V_n\ge\max(G_n,\E[V_{n+1}\mid\F_n])\ge U_n$. For any $\tau$, optional stopping for supermartingales gives $\E G_\tau\le\E U_\tau\le U_0$. Finally, on $\{\tau^*>n\}$ one has $U_n=\E[U_{n+1}\mid\F_n]$, so $U^{\tau^*}$ is a martingale, whence $U_0=\E U_{\tau^*}=\E G_{\tau^*}$.
+\end{proof}
+
+\begin{intuition}
+This is the American option algorithm: at each node take the maximum of exercising now and continuing. It also explains the hedge. The seller holds a supermartingale, so the buyer's failure to exercise at the optimal time only leaves money in the seller's hands.
+\end{intuition}
+
+\begin{exercises}
+\item For a walk with up-probability $p>\tfrac12$ started at zero, let $\tau$ be the first hit of $1$. Using an exponential martingale, compute $\E[s^{\tau}]$ for $s\in(0,1)$, and from it obtain $\E[\tau]$.
+\item \emph{(Ballot problem.)} Show that $M_n/n$ is a backward martingale for the symmetric walk conditioned on $M_N$. Deduce the ballot theorem $x/n$ of the class notes without the reflection principle.
+\item Show that $W_t^2-t$ and $W_t^3-3tW_t$ are martingales. Find the next one in the sequence (Hermite polynomials).
+\item Let $\tau$ be the first exit of $W$ from $(-a,a)$. Using $W_t^4-6tW_t^2+3t^2$, compute $\E\tau^2$.
+\item Prove that if $M$ is a continuous local martingale with $\E\sup_{s\le T}|M_s|<\infty$, then $M$ is a true martingale on $[0,T]$.
+\item A coin is tossed until the pattern $HTH$ appears. Using a fair-casino martingale argument (a new gambler arrives each round and bets on the pattern), find the expected number of tosses. Do the same for $HHH$, and explain the difference.
+\end{exercises}

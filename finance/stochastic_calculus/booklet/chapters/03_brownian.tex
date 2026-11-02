@@ -1,0 +1,219 @@
+\chapter{Brownian Motion}\label{ch:bm}
+
+\section{Definition and existence}
+
+\begin{definition}\label{def:bm}
+A process $(W_t)_{t\ge0}$ is a \emph{standard Brownian motion} (Wiener process) with respect to a filtration $(\F_t)$ if
+\begin{enumerate}
+\item $W_0=0$ a.s.\ and $W$ is adapted;
+\item for $s<t$, the increment $W_t-W_s$ is independent of $\F_s$ and has law $\Nc(0,t-s)$;
+\item $t\mapsto W_t$ is continuous a.s.
+\end{enumerate}
+\end{definition}
+
+Equivalently, $W$ is a continuous centred Gaussian process with $\Cov(W_s,W_t)=s\wedge t$.
+
+The class notes obtain $W$ as a limit of scaled walks; making that limit rigorous requires a tightness argument (Donsker's theorem). Here is a direct construction that shows why continuity is not automatic.
+
+\begin{theorem}[L\'evy's construction]\label{thm:levy-constr}
+A standard Brownian motion exists on $[0,1]$.
+\end{theorem}
+\begin{proof}
+Let $D_n=\{k2^{-n}\}$ be the dyadic points in $[0,1]$ and $D=\bigcup_nD_n$. Let $(Z_d)_{d\in D}$ be i.i.d.\ $\Nc(0,1)$. Set $W_0=0$, $W_1=Z_1$. Given $W$ on $D_{n-1}$, define for $d\in D_n\setminus D_{n-1}$ the midpoint rule
+\[
+W_d=\frac{W_{d-2^{-n}}+W_{d+2^{-n}}}{2}+\frac{Z_d}{2^{(n+1)/2}}.
+\]
+\emph{Increments.} By induction, increments on $D_n$ are independent $\Nc(0,2^{-n})$: the half-difference of the parent increment and the new noise are independent $\Nc(0,2^{-n-1})$, and their sum and difference are then independent $\Nc(0,2^{-n})$, since for independent Gaussians with equal variance the sum and difference are independent.
+
+\emph{Continuity.} Let $F_n$ be the piecewise-linear function that vanishes on $D_{n-1}$, equals $Z_d2^{-(n+1)/2}$ on $D_n\setminus D_{n-1}$, and is linear between. Then $W=\sum_nF_n$ on $D$. Since $\Prob(|Z|\ge c\sqrt n)\le e^{-c^2n/2}$, the union bound gives
+\[
+\sum_n\Prob\bigl(\max_{d\in D_n}|Z_d|\ge c\sqrt n\bigr)\le\sum_n(2^n+1)e^{-c^2n/2}<\infty\quad\text{for }c>\sqrt{2\ln2}.
+\]
+By Borel--Cantelli, a.s.\ $\|F_n\|_\infty\le c\sqrt n\,2^{-(n+1)/2}$ for all large $n$. These bounds are summable, so the series converges uniformly and the limit is continuous. Gaussian increments extend from $D$ to all of $[0,1]$ by continuity.
+\end{proof}
+
+\begin{intuition}
+Build the path top-down. First pick the endpoint. Then pick the midpoint: the average of its neighbours plus independent noise of the right size. Refine forever. Each level adds noise of size about $2^{-n/2}$, so the corrections shrink fast enough to converge uniformly (giving continuity), but too slowly for the slopes to settle (slope corrections of size $2^{n/2}$ blow up, giving non-differentiability). This also gives the fast way to simulate a path given its end value, and it underlies Brownian bridge constructions in quasi-Monte Carlo.
+\end{intuition}
+
+\paragraph{Symmetries.} If $W$ is a Brownian motion, so are each of the following:
+\begin{itemize}
+\item $-W_t$ (reflection), and $W_{t+h}-W_h$ (time shift);
+\item $c^{-1}W_{c^2t}$ for $c>0$ (Brownian scaling);
+\item $tW_{1/t}$ for $t>0$, with value $0$ at $t=0$ (time inversion).
+\end{itemize}
+Each is a one-line check of the covariance. Scaling is why $\sqrt t$ appears everywhere: the size of the move over time $t$ is $\sqrt t$, and option prices depend on $\sigma\sqrt T$. Time inversion turns large-time behaviour into small-time behaviour; for example it gives $W_t/t\to0$ a.s.\ from continuity at $0$ (or from the strong law).
+
+\section{Path properties}
+
+\begin{theorem}[Quadratic variation]\label{thm:qv}
+For partitions $\Pi$ of $[0,T]$ with mesh $\|\Pi\|\to0$,
+$
+\sum_j(W_{t_{j+1}}-W_{t_j})^2\to T
+$
+in $L^2$. If $\sum_n\|\Pi_n\|<\infty$, convergence also holds almost surely.
+\end{theorem}
+\begin{proof}
+Let $Q_\Pi$ be the sum. Then $\E Q_\Pi=T$, and by independence with $\Var[(\Delta W)^2]=2(\Delta t)^2$,
+\[
+\E(Q_\Pi-T)^2=\sum_j2(\Delta t_j)^2\le2T\|\Pi\|\to0.
+\]
+If the meshes are summable, Chebyshev gives $\sum_n\Prob(|Q_{\Pi_n}-T|>\epsilon)<\infty$. Borel--Cantelli then yields a.s.\ convergence.
+\end{proof}
+
+\begin{pitfall}
+The class notes' computation for the scaled walk gave $\sum\frac1pX_i^2=T$ exactly, since $X_i^2=1$. For Brownian motion $Q_\Pi$ is random for each finite partition; only its limit is deterministic. The remarkable point is that a \emph{random} path has a \emph{deterministic} quadratic variation. Also: if one takes the supremum over all partitions, not a limit along shrinking ones, the result is $+\infty$ a.s. Quadratic variation is defined by a limit along meshes.
+\end{pitfall}
+
+\begin{corollary}
+Almost surely, $W$ has infinite first variation on every interval.
+\end{corollary}
+\begin{proof}
+$\sum_j(\Delta W_j)^2\le\max_j|\Delta W_j|\cdot\sum_j|\Delta W_j|$. If the first variation were finite then, since $\max_j|\Delta W_j|\to0$ by continuity, the left side would tend to zero, contradicting Theorem~\ref{thm:qv}.
+\end{proof}
+
+This corollary is the entire reason for It\^o calculus: an integral $\int H\,\dd W$ cannot be a Stieltjes integral path by path.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 1,horizontal sep=1.15cm},booklet,width=0.34\linewidth,height=4.6cm]
+\nextgroupplot[title={(a) one sample path},xlabel={$t$},ylabel={$W_t$}]
+\addplot[ser1,line width=0.4pt] table[x=t,y=W]{\datapath/bm_path.dat};
+\nextgroupplot[title={(b) $\sum|\Delta W|$},xlabel={mesh},xmode=log,ymode=log,x dir=reverse,log basis x=2]
+\addplot[ser2,mark=*,mark size=1.3pt] table[x=mesh,y=tv]{\datapath/bm_var.dat};
+\nextgroupplot[title={(c) $\sum(\Delta W)^2$},xlabel={mesh},xmode=log,x dir=reverse,log basis x=2,ymin=0,ymax=2]
+\addplot[ser3,mark=*,mark size=1.3pt] table[x=mesh,y=qv]{\datapath/bm_var.dat};
+\addplot[inkmuted,dashed,line width=0.5pt] coordinates {(0.25,1) (1.5e-5,1)};
+\end{groupplot}
+\end{tikzpicture}
+\caption{One Brownian path on $[0,1]$ sampled at successively finer scales. The first variation (b) grows like $\sqrt{1/\text{mesh}}$ without bound, while the sum of squares (c) settles at $T=1$ (dashed line).}\label{fig:variation}
+\end{figure}
+
+\begin{theorem}[H\"older regularity, stated]\label{thm:holder}
+Almost surely, $W$ is locally H\"older continuous of every order $\gamma<\tfrac12$, and of no order $\gamma\ge\tfrac12$ at typical points. More precisely, L\'evy's modulus of continuity gives
+\[
+\limsup_{h\downarrow0}\ \sup_{0\le t\le1-h}\frac{|W_{t+h}-W_t|}{\sqrt{2h\ln(1/h)}}=1\quad\as
+\]
+\end{theorem}
+
+The H\"older part follows from Kolmogorov's criterion: if $\E|X_t-X_s|^\alpha\le C|t-s|^{1+\beta}$, then $X$ has a modification H\"older of every order below $\beta/\alpha$. For $W$, $\E|W_t-W_s|^{2m}=c_m|t-s|^m$ gives order $(m-1)/2m\to\tfrac12$.
+
+\begin{theorem}[Paley--Wiener--Zygmund]\label{thm:nowhere}
+Almost surely, $W$ is differentiable at no point.
+\end{theorem}
+\begin{proof}[Proof (Dvoretzky--Erd\H{o}s--Kakutani)]
+Suppose $W$ is differentiable at some $s\in[0,1)$ with derivative bounded by $C$ near $s$. Then for all large $n$, with $j=\lfloor ns\rfloor+1$, the three increments $W_{(j+i)/n}-W_{(j+i-1)/n}$, $i=1,2,3$, each have absolute value at most $MC/n$ for a fixed numerical constant $M$, since all these points lie within $4/n$ of $s$. Fix $C$, $n$. Each increment is $\Nc(0,1/n)$, so has density at most $\sqrt{n/2\pi}$, so
+$\Prob(|\Delta W|\le MC/n)\le 2MC\,n^{-1}\sqrt{n/2\pi}=c\,n^{-1/2}$.
+Three independent increments give $(c\,n^{-1/2})^3$, and there are at most $n$ positions $j$:
+\[
+\Prob(\text{such }j\text{ exists})\le n\cdot c^3n^{-3/2}=c^3n^{-1/2}\to0.
+\]
+Letting $n\to\infty$ and then taking a union over integer $C$ shows that the event has probability zero.
+\end{proof}
+
+The class notes' heuristic $\dd W/\dd t\sim1/\sqrt{\dd t}$ is correct in spirit; this proof shows why three consecutive small increments, not one, are needed to make the union bound over $n$ positions converge.
+
+Other fine-scale facts worth knowing:
+\begin{itemize}
+\item \textbf{Law of the iterated logarithm:} $\limsup_{t\to\infty}W_t/\sqrt{2t\ln\ln t}=1$ a.s.; by time inversion, the same holds as $t\downarrow0$ with $\ln\ln(1/t)$.
+\item \textbf{Zero set:} $\{t:W_t=0\}$ is a.s.\ closed, has no isolated points, is uncountable, and has Lebesgue measure zero. A path that returns to zero returns infinitely often immediately afterwards.
+\item \textbf{Oscillation:} since $\limsup_{t\downarrow0}W_t/\sqrt{2t\ln\ln(1/t)}=1$, $W$ takes both signs in every interval $[0,\epsilon]$.
+\end{itemize}
+
+\section{Markov properties and the reflection principle}
+
+\begin{theorem}[Strong Markov]\label{thm:smp}
+If $\tau$ is an a.s.\ finite stopping time, then $W_{\tau+t}-W_\tau$ is a Brownian motion independent of $\F_\tau$.
+\end{theorem}
+\begin{proof}[Sketch]
+For $\tau$ taking countably many values, condition on each value and apply the ordinary Markov property. For general $\tau$, approximate from above by $\tau_n=2^{-n}\lceil2^n\tau\rceil$ and use path continuity with dominated convergence on bounded functionals.
+\end{proof}
+
+\begin{theorem}[Reflection principle]\label{thm:refl}
+Let $a>0$, $\tau_a=\inf\{t:W_t=a\}$. The process
+\[
+\widetilde W_t=W_t\ind_{\{t\le\tau_a\}}+(2a-W_t)\ind_{\{t>\tau_a\}}
+\]
+is a Brownian motion. Consequently, with $M_t=\max_{s\le t}W_s$ and $b\le a$,
+\[
+\Prob(M_t\ge a,\,W_t\le b)=\Prob(W_t\ge2a-b).
+\]
+In particular $\Prob(M_t\ge a)=2\Prob(W_t\ge a)$, so $M_t\overset{d}{=}|W_t|$.
+\end{theorem}
+\begin{proof}
+By the strong Markov property, the post-$\tau_a$ increment is a Brownian motion independent of the pre-$\tau_a$ path, and its negative is too. Gluing either version on gives processes with the same law. The paths that hit $a$ and end below $b$ correspond bijectively, under this reflection, to the paths that end above $2a-b$ (any such path must have hit $a$). For the last claim, write $\Prob(M_t\ge a)=\Prob(M_t\ge a,W_t\ge a)+\Prob(M_t\ge a,W_t<a)=\Prob(W_t\ge a)+\Prob(W_t>a)$.
+\end{proof}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[booklet,height=5.2cm,xlabel={$t$},xmin=0,xmax=1,legend pos=north west]
+\addplot[ser1,line width=0.5pt] table[x=t,y=W]{\datapath/reflect.dat};
+\addlegendentry{$W_t$}
+\addplot[ser2,line width=0.5pt] table[x=t,y=R]{\datapath/reflect.dat};
+\addlegendentry{reflected after $\tau_a$}
+\addplot[inkmuted,dashed,line width=0.5pt] coordinates {(0,0.6) (1,0.6)};
+\node[font=\footnotesize,text=inkmuted,anchor=south east] at (axis cs:0.99,0.6) {$a$};
+\end{axis}
+\end{tikzpicture}
+\caption{The bijection behind Theorem~\ref{thm:refl}, on a simulated path. After the first hit of level $a$, flipping the rest of the path about $a$ yields an equally likely path, turning ``hit $a$ and ended below $a$'' into ``ended above $a$''.}
+\label{fig:reflect}
+\end{figure}
+
+\begin{numcheck}
+With 200{,}000 paths and 1{,}000 steps on $[0,1]$: $\Prob(M_1\ge1)$ is estimated as $0.3079$ against the exact $0.3173$, and $\Prob(M_1\ge0.5)$ as $0.6043$ against $0.6171$. The estimates are systematically \emph{low}, by far more than sampling error. A discretely observed path misses excursions above the level between grid points. This same bias afflicts barrier option simulation, and Section~\ref{sec:mcbarrier} fixes it with a Brownian bridge.
+\end{numcheck}
+
+Differentiating the joint probability gives the joint density of $(M_t,W_t)$:
+\begin{equation}\label{eq:jointmax}
+f_{M,W}(a,b)=\frac{2(2a-b)}{t\sqrt{2\pi t}}\exp\!\Big(-\frac{(2a-b)^2}{2t}\Big),\qquad a\ge\max(0,b).
+\end{equation}
+
+\begin{corollary}[First passage time]\label{cor:fpt}
+$\Prob(\tau_a\le t)=\Prob(M_t\ge a)=2\Phi(-a/\sqrt t)$. So $\tau_a$ has the density
+\[
+f_{\tau_a}(t)=\frac{a}{\sqrt{2\pi t^3}}e^{-a^2/2t},\quad t>0.
+\]
+Hence $\tau_a<\infty$ a.s.\ yet $\E\tau_a=\infty$, as the density decays like $t^{-3/2}$. Its Laplace transform is $\E e^{-\lambda\tau_a}=e^{-a\sqrt{2\lambda}}$.
+\end{corollary}
+\begin{proof}[Laplace transform]
+For $\theta=\sqrt{2\lambda}>0$, $N_t=\exp(\theta W_t-\lambda t)$ is a martingale. The stopped process $N^{\tau_a}$ is bounded by $e^{\theta a}$, and on $\{\tau_a=\infty\}$ it tends to zero. Optional stopping gives $1=e^{\theta a}\E e^{-\lambda\tau_a}$.
+\end{proof}
+
+\begin{example}[Exit from an interval]
+The exit time $\tau$ of $(-a,b)$ satisfies $\Prob(W_\tau=b)=a/(a+b)$ and $\E\tau=ab$, by exactly the argument of Example~\ref{ex:ruin}.
+\end{example}
+
+\begin{theorem}[L\'evy's arcsine law, stated]\label{thm:arcsine}
+The last zero $g=\sup\{s\le1:W_s=0\}$ and the time spent positive $A=\int_0^1\ind_{\{W_s>0\}}\dd s$ each have the arcsine law, $\Prob(\,\cdot\le x)=\frac2\pi\arcsin\sqrt x$.
+\end{theorem}
+
+This is the continuous limit of the class notes' $\alpha_{2l,2\nu}=\mu_{2l}\mu_{2\nu-2l}$. Using $\mu_{2l}\sim1/\sqrt{\pi l}$, the mass $\alpha_{2l,2\nu}\approx\frac{1}{\pi\sqrt{l(\nu-l)}}$, whose density on $[0,1]$ is $\frac{1}{\pi\sqrt{x(1-x)}}$. The density is U-shaped: the most likely values for the fraction of time that a fair game keeps you ahead are near $0$ and $1$, and $\tfrac12$ is the \emph{least} likely. Be careful with this when you read a trader's or a strategy's long winning streak: long stretches on one side happen by pure chance.
+
+\section{The Brownian bridge}\label{sec:bridge}
+
+Conditioned on $W_0=x$ and $W_T=y$, the process is Gaussian with mean $x+(y-x)t/T$ and covariance $s(T-t)/T$ for $s\le t$ (by Example~\ref{ex:gauss}). The reflection principle gives, for $a>\max(x,y)$,
+\begin{equation}\label{eq:bridge}
+\Prob\Bigl(\max_{s\le T}W_s\ge a\ \Big|\ W_0=x,W_T=y\Bigr)=\frac{\varphi_T(2a-x-y)}{\varphi_T(y-x)}=\exp\!\Big(-\frac{2(a-x)(a-y)}{T}\Big),
+\end{equation}
+where $\varphi_T$ is the $\Nc(0,T)$ density. With volatility $\sigma$, replace $T$ by $\sigma^2T$. This gives a closed-form correction for barrier simulation.
+
+\section{Martingales of Brownian motion}
+
+Each of these has a short check by conditional expectation or It\^o's formula:
+\[
+W_t,\qquad W_t^2-t,\qquad W_t^3-3tW_t,\qquad W_t^4-6tW_t^2+3t^2,\qquad \exp(\theta W_t-\tfrac12\theta^2t).
+\]
+The polynomial ones are the Taylor coefficients in $\theta$ of the exponential (Hermite polynomials). And by L\'evy's characterisation (Theorem~\ref{thm:levychar}) the first two properties actually characterise Brownian motion among continuous processes. This is a surprisingly strong statement: a continuous martingale whose square minus $t$ is also a martingale must have Gaussian increments.
+
+\paragraph{Heat equation.} The transition density $p(t,x,y)=\varphi_t(y-x)$ solves $\partial_tp=\tfrac12\partial_{yy}p$, and $u(t,x)=\E[h(x+W_{T-t})]$ solves $\partial_tu+\tfrac12\partial_{xx}u=0$. This link between diffusion and PDEs is pursued in Chapter~\ref{ch:sde}. The factor $\tfrac12$ is the same $\tfrac12$ as in It\^o's formula.
+
+\begin{exercises}
+\item Show directly that $\int_0^1W_t\,\dd t\sim\Nc(0,1/3)$. \emph{Hint:} it is the limit of Gaussian sums; compute the covariance integral.
+\item Compute $\E[W_s\mid W_t]$ for $s<t$, and $\E[W_t\mid W_s]$. Why are these so different?
+\item Compute $\Prob(W_1>0,W_2>0)$. \emph{Answer:} $3/8$. Use the angle between the two Gaussian vectors.
+\item Using \eqref{eq:jointmax}, show that $M_t-W_t\overset{d}{=}|W_t|$ (L\'evy). What is the expected drawdown at time $t$ of a driftless Brownian motion?
+\item Let $\tau=\inf\{t:W_t^2\ge1-t\}$. Show that $\tau<1$ a.s.\ and compute $\E\tau$ and $\E W_\tau^4$ using the martingales above.
+\item (Interview classic.) Stock $S$ follows driftless GBM from $S_0=1$. What is the probability that it ever reaches $2$? And what is the expected maximum of $S$ on $[0,\infty)$? Reconcile the answers using $S$ being a martingale that tends to zero.
+\end{exercises}

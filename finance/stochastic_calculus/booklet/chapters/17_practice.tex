@@ -1,0 +1,73 @@
+\chapter{Market Context}\label{ch:practice}
+
+The earlier chapters leave out most of what makes a product tradeable. This chapter collects the essentials, in the spirit of Hull's textbook, focused on the places where they alter the mathematics.
+
+\section{Forwards, futures and carry}
+
+For an asset with continuous yield $q$ (dividends, or foreign rate for FX) and funding at $r$, static arbitrage gives
+\[
+F(t,T)=S_te^{(r-q)(T-t)}.
+\]
+\begin{itemize}
+\item \textbf{Equity:} $q$ includes dividends and repo (the cost of borrowing a stock to short it). Dividends are in fact discrete and uncertain. Dividend modelling matters for long-dated options, and a hard-to-borrow stock has high implied repo.
+\item \textbf{FX:} covered interest parity, $F=Se^{(r_d-r_f)T}$. Garman--Kohlhagen is Black--Scholes with $q=r_f$. Since 2008 the cross-currency basis has shown this relation is not costless to arbitrage, given limited bank balance sheets.
+\item \textbf{Commodities:} storage cost and \emph{convenience yield} (the benefit of holding physical inventory). Curves can be in contango or backwardation, and there is seasonality.
+\item \textbf{Black's formula:} every European option can be priced directly on the forward, removing most of the carry problem:
+\[
+C=D(0,T)\bigl[FN(d_+)-KN(d_-)\bigr],\qquad d_\pm=\frac{\ln(F/K)\pm\frac12\sigma^2T}{\sigma\sqrt T}.
+\]
+\end{itemize}
+
+Put--call parity reads $C-P=D(0,T)(F-K)$. It is purely static and independent of any model. So market calls and puts at the same strike must have the same implied vol. Any deviation reflects borrow cost or wrong dividends, so parity is commonly used to back out the implied forward from listed options.
+
+\section{Option conventions and microstructure}
+
+\begin{itemize}
+\item Index options (SPX) are European, cash-settled; single-stock options are American. So implied vol extraction needs an American pricer or a parity-based forward.
+\item Quotes come as bid and ask with a wide spread on the wings. Implied vol should be computed separately from each, or from the mid, knowing that OTM wings have large relative errors.
+\item Use OTM options only (calls above forward, puts below) when fitting a smile, since they are more liquid and have no intrinsic value.
+\item Volume concentrates in near-dated, near-the-money strikes. The surface is thin elsewhere, and interpolation is a model.
+\item Expiry calendars, weekly and same-day (``0DTE'') options, and event days (earnings, central banks) put \emph{kinks} in the term structure of variance. Work in \emph{business time}, with weights by event.
+\end{itemize}
+
+\paragraph{Market making and optimal execution.} A market maker earns the spread and bears inventory and adverse selection risk. The Avellaneda--Stoikov (2008) model uses HJB (as in Chapter~\ref{ch:port}) to set bid and ask around an inventory-adjusted reservation price, $r=S-q\gamma\sigma^2(T-t)$. Almgren--Chriss (2001) trade off market impact against timing risk for liquidating a block, giving an optimal trajectory $x(t)\propto\sinh(\kappa(T-t))$. Kyle's model (1985) relates price impact to the presence of informed traders. Empirically, impact grows roughly as the square root of the traded fraction of volume.
+
+\section{Funding, collateral and XVA}
+
+Pre-2008 textbooks use a single risk-free rate for funding and discounting. Today, most derivatives are collateralised, and the correct discount rate is the rate paid on collateral: \emph{OIS} (overnight). Multi-curve frameworks use one curve for discounting and others for projecting floating rates.
+
+Uncollateralised trades carry valuation adjustments, computed as expectations over the life of the trade.
+\[
+\mathrm{CVA}=(1-R)\int_0^TD(0,t)\,\E^\Q[V_t^+]\,\dd\mathrm{PD}(t).
+\]
+CVA charges for counterparty default, where $R$ is the recovery rate, $V^+$ is positive exposure, and $\mathrm{PD}$ is the default probability. DVA is the mirror for one's own default, FVA covers funding, MVA covers initial margin, and KVA covers regulatory capital. Computing $\E^\Q[V_t^+]$ involves nested simulation, so regression methods (as with Longstaff--Schwartz) are the standard way.
+
+\section{Credit}
+
+A simple \emph{reduced-form} model: default $\tau$ is the first jump of a Poisson process with hazard rate $\lambda_t$. Then
+\[
+\Q(\tau>T)=\E^\Q\Bigl[e^{-\int_0^T\lambda_s\dd s}\Bigr],\qquad\text{which is a bond price with }r\text{ replaced by }\lambda.
+\]
+For a defaultable zero-coupon bond with recovery $R$ and constant parameters, the credit spread is approximately $s\approx(1-R)\lambda$. A CDS is an insurance contract on default, with a running premium. Its premium leg and protection leg yield the ``credit triangle'' $s\approx(1-R)\lambda$ at inception. The \emph{structural} (Merton) alternative treats equity as a call on firm value, with default when assets fall below the debt, and it links credit spreads to equity volatility.
+
+\section{Model risk and validation}
+
+\begin{itemize}
+\item Fit quality is a poor check for a model: flexible models fit anything. Test instead on \emph{hedging performance}, out of sample.
+\item Check all prices against bounds: arbitrage-free surface, and reproduction of the hedge instruments.
+\item Compare numerical methods with each other (Monte Carlo against PDE against closed form). This booklet's green boxes are a miniature example.
+\item Keep a model \emph{reserve} for uncertainty on parameters that cannot be hedged, such as vol-of-vol or correlation.
+\end{itemize}
+
+\begin{intuition}
+Derman's advice is worth keeping in mind. A model is not a law of nature, it is an analogy between what you want to value and what you can observe. The analogy is useful insofar as it lets you price by relating to liquid instruments, and it fails where those instruments cannot reach.
+\end{intuition}
+
+\begin{exercises}
+\item A stock is at $100$, and a 1-year forward trades at $102$ with rate $r=5\%$. What is the implied dividend yield? Set out the arbitrage if a forward trades at $106$.
+\item Use parity quotes $C(100)=8$, $P(100)=7.5$, $D(0,1)=0.96$ to find the implied forward.
+\item Derive the Garman--Kohlhagen formula by quoting in the foreign numeraire. Show that a call on EUR/USD is a put on USD/EUR.
+\item Derive the credit triangle, assuming flat hazard and rates.
+\item Derive the Merton structural model's credit spread for a debt with face $B$ at $T$ in terms of a put. Why do short-maturity spreads tend to zero in this model, unlike in the market? What would fix it?
+\item Solve the Almgren--Chriss problem: minimise $\int\eta\dot x^2+\lambda\sigma^2x^2\dd t$ with $x(0)=X$, $x(T)=0$.
+\end{exercises}

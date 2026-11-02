@@ -1,0 +1,95 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsthm}
+\usepackage{newpxtext,newpxmath}
+\usepackage[margin=1.15in]{geometry}
+\usepackage{mathtools}
+\usepackage{microtype,booktabs,enumitem,xcolor,graphicx,bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage[breakable,skins]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\parskip}{4pt}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\small\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\nouppercase{\rightmark}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+% ---- colours: series colours for plots, muted tints for boxes
+\definecolor{ser1}{HTML}{2A78D6}
+\definecolor{ser2}{HTML}{EB6834}
+\definecolor{ser3}{HTML}{1BAF7A}
+\definecolor{inkmuted}{HTML}{52514E}
+\definecolor{gridc}{HTML}{E4E3DE}
+
+% ---- theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ---- boxes
+\newtcolorbox{intuition}{breakable,enhanced,colback=ser1!5,colframe=ser1!55,boxrule=0pt,leftrule=2.5pt,
+  arc=0pt,outer arc=0pt,left=8pt,right=6pt,top=5pt,bottom=5pt,before skip=9pt,after skip=9pt,
+  fontupper=\normalsize,title={\textbf{Intuition.}},attach title to upper={\ }, coltitle=black}
+\newtcolorbox{pitfall}{breakable,enhanced,colback=ser2!6,colframe=ser2!70,boxrule=0pt,leftrule=2.5pt,
+  arc=0pt,outer arc=0pt,left=8pt,right=6pt,top=5pt,bottom=5pt,before skip=9pt,after skip=9pt,
+  title={\textbf{Pitfall.}},attach title to upper={\ }, coltitle=black}
+\newtcolorbox{numcheck}{breakable,enhanced,colback=ser3!6,colframe=ser3!70,boxrule=0pt,leftrule=2.5pt,
+  arc=0pt,outer arc=0pt,left=8pt,right=6pt,top=5pt,bottom=5pt,before skip=9pt,after skip=9pt,
+  title={\textbf{Numerical check.}},attach title to upper={\ }, coltitle=black}
+
+\newenvironment{exercises}{\section*{Exercises}\begin{enumerate}[label=\textbf{\thechapter.\arabic*},leftmargin=*]}{\end{enumerate}}
+
+% ---- notation
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\EQ}{\mathbb{E}^{\Q}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Corr}{\operatorname{Corr}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ind}{\mathbf{1}}
+\newcommand{\as}{\text{a.s.}}
+\newcommand{\qv}[1]{\langle #1\rangle}
+\newcommand{\Nc}{\mathcal{N}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\VaR}{\operatorname{VaR}}
+\newcommand{\ES}{\operatorname{ES}}
+\newcommand{\Ind}[1]{\ind_{\{#1\}}}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% ---- plot style: thin lines, recessive grid and axes
+\pgfplotsset{booklet/.style={
+  width=0.92\linewidth,height=5.6cm,
+  grid=major,major grid style={gridc,line width=0.3pt},
+  axis line style={inkmuted,line width=0.4pt},tick style={inkmuted,line width=0.3pt},
+  tick label style={font=\footnotesize,color=inkmuted},
+  label style={font=\small},title style={font=\small},
+  legend style={font=\footnotesize,draw=none,fill=none},legend cell align=left,
+  every axis plot/.append style={line width=0.9pt,no markers},
+}}
+\newcommand{\datapath}{data}

@@ -1,0 +1,159 @@
+\chapter{Monte Carlo Methods}\label{ch:mc}
+
+\section{The basic estimator}
+
+To compute $\mu=\E[Y]$ we draw i.i.d.\ copies and form $\hat\mu_n=\frac1n\sum_iY_i$. The strong law gives consistency, and the CLT gives
+\[
+\sqrt n(\hat\mu_n-\mu)\Rightarrow\Nc(0,\sigma_Y^2),
+\]
+so a $95\%$ confidence interval is $\hat\mu_n\pm1.96\,\hat\sigma_Y/\sqrt n$. The error decays as $n^{-1/2}$ \emph{whatever the dimension}.
+
+\begin{intuition}
+This is the only feature of Monte Carlo that matters. Quadrature in $d$ dimensions with $n$ points has error about $n^{-p/d}$, which degrades with dimension (the curse of dimensionality). A path-dependent option with 250 dates is a 250-dimensional integral. Monte Carlo pays a slow but dimension-free $n^{-1/2}$, and to gain a decimal of accuracy you need $100$ times the samples. So every clever idea either reduces $\sigma_Y$ or controls bias.
+\end{intuition}
+
+\paragraph{Efficiency.} If one sample costs $c$ and has variance $\sigma^2$, then the variance for budget $T$ is $\sigma^2c/T$. Comparison between methods should use $\sigma^2c$, not $\sigma^2$ alone (Hammersley--Handscomb).
+
+\paragraph{Generating randomness.} Normals are produced by inverse transform $\Phi^{-1}(U)$ or by Box--Muller. A vector with covariance $\Sigma$ is $LZ$, where $LL^\top=\Sigma$ (Cholesky). A Gaussian path $W_{t_i}$ is built by increments, by Brownian bridge, or by PCA of the covariance. A good pseudorandom generator (for example PCG64) has a long period and good equidistribution, and one must seed parallel streams with care.
+
+\section{Discretising SDEs}
+
+Let $\dd X=b(X)\dd t+\sigma(X)\dd W$ and let $h=T/m$.
+\begin{align*}
+\text{Euler--Maruyama:}\quad&X_{k+1}=X_k+b(X_k)h+\sigma(X_k)\Delta W_k,\\
+\text{Milstein:}\quad&X_{k+1}=X_k+b(X_k)h+\sigma(X_k)\Delta W_k+\tfrac12\sigma\sigma'(X_k)\bigl(\Delta W_k^2-h\bigr).
+\end{align*}
+The extra Milstein term comes from applying It\^o's formula to $\sigma(X)$ inside the stochastic integral:
+$\int_{t_k}^{t_{k+1}}\sigma(X_s)\dd W_s\approx\sigma(X_k)\Delta W_k+\sigma\sigma'(X_k)\int_{t_k}^{t_{k+1}}(W_s-W_{t_k})\dd W_s$, and that iterated integral equals $\tfrac12(\Delta W_k^2-h)$ by Proposition~\ref{prop:threechoices}.
+
+\begin{definition}
+A scheme has \emph{strong order} $\gamma$ if $\E|X_T-\hat X_T|\le Ch^\gamma$, and \emph{weak order} $\beta$ if $|\E f(X_T)-\E f(\hat X_T)|\le Ch^\beta$ for smooth $f$.
+\end{definition}
+
+\begin{theorem}[Stated]
+Under Lipschitz and smoothness conditions, Euler has strong order $\tfrac12$ and weak order $1$; Milstein has strong order $1$ and weak order $1$.
+\end{theorem}
+
+\begin{intuition}
+Strong error measures path closeness, relevant for hedging and path-dependent payoffs. Weak error measures closeness of laws, relevant for vanilla pricing. The weak order is better because errors average: the leading Euler error per step is the mean-zero term $\tfrac12\sigma\sigma'(\Delta W^2-h)$, of size $h$ per step. Added over $1/h$ steps, it has root-sum-square size $\sqrt{1/h}\cdot h=\sqrt h$. Hence strong order $\tfrac12$. Being mean zero, it cancels in expectation, and only terms of size $h^2$ per step, $h$ in total, survive.
+\end{intuition}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{loglogaxis}[booklet,height=5.6cm,xlabel={step size $h$},ylabel={$\E|X_T-\hat X_T|$},legend pos=south east,log basis x=2]
+\addplot[ser1,mark=*,mark size=1.3pt] table[x=h,y=euler]{\datapath/strong.dat};
+\addlegendentry{Euler (fitted slope $0.50$)}
+\addplot[ser2,mark=square*,mark size=1.3pt] table[x=h,y=milstein]{\datapath/strong.dat};
+\addlegendentry{Milstein (fitted slope $0.94$)}
+\end{loglogaxis}
+\end{tikzpicture}
+\caption{Strong error for GBM with $\mu=5\%$, $\sigma=50\%$, $S_0=100$, $T=1$, using 5{,}000 paths and an exact solution driven by the same Brownian increments. The slopes match the theoretical orders $\tfrac12$ and $1$.}\label{fig:strong}
+\end{figure}
+
+\begin{numcheck}
+Weak error of Euler for $\E[X_T^2]$ is analytic here: $S_0^2((1+\mu h)^2+\sigma^2h)^{1/h}$ against $S_0^2e^{(2\mu+\sigma^2)T}$. The errors are $195.9$, $101.0$, $51.3$, $25.8$, $13.0$ at $h=2^{-2},\dots,2^{-6}$, halving at every step: order one.
+\end{numcheck}
+
+\paragraph{Bias--variance trade-off.} With $n$ paths and $m$ steps of a weak-order-$1$ scheme, the mean squared error is $C_1/m^2+C_2/n$, and the cost is $nm$. To achieve root mean squared error $\epsilon$ we need $m\sim\epsilon^{-1}$ and $n\sim\epsilon^{-2}$: total cost $\epsilon^{-3}$. So more steps without more paths is wasteful, and the reverse too.
+
+\paragraph{Square-root processes.} Euler can produce negative variance in CIR/Heston. \emph{Full truncation} (used in Chapter~\ref{ch:sv}) replaces $v$ by $v^+$ in the coefficients, and has small bias in practice. Exact simulation from the noncentral chi-squared (Broadie--Kaya) is possible but slow; Andersen's quadratic-exponential scheme matches moments and is the usual compromise.
+
+\section{Variance reduction}
+
+\paragraph{Antithetic variates.} Average $\frac12(f(Z)+f(-Z))$. If $f$ is monotone, the two terms are negatively correlated. Then the variance per pair is below $\frac12\Var f$, and so antithetic beats using independent samples at equal cost. It does nothing for an even function $f$.
+
+\paragraph{Control variates.} Let $C$ have known mean $\mu_C$. The estimator $Y-\beta(C-\mu_C)$ is unbiased, and its variance is minimised by $\beta^*=\Cov(Y,C)/\Var C$, giving
+\[
+\Var(Y-\beta^*(C-\mu_C))=(1-\rho_{YC}^2)\Var Y.
+\]
+Everything depends on $\rho$: reduction by a factor $1/(1-\rho^2)$. Estimating $\beta$ from the same run introduces a small bias, of order $1/n$.
+
+\paragraph{Stratified sampling.} Divide the probability space into cells and sample each with fixed proportion. Then the variance becomes the average \emph{within-cell} variance: by the total variance law (Exercise 1.2) the between-cell variance is removed. In one dimension, $U_i=(i-1+V_i)/n$ removes nearly all the variance. It extends in several dimensions via Latin hypercube (one coordinate at a time) or via stratifying the terminal value with a Brownian bridge.
+
+\paragraph{Importance sampling.} For density $g$ and a proposal $h$,
+$\E_g[f(X)]=\E_h[f(X)\,g(X)/h(X)]$. The optimal $h\propto|f|g$ has zero variance if $f\ge0$, but it is uncomputable. A practical choice is a shift of the Gaussian, i.e.\ Girsanov: sample $Z+\theta$ with weight $e^{-\theta(Z+\theta)+\theta^2/2}$. Choose $\theta$ to make the payoff event likely. This is essential for rare events: deep OTM options, credit tail losses.
+
+\begin{numcheck}
+Call with $S_0=K=100$, $r=5\%$, $\sigma=20\%$, $T=1$; exact price $10.4506$. In a single run of $100{,}000$ normals:
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Method & Estimate & Std error\\
+\midrule
+Plain & 10.4981 & 0.0468\\
+Antithetic (2 evaluations per normal) & 10.4951 & 0.0234\\
+Control variate $S_T$ ($\rho=0.925$) & 10.4842 & 0.0178\\
+Stratified ($40\times5{,}000$ paths) & 10.4505 & 0.00038\\
+\bottomrule
+\end{tabular}
+\end{center}
+Antithetic's standard error is that of $200{,}000$ independent samples ($0.0331$) reduced by a further factor. Stratification wins hugely because this payoff depends on one normal; on a truly high-dimensional problem the gain would be much lower.
+
+\textbf{Rare event, $K=200$:} exact $0.004799$. Plain: $0.004500\pm0.000907$. Importance sampling, shifting the mean so the strike is at the centre ($\theta=3.316$): $0.004814\pm0.000020$. Standard error falls by about a factor of $45$, or a factor of about $2{,}000$ in samples.
+
+\textbf{Asian call, 12 fixings, 1m paths:} plain $6.1536\pm0.0085$. Geometric-average Asian as control, with closed form $5.9402$ (correlation $0.9996$): $6.1563\pm0.00024$, a factor of about $35$ in standard error.
+\end{numcheck}
+
+\paragraph{Conditional Monte Carlo.} Replace $Y$ by $\E[Y\mid\G]$ when this is known; the variance can only fall. Example: in stochastic volatility with $\rho=0$, simulate $v$ and use Black--Scholes for the conditional price (Theorem~\ref{thm:hw}). With $\rho\ne0$, the same works after a shift of the forward.
+
+\section{Quasi-Monte Carlo}
+
+Low-discrepancy sequences (Sobol', Halton) fill the cube more evenly than random points. The Koksma--Hlawka inequality bounds the error by variation times discrepancy: $|\text{error}|\le V(f)D_n^*$, with $D_n^*=O((\log n)^d/n)$. In practice convergence is near $n^{-1}$ when the \emph{effective dimension} is low. So pair QMC with a Brownian bridge or PCA path construction, which loads most of the variance into the first few coordinates. Randomised (scrambled) QMC gives an error estimate.
+
+\section{Barrier options and the bridge correction}\label{sec:mcbarrier}
+
+As in Section~\ref{sec:barrier}, discrete monitoring misses crossings. Given consecutive log prices $x_k,x_{k+1}$ above a lower barrier $b$, by \eqref{eq:bridge} (with minimum version),
+\[
+\Prob(\text{crossing in step})=\exp\Bigl(-\frac{2(x_k-b)(x_{k+1}-b)}{\sigma^2h}\Bigr).
+\]
+So for each step, kill the path with that probability; or better, weight the path by the survival product to reduce variance. Section~\ref{sec:barrier} has the numbers: the bias of 12 standard errors disappears.
+
+\section{Greeks}
+
+\begin{enumerate}
+\item \textbf{Finite differences.} Bump and revalue, $\Delta\approx(V(S+\epsilon)-V(S-\epsilon))/2\epsilon$. Use \emph{common random numbers}, or the variance blows up like $1/\epsilon^2$. The bias is $O(\epsilon^2)$. It works with discontinuous payoffs only with large $\epsilon$.
+\item \textbf{Pathwise.} Differentiate the payoff: $\partial_S\E[f(S_T)]=\E[f'(S_T)\partial_SS_T]$. For a call with GBM, $\partial_SS_T=S_T/S_0$, and so $\Delta=\E[e^{-rT}\ind_{\{S_T>K\}}S_T/S_0]$. It is unbiased, and needs a.e.\ differentiability of the payoff, and Lipschitz continuity. It fails for digitals.
+\item \textbf{Likelihood ratio.} Differentiate the density instead: $\partial_S\E[f(S_T)]=\E[f(S_T)\partial_S\ln p(S_T;S)]$. For GBM the score is $Z/(S_0\sigma\sqrt T)$. It works for any payoff, even discontinuous, but the variance is typically higher and grows as $h\to 0$ for path-dependent payoffs. It is equivalent to a Malliavin weight.
+\item \textbf{Adjoint algorithmic differentiation (AAD).} A single reverse pass gives all sensitivities at a cost about $4$ times one price, no matter how many inputs. It made risk reports for large books practical.
+\end{enumerate}
+
+\begin{numcheck}
+ATM call delta (exact $0.6368$), 400k paths: pathwise $0.6378\pm0.0009$; likelihood ratio $0.6357\pm0.0023$; bump with common normals $0.6377\pm0.0009$.
+\end{numcheck}
+
+\section{American options: Longstaff--Schwartz}
+
+Backward induction needs the continuation value $c_k(x)=\E[e^{-rh}V_{k+1}\mid S_k=x]$, a conditional expectation, and conditional expectation is a projection (Chapter~\ref{ch:measure}). The Longstaff--Schwartz idea is to \emph{regress} it on basis functions of $S_k$ across simulated paths.
+\begin{enumerate}
+\item Simulate $n$ paths forward.
+\item At $k=m$, set the cash flow to the payoff. For $k=m-1,\dots,1$: on in-the-money paths, regress discounted future cash flow on basis functions $\psi_j(S_k)$; exercise if the immediate payoff exceeds the fitted continuation; update the cash flow.
+\item Average discounted cash flows.
+\end{enumerate}
+Only the exercise \emph{decision} uses the regression; the actual cash flow is realised along the path. Any exercise rule is suboptimal, so this gives a \emph{low-biased} estimate. Using a dual formula (Rogers; Haugh--Kogan; Andersen--Broadie), one obtains an upper bound: for any martingale $M$ with $M_0=0$,
+\[
+V_0\le\E\Bigl[\max_k\bigl(G_k-M_k\bigr)\Bigr].
+\]
+A good approximation to the continuation value gives a tight bound and so a confidence interval. The same regression idea is the basis of nested simulations for exposures.
+
+\begin{numcheck}
+American put, $S_0=K=100$, $r=5\%$, $\sigma=20\%$, $T=1$. LSM with $200{,}000$ antithetic paths, 50 exercise dates, cubic polynomials: $6.0754\pm0.0161$. A tree with continuous exercise approximated by $5{,}000$ steps gives $6.0902$.
+\end{numcheck}
+
+\section{Multilevel Monte Carlo}
+
+Giles (2008) writes the fine-grid estimator as a telescoping sum over grids $h_\ell=2^{-\ell}T$:
+\[
+\E[\hat f_L]=\E[\hat f_0]+\sum_{\ell=1}^L\E[\hat f_\ell-\hat f_{\ell-1}].
+\]
+Differences on two levels share Brownian increments, so they have small variance (it is the strong error that matters here). Most samples go on the cheap coarse levels and few on the fine levels. With Euler on Lipschitz payoffs, the cost to reach RMSE $\epsilon$ falls from $\epsilon^{-3}$ to $\epsilon^{-2}(\log\epsilon)^2$. With Milstein, it is $\epsilon^{-2}$.
+
+\begin{exercises}
+\item Implement antithetic sampling for a straddle. Why does it fail to reduce the variance compared with independent sampling?
+\item Find the optimal importance-sampling mean shift $\theta$ for $\Prob(Z>a)$. Compute the variance reduction for $a=4$.
+\item Prove the formula for the variance of the optimal control variate. How would you use several controls? Show that this is a regression.
+\item Derive the pathwise and likelihood-ratio estimators of vega for a call. Which one should be used for a digital?
+\item Why does the Euler scheme for $\E[X_T^2]$ in GBM have error proportional to $h$? Expand the analytic formula.
+\item Implement LSM for the American put with several basis sets, then compute the dual upper bound.
+\item Estimate the number of paths necessary for a standard error of one cent on a one-year ATM call at $S=100$, $\sigma=20\%$. Assume no variance reduction.
+\end{exercises}

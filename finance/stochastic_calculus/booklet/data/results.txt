@@ -1,0 +1,146 @@
+== Variation of a Brownian path ==
+mesh 2^-2: sum|dW|=1.329 sum dW^2=0.7633
+mesh 2^-3: sum|dW|=2.519 sum dW^2=1.2120
+mesh 2^-4: sum|dW|=2.845 sum dW^2=0.8306
+mesh 2^-5: sum|dW|=3.667 sum dW^2=0.7405
+mesh 2^-6: sum|dW|=6.217 sum dW^2=0.8724
+mesh 2^-7: sum|dW|=8.929 sum dW^2=0.9558
+mesh 2^-8: sum|dW|=12.446 sum dW^2=0.9756
+mesh 2^-9: sum|dW|=18.405 sum dW^2=1.0218
+mesh 2^-10: sum|dW|=25.285 sum dW^2=0.9943
+mesh 2^-11: sum|dW|=35.974 sum dW^2=1.0013
+mesh 2^-12: sum|dW|=51.045 sum dW^2=0.9985
+mesh 2^-13: sum|dW|=71.938 sum dW^2=1.0001
+mesh 2^-14: sum|dW|=101.656 sum dW^2=0.9918
+mesh 2^-15: sum|dW|=144.029 sum dW^2=0.9922
+mesh 2^-16: sum|dW|=204.449 sum dW^2=1.0012
+reflection figure: hit at t=0.407, W1=0.176, a=0.6
+P(M_1>=0.5): MC(n=1000) 0.6043  exact 2P(W>=0.5) 0.6171
+P(M_1>=1.0): MC(n=1000) 0.3079  exact 2P(W>=1.0) 0.3173
+P(M_1>=2.0): MC(n=1000) 0.0436  exact 2P(W>=2.0) 0.0455
+== Down-and-out call ==
+vanilla 10.4506 closed-form DO 8.6655
+MC daily monitoring 8.9347 +- 0.0232
+MC with bridge correction 8.6817 +- 0.0231
+== Fourier pricer sanity check against Black-Scholes ==
+Lewis: [5.29339806]  BS: 5.293398058044907
+== Heston ==
+K=80.0: Fourier 21.8133  MC 21.8205 +- 0.0237
+K=100.0: Fourier 7.1926  MC 7.1931 +- 0.0149
+K=120.0: Fourier 0.7981  MC 0.7968 +- 0.0051
+Feller 2 kappa theta - xi^2 = -0.090
+== Merton ==
+K=80.0: series 21.6958 Fourier 21.6958
+K=100.0: series 7.8826 Fourier 7.8826
+K=120.0: series 1.7042 Fourier 1.7042
+T=0.25: ATM-ish IV Heston 0.1892 Merton 0.1849
+T=1.0: ATM-ish IV Heston 0.1805 Merton 0.1979
+Implied density integrates to 0.9958; mean 99.854; ATM vol 0.1805
+== Variance swap replication ==
+Heston: strip fair variance 0.04000 vs theoretical 0.04000
+Heston v0=.09: strip 0.06162 theoretical 0.06162; ATM implied var 0.05189
+== Dupire vs Gatheral form, skew rule ==
+T=0.5 K=90.0: Dupire 0.2230, Gatheral 0.2230, implied 0.2122
+T=0.5 K=100.0: Dupire 0.1971, Gatheral 0.1971, implied 0.2000
+T=0.5 K=110.0: Dupire 0.1828, Gatheral 0.1828, implied 0.1918
+T=0.02: local-vol slope at ATM -0.1997; implied slope -0.1000; ratio 1.997
+T=0.5: local-vol slope at ATM -0.1928; implied slope -0.1000; ratio 1.928
+== SABR Hagan vs MC ==
+K=0.7: Hagan 0.3590 MC 0.3602 (price se 0.00042)
+K=0.85: Hagan 0.3264 MC 0.3270 (price se 0.00037)
+K=1.0: Hagan 0.3024 MC 0.3029 (price se 0.00029)
+K=1.2: Hagan 0.2808 MC 0.2811 (price se 0.00019)
+K=1.4: Hagan 0.2682 MC 0.2681 (price se 0.00011)
+== Short rates ==
+Vasicek P(0,5): formula 0.84974 MC 0.84976 +- 0.00006
+Vasicek bond call (Jamshidian) 0.001020  MC 0.001020 +- 0.000007
+CIR P(0,5): formula 0.85051 MC 0.85058 +- 0.00010
+CIR Feller 2*kappa*theta - sigma^2 = 0.0300
+== Margrabe ==
+Margrabe formula 12.9523, MC (r=3%) 12.9838 +- 0.0137
+Margrabe larger run (8m paths) 12.9585 +- 0.0068
+== Euler and Milstein ==
+h=2^-2: strong Euler 7.0953 Milstein 0.8015; weak Euler E[X^2] err 195.877
+h=2^-3: strong Euler 5.2617 Milstein 0.4634; weak Euler E[X^2] err 100.969
+h=2^-4: strong Euler 3.7355 Milstein 0.2527; weak Euler E[X^2] err 51.282
+h=2^-5: strong Euler 2.6462 Milstein 0.1351; weak Euler E[X^2] err 25.845
+h=2^-6: strong Euler 1.8850 Milstein 0.0718; weak Euler E[X^2] err 12.974
+h=2^-7: strong Euler 1.3189 Milstein 0.0371; weak Euler E[X^2] err 6.500
+h=2^-8: strong Euler 0.9275 Milstein 0.0184; weak Euler E[X^2] err 3.253
+h=2^-9: strong Euler 0.6622 Milstein 0.0091; weak Euler E[X^2] err 1.628
+h=2^-10: strong Euler 0.4596 Milstein 0.0046; weak Euler E[X^2] err 0.814
+fitted slopes: Euler 0.496 Milstein 0.937
+== Variance reduction ==
+Exact 10.4506
+Plain 10.4981 se 0.0468
+Antithetic 10.4951 se 0.0234 (uses 2x the payoff evaluations)
+Control ST 10.4842 se 0.0178 b=0.641 corr=0.925
+Stratified (40 reps of 5000, 200k total): 10.4505 se of mean 0.00038
+K=200 exact 0.004799; plain 0.004500 se 0.000907; IS (theta=3.316) 0.004814 se 0.000020
+Asian (12 fixings): geo exact 5.9402, geo MC 5.9376; plain 6.1536 se 0.0085; CV 6.1563 se 0.00024; corr 0.9996
+Delta exact 0.6368; pathwise 0.6378 se 0.0009; LR 0.6357 se 0.0023; bump(common z) 0.6377 se 0.0009
+== CRR ==
+n=10: Euro call 10.2534 err -0.1972
+n=11: Euro call 10.6112 err +0.1606
+n=50: Euro call 10.4107 err -0.0399
+n=51: Euro call 10.4850 err +0.0344
+n=100: Euro call 10.4306 err -0.0200
+n=101: Euro call 10.4680 err +0.0174
+n=500: Euro call 10.4466 err -0.0040
+n=501: Euro call 10.4541 err +0.0035
+n=1000: Euro call 10.4486 err -0.0020
+American put (n=5000) 6.0902; European 5.5731; premium 0.5171
+Perpetual put K=100,r=5%,sig=20%: L*=71.429, V(100)=12.3200; CRR T=100y (n=20000) 12.3179
+== Longstaff-Schwartz ==
+LSM American put 6.0754 se 0.0161 (50 exercise dates; low-biased relative to continuous exercise)
+Continuous-exercise CRR value 6.0902
+== Finite differences (error = FD - BS, ATM call) ==
+exact 10.45058
+Nx=100 Nt=25: implicit -0.19428 CN -0.14891 CN-Rann -0.15071
+Nx=200 Nt=100: implicit -0.04700 CN -0.03633 CN-Rann -0.03644
+Nx=400 Nt=400: implicit -0.01167 CN -0.00903 CN-Rann -0.00904
+Nx=800 Nt=1600: implicit -0.00291 CN -0.00225 CN-Rann -0.00226
+explicit stability dt <= h^2/sigma^2 = 0.0400 (Nx=200) -> Nt>=25
+explicit Nx=200 Nt=20: dt/limit=1.250 error -334.63
+explicit Nx=200 Nt=23: dt/limit=1.087 error +3.585
+explicit Nx=200 Nt=24: dt/limit=1.042 error -0.57995
+explicit Nx=200 Nt=25: dt/limit=1.000 error +0.08928
+explicit Nx=200 Nt=26: dt/limit=0.962 error -0.0052834
+explicit Nx=200 Nt=30: dt/limit=0.833 error -0.00079275
+Time refinement at fixed Nx=1600 (price error), and gamma at the strike with a large step
+Nx=1600 Nt=25: implicit -0.04244 CN +0.03634
+Nx=1600 Nt=50: implicit -0.02153 CN -0.00221
+Nx=1600 Nt=100: implicit -0.01105 CN -0.00054
+Nx=1600 Nt=200: implicit -0.00581 CN -0.00056
+Nx=1600 Nt=400: implicit -0.00319 CN -0.00056
+implicit: gamma at strike 0.01957 (exact 0.01876), neighbours [0.02009, 0.01983, 0.0193, 0.01901]
+CN: gamma at strike 1.25265 (exact 0.01876), neighbours [-0.17202, -0.38228, -0.37191, -0.16281]
+CN+Rannacher: gamma at strike 0.01881 (exact 0.01876), neighbours [0.01931, 0.01907, 0.01855, 0.01828]
+== Discrete delta hedging ==
+N=6: std P&L 2.670  theory 2.872  mean -0.007
+N=13: std P&L 1.853  theory 1.951  mean -0.000
+N=26: std P&L 1.331  theory 1.380  mean -0.002
+N=52: std P&L 0.949  theory 0.976  mean +0.001
+N=104: std P&L 0.677  theory 0.690  mean +0.005
+N=252: std P&L 0.441  theory 0.443  mean -0.001
+N=504: std P&L 0.314  theory 0.313  mean -0.000
+Gamma P&L: sell at 20%, hedge at 20%, realised 25%
+mean P&L -1.990 std 1.003; BS(25%)-BS(20%) = 1.982
+== GARCH(1,1) ==
+uncond var sim 1.005e-04 theory 1.000e-04; ann vol 0.159
+kurtosis sim 4.57 theory 4.43
+acf r^2 lag 1,2,5,10 sim: [np.float64(0.2127), np.float64(0.2166), np.float64(0.1929), np.float64(0.1796)]  theory: [0.2052, 0.2011, 0.1893, 0.1711]
+== Kalman filter, local level ==
+steady gain sim 0.1810 theory 0.1810; rmse obs 0.512 filter 0.246
+== Kelly ==
+f = 0.5 x Kelly = 0.75: growth 5.375%
+f = 1.0 x Kelly = 1.50: growth 6.500%
+f = 2.0 x Kelly = 3.00: growth 2.000%
+f = 3.0 x Kelly = 4.50: growth -11.500%
+== Markowitz three assets ==
+A=116.1897 B=7.9188 C=0.5970 D=6.6556; GMV mean 0.0682 vol 0.0928
+tangency weights [0.589 0.208 0.202], mean 0.0784, vol 0.1022, Sharpe 0.5716; sqrt(H) 0.5716
+tangency weights from 5y monthly returns, known cov: 5% [-1.05 -1.53 -1.19] median [0.66 0.2  0.15] 95% [2.42 1.99 1.45]
+== VaR ES ==
+Normal 99% VaR 2.326 sigma; ES 2.666 sigma
+t4 unit variance 99% VaR 2.650; ES 3.688

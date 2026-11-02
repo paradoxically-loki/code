@@ -1,0 +1,160 @@
+\chapter{Jump Processes}\label{ch:jumps}
+
+Continuous models cannot produce overnight gaps or the steepness of very short-dated option smiles. Allowing jumps also breaks completeness.
+
+\section{The Poisson process}
+
+\begin{definition}
+A \emph{Poisson process} of intensity $\lambda>0$ is an adapted counting process $N$ with $N_0=0$, with right-continuous paths, and increments independent of the past with $N_t-N_s\sim\mathrm{Poisson}(\lambda(t-s))$.
+\end{definition}
+
+Equivalently, the waiting times between jumps are i.i.d.\ exponential with mean $1/\lambda$. Given $N_T=n$, the jump times are distributed like the order statistics of $n$ uniform points on $[0,T]$; this gives an efficient simulation method.
+
+\begin{proposition}
+The following are martingales: the compensated process $\tilde N_t=N_t-\lambda t$; $\tilde N_t^2-\lambda t$; $\tilde N_t^2-N_t$; and $\exp(uN_t-\lambda t(e^u-1))$.
+\end{proposition}
+
+Here is the first contrast with Brownian motion: $[\tilde N]_t=\sum_{s\le t}(\Delta N_s)^2=N_t$ (random) whereas the predictable variation is $\qv{\tilde N}_t=\lambda t$ (deterministic). Both make the square of $\tilde N$ a martingale after subtraction.
+
+\begin{pitfall}
+\emph{Predictability matters more with jumps.} For a c\`adl\`ag integrand, $\int_0^tH_{s-}\dd\tilde N_s$ is a martingale, but $\int_0^tH_s\dd\tilde N_s$ need not be. For example,
+\[
+\int_0^tN_{s-}\dd N_s=\sum_{k=1}^{N_t}(k-1)=\tfrac12N_t(N_t-1),\quad\text{while}\quad\int_0^tN_s\dd N_s=\tfrac12N_t(N_t+1).
+\]
+The difference is $N_t$, a clearly non-zero expected gain. With Brownian motion, we could get away with being careless in notation because of continuity. With jumps, the left limit $H_{s-}$ is the position taken \emph{before} the jump, which is the only one a trader can have.
+\end{pitfall}
+
+\paragraph{Compound Poisson.} $J_t=\sum_{i=1}^{N_t}Y_i$ with $Y_i$ i.i.d.\ with law $\nu_Y$, independent of $N$. Conditioning on $N_t$,
+\[
+\E e^{iuJ_t}=\exp\bigl(\lambda t(\varphi_Y(u)-1)\bigr),\quad\E J_t=\lambda t\E Y,\quad\Var J_t=\lambda t\E Y^2.
+\]
+
+\section{It\^o's formula with jumps}
+
+Let $X$ be a process of finite-activity jump-diffusion form:
+\[
+\dd X_t=\mu_t\dd t+\sigma_t\dd W_t+\dd J_t.
+\]
+
+\begin{theorem}\label{thm:itojump}
+For $f\in C^2$,
+\[
+f(X_t)=f(X_0)+\int_0^tf'(X_{s-})(\mu_s\dd s+\sigma_s\dd W_s)+\frac12\int_0^tf''(X_{s-})\sigma_s^2\dd s+\sum_{s\le t}\bigl[f(X_s)-f(X_{s-})\bigr].
+\]
+\end{theorem}
+\begin{proof}
+Between jumps, $X$ is an Itô process, and the usual formula applies. At a jump, add the actual change in $f$. There are finitely many jumps on any interval.
+\end{proof}
+
+\begin{intuition}
+Taylor expansion fails for big moves: $f(x+y)-f(x)$ is not approximated by $f'y+\tfrac12f''y^2$. So we keep the whole difference. If $\dd J$ has intensity $\lambda$ and sizes $Y$, the drift contributed by the jumps is $\lambda\E[f(x+Y)-f(x)]$, and the generator becomes non-local:
+\[
+\mathcal{A}f(x)=bf'+\tfrac12\sigma^2f''+\lambda\int\bigl(f(x+y)-f(x)\bigr)\nu_Y(\dd y).
+\]
+Pricing PDEs become partial integro-differential equations (PIDEs).
+\end{intuition}
+
+\paragraph{Stock with jumps.} Consider $\dd S_t=S_{t-}(\mu\dd t+\sigma\dd W_t+\dd J_t)$ with $Y_i>-1$. Theorem~\ref{thm:itojump} applied to $\ln S$ gives
+\begin{equation}\label{eq:jumpsol}
+S_t=S_0\exp\bigl((\mu-\tfrac12\sigma^2)t+\sigma W_t\bigr)\prod_{i=1}^{N_t}(1+Y_i).
+\end{equation}
+A jump of relative size $Y$ moves the stock from $S_{-}$ to $S_-(1+Y)$. The term $\E S_t$ grows at the rate $\mu+\lambda\E Y$, so for $e^{-rt}S_t$ to be a martingale we need $\mu=r-\lambda\bar m$, $\bar m=\E Y$. The drift is lowered, compensating for expected jumps.
+
+\section{Change of measure with jumps}
+
+\begin{theorem}[Girsanov for compound Poisson]\label{thm:girsjump}
+Let $J$ have intensity $\lambda$ and jump density $f$ under $\Prob$. Let $\tilde\lambda>0$ and let $\tilde f$ be a density with the same support as $f$. Define
+\[
+Z_t=e^{(\lambda-\tilde\lambda)t}\prod_{i=1}^{N_t}\frac{\tilde\lambda\tilde f(Y_i)}{\lambda f(Y_i)}.
+\]
+Then $Z$ is a positive mean-one martingale, and under $\dd\Q=Z_T\dd\Prob$, $J$ is compound Poisson with intensity $\tilde\lambda$ and jump density $\tilde f$.
+\end{theorem}
+\begin{proof}
+Compute the joint likelihood of the data. The density of seeing $n$ jumps at times $t_1<\dots<t_n$ with sizes $y_i$ on $[0,T]$ under $(\lambda,f)$ is $\lambda^ne^{-\lambda T}\prod f(y_i)$, and $Z_T$ is the ratio. Multiplicativity over disjoint intervals gives the martingale property.
+\end{proof}
+
+\begin{intuition}
+Unlike Brownian motion, where only the drift could change, here intensities and jump-size laws can change, so long as the set of possible jump sizes stays the same. An equivalent measure cannot create or remove jumps of a given size; it can only reweight them. Note that the measure cannot remove the diffusion either. This much freedom is why the risk-neutral measure is highly non-unique in jump models.
+\end{intuition}
+
+Combining with Brownian Girsanov, $\Theta$ and $(\tilde\lambda,\tilde f)$ must satisfy one equation to make $e^{-rt}S_t$ a martingale:
+\[
+\mu-r-\sigma\Theta+\tilde\lambda\E^{\tilde f}[Y]=0.
+\]
+One equation, infinitely many unknowns. The market price of diffusion risk and of jump risk can be traded against one another.
+
+\section{Incompleteness: a one-period view}
+
+Suppose in one period the stock can go to $uS_0$, $mS_0$ or $dS_0$, with $u>1+r>d$. Risk-neutral probabilities $(q_u,q_m,q_d)$ must satisfy two linear equations, so there is a one-parameter family. Two assets cannot replicate an arbitrary claim on three states. The set of arbitrage-free prices of a claim $V$ is an interval
+\[
+\Bigl[\inf_{\Q}\E^\Q[\tfrac{V}{1+r}],\ \sup_{\Q}\E^\Q[\tfrac{V}{1+r}]\Bigr],
+\]
+and the top of the interval is the \emph{super-replication price} (linear programming duality): the cheapest portfolio that is at least $V$ in all states. In the Merton model, the super-replication interval for a call is essentially the whole no-arbitrage range. Super-replication is thus too expensive to use in practice. Instead one fixes a $\Q$ by calibrating to traded options.
+
+\section{Merton's jump-diffusion model}\label{sec:merton}
+
+Let $\ln(1+Y)\sim\Nc(\mu_J,\delta^2)$, so $\bar m=e^{\mu_J+\delta^2/2}-1$. Merton (1976) argued that jump risk is diversifiable and so carries no risk premium. Under this assumption, $\Q$ leaves $\lambda$ and the law of $Y$ unchanged. (Later models calibrate to options and drop this assumption, in which case $\lambda$ and $\mu_J$ in this section are risk-neutral parameters.)
+
+\begin{theorem}[Merton's formula]\label{thm:merton}
+With $\lambda'=\lambda(1+\bar m)$,
+\[
+C=\sum_{n=0}^\infty e^{-\lambda'T}\frac{(\lambda'T)^n}{n!}\,C_{\rm BS}\bigl(S_0,K,T;r_n,\sigma_n\bigr),
+\]
+where $\sigma_n^2=\sigma^2+n\delta^2/T$ and $r_n=r-\lambda\bar m+n\ln(1+\bar m)/T$.
+\end{theorem}
+\begin{proof}
+Condition on $N_T=n$. Under $\Q$, from \eqref{eq:jumpsol}, $\ln S_T$ is normal with variance $\sigma^2T+n\delta^2$ and mean such that $\E[S_T\mid N_T=n]=S_0e^{(r-\lambda\bar m)T}(1+\bar m)^n$. So the conditional price is $e^{-rT}\E[(S_T-K)^+\mid n]$, a Black--Scholes value with forward $F_n=S_0e^{(r-\lambda\bar m)T}(1+\bar m)^n$. Rewrite $e^{-rT}\Phi$-terms using $e^{-rT}=e^{-r_nT}\cdot e^{(r_n-r)T}$, with $e^{(r_n-r)T}=e^{-\lambda\bar mT}(1+\bar m)^n$, and combine the factor with the Poisson weight $e^{-\lambda T}(\lambda T)^n/n!$. The product is exactly the stated weight with $\lambda'$.
+\end{proof}
+
+\begin{intuition}
+A jump-diffusion is a Black--Scholes model whose volatility is random: with probability $w_n$ you get a variance of $\sigma^2T+n\delta^2$ (and an adjusted forward). A \emph{mixture of normals} has fat tails, and that produces a smile. With negative mean jump, $\mu_J<0$, you get a negative skew.
+\end{intuition}
+
+\begin{numcheck}
+For $S_0=100$, $r=0$, $T=1$, $\sigma=15\%$, $\lambda=0.5$, $\mu_J=-15\%$, $\delta=15\%$: the series gives $21.6958$, $7.8826$, $1.7042$ for $K=80,100,120$, agreeing to four decimals with independent Fourier inversion (Section~\ref{sec:fourier}).
+\end{numcheck}
+
+\section{L\'evy processes}
+
+\begin{definition}
+A \emph{L\'evy process} is an adapted c\`adl\`ag process with $X_0=0$, with stationary increments independent of the past.
+\end{definition}
+
+Brownian motion with drift, Poisson and compound Poisson are all examples.
+
+\begin{theorem}[L\'evy--Khintchine, stated]\label{thm:lk}
+$\E e^{iuX_t}=e^{t\psi(u)}$, where
+\[
+\psi(u)=ibu-\tfrac12\sigma^2u^2+\int_\R\bigl(e^{iux}-1-iux\ind_{\{|x|<1\}}\bigr)\nu(\dd x),
+\]
+for $b\in\R$, $\sigma\ge0$, and a measure $\nu$ with $\nu\{0\}=0$ and $\int\min(1,x^2)\nu(\dd x)<\infty$.
+\end{theorem}
+
+\begin{theorem}[L\'evy--It\^o decomposition, stated]\label{thm:li}
+$X$ splits into independent pieces: drift, Brownian motion with variance $\sigma^2$, a compound Poisson process of big jumps (with L\'evy measure $\nu$ on $|x|\ge1$), and a compensated limit of small jumps.
+\end{theorem}
+
+\begin{intuition}
+$\nu(A)$ is the expected number of jumps per unit time with size in $A$. If $\nu(\R)<\infty$, the process has finitely many jumps: \emph{finite activity}. If $\nu(\R)=\infty$, there are infinitely many tiny jumps: \emph{infinite activity}. The condition $\int_{|x|<1}x^2\nu(\dd x)<\infty$ is what makes the sum of squared jumps finite, hence the compensated sum converges in $L^2$. The compensator $iux\ind_{\{|x|<1\}}$ is what keeps the small-jump sum from blowing up. A L\'evy process has no ``free parameter'' other than $(b,\sigma,\nu)$, which is the infinitely-divisible distribution theorem in disguise.
+\end{intuition}
+
+\paragraph{Examples of pure-jump models.}
+\begin{itemize}
+\item \textbf{Variance gamma (Madan--Seneta):} Brownian motion with drift evaluated at a Gamma time, $X_t=\theta G_t+\sigma W_{G_t}$. It models a random business clock. Its L\'evy density is $\nu(\dd x)=\frac{e^{-\lambda_\pm|x|}}{\kappa|x|}\dd x$. It has infinite activity but finite variation.
+\item \textbf{CGMY/KoBoL:} L\'evy density $C\,e^{-\lambda_\pm|x|}/|x|^{1+Y}$, with $Y<2$. The parameter $Y$ governs small-jump activity: finite activity for $Y<0$, infinite with finite variation for $0\le Y<1$, infinite variation for $1\le Y<2$.
+\item \textbf{Normal inverse Gaussian:} Brownian motion evaluated at an inverse Gaussian time.
+\end{itemize}
+All have a known $\psi$, so options are priced by Fourier methods. The risk-neutral stock is $S_t=S_0e^{(r-\psi(-i))t+X_t}$, the \emph{mean-correcting martingale}.
+
+\paragraph{Why stationarity fails in practice.} Since L\'evy increments are i.i.d., cumulants of $\ln S_T$ add up linearly in $T$. The skewness of $\ln S_T$ therefore decays like $T^{-1/2}$ and the excess kurtosis like $T^{-1}$ (a central limit effect), and the at-the-money slope of implied volatility in $k$ decays like $1/T$. Index skews decay more slowly than this. Additive (Sato) processes, or stochastic volatility with jumps (Bates), address the gap.
+
+\paragraph{Why jumps matter for hedging.} If $\Delta$ hedged, the P\&L at a jump of size $y$ in $S$ is $V(S+y)-V(S)-\Delta y$. For small $y$, it is $\tfrac12\Gamma y^2$, the usual form, but for big $y$ the error is not controlled by rebalancing frequency. \emph{Hedging more often does not help against a jump.} Only trading other options does. This is a clean illustration of incompleteness: gap risk cannot be delta-hedged away.
+
+\begin{exercises}
+\item Show that $\exp(uN_t-\lambda t(e^u-1))$ is a martingale. Use it to find the distribution of the first time $N_t-ct$ exceeds a positive level, when $\lambda<c$ (ruin theory).
+\item Show that for a L\'evy process with $\E|X_1|<\infty$, $X_t-t\E X_1$ is a martingale. If $X_t$ has an exponential moment, find the martingale form of $e^{X_t}$.
+\item Compute the variance, skewness and excess kurtosis of $\ln S_T$ in Merton's model. How do skewness and kurtosis scale in $T$? Why does this imply a smile that flattens with maturity?
+\item In the three-state one-period market with $S_0=100$, $u=1.2$, $m=1$, $d=0.8$, $r=0$, find the interval of arbitrage-free call prices at $K=100$. Find the cheapest super-replicating portfolio.
+\item Let $\dd S=S_{-}\dd\tilde J$ with $\tilde J$ a compensated Poisson process of jump size $a$, $a>-1$, $\lambda$ intensity. Find $S_t$. Is this a complete market? Solve for the hedging ratio replicating a claim $V(S_T)$ with the stock and a bond.
+\item For $H_t=\ind_{\{t\le\tau_1\}}$ with $\tau_1$ the first jump of $N$, compute $\int_0^tH_s\dd\tilde N_s$. Show it is a martingale with mean zero. This is the basic payoff of a credit default swap; find the \emph{hazard rate} formulation of default probability.
+\end{exercises}
