@@ -63,3 +63,15 @@ Given an edge list with weights as latency (positive). From 1 to n, find the fol
 
 ### Q4
 The Great Chai Stall Crawl
+
+
+# CapitalOne Tes
+1. Signal Blah Blah Blah
+There is a list of amplifiers, each with a serial number stamp on it, and the signal strength of each amplifier is its serial number. Each amplifier also has an activation number with the number of primes that divide the serial number. From the list of serial numbers, you are supposed to turn on some or all amplifiers such that no two amplifiers have activation number difference more than 1. Find the maximum possible signal strength.
+
+2. Smallest window size with bitwise OR atleast S
+Given an array, find the smallest k such that all windows of size k has bitwise OR at least S. 
+
+
+3. Shortest Path to K points
+There is a M * N grid with entries being 0 and 1. 1 means wall and 0 means path. There are also K points whose (x,y) coordinates are given. Find the shortest distance of all the k points from (0,0).
