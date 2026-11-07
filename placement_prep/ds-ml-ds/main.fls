@@ -3,7 +3,7 @@ INPUT /etc/texmf/web2c/texmf.cnf
 INPUT /usr/share/texmf/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT /home/paradox/code/placement_prep/ds-ml-ds/main.tex
+INPUT main.tex
 OUTPUT main.log
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/book.cls
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/book.cls
@@ -423,10 +423,9 @@ INPUT chapters/ch15_python.tex
 INPUT /usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt10.tfm
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtt9.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtti10.tfm
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmtk10.tfm
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmr10.tfm
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ec-lmr9.tfm
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmtt.fd
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmtt.fd
 INPUT /usr/share/texmf/tex/latex/lm/ts1lmtt.fd
@@ -441,7 +440,7 @@ INPUT chapters/ch16_sql.tex
 INPUT /usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 INPUT /usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
-INPUT /usr/share/texmf/fonts/tfm/public/lm/ts1-lmtt10.tfm
+INPUT /usr/share/texmf/fonts/tfm/public/lm/ts1-lmtt9.tfm
 INPUT ./chapters/ch17_qbank.tex
 INPUT ./chapters/ch17_qbank.tex
 OUTPUT chapters/ch17_qbank.aux
@@ -536,5 +535,6 @@ INPUT /usr/share/texmf/fonts/type1/public/lm/lmsy6.pfb
 INPUT /usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb
 INPUT /usr/share/texmf/fonts/type1/public/lm/lmtk10.pfb
 INPUT /usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb
+INPUT /usr/share/texmf/fonts/type1/public/lm/lmtt9.pfb
 INPUT /usr/share/texmf/fonts/type1/public/lm/lmtti10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb

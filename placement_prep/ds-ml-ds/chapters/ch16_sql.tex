@@ -3,7 +3,7 @@
 SQL is the most reliably tested skill in DS online assessments. Most questions reduce to a handful of patterns: join, aggregate, filter groups, and window functions. Every query below was executed on SQLite against the sample tables; syntax is standard and works on PostgreSQL/MySQL 8 unless noted (date functions differ most between dialects).
 
 \section{Sample schema used in this chapter}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 employees(emp_id, name, dept, salary, manager_id)
 customers(cust_id, name, city, signup_date)
 orders(order_id, cust_id, order_date, amount)
@@ -53,7 +53,7 @@ Consequences that interviewers test:
 \section{Classic interview queries}
 
 \subsection{Second-highest (and \texorpdfstring{$N$}{N}-th highest) salary}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 -- Using a subquery
 SELECT MAX(salary) AS second_highest
 FROM employees
@@ -67,7 +67,7 @@ WHERE rnk = 3;
 \end{lstlisting}
 
 \subsection{Top-\texorpdfstring{$N$}{N} per group}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 -- Top 2 earners in each department (ties broken arbitrarily by ROW_NUMBER)
 WITH ranked AS (
   SELECT dept, name, salary,
@@ -81,7 +81,7 @@ ORDER BY dept, salary DESC;
 \end{lstlisting}
 
 \subsection{Employees earning more than their manager (self join)}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 SELECT e.name AS employee, e.salary, m.name AS manager, m.salary AS mgr_salary
 FROM employees e
 JOIN employees m ON e.manager_id = m.emp_id
@@ -89,7 +89,7 @@ WHERE e.salary > m.salary;
 \end{lstlisting}
 
 \subsection{Customers who never ordered (anti join)}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 SELECT c.cust_id, c.name
 FROM customers c
 LEFT JOIN orders o ON o.cust_id = c.cust_id
@@ -101,7 +101,7 @@ WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.cust_id = c.cust_id);
 \end{lstlisting}
 
 \subsection{Duplicates: find and keep one}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 -- Which (cust_id, order_date) pairs appear more than once?
 SELECT cust_id, order_date, COUNT(*) AS n
 FROM orders
@@ -117,7 +117,7 @@ WHERE rn = 1;
 \end{lstlisting}
 
 \subsection{Department aggregates with HAVING and share of total}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 SELECT dept,
        COUNT(*) AS headcount,
        ROUND(AVG(salary), 1) AS avg_salary,
@@ -130,7 +130,7 @@ ORDER BY avg_salary DESC;
 Note \texttt{SUM(SUM(salary)) OVER ()}: the inner \texttt{SUM} is the group aggregate, the outer is a window over all groups. Subtle point: windows are evaluated \emph{after} \texttt{HAVING}, so the percentage is a share of the departments that survive the filter, not of the whole company. If you want company-wide shares, compute the total in a separate CTE. Also note \texttt{100.0} --- integer division (\texttt{100 * a / b} with integers) truncates in many dialects.
 
 \subsection{Running total, moving average, previous value}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 SELECT cust_id, order_date, amount,
        SUM(amount) OVER (PARTITION BY cust_id ORDER BY order_date, order_id
                          ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total,
@@ -142,7 +142,7 @@ ORDER BY cust_id, order_date, order_id;
 \end{lstlisting}
 
 \subsection{Month-over-month revenue growth}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 WITH monthly AS (
   SELECT strftime('%Y-%m', order_date) AS month,   -- PostgreSQL: DATE_TRUNC('month', order_date)
          SUM(amount) AS revenue
@@ -158,7 +158,7 @@ ORDER BY month;
 \end{lstlisting}
 
 \subsection{Pivot with conditional aggregation}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 SELECT c.city,
        SUM(CASE WHEN strftime('%m', o.order_date) = '01' THEN o.amount ELSE 0 END) AS jan,
        SUM(CASE WHEN strftime('%m', o.order_date) = '02' THEN o.amount ELSE 0 END) AS feb,
@@ -173,7 +173,7 @@ ORDER BY c.city;
 \begin{realworld}
 ``Find users who logged in on at least 3 consecutive days'' is a favourite at consumer-tech firms. The trick: within a run of consecutive dates, \texttt{date $-$ row\_number} is constant.
 \end{realworld}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 WITH d AS (SELECT DISTINCT user_id, login_date FROM logins),
 g AS (
   SELECT user_id, login_date,
@@ -190,7 +190,7 @@ HAVING COUNT(*) >= 3;
 \end{lstlisting}
 
 \subsection{Retention: share of users who returned the next day}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 WITH firsts AS (
   SELECT user_id, MIN(login_date) AS first_day FROM logins GROUP BY user_id
 )
@@ -203,7 +203,7 @@ JOIN logins l
 \end{lstlisting}
 
 \subsection{Monthly cohort analysis}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 WITH first_order AS (
   SELECT cust_id, strftime('%Y-%m', MIN(order_date)) AS cohort
   FROM orders GROUP BY cust_id
@@ -219,7 +219,7 @@ ORDER BY cohort, month;
 \end{lstlisting}
 
 \subsection{Median}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 -- Portable median via row numbers (PostgreSQL also has PERCENTILE_CONT(0.5))
 WITH r AS (
   SELECT salary,
@@ -233,7 +233,7 @@ WHERE rn IN ((n + 1) / 2, (n + 2) / 2);   -- integer division picks 1 or 2 middl
 \end{lstlisting}
 
 \subsection{Customers whose every order exceeded 200 (relational division style)}
-\begin{lstlisting}[language=SQL]
+\begin{lstlisting}[style=sql]
 SELECT cust_id
 FROM orders
 GROUP BY cust_id

@@ -31,23 +31,47 @@
 \newcommand{\Q}[1]{\par\medskip\stepcounter{qcount}\noindent\textbf{Q\arabic{chapter}.\arabic{qcount}.\ #1}\par}
 \newcommand{\A}{\noindent\textit{Answer.}\ }
 
-% ---------- code ----------
+% ---------- code style ----------
+\definecolor{codebg}{HTML}{F7F7F9}
+\definecolor{rule}{HTML}{C9CDD3}
+\definecolor{kw}{HTML}{0B57A4}
+\definecolor{bi}{HTML}{7A3E9D}
+\definecolor{str}{HTML}{B3401E}
+\definecolor{cmt}{HTML}{6A737D}
+
+% Extended languages: base keywords plus builtins/functions (class 2)
+\lstdefinelanguage{PythonDS}{language=Python,
+  morekeywords={None,True,False,nonlocal},
+  morekeywords=[2]{len,range,enumerate,zip,min,max,sum,sorted,set,dict,list,tuple,
+    int,str,bool,float,any,all,abs,iter,next,ord,map,divmod,reversed,print,isinstance,
+    List,Optional,defaultdict,Counter,deque,heapq,bisect,functools,self,np,pd}
+}
+\lstdefinelanguage{SQLDS}{language=SQL,
+  deletekeywords={COUNT,SUM,AVG,MIN,MAX,CAST,ROUND,LOWER,UPPER,LENGTH,SUBSTRING,ABS,COALESCE,NULLIF,EXTRACT},
+  morekeywords={WITH,OVER,PARTITION,RECURSIVE,LIMIT,OFFSET,ROWS,RANGE,PRECEDING,
+    FOLLOWING,UNBOUNDED,CURRENT,ROW,EXCEPT,INTERSECT,INTERVAL,FILTER},
+  morekeywords=[2]{COUNT,SUM,AVG,MIN,MAX,ROW_NUMBER,RANK,DENSE_RANK,NTILE,PERCENT_RANK,
+    LAG,LEAD,FIRST_VALUE,LAST_VALUE,COALESCE,NULLIF,CAST,ROUND,EXTRACT,DATE_TRUNC,
+    LOWER,UPPER,LENGTH,SUBSTRING,ABS}
+}
 \lstdefinestyle{plain}{
-  basicstyle=\ttfamily\small,
-  columns=fullflexible,
-  keepspaces=true,
-  breaklines=true,
-  frame=single,
-  rulecolor=\color{black!35},
-  framesep=4pt,
-  xleftmargin=6pt, xrightmargin=6pt,
-  showstringspaces=false,
-  commentstyle=\color{black!60}\itshape,
-  keywordstyle=\bfseries,
-  upquote=true,
-  literate={-}{-}1 {≤}{{$\le$}}1 {≥}{{$\ge$}}1
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{kw},
+  keywordstyle=[2]\color{bi},
+  stringstyle=\color{str},
+  commentstyle=\color{cmt}\itshape,
+  backgroundcolor=\color{codebg},
+  frame=single, rulecolor=\color{rule}, framesep=5pt,
+  xleftmargin=5pt, xrightmargin=5pt,
+  columns=fullflexible, keepspaces=true, upquote=true,
+  showstringspaces=false, breaklines=true,
+  breakatwhitespace=true, tabsize=4,
+  literate={~}{{\raisebox{-0.55ex}{\char126}}}1 {≤}{{$\le$}}1 {≥}{{$\ge$}}1,
+  aboveskip=6pt, belowskip=4pt
 }
 \lstset{style=plain}
+\lstdefinestyle{python}{style=plain, language=PythonDS}
+\lstdefinestyle{sql}{style=plain, language=SQLDS}
 
 % ---------- math shortcuts ----------
 \newcommand{\R}{\mathbb{R}}

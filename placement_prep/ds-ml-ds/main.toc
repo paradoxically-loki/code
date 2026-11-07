@@ -217,16 +217,16 @@
 \contentsline {section}{\numberline {15.3}pandas}{74}{section.15.3}%
 \contentsline {subsection}{\numberline {15.3.1}Core operations}{74}{subsection.15.3.1}%
 \contentsline {subsection}{\numberline {15.3.2}Time-aware and window-style operations}{75}{subsection.15.3.2}%
-\contentsline {subsection}{\numberline {15.3.3}pandas pitfalls}{76}{subsection.15.3.3}%
+\contentsline {subsection}{\numberline {15.3.3}pandas pitfalls}{75}{subsection.15.3.3}%
 \contentsline {section}{\numberline {15.4}scikit-learn: leakage-safe pipelines}{76}{section.15.4}%
 \contentsline {section}{\numberline {15.5}Implement-from-scratch questions}{76}{section.15.5}%
 \contentsline {subsection}{\numberline {15.5.1}Linear regression with gradient descent (and closed form)}{76}{subsection.15.5.1}%
 \contentsline {subsection}{\numberline {15.5.2}Logistic regression}{77}{subsection.15.5.2}%
 \contentsline {subsection}{\numberline {15.5.3}k-means}{77}{subsection.15.5.3}%
-\contentsline {subsection}{\numberline {15.5.4}k-nearest neighbours}{78}{subsection.15.5.4}%
+\contentsline {subsection}{\numberline {15.5.4}k-nearest neighbours}{77}{subsection.15.5.4}%
 \contentsline {subsection}{\numberline {15.5.5}Metrics by hand: confusion matrix and ROC-AUC}{78}{subsection.15.5.5}%
 \contentsline {subsection}{\numberline {15.5.6}A two-layer neural network with manual backprop}{78}{subsection.15.5.6}%
-\contentsline {subsection}{\numberline {15.5.7}PCA via SVD}{79}{subsection.15.5.7}%
+\contentsline {subsection}{\numberline {15.5.7}PCA via SVD}{78}{subsection.15.5.7}%
 \contentsline {section}{\numberline {15.6}Typical DSA patterns in DS coding rounds}{79}{section.15.6}%
 \contentsline {section}{\numberline {15.7}Interview questions}{80}{section.15.7}%
 \contentsline {chapter}{\numberline {16}SQL for Data Science Interviews}{81}{chapter.16}%
@@ -237,7 +237,7 @@
 \contentsline {section}{\numberline {16.5}Window functions}{82}{section.16.5}%
 \contentsline {section}{\numberline {16.6}Classic interview queries}{82}{section.16.6}%
 \contentsline {subsection}{\numberline {16.6.1}Second-highest (and $N$-th highest) salary}{82}{subsection.16.6.1}%
-\contentsline {subsection}{\numberline {16.6.2}Top-$N$ per group}{83}{subsection.16.6.2}%
+\contentsline {subsection}{\numberline {16.6.2}Top-$N$ per group}{82}{subsection.16.6.2}%
 \contentsline {subsection}{\numberline {16.6.3}Employees earning more than their manager (self join)}{83}{subsection.16.6.3}%
 \contentsline {subsection}{\numberline {16.6.4}Customers who never ordered (anti join)}{83}{subsection.16.6.4}%
 \contentsline {subsection}{\numberline {16.6.5}Duplicates: find and keep one}{83}{subsection.16.6.5}%
@@ -245,18 +245,18 @@
 \contentsline {subsection}{\numberline {16.6.7}Running total, moving average, previous value}{84}{subsection.16.6.7}%
 \contentsline {subsection}{\numberline {16.6.8}Month-over-month revenue growth}{84}{subsection.16.6.8}%
 \contentsline {subsection}{\numberline {16.6.9}Pivot with conditional aggregation}{84}{subsection.16.6.9}%
-\contentsline {subsection}{\numberline {16.6.10}Consecutive days (gaps and islands)}{85}{subsection.16.6.10}%
+\contentsline {subsection}{\numberline {16.6.10}Consecutive days (gaps and islands)}{84}{subsection.16.6.10}%
 \contentsline {subsection}{\numberline {16.6.11}Retention: share of users who returned the next day}{85}{subsection.16.6.11}%
 \contentsline {subsection}{\numberline {16.6.12}Monthly cohort analysis}{85}{subsection.16.6.12}%
 \contentsline {subsection}{\numberline {16.6.13}Median}{85}{subsection.16.6.13}%
-\contentsline {subsection}{\numberline {16.6.14}Customers whose every order exceeded 200 (relational division style)}{86}{subsection.16.6.14}%
+\contentsline {subsection}{\numberline {16.6.14}Customers whose every order exceeded 200 (relational division style)}{85}{subsection.16.6.14}%
 \contentsline {section}{\numberline {16.7}Other things you may be asked}{86}{section.16.7}%
 \contentsline {section}{\numberline {16.8}Interview questions}{86}{section.16.8}%
-\contentsline {chapter}{\numberline {17}Rapid-Fire Question Bank}{88}{chapter.17}%
-\contentsline {section}{\numberline {17.1}Statistics and probability}{88}{section.17.1}%
-\contentsline {section}{\numberline {17.2}Classical machine learning}{89}{section.17.2}%
-\contentsline {section}{\numberline {17.3}Deep learning}{90}{section.17.3}%
-\contentsline {section}{\numberline {17.4}Tricky MCQ-style items}{92}{section.17.4}%
-\contentsline {section}{\numberline {17.5}Case and open-ended questions}{92}{section.17.5}%
-\contentsline {section}{\numberline {17.6}Talking about your own projects}{93}{section.17.6}%
-\contentsline {chapter}{\numberline {A}Formula Cheat Sheet}{94}{appendix.A}%
+\contentsline {chapter}{\numberline {17}Rapid-Fire Question Bank}{87}{chapter.17}%
+\contentsline {section}{\numberline {17.1}Statistics and probability}{87}{section.17.1}%
+\contentsline {section}{\numberline {17.2}Classical machine learning}{88}{section.17.2}%
+\contentsline {section}{\numberline {17.3}Deep learning}{89}{section.17.3}%
+\contentsline {section}{\numberline {17.4}Tricky MCQ-style items}{91}{section.17.4}%
+\contentsline {section}{\numberline {17.5}Case and open-ended questions}{91}{section.17.5}%
+\contentsline {section}{\numberline {17.6}Talking about your own projects}{92}{section.17.6}%
+\contentsline {chapter}{\numberline {A}Formula Cheat Sheet}{93}{appendix.A}%

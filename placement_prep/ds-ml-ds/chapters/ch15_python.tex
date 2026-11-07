@@ -19,7 +19,7 @@ Type & Properties & Average complexity\\
 \end{tabular}
 
 \subsection{Gotchas}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 # 1. Mutable default arguments are created once
 def add(item, bucket=[]):          # bug
     bucket.append(item); return bucket
@@ -52,7 +52,7 @@ print(0.1 + 0.2 == 0.3, abs(0.1 + 0.2 - 0.3) < 1e-9)  # False True
 \end{lstlisting}
 
 \subsection{Idioms worth having at your fingertips}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 from collections import Counter, defaultdict
 words = "the quick fox and the lazy dog and the cat".split()
 print(Counter(words).most_common(2))        # [('the', 3), ('and', 2)]
@@ -95,7 +95,7 @@ print(sorted(words, key=lambda w: (-len(w), w))[:3])  # sort by length desc, the
 \subsection{Vectorisation and broadcasting}
 Python loops over arrays are slow (interpreter overhead per element); NumPy operations run in compiled C over contiguous memory. \textbf{Broadcasting rules}: compare shapes from the right; two dimensions are compatible if equal or one of them is 1; missing leading dimensions are treated as 1.
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 X = np.arange(12, dtype=float).reshape(4, 3)  # 4 samples, 3 features
 mu, sd = X.mean(axis=0), X.std(axis=0)        # axis=0 -> down the rows, per column
@@ -122,7 +122,7 @@ print(dict(zip(vals.tolist(), counts.tolist())))
 \end{lstlisting}
 
 \subsection{Numerically stable softmax and log-sum-exp}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 def softmax(z, axis=-1):
     z = z - z.max(axis=axis, keepdims=True)   # shift: same result, no overflow
@@ -139,7 +139,7 @@ print(softmax(np.array([1000.0, 1001.0, 1002.0])))   # naive exp would overflow
 \section{pandas}
 
 \subsection{Core operations}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import pandas as pd, numpy as np
 orders = pd.DataFrame({
     "order_id": [1, 2, 3, 4, 5, 6],
@@ -186,7 +186,7 @@ print(long.head())
 \end{lstlisting}
 
 \subsection{Time-aware and window-style operations}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import pandas as pd
 s = pd.DataFrame({"cust": [1, 1, 1, 2, 2],
                   "day": pd.to_datetime(["2026-01-01", "2026-01-05", "2026-01-20",
@@ -216,7 +216,7 @@ print(s.sort_values("spend", ascending=False).drop_duplicates("cust"))
 \end{itemize}
 
 \section{scikit-learn: leakage-safe pipelines}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np, pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -249,7 +249,7 @@ Hyperparameters inside a pipeline are addressed as \texttt{"clf\_\_C"} in \textt
 \section{Implement-from-scratch questions}
 
 \subsection{Linear regression with gradient descent (and closed form)}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 rng = np.random.default_rng(42)
 X = rng.normal(size=(200, 3)); true_w = np.array([2.0, -1.0, 0.5])
@@ -271,7 +271,7 @@ print(w.round(3), round(b, 3), beta.round(3))
 \end{lstlisting}
 
 \subsection{Logistic regression}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 def sigmoid(z):
     return 1 / (1 + np.exp(-np.clip(z, -500, 500)))
@@ -299,7 +299,7 @@ print(w.round(2), round(log_loss(y, p), 3), ((p > 0.5) == y).mean())
 \end{lstlisting}
 
 \subsection{k-means}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 def kmeans(X, k, iters=100, seed=0):
     rng = np.random.default_rng(seed)
@@ -321,7 +321,7 @@ print(np.round(C[np.argsort(C[:, 0] + C[:, 1])], 1), round(inertia, 1))
 \end{lstlisting}
 
 \subsection{k-nearest neighbours}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 from collections import Counter
 def knn_predict(Xtr, ytr, Xte, k=3):
@@ -334,7 +334,7 @@ print(knn_predict(Xtr, ytr, np.array([[0.2, 0.4], [5.5, 4.8]]), k=3))   # [0 1]
 \end{lstlisting}
 
 \subsection{Metrics by hand: confusion matrix and ROC-AUC}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 def confusion(y, yhat):
     tp = int(((y == 1) & (yhat == 1)).sum()); fp = int(((y == 0) & (yhat == 1)).sum())
@@ -358,7 +358,7 @@ print(roc_auc(y, s))   # 0.875 (14 of 16 pos-neg pairs ordered correctly)
 \end{lstlisting}
 
 \subsection{A two-layer neural network with manual backprop}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 rng = np.random.default_rng(0)
 X = rng.normal(size=(400, 2))
@@ -383,7 +383,7 @@ print(round(loss, 3), (P.argmax(1) == y).mean())
 \end{lstlisting}
 
 \subsection{PCA via SVD}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 import numpy as np
 def pca(X, k):
     Xc = X - X.mean(0)
@@ -399,7 +399,7 @@ print(ev.round(3))      # first component carries almost all the variance
 \end{lstlisting}
 
 \section{Typical DSA patterns in DS coding rounds}
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=python]
 # Two-sum with a hash map: O(n)
 def two_sum(nums, target):
     seen = {}
